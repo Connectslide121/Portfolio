@@ -1,0 +1,28 @@
+aside {
+  background-color: blueviolet;
+  height: 100vh;
+  min-width: 3vw;
+  position: fixed;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.sidebar-social-media-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-social-media-links li a {
+  text-decoration: none;
+  color: black;
+  font-size: 30px;
+  padding-right: 4px;
+  transition: color 0.2s ease;
+}
+
+.sidebar-social-media-links li a:hover {
+  color: white;
+}

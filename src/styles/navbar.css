@@ -1,0 +1,22 @@
+nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+  background-color: aquamarine;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: black;
+}
+
+.navbar-section-links {
+  display: flex;
+  gap: 20px;
+}
