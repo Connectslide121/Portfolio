@@ -1,28 +1,31 @@
 aside {
-  background-color: blueviolet;
-  height: 100vh;
-  min-width: 3vw;
+  height: 80vh;
   position: fixed;
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
+  width: 3vw;
 }
 
-.sidebar-social-media-links {
+aside ul {
   list-style: none;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 20px;
 }
 
-.sidebar-social-media-links li a {
+aside ul li a {
   text-decoration: none;
-  color: black;
   font-size: 30px;
-  padding-right: 4px;
-  transition: color 0.2s ease;
 }
 
-.sidebar-social-media-links li a:hover {
-  color: white;
+aside ul li a p {
+  text-align: end;
+  transition: 0.2s;
+}
+
+aside ul li a:hover p {
+  color: rgb(255, 110, 57);
+  transform: translateX(8px);
 }

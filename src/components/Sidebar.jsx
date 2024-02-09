@@ -11,7 +11,7 @@ import {
 export default function Sidebar() {
   return (
     <aside>
-      <ul className="sidebar-social-media-links">
+      <ul>
         <li>
           <a
             href="https://www.linkedin.com/in/jon-mendizabal"
@@ -19,7 +19,9 @@ export default function Sidebar() {
             rel="noreferrer"
             title="linkedin"
           >
-            <FontAwesomeIcon icon={faLinkedin} />
+            <p>
+              <FontAwesomeIcon icon={faLinkedin} />
+            </p>
           </a>
         </li>
         <li>
@@ -29,7 +31,9 @@ export default function Sidebar() {
             rel="noreferrer"
             title="github"
           >
-            <FontAwesomeIcon icon={faGithub} />
+            <p>
+              <FontAwesomeIcon icon={faGithub} />
+            </p>
           </a>
         </li>
         <li>
@@ -39,7 +43,9 @@ export default function Sidebar() {
             rel="noreferrer"
             title="npm"
           >
-            <FontAwesomeIcon icon={faNpm} />
+            <p>
+              <FontAwesomeIcon icon={faNpm} />
+            </p>
           </a>
         </li>
         <li>
@@ -49,7 +55,9 @@ export default function Sidebar() {
             rel="noreferrer"
             title="itch.io"
           >
-            <FontAwesomeIcon icon={faItchIo} />
+            <p>
+              <FontAwesomeIcon icon={faItchIo} />
+            </p>
           </a>
         </li>
       </ul>
