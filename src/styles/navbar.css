@@ -2,30 +2,45 @@ nav {
   position: fixed;
   top: 0;
   width: 100%;
-  height: 5vh;
+  height: 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-inline: 15%;
+  background-color: var(--mainColorLight);
+  transition: 0.3s;
+  z-index: 100;
 }
 
 nav ul {
   display: flex;
   list-style: none;
-  border-left: #242424 solid 1px;
   padding: 4px 0px;
   transition: 0.3s;
 }
 
 nav ul li a {
   text-decoration: none;
-  padding: 4px 10px;
-  transition: 0.2s;
-  border-right: #242424 solid 1px;
+  padding: 4px 0;
+  margin-inline: 10px;
+  position: relative;
 }
 
-nav ul li a:hover {
-  box-shadow: 0 0 6px gray;
+nav ul li a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 0%;
+  background-color: var(--hoverColorLight);
+  transition: 0.4s;
+  z-index: -1;
+}
+
+nav ul li a.active::after,
+nav ul li a:hover::after {
+  width: 100%;
 }
 
 .navbar-logo {
@@ -54,7 +69,7 @@ nav ul li a:hover {
   position: absolute;
   top: 2px;
   left: 2px;
-  background: linear-gradient(180deg, orange, orangered);
+  background: var(--accentGradientLight);
   border-radius: 50vh;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
   transition: 0.3s;
@@ -67,13 +82,13 @@ nav ul li a:hover {
 }
 
 #darkmode-toggle:checked + .darkmode-toggle-label {
-  background-color: #242424;
+  background-color: var(--mainColorDark);
 }
 
 #darkmode-toggle:checked + .darkmode-toggle-label:after {
   left: 68px;
   transform: translateX(-100%);
-  background: linear-gradient(180deg, #777, #3a3a3a);
+  background: var(--accentGradientDark);
 }
 
 .darkmode-toggle-label:hover:after {
@@ -89,7 +104,7 @@ nav ul li a:hover {
 
 .sun {
   left: 6px;
-  color: #fff;
+  color: var(--mainColorLight);
   transition: 0.3s;
 }
 
@@ -103,7 +118,7 @@ nav ul li a:hover {
   color: #7e7e7e;
 }
 #darkmode-toggle:checked + .darkmode-toggle-label .moon {
-  color: #fff;
+  color: var(--mainColorLight);
 }
 
 .navbar-buttons {
@@ -114,10 +129,10 @@ nav ul li a:hover {
 
 .navbar-buttons a {
   text-decoration: none;
-  color: #fff;
+  color: var(--mainColorLight);
   padding: 6px 24px;
   border-radius: 50vh;
   line-height: 1;
-  box-shadow: 0 0 6px gray;
-  background: linear-gradient(180deg, orange, orangered);
+  box-shadow: 0 0 6px var(--boxShadow1);
+  background: var(--accentGradientLight);
 }

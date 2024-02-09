@@ -2,16 +2,15 @@ aside {
   height: 80vh;
   position: fixed;
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  width: 3vw;
+  margin-left: 30px;
+  width: 40px;
 }
 
 aside ul {
   list-style: none;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   gap: 20px;
 }
 
@@ -20,12 +19,18 @@ aside ul li a {
   font-size: 30px;
 }
 
-aside ul li a p {
-  text-align: end;
-  transition: 0.2s;
+aside ul li a svg {
+  transition: 0.3s;
+  transform: translateX(0px);
+  height: 40px;
 }
 
-aside ul li a:hover p {
-  color: rgb(255, 110, 57);
+aside ul li a:hover svg {
   transform: translateX(8px);
+  fill: url(#sidebar-icon-gradient);
+}
+
+#sidebar-icon-gradient {
+  --color-stop: orange;
+  --color-bot: orangered;
 }

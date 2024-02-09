@@ -6,7 +6,7 @@ import Contact from "../components/Contact";
 
 export default function Portfolio() {
   return (
-    <div className="portfolio-wrapper">
+    <div className="main-container">
       <Home />
       <About />
       <Projects />

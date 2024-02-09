@@ -1,15 +1,35 @@
 #home {
-  max-width: 70%;
+  width: 70%;
+  min-height: 100vh;
+  padding-top: 5vh;
 }
 
 #home h1 {
-  font-size: 200px;
+  font-size: 100px;
   font-weight: normal;
+  text-align: start;
   background: radial-gradient(
     circle farthest-corner at center center,
     #cfcbcc 14%,
-    #2b2b2b 100%
+    #5a5a5a 100%
   );
   background-clip: text;
-  color: rgb(0 0 0 / 20%);
+  color: transparent;
+  width: fit-content;
+}
+
+.home-card {
+}
+
+.home-image-wrapper {
+  position: relative;
+  height: 50vh;
+}
+
+.home-image {
+  position: absolute;
+  left: 0;
+  top: 15%;
+  width: 80%;
+  margin-left: 20%;
 }

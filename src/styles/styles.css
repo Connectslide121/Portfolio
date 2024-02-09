@@ -3,47 +3,70 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
-  --mainColor1: #242424;
-  --mainColor2: #fff;
-  --accentGradientLight: orange;
-  --accentGradientDark: orangered;
+  --mainColorDark: black;
+  --mainColorLight: #fff;
+  --hoverColorLight: #ff8100;
+  --hoverColorDark: #7787f9;
+  --boxShadow1: gray;
+  --accentGradientLight: linear-gradient(180deg, orange, orangered);
+  --accentGradientDark: linear-gradient(180deg, dodgerblue, violet);
 }
 
 body {
-  color: #242424;
-  background-color: #fff;
+  color: var(--mainColorDark);
+  background-color: var(--mainColorLight);
   transition: 0.3s;
 }
 
-.portfolio-wrapper {
+.main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-left: 5vw;
   margin-top: 5vh;
+  overflow-x: hidden;
 }
 
 a {
-  color: #242424;
+  color: var(--mainColorDark);
 }
 
 body.dark-theme {
-  color: #fff;
-  background-color: #242424;
+  color: var(--mainColorLight);
+  background-color: var(--mainColorDark);
 }
 
 body.dark-theme a {
-  color: #fff;
+  color: var(--mainColorLight);
 }
 
 body.dark-theme .navbar-logo {
   filter: invert(1);
 }
 
-body.dark-theme nav ul li a {
-  border-right: #fff solid 1px;
+body.dark-theme nav {
+  background-color: var(--mainColorDark);
 }
 
-body.dark-theme nav ul {
-  border-left: #fff solid 1px;
+body.dark-theme .navbar-buttons a {
+  background: var(--accentGradientDark);
+}
+
+body.dark-theme nav ul li a::after,
+body.dark-theme nav ul li a.active::after,
+body.dark-theme nav ul li a:hover::after {
+  background-color: var(--hoverColorDark);
+}
+
+body.dark-theme aside ul li a svg {
+  fill: #fff;
+}
+
+body.dark-theme aside ul li a:hover svg {
+  fill: url(#sidebar-icon-gradient);
+}
+
+body.dark-theme #sidebar-icon-gradient {
+  --color-stop: dodgerblue;
+  --color-bot: violet;
 }
