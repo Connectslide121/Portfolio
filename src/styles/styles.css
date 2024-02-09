@@ -70,3 +70,7 @@ body.dark-theme #sidebar-icon-gradient {
   --color-stop: dodgerblue;
   --color-bot: violet;
 }
+
+body.dark-theme .home-image {
+  filter: drop-shadow(2px 2px 2px var(--mainColorLight));
+}
