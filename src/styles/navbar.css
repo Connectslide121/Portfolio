@@ -137,14 +137,6 @@ nav ul li a:hover::after {
   background: var(--accentGradient);
 }
 
-.resume-button {
-  transition: 0.3s;
-}
-
-.resume-button:hover {
-  scale: 1.1;
-}
-
 body.dark-theme .navbar-logo {
   filter: invert(1);
 }
@@ -155,4 +147,12 @@ body.dark-theme nav {
     #151515 0%,
     #111111 40%
   );
+}
+
+.resume-button {
+  transition: 0.1s;
+}
+
+.resume-button:hover {
+  opacity: 0.6;
 }

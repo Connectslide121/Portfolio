@@ -7,10 +7,10 @@
 }
 
 body {
-  --mainColor: #111111;
-  --hoverColor: #7787f9;
-  --boxShadow: #111111;
-  --accentGradient: linear-gradient(180deg, rgb(51, 107, 163), violet);
+  --mainColor: #111;
+  --hoverColor: #578ec5;
+  --boxShadow: #111;
+  --accentGradient: linear-gradient(180deg, #336ba3, violet);
   --backgroundGradient: radial-gradient(
     ellipse farthest-side at center center,
     #eeeeee 0%,

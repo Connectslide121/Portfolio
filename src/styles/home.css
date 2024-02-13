@@ -4,7 +4,7 @@
   align-items: center;
   margin-inline: auto;
   min-height: 95vh;
-  width: 70%;
+  width: 65%;
 }
 
 .home-text-wrapper {
@@ -34,4 +34,18 @@
 .home-image {
   filter: drop-shadow(2px 2px 2px var(--boxShadow));
   height: 70vh;
+  animation: float 5s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translatey(0px);
+  }
+  50% {
+    transform: translatey(-20px);
+  }
+  100% {
+    transform: translatey(0px);
+  }
 }

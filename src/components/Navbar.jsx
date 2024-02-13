@@ -30,7 +30,7 @@ export default function Navbar() {
             target="_blank"
             className="resume-button"
           >
-            Resume
+            Download CV
           </a>
         </div>
       </nav>
