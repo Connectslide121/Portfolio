@@ -4,12 +4,13 @@
   align-items: center;
   margin-inline: auto;
   min-height: 95vh;
-  width: 60%;
+  width: 70%;
 }
 
 .home-text-wrapper {
   width: 50%;
   height: 100%;
+  padding-left: 2vw;
 }
 
 #home h1 {
