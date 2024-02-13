@@ -10,7 +10,8 @@ export default function Navbar() {
         <img src={logo} alt="logo" className="navbar-logo" />
         <ul>
           <li>
-            <a href="#home">Home</a>
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a href="#">Home</a>
           </li>
           <li>
             <a href="#about">About</a>
@@ -24,7 +25,11 @@ export default function Navbar() {
         </ul>
         <div className="navbar-buttons">
           <ThemeToggle />
-          <a href="/Jon Mendizabal - Resume.pdf" download>
+          <a
+            href="/Jon Mendizabal - Resume.pdf"
+            target="_blank"
+            className="resume-button"
+          >
             Resume
           </a>
         </div>

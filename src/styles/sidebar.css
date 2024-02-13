@@ -1,9 +1,7 @@
 aside {
-  height: 80vh;
   position: fixed;
-  display: flex;
-  align-items: center;
   margin-left: 30px;
+  margin-top: 30vh;
   width: 40px;
 }
 
@@ -11,18 +9,16 @@ aside ul {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-aside ul li a {
-  text-decoration: none;
-  font-size: 30px;
+  gap: 40px;
+  width: 100%;
 }
 
 aside ul li a svg {
   transition: 0.3s;
   transform: translateX(0px);
   height: 40px;
+  width: 100%;
+  fill: var(--mainColor);
 }
 
 aside ul li a:hover svg {
@@ -31,6 +27,6 @@ aside ul li a:hover svg {
 }
 
 #sidebar-icon-gradient {
-  --color-stop: orange;
-  --color-bot: orangered;
+  --color-stop: rgb(51, 107, 163);
+  --color-bot: violet;
 }

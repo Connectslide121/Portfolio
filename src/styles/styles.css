@@ -2,75 +2,43 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
-  --mainColorDark: black;
-  --mainColorLight: #fff;
-  --hoverColorLight: #ff8100;
-  --hoverColorDark: #7787f9;
-  --boxShadow1: gray;
-  --accentGradientLight: linear-gradient(180deg, orange, orangered);
-  --accentGradientDark: linear-gradient(180deg, dodgerblue, violet);
+  scroll-behavior: smooth;
+  font-family: "Inter", sans-serif;
 }
 
 body {
-  color: var(--mainColorDark);
-  background-color: var(--mainColorLight);
+  --mainColor: #111111;
+  --hoverColor: #7787f9;
+  --boxShadow: #111111;
+  --accentGradient: linear-gradient(180deg, rgb(51, 107, 163), violet);
+  --backgroundGradient: radial-gradient(
+    ellipse farthest-side at center center,
+    #eeeeee 0%,
+    #ffffff 100%
+  );
+  color: var(--mainColor);
+  background: var(--backgroundGradient);
+  background-attachment: fixed;
   transition: 0.3s;
+}
+
+body.dark-theme {
+  --mainColor: #fff;
+  --boxShadow: #555555;
+  --backgroundGradient: radial-gradient(
+    ellipse farthest-side at center center,
+    #303030 0%,
+    #111111 100%
+  );
 }
 
 .main-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-left: 5vw;
   margin-top: 5vh;
   overflow-x: hidden;
 }
 
 a {
-  color: var(--mainColorDark);
-}
-
-body.dark-theme {
-  color: var(--mainColorLight);
-  background-color: var(--mainColorDark);
-}
-
-body.dark-theme a {
-  color: var(--mainColorLight);
-}
-
-body.dark-theme .navbar-logo {
-  filter: invert(1);
-}
-
-body.dark-theme nav {
-  background-color: var(--mainColorDark);
-}
-
-body.dark-theme .navbar-buttons a {
-  background: var(--accentGradientDark);
-}
-
-body.dark-theme nav ul li a::after,
-body.dark-theme nav ul li a.active::after,
-body.dark-theme nav ul li a:hover::after {
-  background-color: var(--hoverColorDark);
-}
-
-body.dark-theme aside ul li a svg {
-  fill: #fff;
-}
-
-body.dark-theme aside ul li a:hover svg {
-  fill: url(#sidebar-icon-gradient);
-}
-
-body.dark-theme #sidebar-icon-gradient {
-  --color-stop: dodgerblue;
-  --color-bot: violet;
-}
-
-body.dark-theme .home-image {
-  filter: drop-shadow(2px 2px 2px var(--mainColorLight));
+  color: var(--mainColor);
 }

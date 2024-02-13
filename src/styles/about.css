@@ -1,3 +1,131 @@
 #about {
+  padding-top: 6vh;
   min-height: 100vh;
+  width: 60%;
+  margin-inline: auto;
+  display: flex;
+  gap: 10%;
+}
+
+.about-image-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20%;
+}
+
+.about-image {
+  height: 70vh;
+}
+
+.about-board-image {
+  filter: drop-shadow(4px 4px 4px var(--boxShadow));
+}
+
+.about-links-wrapper {
+  margin-left: 2vw;
+  padding-top: 6vh;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  gap: 2.5vh;
+}
+
+.about-link {
+  height: 15vh;
+  filter: drop-shadow(2px 2px 2px #222);
+  opacity: 0.5;
+  animation: shake 5s;
+  animation-iteration-count: infinite;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.about-link.active-link {
+  filter: drop-shadow(0px 0px 10px #fff);
+  opacity: 1;
+  animation: none;
+}
+.about-link:hover {
+  filter: drop-shadow(0px 0px 10px #fff);
+  opacity: 1;
+}
+
+@keyframes shake {
+  0% {
+    transform: rotate(0deg);
+  }
+  3% {
+    transform: scale(1.1) rotate(-5deg);
+  }
+  6% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  12% {
+    transform: rotate(0deg);
+  }
+}
+
+.about-text-wrapper {
+  width: 70%;
+  display: flex;
+  align-items: center;
+}
+
+.tools-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5vh;
+}
+
+.tool-cards-wrapper {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.tool-card {
+  width: 12%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-card img {
+  background-color: #555;
+  border-radius: 1vw;
+  width: 100%;
+  padding: 5px;
+}
+
+.about-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5vh;
+}
+
+.about-item-wrapper ul li {
+  line-height: 1.5;
+  list-style: none;
+  background-color: #555;
+  padding: 25px;
+  border-radius: 1vw;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.about-item-wrapper ul {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.about-item-wrapper ul li h4 {
+  font-size: 20px;
+  font-weight: 400;
 }
