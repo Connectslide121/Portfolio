@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/navbar.css";
-import logo from "../images/logo.png";
+import logo from "../images/logo.webp";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {

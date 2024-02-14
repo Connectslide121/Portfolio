@@ -1,18 +1,18 @@
 import React from "react";
-import html from "../images/tools/skill1.webp";
-import css from "../images/tools/skill2.webp";
-import js from "../images/tools/skill3.webp";
-import nodejs from "../images/tools/skill14.webp";
-import reactjs from "../images/tools/skill4.webp";
-import csharp from "../images/tools/skill5.webp";
-import sql from "../images/tools/skill6.webp";
-import dapper from "../images/tools/skill12.webp";
-import entityfw from "../images/tools/skill13.webp";
-import unity from "../images/tools/skill7.webp";
-import git from "../images/tools/skill8.webp";
-import github from "../images/tools/skill9.webp";
-import nx from "../images/tools/skill10.webp";
-import quikcast from "../images/tools/skill11.webp";
+import html from "../images/tools/html.webp";
+import css from "../images/tools/css.webp";
+import js from "../images/tools/js.webp";
+import nodejs from "../images/tools/nodejs.webp";
+import reactjs from "../images/tools/reactjs.webp";
+import csharp from "../images/tools/csharp.webp";
+import sql from "../images/tools/sql.webp";
+import dapper from "../images/tools/dapper.webp";
+import entityfw from "../images/tools/entityfw.webp";
+import unity from "../images/tools/unity.webp";
+import git from "../images/tools/git.webp";
+import github from "../images/tools/github.webp";
+import nx from "../images/tools/nx.webp";
+import quikcast from "../images/tools/quikcast.webp";
 
 export default function Tools() {
   return (
