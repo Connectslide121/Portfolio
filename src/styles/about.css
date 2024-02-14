@@ -87,7 +87,7 @@
 }
 
 .tool-card {
-  width: 12%;
+  width: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -95,10 +95,12 @@
 }
 
 .tool-card img {
-  background-color: #555;
+  background-color: #f0f0f0;
   border-radius: 1vw;
   width: 100%;
   padding: 5px;
+  box-shadow: 3px 3px 6px var(--boxShadow);
+  border: solid 1px #d1d1d1;
 }
 
 .about-item-wrapper {
@@ -111,10 +113,10 @@
 .about-item-wrapper ul li {
   line-height: 1.5;
   list-style: none;
-  background-color: #555;
+  background-color: #ddd;
   padding: 25px;
   border-radius: 1vw;
-  color: #fff;
+  color: #111;
   display: flex;
   flex-direction: column;
   gap: 20px;

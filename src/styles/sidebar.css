@@ -14,7 +14,7 @@ aside ul {
 }
 
 aside ul li a svg {
-  transition: 0.3s;
+  transition: 0.1s;
   transform: translateX(0px);
   height: 40px;
   width: 100%;
@@ -23,7 +23,7 @@ aside ul li a svg {
 
 aside ul li a:hover svg {
   transform: translateX(8px);
-  fill: url(#sidebar-icon-gradient);
+  fill: var(--hoverColor);
 }
 
 #sidebar-icon-gradient {

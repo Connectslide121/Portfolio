@@ -6,11 +6,11 @@ import Contact from "./Contact";
 
 export default function Portfolio() {
   return (
-    <div className="main-container">
+    <main className="main-container">
       <Home />
-      <About />
       <Projects />
+      <About />
       <Contact />
-    </div>
+    </main>
   );
 }

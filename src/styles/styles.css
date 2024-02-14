@@ -9,11 +9,11 @@
 body {
   --mainColor: #111;
   --hoverColor: #578ec5;
-  --boxShadow: #111;
+  --boxShadow: #d1d1d1;
   --accentGradient: linear-gradient(180deg, #336ba3, violet);
   --backgroundGradient: radial-gradient(
     ellipse farthest-side at center center,
-    #eeeeee 0%,
+    #e3e3e3 0%,
     #ffffff 100%
   );
   color: var(--mainColor);
@@ -24,7 +24,7 @@ body {
 
 body.dark-theme {
   --mainColor: #fff;
-  --boxShadow: #555555;
+  --boxShadow: #787878;
   --backgroundGradient: radial-gradient(
     ellipse farthest-side at center center,
     #303030 0%,

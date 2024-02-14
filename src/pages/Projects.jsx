@@ -3,18 +3,18 @@ import "../styles/projects.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { projects } from "../components/projectList";
+import { featuredProjects } from "../components/projectList";
 import DAIETpedia from "../images/projects/daietpedia.mp4";
 import CodepenAI from "../images/projects/CodepenAI.mp4";
 import PasswordInput from "../images/projects/password-input.mp4";
 import PlasticSlurg from "../images/projects/PlasticSlurg.mp4";
-import nodejs from "../images/tools/skill14.png";
-import reactjs from "../images/tools/skill4.png";
-import csharp from "../images/tools/skill5.png";
-import sql from "../images/tools/skill6.png";
-import dapper from "../images/tools/skill12.png";
-import entityfw from "../images/tools/skill13.png";
-import unity from "../images/tools/skill7.png";
+import nodejs from "../images/tools/skill14.webp";
+import reactjs from "../images/tools/skill4.webp";
+import csharp from "../images/tools/skill5.webp";
+import sql from "../images/tools/skill6.webp";
+import dapper from "../images/tools/skill12.webp";
+import entityfw from "../images/tools/skill13.webp";
+import unity from "../images/tools/skill7.webp";
 
 export default function Projects() {
   const assignVideo = (title) => {
@@ -31,6 +31,8 @@ export default function Projects() {
         return CodepenAI;
     }
   };
+
+  const assignImage = (title) => {};
 
   const assignTechnologies = (technologies) => {
     switch (technologies) {
@@ -54,27 +56,35 @@ export default function Projects() {
   };
 
   return (
-    <div id="projects">
+    <section id="projects">
       <h2>FEATURED PROJECTS</h2>
       <div className="project-cards-wrapper">
-        {projects.map((project, index) => (
+        {featuredProjects.map((project, index) => (
           <div key={index} className="project-card">
-            <video
-              className="project-media"
-              src={assignVideo(project.title)}
-              autoPlay
-              muted
-              controls
-            ></video>
+            {project.media === "video" ? (
+              <video
+                className="project-media"
+                src={assignVideo(project.title)}
+                autoPlay
+                muted
+                controls
+              ></video>
+            ) : (
+              <img
+                className="project-media"
+                src={assignImage(project.title)}
+                alt={project.title}
+              />
+            )}
             <div className="project-description">
               <div className="project-header">
                 <div className="project-title">
                   <h2>{project.title}</h2>
-                  <h4>{project.date}</h4>
                 </div>
                 <div className="project-technologies">
-                  {project.technologies.map((technology) => (
+                  {project.technologies.map((technology, index) => (
                     <img
+                      key={index}
                       src={assignTechnologies(technology)}
                       alt={technology}
                       title={technology}
@@ -85,8 +95,8 @@ export default function Projects() {
               <p>{project.description}</p>
               {project.details && (
                 <ul className="project-details-list">
-                  {project.details.map((detail) => (
-                    <li>{detail}</li>
+                  {project.details.map((detail, index) => (
+                    <li key={index}>{detail}</li>
                   ))}
                 </ul>
               )}
@@ -118,6 +128,6 @@ export default function Projects() {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }
