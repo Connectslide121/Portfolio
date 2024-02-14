@@ -8,7 +8,7 @@
 
 body {
   --mainColor: #111;
-  --hoverColor: #578ec5;
+  --hoverColor: #215e9b;
   --boxShadow: #d1d1d1;
   --accentGradient: linear-gradient(180deg, #336ba3, violet);
   --backgroundGradient: radial-gradient(
@@ -37,6 +37,8 @@ body.dark-theme {
   flex-direction: column;
   margin-top: 5vh;
   overflow-x: hidden;
+  width: 65%;
+  margin-inline: auto;
 }
 
 a {

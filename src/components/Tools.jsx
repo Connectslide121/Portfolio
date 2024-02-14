@@ -21,59 +21,59 @@ export default function Tools() {
       <div className="tool-cards-wrapper">
         <div className="tool-card">
           <img src={html} alt="html" />
-          <h4>HTML</h4>
+          <h3>HTML</h3>
         </div>
         <div className="tool-card">
           <img src={css} alt="css" />
-          <h4>CSS</h4>
+          <h3>CSS</h3>
         </div>
         <div className="tool-card">
           <img src={js} alt="javascript" />
-          <h4>JavaScript</h4>
+          <h3>JavaScript</h3>
         </div>
         <div className="tool-card">
           <img src={nodejs} alt="node.js" />
-          <h4>Node.js</h4>
+          <h3>Node.js</h3>
         </div>
         <div className="tool-card">
           <img src={reactjs} alt="react.js" />
-          <h4>React.js</h4>
+          <h3>React.js</h3>
         </div>
         <div className="tool-card">
           <img src={csharp} alt="c-sharp" />
-          <h4>C#</h4>
+          <h3>C#</h3>
         </div>
         <div className="tool-card">
           <img src={sql} alt="sql" />
-          <h4>SQL</h4>
+          <h3>SQL</h3>
         </div>
         <div className="tool-card">
           <img src={dapper} alt="dapper" />
-          <h4>Dapper</h4>
+          <h3>Dapper</h3>
         </div>
         <div className="tool-card">
           <img src={entityfw} alt="entity framework" />
-          <h4>Entity FW</h4>
+          <h3>EntityFW</h3>
         </div>
         <div className="tool-card">
           <img src={unity} alt="unity" />
-          <h4>Unity</h4>
+          <h3>Unity</h3>
         </div>
         <div className="tool-card">
           <img src={git} alt="git" />
-          <h4>Git</h4>
+          <h3>Git</h3>
         </div>
         <div className="tool-card">
           <img src={github} alt="github" />
-          <h4>GitHub</h4>
+          <h3>GitHub</h3>
         </div>
         <div className="tool-card">
           <img src={nx} alt="siemens nx" />
-          <h4>NX</h4>
+          <h3>NX</h3>
         </div>
         <div className="tool-card">
           <img src={quikcast} alt="quikcast" />
-          <h4>QuikCAST</h4>
+          <h3>QuikCAST</h3>
         </div>
       </div>
     </div>

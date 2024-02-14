@@ -8,8 +8,10 @@ export default function About() {
   return (
     <section id="about">
       <Tools />
-      <Education />
-      <Experience />
+      <div className="about-info-wrapper">
+        <Education />
+        <Experience />
+      </div>
     </section>
   );
 }

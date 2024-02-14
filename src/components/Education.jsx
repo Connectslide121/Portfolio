@@ -7,21 +7,51 @@ export default function Education() {
       <div>
         <ul>
           <li>
-            <h4>2023 - 2024</h4>
-            <h4> .NET Full-stack developer course at Lexicon Växjö (Sweden)</h4>
+            <div className="about-item-header">
+              <h3>2023 - 2024</h3>
+              <a
+                href="https://www.lexicon.se/"
+                target="_blank"
+                rel="noreferrer"
+                title="Lexicon website"
+              >
+                Visit site
+              </a>
+            </div>
+            <h3>.NET Full-stack developer course at Lexicon Växjö (Sweden)</h3>
           </li>
           <li>
-            <h4>2008 - 2010</h4>
-            <h4>
+            <div className="about-item-header">
+              <h3>2008 - 2010</h3>
+              <a
+                href="https://www.leartik.eus/"
+                target="_blank"
+                rel="noreferrer"
+                title="Lea Artibai website"
+              >
+                Visit site
+              </a>
+            </div>
+            <h3>
               HNC of Casting manufacturing &#38; powder metallurgy at
               Lea-Artibai (Spain)
-            </h4>
+            </h3>
           </li>
           <li>
-            <h4>2005 - 2008</h4>
-            <h4>
+            <div className="about-item-header">
+              <h3>2005 - 2008</h3>
+              <a
+                href="https://www.leartik.eus/"
+                target="_blank"
+                rel="noreferrer"
+                title="Lea Artibai website"
+              >
+                Visit site
+              </a>
+            </div>
+            <h3>
               Polymers Engineering at London Metropolitan University (Spain)
-            </h4>
+            </h3>
           </li>
         </ul>
       </div>
