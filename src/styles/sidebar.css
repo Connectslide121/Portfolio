@@ -14,8 +14,7 @@ aside ul {
 }
 
 aside ul li a svg {
-  transition: 0.1s;
-  transform: translateX(0px);
+  transition: 0.15s;
   height: 40px;
   width: 100%;
   fill: var(--mainColor);

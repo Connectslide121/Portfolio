@@ -6,7 +6,7 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15%;
+  padding: 10px 10%;
   background: radial-gradient(
     circle farthest-side at center center,
     #fbfbfb 0%,
@@ -61,6 +61,7 @@ nav ul li a:hover::after {
   margin-top: 10px;
   height: 100%;
   object-fit: cover;
+  transition: 0.3s;
 }
 
 .darkmode-toggle-label {
@@ -159,6 +160,9 @@ body.dark-theme nav {
 
 .resume-button {
   transition: 0.1s;
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .resume-button:hover {

@@ -17,7 +17,7 @@ import quikcast from "../images/tools/quikcast.webp";
 export default function Tools() {
   return (
     <div className="tools-wrapper">
-      <h2>TECH-STACK</h2>
+      <h2>TECH STACK</h2>
       <div className="tool-cards-wrapper">
         <div className="tool-card">
           <img src={html} alt="html" />

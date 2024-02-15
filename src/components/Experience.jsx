@@ -1,4 +1,6 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 
 export default function Experience() {
   return (
@@ -16,6 +18,7 @@ export default function Experience() {
                 title="Lea Artibai website"
               >
                 Visit site
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
               </a>
             </div>
             <h3> Plant Manager/Product designer at AML SA (Spain)</h3>
@@ -35,6 +38,7 @@ export default function Experience() {
                 title="Lea Artibai website"
               >
                 Visit site
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
               </a>
             </div>
             <h3> Plant Manager/Product designer at ATPL PL (India)</h3>

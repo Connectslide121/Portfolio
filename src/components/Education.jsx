@@ -1,4 +1,6 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 
 export default function Education() {
   return (
@@ -16,6 +18,7 @@ export default function Education() {
                 title="Lexicon website"
               >
                 Visit site
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
               </a>
             </div>
             <h3>.NET Full-stack developer course at Lexicon Växjö (Sweden)</h3>
@@ -30,6 +33,7 @@ export default function Education() {
                 title="Lea Artibai website"
               >
                 Visit site
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
               </a>
             </div>
             <h3>
@@ -47,6 +51,7 @@ export default function Education() {
                 title="Lea Artibai website"
               >
                 Visit site
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
               </a>
             </div>
             <h3>

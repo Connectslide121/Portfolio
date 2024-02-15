@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "../styles/projects.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faLink, faGamepad } from "@fortawesome/free-solid-svg-icons";
+import { faGithub, faNpm } from "@fortawesome/free-brands-svg-icons";
 
 import { featuredProjects, allProjects } from "../components/projectList";
 
@@ -111,12 +111,25 @@ export default function Projects() {
     }
   };
 
-  const handleOpenOtherProjects = () => {
+  const assignIcon = (button) => {
+    switch (button) {
+      case "Package site":
+        return faNpm;
+      case "Live demo":
+        return faLink;
+      case "Play game":
+        return faGamepad;
+      default:
+        return faGithub;
+    }
+  };
+
+  const openOtherProjects = () => {
     setShowOtherProjects(true);
     document.body.classList.add("other-projects-open");
   };
 
-  const handleCloseOtherProjects = () => {
+  const closeOtherProjects = () => {
     setShowOtherProjects(false);
     document.body.classList.remove("other-projects-open");
   };
@@ -174,7 +187,7 @@ export default function Projects() {
                   rel="noreferrer"
                 >
                   <FontAwesomeIcon icon={faGithub} />
-                  <span>SOURCE CODE</span>
+                  <span>Source code</span>
                 </a>
                 {project.livedemo && (
                   <a
@@ -183,7 +196,7 @@ export default function Projects() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <FontAwesomeIcon icon={faLink} />
+                    <FontAwesomeIcon icon={assignIcon(project.button)} />
                     <span>{project.button}</span>
                   </a>
                 )}
@@ -192,15 +205,12 @@ export default function Projects() {
           </div>
         ))}
       </div>
-      <button
-        className="other-projects-button"
-        onClick={handleOpenOtherProjects}
-      >
+      <button className="other-projects-button" onClick={openOtherProjects}>
         - Other projects -
       </button>
       {showOtherProjects && (
         <div className="other-projects-wrapper">
-          <div className="overlay" onClick={handleCloseOtherProjects}></div>
+          <div className="overlay" onClick={closeOtherProjects}></div>
           <div className="other-projects-content">
             <div className="project-cards-wrapper">
               {allProjects.map((project, index) => (
@@ -252,7 +262,7 @@ export default function Projects() {
                         rel="noreferrer"
                       >
                         <FontAwesomeIcon icon={faGithub} />
-                        <span>SOURCE CODE</span>
+                        <span>Source code</span>
                       </a>
                       {project.livedemo && (
                         <a
@@ -261,7 +271,7 @@ export default function Projects() {
                           target="_blank"
                           rel="noreferrer"
                         >
-                          <FontAwesomeIcon icon={faLink} />
+                          <FontAwesomeIcon icon={assignIcon(project.button)} />
                           <span>{project.button}</span>
                         </a>
                       )}

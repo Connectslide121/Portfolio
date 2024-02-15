@@ -8,9 +8,9 @@
 
 body {
   --mainColor: #111;
-  --hoverColor: #215e9b;
+  --hoverColor: #2376c9;
   --boxShadow: #d1d1d1;
-  --accentGradient: linear-gradient(180deg, #336ba3, violet);
+  --cardBackground: #f0f0f0;
   --backgroundGradient: radial-gradient(
     ellipse farthest-side at center center,
     #e3e3e3 0%,
@@ -46,4 +46,12 @@ body.other-projects-open {
 
 a {
   color: var(--mainColor);
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  color: #fff;
+  background-color: var(--hoverColor);
 }

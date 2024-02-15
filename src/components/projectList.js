@@ -11,7 +11,7 @@ export const featuredProjects = [
     technologies: ["html", "css", "react", "node", "csharp", "entityfw", "sql"],
     repository: "https://github.com/Connectslide121/CodepenAI",
     livedemo: "https://connectslide121.github.io/CodepenAI-livedemo",
-    button: "LIVE DEMO",
+    button: "Live demo",
     date: "January 2024"
   },
   {
@@ -22,7 +22,7 @@ export const featuredProjects = [
     technologies: ["react", "node"],
     repository: "https://github.com/Connectslide121/password-input-component",
     livedemo: "https://www.npmjs.com/package/password-input-component",
-    button: "NPM PAGE",
+    button: "Package site",
     date: "January 2024"
   },
   {
@@ -33,7 +33,7 @@ export const featuredProjects = [
     technologies: ["html", "css", "react", "node"],
     repository: "https://github.com/Connectslide121/daietpedia",
     livedemo: "https://connectslide121.github.io/daietpedia",
-    button: "LIVE DEMO",
+    button: "Live demo",
     date: "January 2024"
   },
 
@@ -45,7 +45,7 @@ export const featuredProjects = [
     technologies: ["unity", "csharp"],
     repository: "https://github.com/Connectslide121/Plastic-Slurg",
     livedemo: "https://connect-slide-121.itch.io/plastic-slurg",
-    button: "PLAY GAME",
+    button: "Play game",
     date: "November 2023"
   }
 ];
@@ -59,7 +59,7 @@ export const allProjects = [
     technologies: ["html", "css", "react", "csharp", "entityfw", "sql"],
     repository: "https://github.com/Connectslide121/Listr",
     livedemo: "https://connectslide121.github.io/Listr-livedemo",
-    button: "LIVE DEMO",
+    button: "Live demo",
     date: "January 2024"
   },
   {
@@ -69,7 +69,7 @@ export const allProjects = [
     technologies: ["html", "css", "react"],
     repository: "https://github.com/Connectslide121/Calculator",
     livedemo: "https://connectslide121.github.io/Calculator",
-    button: "LIVE DEMO",
+    button: "Live demo",
     date: "December 2023"
   },
   {
@@ -80,7 +80,7 @@ export const allProjects = [
     technologies: ["html", "css", "javascript"],
     repository: "https://github.com/Connectslide121/AI-image-generator",
     livedemo: "https://connectslide121.github.io/AI-image-generator",
-    button: "LIVE DEMO",
+    button: "Live demo",
     date: "December 2023"
   },
   {
@@ -91,7 +91,7 @@ export const allProjects = [
     technologies: ["html", "css", "javascript"],
     repository: "https://github.com/Connectslide121/Image-search-app",
     livedemo: "https://connectslide121.github.io/Image-search-app",
-    button: "LIVE DEMO",
+    button: "Live demo",
     date: "December 2023"
   },
   {
@@ -102,7 +102,7 @@ export const allProjects = [
     technologies: ["html", "css", "javascript"],
     repository: "https://github.com/Connectslide121/Sokoban",
     livedemo: "https://connectslide121.github.io/Sokoban",
-    button: "PLAY GAME",
+    button: "Play game",
     date: "December 2023"
   },
   {
@@ -131,7 +131,7 @@ export const allProjects = [
     technologies: ["unity", "csharp"],
     repository: "https://github.com/Connectslide121/Sliding-puzzle",
     livedemo: "https://connect-slide-121.itch.io/sliding-puzzle",
-    button: "PLAY GAME",
+    button: "Play game",
     date: "November 2023"
   },
   {
@@ -141,7 +141,7 @@ export const allProjects = [
     technologies: ["html", "css"],
     repository: "https://github.com/Connectslide121/Spotify-clone",
     livedemo: "https://connectslide121.github.io/Spotify-clone",
-    button: "LIVE DEMO",
+    button: "Live demo",
     date: "November 2023"
   },
   {
@@ -160,7 +160,7 @@ export const allProjects = [
     technologies: ["unity", "csharp"],
     repository: "https://github.com/Connectslide121/Flapry-Birb",
     livedemo: "https://connect-slide-121.itch.io/flapry-blirb",
-    button: "PLAY GAME",
+    button: "Play game",
     date: "October 2023"
   },
   {
@@ -170,7 +170,7 @@ export const allProjects = [
     technologies: ["html", "css"],
     repository: "https://github.com/Connectslide121/Patisserie-Lente",
     livedemo: "https://connectslide121.github.io/Patisserie-Lente",
-    button: "LIVE DEMO",
+    button: "Live demo",
     date: "September 2023"
   }
 ];

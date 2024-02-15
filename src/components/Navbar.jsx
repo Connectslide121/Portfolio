@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import "../styles/navbar.css";
 import logo from "../images/logo.webp";
 import ThemeToggle from "./ThemeToggle";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 
 export default function Navbar() {
   const [scrollY, setScrollY] = useState(0);
   const [homeHeight, setHomeHeight] = useState(0);
   const [projectsHeight, setProjectsHeight] = useState(0);
   const [aboutHeight, setAboutHeight] = useState(0);
-  const [contactHeight, setContactHeight] = useState(0);
   const [homeClass, setHomeClass] = useState("active-nav-link");
   const [projectsClass, setProjectsClass] = useState("");
   const [aboutClass, setAboutClass] = useState("");
@@ -17,25 +18,28 @@ export default function Navbar() {
   window.onscroll = () => {
     setScrollY(window.scrollY);
 
-    if (scrollY < homeHeight - 200) {
+    if (scrollY < homeHeight - window.innerHeight / 2.5) {
       setHomeClass("active-nav-link");
       setProjectsClass("");
       setAboutClass("");
       setContactClass("");
-    } else if (scrollY < homeHeight + projectsHeight - 300) {
+    } else if (
+      scrollY <
+      homeHeight + projectsHeight - window.innerHeight / 2.5
+    ) {
       setHomeClass("");
       setProjectsClass("active-nav-link");
       setAboutClass("");
       setContactClass("");
-    } else if (scrollY < homeHeight + projectsHeight + aboutHeight - 300) {
+    } else if (
+      scrollY <
+      homeHeight + projectsHeight + aboutHeight - window.innerHeight / 2.5
+    ) {
       setHomeClass("");
       setProjectsClass("");
       setAboutClass("active-nav-link");
       setContactClass("");
-    } else if (
-      scrollY <
-      homeHeight + projectsHeight + aboutHeight + contactHeight - 300
-    ) {
+    } else {
       setHomeClass("");
       setProjectsClass("");
       setAboutClass("");
@@ -47,7 +51,6 @@ export default function Navbar() {
     setHomeHeight(document.getElementById("home").offsetHeight);
     setProjectsHeight(document.getElementById("projects").offsetHeight);
     setAboutHeight(document.getElementById("about").offsetHeight);
-    setContactHeight(document.getElementById("contact").offsetHeight);
   }, []);
 
   return (
@@ -83,6 +86,7 @@ export default function Navbar() {
           target="_blank"
           className="resume-button"
         >
+          <FontAwesomeIcon icon={faDownload} />
           Download CV
         </a>
       </div>
