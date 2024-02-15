@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/projects.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 import { featuredProjects, allProjects } from "../components/projectList";

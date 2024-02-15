@@ -48,6 +48,10 @@ nav ul li a:hover {
   color: #999;
 }
 
+.active-nav-link::after {
+  width: 100%;
+}
+
 nav ul li a.active::after,
 nav ul li a:hover::after {
   width: 100%;
