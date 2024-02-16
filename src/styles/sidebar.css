@@ -22,7 +22,7 @@ aside ul li a svg {
 
 aside ul li a:hover svg {
   transform: translateX(8px);
-  fill: var(--hoverColor);
+  fill: var(--accentColor);
 }
 
 #sidebar-icon-gradient {

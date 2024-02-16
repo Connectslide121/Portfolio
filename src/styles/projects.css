@@ -1,6 +1,5 @@
 #projects {
   padding-top: 10vh;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   gap: 5vh;
@@ -105,7 +104,7 @@ body.dark-theme .project-media {
   border-radius: 50vh;
   line-height: 1;
   box-shadow: 2px 2px 4px #999;
-  background: var(--hoverColor);
+  background: var(--accentColor);
   transition: 0.1s;
   font-size: 16px;
 }
@@ -138,7 +137,7 @@ body.dark-theme .project-media {
   bottom: 4px;
   height: 3px;
   width: 90%;
-  background-color: var(--hoverColor);
+  background-color: var(--accentColor);
   transition: 0.2s;
   z-index: -1;
 }
@@ -180,4 +179,5 @@ body.dark-theme .project-media {
   height: 94vh;
   background: var(--backgroundGradient);
   border: solid 1px #777777;
+  scrollbar-color: var(--accentColor) transparent;
 }

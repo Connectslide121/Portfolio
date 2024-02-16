@@ -113,7 +113,7 @@ export default function Projects() {
 
   const assignIcon = (button) => {
     switch (button) {
-      case "Package site":
+      case "Documentation":
         return faNpm;
       case "Live demo":
         return faLink;

@@ -39,13 +39,14 @@ nav ul li a::after {
   bottom: 0;
   height: 3px;
   width: 0%;
-  background-color: var(--hoverColor);
+  background-color: var(--accentColor);
   transition: 0.2s;
   z-index: -1;
 }
 
 nav ul li a:hover {
   color: #999;
+  cursor: pointer;
 }
 
 .active-nav-link::after {
@@ -62,6 +63,7 @@ nav ul li a:hover::after {
   height: 100%;
   object-fit: cover;
   transition: 0.3s;
+  cursor: pointer;
 }
 
 .darkmode-toggle-label {
@@ -84,7 +86,7 @@ nav ul li a:hover::after {
   position: absolute;
   top: 2px;
   left: 2px;
-  background: var(--hoverColor);
+  background: var(--accentColor);
   border-radius: 50vh;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
   transition: 0.3s;
@@ -143,7 +145,7 @@ nav ul li a:hover::after {
   padding: 6px 24px;
   border-radius: 50vh;
   box-shadow: 2px 2px 2px var(--boxShadow);
-  background: var(--hoverColor);
+  background: var(--accentColor);
 }
 
 body.dark-theme .navbar-logo {

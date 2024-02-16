@@ -87,7 +87,7 @@ body.dark-theme .contact-info img {
   padding: 10px;
   font-size: 14px;
   border-radius: 0.7vw;
-  border: solid 1px #d1d1d1;
+  border: solid 1px #5d5d5d;
 }
 
 .contact-form form textarea {
@@ -96,7 +96,7 @@ body.dark-theme .contact-info img {
   padding: 10px;
   font-size: 14px;
   border-radius: 0.7vw;
-  border: solid 1px #d1d1d1;
+  border: solid 1px #5d5d5d;
   scrollbar-width: none;
 }
 
@@ -107,7 +107,7 @@ body.dark-theme .contact-info img {
   border: none;
   border-radius: 50vh;
   box-shadow: 2px 2px 2px var(--boxShadow);
-  background: var(--hoverColor);
+  background: var(--accentColor);
   transition: 0.1s;
   font-size: 16px;
   width: fit-content;

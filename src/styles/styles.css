@@ -6,9 +6,13 @@
   font-family: "Inter", sans-serif;
 }
 
+.App {
+  scrollbar-color: var(--accentColor) transparent;
+}
+
 body {
   --mainColor: #111;
-  --hoverColor: #2376c9;
+  --accentColor: #2376c9;
   --boxShadow: #d1d1d1;
   --cardBackground: #f0f0f0;
   --backgroundGradient: radial-gradient(
@@ -52,6 +56,5 @@ a {
   display: flex;
   justify-content: center;
   padding: 20px 0;
-  color: #fff;
-  background-color: var(--hoverColor);
+  color: var(--mainColor);
 }

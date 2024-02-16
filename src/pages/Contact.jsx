@@ -34,7 +34,7 @@ export default function Contact() {
           </div>
         </div>
         <div className="contact-form">
-          <form action="">
+          <form action="https://getform.io/f/penL3Eb7" method="POST">
             <div className="contact-form-group">
               <label htmlFor="name">Name</label>
               <input type="text" id="name" name="name" required />

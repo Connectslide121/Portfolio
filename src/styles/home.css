@@ -46,3 +46,15 @@
     transform: translatey(0px);
   }
 }
+
+@media screen and (max-width: 1300px) {
+  #home {
+    flex-direction: column;
+    gap: 5vh;
+    margin-top: 5vh;
+  }
+
+  .home-image {
+    height: 50vh;
+  }
+}

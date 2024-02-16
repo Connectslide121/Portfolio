@@ -22,7 +22,7 @@ export const featuredProjects = [
     technologies: ["react", "node"],
     repository: "https://github.com/Connectslide121/password-input-component",
     livedemo: "https://www.npmjs.com/package/password-input-component",
-    button: "Package site",
+    button: "Documentation",
     date: "January 2024"
   },
   {
