@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/Portfolio/static/css/main.daf68e1d.css",
+    "main.css": "/Portfolio/static/css/main.2d02373e.css",
     "main.js": "/Portfolio/static/js/main.5808aa28.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/codepenai.mp4": "/Portfolio/static/media/codepenai.67099e612ecd577ff4f7.mp4",
@@ -37,11 +37,11 @@
     "static/media/html.webp": "/Portfolio/static/media/html.5f863fccf290c35b28a0.webp",
     "static/media/js.webp": "/Portfolio/static/media/js.112e86014c0a1cf4e28e.webp",
     "index.html": "/Portfolio/index.html",
-    "main.daf68e1d.css.map": "/Portfolio/static/css/main.daf68e1d.css.map",
+    "main.2d02373e.css.map": "/Portfolio/static/css/main.2d02373e.css.map",
     "main.5808aa28.js.map": "/Portfolio/static/js/main.5808aa28.js.map"
   },
   "entrypoints": [
-    "static/css/main.daf68e1d.css",
+    "static/css/main.2d02373e.css",
     "static/js/main.5808aa28.js"
   ]
 }
