@@ -179,4 +179,8 @@ body.dark-theme nav {
   nav ul li a {
     display: none;
   }
+
+  .navbar-logo {
+    margin-bottom: 10px;
+  }
 }

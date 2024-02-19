@@ -62,3 +62,9 @@ a {
 .footer h4 svg {
   color: var(--accentColor);
 }
+
+@media screen and (max-width: 850px) {
+  .main-container {
+    width: 80%;
+  }
+}

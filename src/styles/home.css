@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 95vh;
 }
 
 .home-text-wrapper {
@@ -56,5 +56,29 @@
 
   .home-image {
     height: 50vh;
+  }
+}
+@media screen and (max-width: 850px) {
+  #home {
+    flex-direction: column;
+    gap: 10vh;
+    margin-top: 1vh;
+  }
+
+  .home-image {
+    height: 30vh;
+  }
+
+  #home h1 {
+    font-size: 32px;
+  }
+
+  #home h2 {
+    font-size: 16px;
+  }
+
+  .home-text-wrapper {
+    width: 80%;
+    height: 100%;
   }
 }

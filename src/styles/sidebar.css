@@ -29,3 +29,10 @@ aside ul li a:hover svg {
   --color-stop: rgb(51, 107, 163);
   --color-bot: violet;
 }
+
+@media screen and (max-width: 850px) {
+  aside {
+    margin-left: 10px;
+    width: 25px;
+  }
+}

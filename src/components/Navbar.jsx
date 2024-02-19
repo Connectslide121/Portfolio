@@ -5,6 +5,7 @@ import logo from "../images/logo.webp";
 import ThemeToggle from "./ThemeToggle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import resume from "../images/Jon Mendizabal - CV.pdf";
 
 export default function Navbar() {
   const [scrollY, setScrollY] = useState(0);
@@ -120,8 +121,9 @@ export default function Navbar() {
       <div className="navbar-buttons">
         <ThemeToggle />
         <a
-          href="/Jon Mendizabal - Resume.pdf"
+          href={resume}
           target="_blank"
+          rel="noreferrer"
           className="resume-button"
         >
           <FontAwesomeIcon icon={faDownload} />

@@ -175,7 +175,9 @@ export default function Projects() {
               {project.details && (
                 <ul className="project-details-list">
                   {project.details.map((detail, index) => (
-                    <li key={index}>{detail}</li>
+                    <li key={index}>
+                      <p>{detail}</p>
+                    </li>
                   ))}
                 </ul>
               )}

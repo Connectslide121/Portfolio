@@ -62,10 +62,6 @@ body.dark-theme .project-media {
   font-size: 18px;
 }
 
-.project-description h4 {
-  font-weight: normal;
-}
-
 .project-description h2 {
   font-size: 40px;
   font-weight: normal;
@@ -190,5 +186,28 @@ body.dark-theme .project-media {
   .project-media {
     width: 100%;
     border-radius: 1vw 1vw 0 0;
+  }
+
+  .project-header {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .project-header h2 {
+    font-size: 30px;
+  }
+
+  .project-technologies img {
+    width: 30px;
+  }
+
+  .project-description p {
+    line-height: 1.2;
+    font-size: 14px;
+  }
+
+  .project-buttons a {
+    font-size: 14px;
+    padding: 4px 10px;
   }
 }
