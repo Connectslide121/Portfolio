@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Portfolio/static/css/main.ef0338a1.css",
-    "main.js": "/Portfolio/static/js/main.9b844406.js",
+    "main.js": "/Portfolio/static/js/main.c82269a5.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/codepenai.mp4": "/Portfolio/static/media/codepenai.67099e612ecd577ff4f7.mp4",
     "static/media/plastic-slurg.mp4": "/Portfolio/static/media/plastic-slurg.a10eea5912762bdf2abc.mp4",
@@ -37,10 +37,10 @@
     "static/media/js.webp": "/Portfolio/static/media/js.112e86014c0a1cf4e28e.webp",
     "index.html": "/Portfolio/index.html",
     "main.ef0338a1.css.map": "/Portfolio/static/css/main.ef0338a1.css.map",
-    "main.9b844406.js.map": "/Portfolio/static/js/main.9b844406.js.map"
+    "main.c82269a5.js.map": "/Portfolio/static/js/main.c82269a5.js.map"
   },
   "entrypoints": [
     "static/css/main.ef0338a1.css",
-    "static/js/main.9b844406.js"
+    "static/js/main.c82269a5.js"
   ]
 }
