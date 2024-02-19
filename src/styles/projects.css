@@ -181,3 +181,14 @@ body.dark-theme .project-media {
   border: solid 1px #777777;
   scrollbar-color: var(--accentColor) transparent;
 }
+
+@media screen and (max-width: 850px) {
+  .project-card {
+    flex-direction: column;
+  }
+
+  .project-media {
+    width: 100%;
+    border-radius: 1vw 1vw 0 0;
+  }
+}

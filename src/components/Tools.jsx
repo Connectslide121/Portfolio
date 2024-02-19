@@ -13,6 +13,7 @@ import git from "../images/tools/git.webp";
 import github from "../images/tools/github.webp";
 import nx from "../images/tools/nx.webp";
 import quikcast from "../images/tools/quikcast.webp";
+import aws from "../images/tools/aws.webp";
 
 export default function Tools() {
   return (
@@ -42,6 +43,10 @@ export default function Tools() {
         <div className="tool-card">
           <img src={csharp} alt="c-sharp" />
           <h3>C#</h3>
+        </div>
+        <div className="tool-card">
+          <img src={aws} alt="aws" />
+          <h3>AWS</h3>
         </div>
         <div className="tool-card">
           <img src={sql} alt="sql" />

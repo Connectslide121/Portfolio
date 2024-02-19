@@ -20,7 +20,7 @@
 }
 
 .tool-card {
-  width: 3.5vw;
+  width: 3vw;
   min-width: 60px;
   display: flex;
   flex-direction: column;
@@ -98,4 +98,15 @@
   flex-direction: column;
   gap: 20px;
   width: 100%;
+}
+
+@media screen and (max-width: 1300px) {
+  .about-info-wrapper {
+    flex-direction: column;
+    gap: 6vh;
+  }
+
+  .about-item-wrapper {
+    width: 100%;
+  }
 }

@@ -120,3 +120,15 @@ body.dark-theme .contact-info img {
   opacity: 0.6;
   cursor: pointer;
 }
+
+@media screen and (max-width: 850px) {
+  .contact-content {
+    flex-direction: column;
+    gap: 6vh;
+  }
+
+  .contact-info,
+  .contact-form {
+    width: 100%;
+  }
+}
