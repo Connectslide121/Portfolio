@@ -43,6 +43,7 @@ aside ul li a:hover svg {
     width: fit-content;
     margin-inline: auto;
     height: 50px;
+    gap: 20px;
     align-items: center;
   }
 
