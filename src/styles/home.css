@@ -78,7 +78,8 @@
   }
 
   .home-text-wrapper {
-    width: 80%;
+    width: fit-content;
     height: 100%;
+    margin-inline: auto;
   }
 }

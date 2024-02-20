@@ -1,8 +1,7 @@
 aside {
   position: fixed;
-  margin-left: 30px;
   margin-top: 30vh;
-  width: 40px;
+  width: 100px;
 }
 
 aside ul {
@@ -32,7 +31,31 @@ aside ul li a:hover svg {
 
 @media screen and (max-width: 850px) {
   aside {
-    margin-left: 10px;
-    width: 25px;
+    bottom: 0;
+    margin-top: 0;
+    width: 100%;
+    background: var(--barBackgroundGradient);
+    z-index: 10;
+  }
+
+  aside ul {
+    flex-direction: row;
+    width: fit-content;
+    margin-inline: auto;
+    height: 50px;
+    align-items: center;
+  }
+
+  aside ul li a svg {
+    height: 30px;
+  }
+
+  aside ul li a:hover svg {
+    transform: none;
+    fill: var(--mainColor);
+  }
+
+  aside ul li a:active svg {
+    fill: var(--accentColor);
   }
 }

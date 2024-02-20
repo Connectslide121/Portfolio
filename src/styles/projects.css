@@ -181,6 +181,7 @@ body.dark-theme .project-media {
 @media screen and (max-width: 850px) {
   .project-card {
     flex-direction: column;
+    box-shadow: none;
   }
 
   .project-media {
@@ -194,11 +195,20 @@ body.dark-theme .project-media {
   }
 
   .project-header h2 {
-    font-size: 30px;
+    font-size: 24px;
   }
 
   .project-technologies img {
     width: 30px;
+  }
+
+  .project-description {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: #111;
+    font-size: 18px;
   }
 
   .project-description p {

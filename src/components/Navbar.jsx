@@ -127,7 +127,7 @@ export default function Navbar() {
           className="resume-button"
         >
           <FontAwesomeIcon icon={faDownload} />
-          Download CV
+          <span>Download</span> CV
         </a>
       </div>
     </nav>
