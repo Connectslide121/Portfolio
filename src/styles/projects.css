@@ -124,6 +124,7 @@ body.dark-theme .project-media {
   transition: 0.1s;
   margin-inline: auto;
   padding: 8px;
+  z-index: 20;
 }
 
 .other-projects-button::after {
@@ -151,10 +152,12 @@ body.dark-theme .project-media {
   bottom: 0;
   position: fixed;
   z-index: 100;
+  display: flex;
+  flex-direction: column;
 }
 
 .overlay {
-  background: #8282828f;
+  background: #6f6f6fe7;
   width: 100vw;
   height: 100vh;
   top: 0;
@@ -167,12 +170,12 @@ body.dark-theme .project-media {
 .other-projects-content {
   position: relative;
   z-index: 20;
-  margin: 3vh 0;
+  margin: 3vh 0 1.5vh 0;
   padding: 5vh;
   width: 75%;
   margin-inline: auto;
   overflow-y: scroll;
-  height: 94vh;
+  height: 90vh;
   background: var(--backgroundGradient);
   border: solid 1px #777777;
   scrollbar-color: var(--accentColor) transparent;
@@ -219,5 +222,12 @@ body.dark-theme .project-media {
   .project-buttons a {
     font-size: 14px;
     padding: 4px 10px;
+  }
+  .other-projects-content {
+    margin: 2vh 0;
+    padding: 2vh;
+    width: 90%;
+    margin-inline: auto;
+    height: 90vh;
   }
 }

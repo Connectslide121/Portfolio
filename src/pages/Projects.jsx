@@ -283,6 +283,12 @@ export default function Projects() {
               ))}
             </div>
           </div>
+          <button
+            className="other-projects-button"
+            onClick={closeOtherProjects}
+          >
+            - Close -
+          </button>
         </div>
       )}
     </section>
