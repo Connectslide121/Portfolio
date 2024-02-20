@@ -110,3 +110,13 @@
     width: 100%;
   }
 }
+
+@media screen and (max-width: 850px) {
+  .tool-card img {
+    box-shadow: none;
+  }
+
+  .about-item-wrapper ul li {
+    box-shadow: none;
+  }
+}
