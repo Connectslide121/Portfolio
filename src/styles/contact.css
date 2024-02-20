@@ -130,5 +130,6 @@ body.dark-theme .contact-info img {
   .contact-info,
   .contact-form {
     width: 100%;
+    box-shadow: none;
   }
 }
