@@ -16,6 +16,7 @@ import unity from "../images/tools/unity.webp";
 import javascript from "../images/tools/js.webp";
 import html from "../images/tools/html.webp";
 import css from "../images/tools/css.webp";
+import aws from "../images/tools/aws.webp";
 
 import DAIETpedia from "../images/projects/daietpedia.mp4";
 import CodepenAI from "../images/projects/codepenai.mp4";
@@ -106,6 +107,8 @@ export default function Projects() {
         return html;
       case "css":
         return css;
+      case "aws":
+        return aws;
       default:
         return reactjs;
     }

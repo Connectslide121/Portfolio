@@ -8,7 +8,16 @@ export const featuredProjects = [
       "OpenAI API used for code generation, API key required",
       "Unsplash API used for getting images"
     ],
-    technologies: ["html", "css", "react", "node", "csharp", "entityfw", "sql"],
+    technologies: [
+      "html",
+      "css",
+      "react",
+      "node",
+      "csharp",
+      "entityfw",
+      "sql",
+      "aws"
+    ],
     repository: "https://github.com/Connectslide121/CodepenAI",
     livedemo: "https://connectslide121.github.io/CodepenAI-livedemo",
     button: "Live demo",
