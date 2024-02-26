@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Portfolio/static/css/main.e1909302.css",
-    "main.js": "/Portfolio/static/js/main.158068f9.js",
+    "main.js": "/Portfolio/static/js/main.4d740c65.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/codepenai.mp4": "/Portfolio/static/media/codepenai.67099e612ecd577ff4f7.mp4",
     "static/media/plastic-slurg.mp4": "/Portfolio/static/media/plastic-slurg.a10eea5912762bdf2abc.mp4",
@@ -24,24 +24,21 @@
     "static/media/sql.webp": "/Portfolio/static/media/sql.4dd3f8bd82f1c74a8516.webp",
     "static/media/aws.webp": "/Portfolio/static/media/aws.009497f44b7452469810.webp",
     "static/media/github.webp": "/Portfolio/static/media/github.f8c6262347db8b2a6d36.webp",
-    "static/media/dapper.webp": "/Portfolio/static/media/dapper.726453fa1ccfe5d1179d.webp",
+    "static/media/angular.webp": "/Portfolio/static/media/angular.673f670248d08604615c.webp",
     "static/media/nodejs.webp": "/Portfolio/static/media/nodejs.36072545b4e3d1e14cf4.webp",
     "static/media/git.webp": "/Portfolio/static/media/git.8b668b1574beac30d281.webp",
     "static/media/unity.webp": "/Portfolio/static/media/unity.dc85bb1d4a9a5fc48f54.webp",
-    "static/media/entityfw.webp": "/Portfolio/static/media/entityfw.b5b8ec430984c8041a36.webp",
     "static/media/logo.webp": "/Portfolio/static/media/logo.28e93fd8effcf5ba8c1a.webp",
-    "static/media/nx.webp": "/Portfolio/static/media/nx.6d9588369a7172df586d.webp",
     "static/media/csharp.webp": "/Portfolio/static/media/csharp.cfbc524291f3ce489875.webp",
-    "static/media/quikcast.webp": "/Portfolio/static/media/quikcast.9bf65036e636004e92cb.webp",
     "static/media/css.webp": "/Portfolio/static/media/css.4b3ad0b4e36ce594b702.webp",
     "static/media/html.webp": "/Portfolio/static/media/html.5f863fccf290c35b28a0.webp",
     "static/media/js.webp": "/Portfolio/static/media/js.112e86014c0a1cf4e28e.webp",
     "index.html": "/Portfolio/index.html",
     "main.e1909302.css.map": "/Portfolio/static/css/main.e1909302.css.map",
-    "main.158068f9.js.map": "/Portfolio/static/js/main.158068f9.js.map"
+    "main.4d740c65.js.map": "/Portfolio/static/js/main.4d740c65.js.map"
   },
   "entrypoints": [
     "static/css/main.e1909302.css",
-    "static/js/main.158068f9.js"
+    "static/js/main.4d740c65.js"
   ]
 }
