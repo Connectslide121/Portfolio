@@ -10,8 +10,6 @@ import nodejs from "../images/tools/nodejs.webp";
 import reactjs from "../images/tools/reactjs.webp";
 import csharp from "../images/tools/csharp.webp";
 import sql from "../images/tools/sql.webp";
-import dapper from "../images/tools/dapper.webp";
-import entityfw from "../images/tools/entityfw.webp";
 import unity from "../images/tools/unity.webp";
 import javascript from "../images/tools/js.webp";
 import html from "../images/tools/html.webp";
@@ -95,10 +93,6 @@ export default function Projects() {
         return csharp;
       case "sql":
         return sql;
-      case "dapper":
-        return dapper;
-      case "entityfw":
-        return entityfw;
       case "unity":
         return unity;
       case "javascript":

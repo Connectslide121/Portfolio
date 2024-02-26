@@ -6,14 +6,11 @@ import nodejs from "../images/tools/nodejs.webp";
 import reactjs from "../images/tools/reactjs.webp";
 import csharp from "../images/tools/csharp.webp";
 import sql from "../images/tools/sql.webp";
-import dapper from "../images/tools/dapper.webp";
-import entityfw from "../images/tools/entityfw.webp";
 import unity from "../images/tools/unity.webp";
 import git from "../images/tools/git.webp";
 import github from "../images/tools/github.webp";
-import nx from "../images/tools/nx.webp";
-import quikcast from "../images/tools/quikcast.webp";
 import aws from "../images/tools/aws.webp";
+import angular from "../images/tools/angular.webp";
 
 export default function Tools() {
   return (
@@ -41,6 +38,10 @@ export default function Tools() {
           <h3>React.js</h3>
         </div>
         <div className="tool-card">
+          <img src={angular} alt="angular.js" />
+          <h3>Angular</h3>
+        </div>
+        <div className="tool-card">
           <img src={csharp} alt="c-sharp" />
           <h3>C#</h3>
         </div>
@@ -53,14 +54,6 @@ export default function Tools() {
           <h3>SQL</h3>
         </div>
         <div className="tool-card">
-          <img src={dapper} alt="dapper" />
-          <h3>Dapper</h3>
-        </div>
-        <div className="tool-card">
-          <img src={entityfw} alt="entity framework" />
-          <h3>EntityFW</h3>
-        </div>
-        <div className="tool-card">
           <img src={unity} alt="unity" />
           <h3>Unity</h3>
         </div>
@@ -71,14 +64,6 @@ export default function Tools() {
         <div className="tool-card">
           <img src={github} alt="github" />
           <h3>GitHub</h3>
-        </div>
-        <div className="tool-card">
-          <img src={nx} alt="siemens nx" />
-          <h3>NX</h3>
-        </div>
-        <div className="tool-card">
-          <img src={quikcast} alt="quikcast" />
-          <h3>QuikCAST</h3>
         </div>
       </div>
     </div>

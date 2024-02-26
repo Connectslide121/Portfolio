@@ -8,16 +8,7 @@ export const featuredProjects = [
       "OpenAI API used for code generation, API key required",
       "Unsplash API used for getting images"
     ],
-    technologies: [
-      "html",
-      "css",
-      "react",
-      "node",
-      "csharp",
-      "entityfw",
-      "sql",
-      "aws"
-    ],
+    technologies: ["html", "css", "react", "node", "csharp", "sql", "aws"],
     repository: "https://github.com/Connectslide121/CodepenAI",
     livedemo: "https://connectslide121.github.io/CodepenAI-livedemo",
     button: "Live demo",
@@ -65,7 +56,7 @@ export const allProjects = [
     media: "video",
     description:
       " A multi purpose list creator. Create your To-do lists, bug trackers, general lists... I always use it for my projects! Back-end consists of a REST API with a connection to a MySQL server using Entity Framework. No back-end in the live demo yet, the data resets on page reload.",
-    technologies: ["html", "css", "react", "csharp", "entityfw", "sql"],
+    technologies: ["html", "css", "react", "csharp", "sql"],
     repository: "https://github.com/Connectslide121/Listr",
     livedemo: "https://connectslide121.github.io/Listr-livedemo",
     button: "Live demo",
@@ -119,7 +110,7 @@ export const allProjects = [
     media: "image",
     description:
       "The backend of a community portal site. An API project with a connection to an SQL database using Entity Framework. User authentication and authorization with ASP-NET Core Identity.",
-    technologies: ["csharp", "entityfw", "sql"],
+    technologies: ["csharp", "sql"],
     repository:
       "https://github.com/Lexicon-group-4-Community-portal/CommunityPortal",
     date: "December 2023"
