@@ -65,7 +65,7 @@
   color: #fff;
   padding: 6px 24px;
   border-radius: 50vh;
-  box-shadow: 2px 2px 2px var(--boxShadow);
+  box-shadow: 2px 2px 4px #555;
   background: var(--accentColor);
   transition: 0.1s;
   font-size: 14px;

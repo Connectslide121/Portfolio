@@ -33,7 +33,7 @@ body {
 
 body.dark-theme {
   --mainColor: #fff;
-  --boxShadow: #787878;
+  --boxShadow: #333;
   --backgroundGradient: radial-gradient(
     ellipse farthest-side at center center,
     #303030 0%,

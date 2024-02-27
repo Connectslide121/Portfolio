@@ -99,7 +99,7 @@ body.dark-theme .project-media {
   padding: 8px 24px;
   border-radius: 50vh;
   line-height: 1;
-  box-shadow: 2px 2px 4px #999;
+  box-shadow: 2px 2px 4px #555;
   background: var(--accentColor);
   transition: 0.1s;
   font-size: 16px;
