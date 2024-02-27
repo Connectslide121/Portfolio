@@ -11,6 +11,7 @@ import git from "../images/tools/git.webp";
 import github from "../images/tools/github.webp";
 import aws from "../images/tools/aws.webp";
 import angular from "../images/tools/angular.webp";
+import ts from "../images/tools/ts.webp";
 
 export default function Tools() {
   return (
@@ -28,6 +29,10 @@ export default function Tools() {
         <div className="tool-card">
           <img src={js} alt="javascript" />
           <h3>JavaScript</h3>
+        </div>
+        <div className="tool-card">
+          <img src={ts} alt="typescript" />
+          <h3>TypeScript</h3>
         </div>
         <div className="tool-card">
           <img src={nodejs} alt="node.js" />

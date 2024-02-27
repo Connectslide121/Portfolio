@@ -6,15 +6,17 @@ import { faGithub, faNpm } from "@fortawesome/free-brands-svg-icons";
 
 import { featuredProjects, allProjects } from "../components/projectList";
 
-import nodejs from "../images/tools/nodejs.webp";
-import reactjs from "../images/tools/reactjs.webp";
-import csharp from "../images/tools/csharp.webp";
-import sql from "../images/tools/sql.webp";
-import unity from "../images/tools/unity.webp";
-import javascript from "../images/tools/js.webp";
 import html from "../images/tools/html.webp";
 import css from "../images/tools/css.webp";
+import javascript from "../images/tools/js.webp";
+import typescript from "../images/tools/ts.webp";
+import nodejs from "../images/tools/nodejs.webp";
+import reactjs from "../images/tools/reactjs.webp";
+import angular from "../images/tools/angular.webp";
+import csharp from "../images/tools/csharp.webp";
+import sql from "../images/tools/sql.webp";
 import aws from "../images/tools/aws.webp";
+import unity from "../images/tools/unity.webp";
 
 import DAIETpedia from "../images/projects/daietpedia.mp4";
 import CodepenAI from "../images/projects/codepenai.mp4";
@@ -89,6 +91,8 @@ export default function Projects() {
         return nodejs;
       case "react":
         return reactjs;
+      case "angular":
+        return angular;
       case "csharp":
         return csharp;
       case "sql":
@@ -97,6 +101,8 @@ export default function Projects() {
         return unity;
       case "javascript":
         return javascript;
+      case "typescript":
+        return typescript;
       case "html":
         return html;
       case "css":
