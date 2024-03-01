@@ -28,6 +28,7 @@ import Listr from "../images/projects/listr.mp4";
 import Sokoban from "../images/projects/sokoban.mp4";
 import SlidingPuzzles from "../images/projects/sliding-puzzles.mp4";
 import FlapryBlirb from "../images/projects/flapry-blirb.mp4";
+import ContactBook from "../images/projects/contact-book.mp4";
 
 import Calculator from "../images/projects/calculator.webp";
 import imageGenerator from "../images/projects/ai-image-generator.webp";
@@ -37,6 +38,7 @@ import VendingMachine from "../images/projects/vending-machine.webp";
 import SpotifyClone from "../images/projects/spotify-clone.webp";
 import LawnMowerRental from "../images/projects/lawn-mower-rental.webp";
 import PatisserieLente from "../images/projects/patisserie-lente.webp";
+import none from "../images/projects/none.jpg";
 
 export default function Projects() {
   const [showOtherProjects, setShowOtherProjects] = useState(false);
@@ -59,6 +61,8 @@ export default function Projects() {
         return SlidingPuzzles;
       case "Flapry Blirb":
         return FlapryBlirb;
+      case "Contact book":
+        return ContactBook;
       default:
         return CodepenAI;
     }
@@ -101,9 +105,9 @@ export default function Projects() {
         return sql;
       case "unity":
         return unity;
-      case "javascript":
+      case "js":
         return javascript;
-      case "typescript":
+      case "ts":
         return typescript;
       case "html":
         return html;
@@ -116,7 +120,7 @@ export default function Projects() {
       case "nosql":
         return nosql;
       default:
-        return reactjs;
+        return none;
     }
   };
 
