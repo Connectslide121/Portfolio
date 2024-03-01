@@ -21,7 +21,7 @@ export default function Navbar() {
   window.onscroll = () => {
     setScrollY(window.scrollY);
 
-    if (scrollY < homeHeight - window.innerHeight / 2.5) {
+    if (scrollY < homeHeight - window.innerHeight / 2.4) {
       setHomeClass("active-nav-link");
       setProjectsClass("");
       setAboutClass("");
