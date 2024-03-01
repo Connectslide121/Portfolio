@@ -8,9 +8,20 @@ export const featuredProjects = [
       "OpenAI API used for code generation, API key required",
       "Unsplash API used for getting images"
     ],
-    technologies: ["html", "css", "react", "node", "csharp", "sql", "aws"],
+    technologies: ["html", "css", "react", "csharp", "sql", "aws"],
     repository: "https://github.com/Connectslide121/CodepenAI",
     livedemo: "https://connectslide121.github.io/CodepenAI-livedemo",
+    button: "Live demo",
+    date: "January 2024"
+  },
+  {
+    title: "Contact book",
+    media: "video",
+    description:
+      "A simple web application built with Angular that allows users to manage their contacts easily. This project is designed to demonstrate a simple CRUD (Create, Read, Update, Delete) operation using Angular as the front-end framework and CosmosDB with Azure functions for the back-end.",
+    technologies: ["html", "css", "angular", "csharp", "nosql", "azure"],
+    repository: "https://github.com/Connectslide121/contact-book",
+    livedemo: "https://connectslide121.github.io/daietpedia",
     button: "Live demo",
     date: "January 2024"
   },
@@ -26,18 +37,6 @@ export const featuredProjects = [
     date: "January 2024"
   },
   {
-    title: "DAIETpedia",
-    media: "video",
-    description:
-      "An innovative recipe website where your culinary journey is personalized by AI. Whether you're searching for recipes by ingredient, cuisine, or dietary restrictions, DAIETpedia is here to suggest a whole menu tailored just for you!",
-    technologies: ["html", "css", "react", "node"],
-    repository: "https://github.com/Connectslide121/daietpedia",
-    livedemo: "https://connectslide121.github.io/daietpedia",
-    button: "Live demo",
-    date: "January 2024"
-  },
-
-  {
     title: "Plastic Slurg",
     media: "video",
     description:
@@ -51,6 +50,17 @@ export const featuredProjects = [
 ];
 
 export const allProjects = [
+  {
+    title: "DAIETpedia",
+    media: "video",
+    description:
+      "An innovative recipe website where your culinary journey is personalized by AI. Whether you're searching for recipes by ingredient, cuisine, or dietary restrictions, DAIETpedia is here to suggest a whole menu tailored just for you!",
+    technologies: ["html", "css", "react", "node"],
+    repository: "https://github.com/Connectslide121/daietpedia",
+    livedemo: "https://connectslide121.github.io/daietpedia",
+    button: "Live demo",
+    date: "January 2024"
+  },
   {
     title: "Listr",
     media: "video",

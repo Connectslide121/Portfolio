@@ -15,6 +15,8 @@ import reactjs from "../images/tools/reactjs.webp";
 import angular from "../images/tools/angular.webp";
 import csharp from "../images/tools/csharp.webp";
 import sql from "../images/tools/sql.webp";
+import nosql from "../images/tools/nosql.webp";
+import azure from "../images/tools/azure.webp";
 import aws from "../images/tools/aws.webp";
 import unity from "../images/tools/unity.webp";
 
@@ -109,6 +111,10 @@ export default function Projects() {
         return css;
       case "aws":
         return aws;
+      case "azure":
+        return azure;
+      case "nosql":
+        return nosql;
       default:
         return reactjs;
     }

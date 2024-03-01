@@ -20,8 +20,7 @@
 }
 
 .tool-card {
-  width: 3vw;
-  min-width: 60px;
+  width: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -12,6 +12,8 @@ import github from "../images/tools/github.webp";
 import aws from "../images/tools/aws.webp";
 import angular from "../images/tools/angular.webp";
 import ts from "../images/tools/ts.webp";
+import nosql from "../images/tools/nosql.webp";
+import azure from "../images/tools/azure.webp";
 
 export default function Tools() {
   return (
@@ -51,12 +53,20 @@ export default function Tools() {
           <h3>C#</h3>
         </div>
         <div className="tool-card">
+          <img src={azure} alt="azure" />
+          <h3>Azure</h3>
+        </div>
+        <div className="tool-card">
           <img src={aws} alt="aws" />
           <h3>AWS</h3>
         </div>
         <div className="tool-card">
           <img src={sql} alt="sql" />
           <h3>SQL</h3>
+        </div>
+        <div className="tool-card">
+          <img src={nosql} alt="nosql" />
+          <h3>No SQL</h3>
         </div>
         <div className="tool-card">
           <img src={unity} alt="unity" />
