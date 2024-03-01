@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Portfolio/static/css/main.f98d99cc.css",
-    "main.js": "/Portfolio/static/js/main.d7a5f359.js",
+    "main.js": "/Portfolio/static/js/main.77f95553.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/codepenai.mp4": "/Portfolio/static/media/codepenai.67099e612ecd577ff4f7.mp4",
     "static/media/plastic-slurg.mp4": "/Portfolio/static/media/plastic-slurg.a10eea5912762bdf2abc.mp4",
@@ -25,6 +25,7 @@
     "static/media/sql.webp": "/Portfolio/static/media/sql.4dd3f8bd82f1c74a8516.webp",
     "static/media/aws.webp": "/Portfolio/static/media/aws.009497f44b7452469810.webp",
     "static/media/github.webp": "/Portfolio/static/media/github.f8c6262347db8b2a6d36.webp",
+    "static/media/none.jpg": "/Portfolio/static/media/none.a2daeb3cc0db164a257f.jpg",
     "static/media/angular.webp": "/Portfolio/static/media/angular.673f670248d08604615c.webp",
     "static/media/nosql.webp": "/Portfolio/static/media/nosql.c93496101c611b767427.webp",
     "static/media/nodejs.webp": "/Portfolio/static/media/nodejs.36072545b4e3d1e14cf4.webp",
@@ -39,10 +40,10 @@
     "static/media/js.webp": "/Portfolio/static/media/js.112e86014c0a1cf4e28e.webp",
     "index.html": "/Portfolio/index.html",
     "main.f98d99cc.css.map": "/Portfolio/static/css/main.f98d99cc.css.map",
-    "main.d7a5f359.js.map": "/Portfolio/static/js/main.d7a5f359.js.map"
+    "main.77f95553.js.map": "/Portfolio/static/js/main.77f95553.js.map"
   },
   "entrypoints": [
     "static/css/main.f98d99cc.css",
-    "static/js/main.d7a5f359.js"
+    "static/js/main.77f95553.js"
   ]
 }
