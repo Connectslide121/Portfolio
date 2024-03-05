@@ -21,7 +21,7 @@ export default function Navbar() {
   window.onscroll = () => {
     setScrollY(window.scrollY);
 
-    if (scrollY < homeHeight - window.innerHeight / 2.4) {
+    if (scrollY < homeHeight - window.innerHeight / 2.5) {
       setHomeClass("active-nav-link");
       setProjectsClass("");
       setAboutClass("");
@@ -71,49 +71,22 @@ export default function Navbar() {
 
       <ul>
         <li>
-          <a
-            className={homeClass}
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          >
+          <a className={homeClass} href="#home">
             Home
           </a>
         </li>
         <li>
-          <a
-            className={projectsClass}
-            onClick={() =>
-              window.scrollTo({
-                top: navbarHeight + homeHeight,
-                behavior: "smooth"
-              })
-            }
-          >
+          <a className={projectsClass} href="#projects">
             Projects
           </a>
         </li>
         <li>
-          <a
-            className={aboutClass}
-            onClick={() =>
-              window.scrollTo({
-                top: navbarHeight + homeHeight + projectsHeight,
-                behavior: "smooth"
-              })
-            }
-          >
+          <a className={aboutClass} href="#about">
             About
           </a>
         </li>
         <li>
-          <a
-            className={contactClass}
-            onClick={() =>
-              window.scrollTo({
-                top: navbarHeight + homeHeight + projectsHeight + aboutHeight,
-                behavior: "smooth"
-              })
-            }
-          >
+          <a className={contactClass} href="#contact">
             Contact
           </a>
         </li>
