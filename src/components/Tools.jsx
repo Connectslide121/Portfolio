@@ -14,6 +14,7 @@ import angular from "../images/tools/angular.webp";
 import ts from "../images/tools/ts.webp";
 import nosql from "../images/tools/nosql.webp";
 import azure from "../images/tools/azure.webp";
+import azuredevops from "../images/tools/azuredevops.webp";
 
 export default function Tools() {
   return (
@@ -79,6 +80,10 @@ export default function Tools() {
         <div className="tool-card">
           <img src={github} alt="github" />
           <h3>GitHub</h3>
+        </div>
+        <div className="tool-card">
+          <img src={azuredevops} alt="azure devops" />
+          <h3>Azure DevOps</h3>
         </div>
       </div>
     </div>
