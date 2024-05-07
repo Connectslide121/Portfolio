@@ -14,8 +14,8 @@ export default function App() {
         <Sidebar />
         <main className="main-container">
           <Home />
-          <Projects />
           <About />
+          <Projects />
           <Contact />
         </main>
         <Footer />

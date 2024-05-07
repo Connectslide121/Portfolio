@@ -9,8 +9,8 @@ export default function About() {
     <section id="about">
       <Tools />
       <div className="about-info-wrapper">
-        <Education />
         <Experience />
+        <Education />
       </div>
     </section>
   );

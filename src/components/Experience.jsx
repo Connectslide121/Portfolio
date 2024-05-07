@@ -10,12 +10,36 @@ export default function Experience() {
         <ul>
           <li>
             <div className="about-item-header">
+              <h3>2024</h3>
+              <a
+                href="https://sprinta.se/"
+                target="_blank"
+                rel="noreferrer"
+                title="Sprinta website"
+              >
+                Visit site
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+              </a>
+            </div>
+            <h3> Intern at Sprinta (Sweden)</h3>
+            <p>
+              - Developed an AI powered "internal tools" application for the
+              company using Angular, Azure Functions and CosmosDB. The
+              application is used to manage the company's consultants data and
+              generate CVs easily.
+              <br />
+              <br />- Developed a user-friendly UI to centralize company's
+              pre-existing scripts using Angular, Express and MongoDB.
+            </p>
+          </li>
+          <li>
+            <div className="about-item-header">
               <h3>2011 - 2023</h3>
               <a
                 href="https://www.amlsa.com/?lang=eng"
                 target="_blank"
                 rel="noreferrer"
-                title="Lea Artibai website"
+                title="AML website"
               >
                 Visit site
                 <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
@@ -35,7 +59,7 @@ export default function Experience() {
                 href="https://arihanttechnocastindia.com/"
                 target="_blank"
                 rel="noreferrer"
-                title="Lea Artibai website"
+                title="ATPL website"
               >
                 Visit site
                 <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
