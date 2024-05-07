@@ -76,13 +76,13 @@ export default function Navbar() {
           </a>
         </li>
         <li>
-          <a className={projectsClass} href="#projects">
-            Projects
+          <a className={aboutClass} href="#about">
+            About
           </a>
         </li>
         <li>
-          <a className={aboutClass} href="#about">
-            About
+          <a className={projectsClass} href="#projects">
+            Projects
           </a>
         </li>
         <li>
