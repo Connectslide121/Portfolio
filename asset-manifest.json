@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Portfolio/static/css/main.f98d99cc.css",
-    "main.js": "/Portfolio/static/js/main.4bcf8661.js",
+    "main.js": "/Portfolio/static/js/main.6f684c11.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/codepenai.mp4": "/Portfolio/static/media/codepenai.67099e612ecd577ff4f7.mp4",
     "static/media/plastic-slurg.mp4": "/Portfolio/static/media/plastic-slurg.a10eea5912762bdf2abc.mp4",
@@ -18,7 +18,7 @@
     "static/media/spotify-clone.webp": "/Portfolio/static/media/spotify-clone.bc98e7b6b08fad149905.webp",
     "static/media/vending-machine.webp": "/Portfolio/static/media/vending-machine.b762ec5b9f486b0176e1.webp",
     "static/media/lawn-mower-rental.webp": "/Portfolio/static/media/lawn-mower-rental.3b8cbda7ec56ee0cc32e.webp",
-    "static/media/Jon Mendizabal - CV.pdf": "/Portfolio/static/media/Jon Mendizabal - CV.ef8bed00349c74740743.pdf",
+    "static/media/Jon Mendizabal - CV.pdf": "/Portfolio/static/media/Jon Mendizabal - CV.b6ab5ebd5f149e653cc9.pdf",
     "static/media/home-image.webp": "/Portfolio/static/media/home-image.e15e791de15777d3362b.webp",
     "static/media/calculator.webp": "/Portfolio/static/media/calculator.947191452e1000ceea4d.webp",
     "static/media/reactjs.webp": "/Portfolio/static/media/reactjs.67dfd81581974d545a90.webp",
@@ -40,10 +40,10 @@
     "static/media/js.webp": "/Portfolio/static/media/js.112e86014c0a1cf4e28e.webp",
     "index.html": "/Portfolio/index.html",
     "main.f98d99cc.css.map": "/Portfolio/static/css/main.f98d99cc.css.map",
-    "main.4bcf8661.js.map": "/Portfolio/static/js/main.4bcf8661.js.map"
+    "main.6f684c11.js.map": "/Portfolio/static/js/main.6f684c11.js.map"
   },
   "entrypoints": [
     "static/css/main.f98d99cc.css",
-    "static/js/main.4bcf8661.js"
+    "static/js/main.6f684c11.js"
   ]
 }
