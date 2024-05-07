@@ -83,7 +83,7 @@ export default function Tools() {
         </div>
         <div className="tool-card">
           <img src={azuredevops} alt="azure devops" />
-          <h3>Azure DevOps</h3>
+          <h3>AzureDevOps</h3>
         </div>
       </div>
     </div>
