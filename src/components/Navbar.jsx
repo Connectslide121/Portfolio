@@ -3,13 +3,9 @@ import React, { useEffect, useState } from "react";
 import "../styles/navbar.css";
 import logo from "../images/logo.webp";
 import ThemeToggle from "./ThemeToggle";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import resume from "../images/Jon Mendizabal - CV.pdf";
 
 export default function Navbar() {
   const [scrollY, setScrollY] = useState(0);
-  const [navbarHeight, setNavbarHeight] = useState(0);
   const [homeHeight, setHomeHeight] = useState(0);
   const [projectsHeight, setProjectsHeight] = useState(0);
   const [aboutHeight, setAboutHeight] = useState(0);
@@ -23,32 +19,29 @@ export default function Navbar() {
 
     if (scrollY < homeHeight - window.innerHeight / 2.5) {
       setHomeClass("active-nav-link");
-      setProjectsClass("");
       setAboutClass("");
-      setContactClass("");
-    } else if (
-      scrollY <
-      homeHeight + projectsHeight - window.innerHeight / 2.5
-    ) {
-      setHomeClass("");
-      setProjectsClass("active-nav-link");
-      setAboutClass("");
-      setContactClass("");
-    } else if (
-      scrollY <
-      homeHeight + projectsHeight + aboutHeight - window.innerHeight / 2.5
-    ) {
-      setHomeClass("");
       setProjectsClass("");
+      setContactClass("");
+    } else if (scrollY < homeHeight + aboutHeight - window.innerHeight / 2.5) {
+      setHomeClass("");
       setAboutClass("active-nav-link");
+      setProjectsClass("");
+      setContactClass("");
+    } else if (
+      scrollY <
+      homeHeight + aboutHeight + projectsHeight - window.innerHeight / 2.5
+    ) {
+      setHomeClass("");
+      setAboutClass("");
+      setProjectsClass("active-nav-link");
       setContactClass("");
     } else if (
       scrollY >
       homeHeight + projectsHeight + aboutHeight - window.innerHeight / 2.5
     ) {
       setHomeClass("");
-      setProjectsClass("");
       setAboutClass("");
+      setProjectsClass("");
       setContactClass("active-nav-link");
     }
   };
@@ -57,7 +50,6 @@ export default function Navbar() {
     setHomeHeight(document.getElementById("home").offsetHeight);
     setProjectsHeight(document.getElementById("projects").offsetHeight);
     setAboutHeight(document.getElementById("about").offsetHeight);
-    setNavbarHeight(document.querySelector("nav").offsetHeight);
   }, []);
 
   return (
@@ -93,15 +85,6 @@ export default function Navbar() {
       </ul>
       <div className="navbar-buttons">
         <ThemeToggle />
-        <a
-          href={resume}
-          target="_blank"
-          rel="noreferrer"
-          className="resume-button"
-        >
-          <FontAwesomeIcon icon={faDownload} />
-          <span>Download</span> CV
-        </a>
       </div>
     </nav>
   );

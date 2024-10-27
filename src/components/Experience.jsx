@@ -21,15 +21,24 @@ export default function Experience() {
                 <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
               </a>
             </div>
-            <h3> Intern at Sprinta (Sweden)</h3>
+            <h3> System developer at Sprinta (Sweden)</h3>
             <p>
               - Developed an AI powered "internal tools" application for the
               company using Angular, Azure Functions and CosmosDB. The
               application is used to manage the company's consultants data and
               generate CVs easily.
               <br />
-              <br />- Developed a user-friendly UI to centralize company's
-              pre-existing scripts using Angular, Express and MongoDB.
+              <br />- Currently developing{" "}
+              <a
+                href="https://www.certumhub.com"
+                target="_blank"
+                rel="noreferrer"
+                className="experience-link"
+              >
+                www.certumhub.com
+              </a>
+              , an AI powered web application to help companies apply for
+              different certificates (ISO, WCAG...).
             </p>
           </li>
           <li>

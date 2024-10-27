@@ -73,6 +73,10 @@ a {
   color: var(--accentColor);
 }
 
+.experience-link {
+  color: black;
+}
+
 @media screen and (max-width: 850px) {
   .main-container {
     width: 100%;
