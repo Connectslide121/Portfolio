@@ -21,11 +21,11 @@ import aws from "../images/tools/aws.webp";
 import unity from "../images/tools/unity.webp";
 
 import DAIETpedia from "../images/projects/daietpedia.mp4";
-import CodepenAI from "../images/projects/codepenai.mp4";
+import CodepenAI from "../images/projects/CodepenAI.mp4";
 import PasswordInput from "../images/projects/password-input.mp4";
 import PlasticSlurg from "../images/projects/plastic-slurg.mp4";
 import Listr from "../images/projects/listr.mp4";
-import Sokoban from "../images/projects/sokoban.mp4";
+import Sokoban from "../images/projects/Sokoban.mp4";
 import SlidingPuzzles from "../images/projects/sliding-puzzles.mp4";
 import FlapryBlirb from "../images/projects/flapry-blirb.mp4";
 import ContactBook from "../images/projects/contact-book.mp4";
