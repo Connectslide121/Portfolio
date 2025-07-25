@@ -87,7 +87,7 @@
   list-style: none;
   padding: 25px;
   border-radius: var(--radius);
-  color: #111;
+  color: var(--mainColor);
   display: flex;
   flex-direction: column;
   gap: 20px;
