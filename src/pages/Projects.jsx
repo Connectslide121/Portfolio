@@ -156,7 +156,6 @@ export default function Projects() {
             {project.media === "video" ? (
               <video
                 className="project-media"
-                autoPlay
                 muted
                 controls
                 playsInline
@@ -235,7 +234,6 @@ export default function Projects() {
                   {project.media === "video" ? (
                     <video
                       className="project-media"
-                      autoPlay
                       muted
                       controls
                       playsInline
