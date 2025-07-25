@@ -156,11 +156,13 @@ export default function Projects() {
             {project.media === "video" ? (
               <video
                 className="project-media"
-                src={assignVideo(project.title)}
                 autoPlay
                 muted
                 controls
-              ></video>
+                playsInline
+              >
+                <source src={assignVideo(project.title)} type="video/mp4" />
+              </video>
             ) : (
               <img
                 className="project-media"
@@ -233,11 +235,13 @@ export default function Projects() {
                   {project.media === "video" ? (
                     <video
                       className="project-media"
-                      src={assignVideo(project.title)}
                       autoPlay
                       muted
                       controls
-                    ></video>
+                      playsInline
+                    >
+                      <source src={assignVideo(project.title)} type="video/mp4" />
+                    </video>
                   ) : (
                     <img
                       className="project-media"
