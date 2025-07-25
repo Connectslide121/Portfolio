@@ -10,35 +10,29 @@ export default function Experience() {
         <ul>
           <li>
             <div className="about-item-header">
-              <h3>2024</h3>
+              <h3>2024 - Present</h3>
               <a
-                href="https://sprinta.se/"
+                href="https://www.certumhub.com"
                 target="_blank"
                 rel="noreferrer"
-                title="Sprinta website"
+                title="CertumHub website"
               >
                 Visit site
                 <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
               </a>
             </div>
-            <h3> System developer at Sprinta (Sweden)</h3>
+            <h3>Sprinta Consulting AB, Sweden - Software Developer &amp; Platform Architect</h3>
             <p>
-              - Developed an AI powered "internal tools" application for the
-              company using Angular, Azure Functions and CosmosDB. The
-              application is used to manage the company's consultants data and
-              generate CVs easily.
-              <br />
-              <br />- Currently developing{" "}
-              <a
-                href="https://www.certumhub.com"
-                target="_blank"
-                rel="noreferrer"
-                className="experience-link"
-              >
-                www.certumhub.com
-              </a>
-              , an AI powered web application to help companies apply for
-              different certificates (ISO, WCAG...).
+              • Sole developer of CertumHub, an AI-powered platform for e-learning
+              and sustainability assessments with multilingual support.
+              <br />• Architected and built complex modules like a course builder,
+              ISO26000 verification module, auditor workflows, and AI chat
+              assistants using Angular, Azure Functions, CosmosDB, and OpenAI
+              APIs.
+              <br />• Designed a vector database-powered AI content system for
+              real-time context-aware interactions.
+              <br />• Took ownership of customer support and conducted product
+              demos for new clients.
             </p>
           </li>
           <li>
@@ -54,30 +48,17 @@ export default function Experience() {
                 <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
               </a>
             </div>
-            <h3> Plant Manager/Product designer at AML SA (Spain)</h3>
+            <h3>AML SA, Spain &amp; India - Plant Manager / Product designer</h3>
             <p>
-              Managed production at a sand casting steel foundry. Daily &#38;
-              weekly MTO production planning, pattern designing, 3D drawing and
-              process simulation have been part of my main responsibilities.
-            </p>
-          </li>
-          <li>
-            <div className="about-item-header">
-              <h3>2017</h3>
-              <a
-                href="https://arihanttechnocastindia.com/"
-                target="_blank"
-                rel="noreferrer"
-                title="ATPL website"
-              >
-                Visit site
-                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-              </a>
-            </div>
-            <h3> Plant Manager/Product designer at ATPL PL (India)</h3>
-            <p>
-              Started up the production line in a newly opened foundry, designed
-              workflow, taught employees and led the production team.
+              • Managed production at AML SA’s sand casting steel foundry in
+              Spain, including daily and weekly MTO planning, CAD pattern design,
+              and process simulation.
+              <br />• In 2017, sent to India by AML to start up a new production
+              facility (ATPL PL), where I established the production line,
+              trained employees, and led operations until handover.
+              <br />• Played a key role in workflow design, team leadership, and
+              cross-cultural coordination between headquarters in Spain and the
+              Indian subsidiary.
             </p>
           </li>
         </ul>
