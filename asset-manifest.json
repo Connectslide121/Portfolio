@@ -1,8 +1,17 @@
 {
   "files": {
     "main.css": "/Portfolio/static/css/main.efc5d3cd.css",
-    "main.js": "/Portfolio/static/js/main.b7f5e531.js",
+    "main.js": "/Portfolio/static/js/main.0447ec03.js",
+    "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
+    "static/media/CodepenAI.mp4": "/Portfolio/static/media/CodepenAI.67099e612ecd577ff4f7.mp4",
+    "static/media/plastic-slurg.mp4": "/Portfolio/static/media/plastic-slurg.a10eea5912762bdf2abc.mp4",
+    "static/media/flapry-blirb.mp4": "/Portfolio/static/media/flapry-blirb.a967b9e8c9a80959e191.mp4",
+    "static/media/listr.mp4": "/Portfolio/static/media/listr.ffca4c2bd651c97ab43f.mp4",
+    "static/media/sliding-puzzles.mp4": "/Portfolio/static/media/sliding-puzzles.3c4dcd89da932b27c3a8.mp4",
+    "static/media/Sokoban.mp4": "/Portfolio/static/media/Sokoban.473aa4443ebdafbeacdb.mp4",
+    "static/media/contact-book.mp4": "/Portfolio/static/media/contact-book.9e016bced28c4f5e254d.mp4",
     "static/media/patisserie-lente.webp": "/Portfolio/static/media/patisserie-lente.32a4d650127ff8ef7cc4.webp",
+    "static/media/password-input.mp4": "/Portfolio/static/media/password-input.4e5215541366965a7f1e.mp4",
     "static/media/community-portal.webp": "/Portfolio/static/media/community-portal.e1ab06f89714b2567a55.webp",
     "static/media/image-search-app.webp": "/Portfolio/static/media/image-search-app.a1cebf9d143990dca8fd.webp",
     "static/media/ai-image-generator.webp": "/Portfolio/static/media/ai-image-generator.1b3a5b72ddece82ec081.webp",
@@ -30,20 +39,11 @@
     "static/media/ts.webp": "/Portfolio/static/media/ts.0b561676e4d3d793d7b7.webp",
     "static/media/js.webp": "/Portfolio/static/media/js.112e86014c0a1cf4e28e.webp",
     "index.html": "/Portfolio/index.html",
-    "static/media/CodepenAI.mp4": "/Portfolio/static/media/CodepenAI.223f3be8e98bab02e1a8.mp4",
-    "static/media/Sokoban.mp4": "/Portfolio/static/media/Sokoban.e3a7f40c818da0176fca.mp4",
-    "static/media/contact-book.mp4": "/Portfolio/static/media/contact-book.e23a2a7fba4067b6199e.mp4",
-    "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.f66bbaf6bc83f12b72c9.mp4",
-    "static/media/flapry-blirb.mp4": "/Portfolio/static/media/flapry-blirb.ec70b490dce1b5210aed.mp4",
-    "static/media/listr.mp4": "/Portfolio/static/media/listr.def01732e5b106960d53.mp4",
-    "static/media/plastic-slurg.mp4": "/Portfolio/static/media/plastic-slurg.f556dd4ff65357b1d3de.mp4",
-    "static/media/sliding-puzzles.mp4": "/Portfolio/static/media/sliding-puzzles.7307d61f03a634921c86.mp4",
-    "static/media/password-input.mp4": "/Portfolio/static/media/password-input.33ece18ebd4e073e5646.mp4",
     "main.efc5d3cd.css.map": "/Portfolio/static/css/main.efc5d3cd.css.map",
-    "main.b7f5e531.js.map": "/Portfolio/static/js/main.b7f5e531.js.map"
+    "main.0447ec03.js.map": "/Portfolio/static/js/main.0447ec03.js.map"
   },
   "entrypoints": [
     "static/css/main.efc5d3cd.css",
-    "static/js/main.b7f5e531.js"
+    "static/js/main.0447ec03.js"
   ]
 }
