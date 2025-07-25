@@ -27,8 +27,12 @@
 }
 
 .contact-info img {
-  width: 50%;
+  width: 40%;
   transition: 0.3s;
+}
+
+.contact-info img:hover {
+  transform: scale(1.05);
 }
 
 .contact-info-details {
@@ -61,8 +65,8 @@ body.dark-theme .contact-info img {
   background-color: var(--cardBackground);
   color: #111;
   padding: 25px;
-  border-radius: 1vw;
-  box-shadow: 3px 3px 6px var(--boxShadow);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 10px var(--boxShadow);
   border: solid 1px #d1d1d1;
 }
 
@@ -86,7 +90,7 @@ body.dark-theme .contact-info img {
 .contact-form input {
   padding: 10px;
   font-size: 14px;
-  border-radius: 0.7vw;
+  border-radius: var(--radius);
   border: solid 1px #5d5d5d;
 }
 
@@ -95,7 +99,7 @@ body.dark-theme .contact-info img {
   overflow-y: scroll;
   padding: 10px;
   font-size: 14px;
-  border-radius: 0.7vw;
+  border-radius: var(--radius);
   border: solid 1px #5d5d5d;
   scrollbar-width: none;
 }
@@ -105,8 +109,8 @@ body.dark-theme .contact-info img {
   color: #fff;
   padding: 6px 24px;
   border: none;
-  border-radius: 50vh;
-  box-shadow: 2px 2px 2px var(--boxShadow);
+  border-radius: var(--radius);
+  box-shadow: 2px 2px 4px var(--boxShadow);
   background: var(--accentColor);
   transition: 0.1s;
   font-size: 16px;

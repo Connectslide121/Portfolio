@@ -12,12 +12,13 @@
 
 body {
   --mainColor: #111;
-  --accentColor: #2376c9;
+  --accentColor: #2563eb;
   --boxShadow: #d1d1d1;
-  --cardBackground: #f0f0f0;
+  --cardBackground: #f9f9f9;
+  --radius: 0.8rem;
   --backgroundGradient: radial-gradient(
     ellipse farthest-side at center center,
-    #e3e3e3 0%,
+    #f1f1f1 0%,
     #ffffff 100%
   );
   --barBackgroundGradient: radial-gradient(
@@ -33,7 +34,9 @@ body {
 
 body.dark-theme {
   --mainColor: #fff;
+  --accentColor: #3b82f6;
   --boxShadow: #333;
+  --cardBackground: #1f1f1f;
   --backgroundGradient: radial-gradient(
     ellipse farthest-side at center center,
     #303030 0%,
@@ -54,7 +57,7 @@ body.other-projects-open {
   display: flex;
   flex-direction: column;
   margin-top: 5vh;
-  width: 65%;
+  width: 70%;
   margin-inline: auto;
 }
 
@@ -79,8 +82,8 @@ a {
 
 @media screen and (max-width: 850px) {
   .main-container {
-    width: 100%;
-    padding: 0 10%;
+    width: 90%;
+    padding: 0 5%;
   }
 
   .footer {

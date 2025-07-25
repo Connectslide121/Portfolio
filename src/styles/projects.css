@@ -6,18 +6,24 @@
 }
 
 .project-cards-wrapper {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 5vh;
 }
 
 .project-card {
   width: 100%;
   border: solid 1px #d1d1d1;
-  border-radius: 1vw;
-  box-shadow: 3px 3px 6px var(--boxShadow);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 10px var(--boxShadow);
+  overflow: hidden;
   display: flex;
   background-color: var(--cardBackground);
+  transition: transform 0.2s;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
 }
 
 body.dark-theme .project-card {
@@ -28,7 +34,7 @@ body.dark-theme .project-card {
   width: 40%;
   object-fit: cover;
   object-position: center;
-  border-radius: 1vw 0 0 1vw;
+  border-radius: var(--radius) 0 0 var(--radius);
   border-right: solid 1px #d1d1d1;
 }
 
@@ -63,13 +69,12 @@ body.dark-theme .project-media {
 }
 
 .project-description h2 {
-  font-size: 40px;
-  font-weight: normal;
-  text-align: start;
+  font-size: 32px;
+  font-weight: 600;
   background: radial-gradient(
     circle farthest-corner at center center,
-    #8c8c8c 14%,
-    #5a5a5a 100%
+    #8c8c8c 0%,
+    #5a5a5a 80%
   );
   background-clip: text;
   color: transparent;
@@ -97,7 +102,7 @@ body.dark-theme .project-media {
   text-decoration: none;
   color: #fff;
   padding: 8px 24px;
-  border-radius: 50vh;
+  border-radius: var(--radius);
   line-height: 1;
   box-shadow: 2px 2px 4px #555;
   background: var(--accentColor);
