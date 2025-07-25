@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/Portfolio/static/css/main.c81946ae.css",
-    "main.js": "/Portfolio/static/js/main.3c47d370.js",
+    "main.css": "/Portfolio/static/css/main.efc5d3cd.css",
+    "main.js": "/Portfolio/static/js/main.b7f5e531.js",
     "static/media/patisserie-lente.webp": "/Portfolio/static/media/patisserie-lente.32a4d650127ff8ef7cc4.webp",
     "static/media/community-portal.webp": "/Portfolio/static/media/community-portal.e1ab06f89714b2567a55.webp",
     "static/media/image-search-app.webp": "/Portfolio/static/media/image-search-app.a1cebf9d143990dca8fd.webp",
@@ -39,11 +39,11 @@
     "static/media/plastic-slurg.mp4": "/Portfolio/static/media/plastic-slurg.f556dd4ff65357b1d3de.mp4",
     "static/media/sliding-puzzles.mp4": "/Portfolio/static/media/sliding-puzzles.7307d61f03a634921c86.mp4",
     "static/media/password-input.mp4": "/Portfolio/static/media/password-input.33ece18ebd4e073e5646.mp4",
-    "main.c81946ae.css.map": "/Portfolio/static/css/main.c81946ae.css.map",
-    "main.3c47d370.js.map": "/Portfolio/static/js/main.3c47d370.js.map"
+    "main.efc5d3cd.css.map": "/Portfolio/static/css/main.efc5d3cd.css.map",
+    "main.b7f5e531.js.map": "/Portfolio/static/js/main.b7f5e531.js.map"
   },
   "entrypoints": [
-    "static/css/main.c81946ae.css",
-    "static/js/main.3c47d370.js"
+    "static/css/main.efc5d3cd.css",
+    "static/js/main.b7f5e531.js"
   ]
 }
