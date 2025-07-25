@@ -63,7 +63,7 @@ body.dark-theme .contact-info img {
   width: 48%;
   height: fit-content;
   background-color: var(--cardBackground);
-  color: #111;
+  color: var(--mainColor);
   padding: 25px;
   border-radius: var(--radius);
   box-shadow: 0 4px 10px var(--boxShadow);

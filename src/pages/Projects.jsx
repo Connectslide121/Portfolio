@@ -160,6 +160,7 @@ export default function Projects() {
                 autoPlay
                 muted
                 controls
+                playsInline
               ></video>
             ) : (
               <img
@@ -237,6 +238,7 @@ export default function Projects() {
                       autoPlay
                       muted
                       controls
+                      playsInline
                     ></video>
                   ) : (
                     <img
