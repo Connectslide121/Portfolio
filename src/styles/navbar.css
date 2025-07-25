@@ -26,6 +26,7 @@ nav ul li a {
   position: relative;
   font-size: 18px;
   transition: 0.1s;
+  color: var(--mainColor);
 }
 
 nav ul li a::after {
@@ -143,8 +144,8 @@ body.dark-theme .navbar-logo {
   text-decoration: none;
   color: #fff;
   padding: 6px 24px;
-  border-radius: 50vh;
-  box-shadow: 2px 2px 2px var(--boxShadow);
+  border-radius: var(--radius);
+  box-shadow: 2px 2px 4px var(--boxShadow);
   background: var(--accentColor);
 }
 

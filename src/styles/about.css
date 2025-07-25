@@ -20,7 +20,7 @@
 }
 
 .tool-card {
-  width: 90px;
+  width: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29,11 +29,16 @@
 
 .tool-card img {
   background-color: var(--cardBackground);
-  border-radius: 0.7vw;
+  border-radius: var(--radius);
   width: 100%;
   padding: 5px;
-  box-shadow: 3px 3px 6px var(--boxShadow);
+  box-shadow: 0 4px 10px var(--boxShadow);
   border: solid 1px #d1d1d1;
+  transition: transform 0.2s;
+}
+
+.tool-card img:hover {
+  transform: translateY(-4px);
 }
 
 .tool-card h3 {
@@ -81,14 +86,14 @@
   line-height: 1.3;
   list-style: none;
   padding: 25px;
-  border-radius: 1vw;
+  border-radius: var(--radius);
   color: #111;
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 100%;
   background-color: var(--cardBackground);
-  box-shadow: 3px 3px 6px var(--boxShadow);
+  box-shadow: 0 4px 10px var(--boxShadow);
   border: solid 1px #d1d1d1;
 }
 
