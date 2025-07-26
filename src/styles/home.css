@@ -14,11 +14,7 @@
   font-size: 64px;
   font-weight: 600;
   text-align: start;
-  background: radial-gradient(
-    circle farthest-corner at center center,
-    #b3b3b3 0%,
-    #5a5a5a 80%
-  );
+  background: linear-gradient(90deg, var(--accentColor), #111);
   background-clip: text;
   color: transparent;
   width: fit-content;

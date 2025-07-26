@@ -8,6 +8,8 @@ nav {
   align-items: center;
   padding: 10px 10%;
   background: var(--barBackgroundGradient);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--boxShadow);
   transition: 0.3s;
   z-index: 100;
 }

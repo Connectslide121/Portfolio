@@ -35,7 +35,9 @@ npm run build
 
 ## Deployment
 
-The project is configured for deployment to GitHub Pages using the `gh-pages` package. Run the following commands to build and deploy:
+The project is configured for deployment to GitHub Pages using the `gh-pages` package. A GitHub Actions workflow builds and publishes the site whenever the `master` or `work` branch is pushed. This makes it easy to preview changes from `work` and revert by pushing `master` again.
+
+Run the following commands to build and deploy manually:
 
 ```bash
 npm run predeploy

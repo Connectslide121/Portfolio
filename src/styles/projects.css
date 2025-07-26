@@ -71,11 +71,7 @@ body.dark-theme .project-media {
 .project-description h2 {
   font-size: 32px;
   font-weight: 600;
-  background: radial-gradient(
-    circle farthest-corner at center center,
-    #8c8c8c 0%,
-    #5a5a5a 80%
-  );
+  background: linear-gradient(90deg, var(--accentColor), #111);
   background-clip: text;
   color: transparent;
   width: fit-content;

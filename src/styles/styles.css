@@ -3,7 +3,7 @@
   padding: 0;
   box-sizing: border-box;
   scroll-behavior: smooth;
-  font-family: "Inter", sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .App {
@@ -12,18 +12,18 @@
 
 body {
   --mainColor: #111;
-  --accentColor: #2563eb;
-  --boxShadow: #d1d1d1;
+  --accentColor: #6366f1;
+  --boxShadow: #d6d6d6;
   --cardBackground: #f9f9f9;
   --radius: 0.8rem;
   --backgroundGradient: radial-gradient(
     ellipse farthest-side at center center,
-    #f1f1f1 0%,
+    #f0f2ff 0%,
     #ffffff 100%
   );
   --barBackgroundGradient: radial-gradient(
     circle farthest-side at center center,
-    #fbfbfb 0%,
+    #f6f7ff 0%,
     #ffffff 60%
   );
   color: var(--mainColor);
@@ -34,18 +34,18 @@ body {
 
 body.dark-theme {
   --mainColor: #fff;
-  --accentColor: #3b82f6;
+  --accentColor: #a5b4fc;
   --boxShadow: #333;
   --cardBackground: #1f1f1f;
   --backgroundGradient: radial-gradient(
     ellipse farthest-side at center center,
-    #303030 0%,
-    #111111 100%
+    #222233 0%,
+    #111122 100%
   );
   --barBackgroundGradient: radial-gradient(
     circle farthest-side at center center,
-    #151515 0%,
-    #111111 40%
+    #1a1a2a 0%,
+    #111122 40%
   );
 }
 
@@ -57,7 +57,8 @@ body.other-projects-open {
   display: flex;
   flex-direction: column;
   margin-top: 5vh;
-  width: 70%;
+  width: 80%;
+  max-width: 1200px;
   margin-inline: auto;
 }
 
