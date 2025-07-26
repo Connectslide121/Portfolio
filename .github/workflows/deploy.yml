@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - work
 
 permissions:
   contents: write
