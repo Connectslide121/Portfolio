@@ -24,6 +24,7 @@ import rag from "../images/tools/rag.webp";
 import azureai from "../images/tools/azureai.webp";
 import cosmosdb from "../images/tools/cosmosdb.webp";
 import mongodb from "../images/tools/mongodb.webp";
+import mcp from "../images/tools/mcp.PNG";
 
 export default function Tools() {
   const toolCategories = [
@@ -35,7 +36,8 @@ export default function Tools() {
         { name: "LLMs", image: llm, alt: "llm" },
         { name: "Embedding Models", image: embedding, alt: "embedding" },
         { name: "Vector Databases", image: vectorDb, alt: "vector database" },
-        { name: "RAG", image: rag, alt: "rag" }
+        { name: "RAG", image: rag, alt: "rag" },
+        { name: "MCP Servers", image: mcp, alt: "mcp servers" }
       ]
     },
     {
