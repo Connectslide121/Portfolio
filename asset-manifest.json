@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/Portfolio/static/css/main.9db8e068.css",
-    "main.js": "/Portfolio/static/js/main.eddbd259.js",
+    "main.css": "/Portfolio/static/css/main.b64a14f4.css",
+    "main.js": "/Portfolio/static/js/main.facba81c.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/CodepenAI.mp4": "/Portfolio/static/media/CodepenAI.67099e612ecd577ff4f7.mp4",
     "static/media/plastic-slurg.mp4": "/Portfolio/static/media/plastic-slurg.a10eea5912762bdf2abc.mp4",
@@ -17,15 +17,19 @@
     "static/media/ai-image-generator.webp": "/Portfolio/static/media/ai-image-generator.1b3a5b72ddece82ec081.webp",
     "static/media/spotify-clone.webp": "/Portfolio/static/media/spotify-clone.bc98e7b6b08fad149905.webp",
     "static/media/vending-machine.webp": "/Portfolio/static/media/vending-machine.b762ec5b9f486b0176e1.webp",
+    "static/media/mongodb.webp": "/Portfolio/static/media/mongodb.73945bf357d77ed7cfed.webp",
     "static/media/lawn-mower-rental.webp": "/Portfolio/static/media/lawn-mower-rental.3b8cbda7ec56ee0cc32e.webp",
     "static/media/home-image.webp": "/Portfolio/static/media/home-image.e15e791de15777d3362b.webp",
+    "static/media/rag.webp": "/Portfolio/static/media/rag.35d20de8ab7414b15a26.webp",
     "static/media/calculator.webp": "/Portfolio/static/media/calculator.947191452e1000ceea4d.webp",
+    "static/media/openai.webp": "/Portfolio/static/media/openai.7e81fc1d916da3b50e3b.webp",
     "static/media/reactjs.webp": "/Portfolio/static/media/reactjs.67dfd81581974d545a90.webp",
     "static/media/sql.webp": "/Portfolio/static/media/sql.4dd3f8bd82f1c74a8516.webp",
     "static/media/aws.webp": "/Portfolio/static/media/aws.009497f44b7452469810.webp",
     "static/media/github.webp": "/Portfolio/static/media/github.f8c6262347db8b2a6d36.webp",
     "static/media/none.jpg": "/Portfolio/static/media/none.a2daeb3cc0db164a257f.jpg",
     "static/media/angular.webp": "/Portfolio/static/media/angular.673f670248d08604615c.webp",
+    "static/media/azureai.webp": "/Portfolio/static/media/azureai.cc385f57ea691f1b9922.webp",
     "static/media/nosql.webp": "/Portfolio/static/media/nosql.c93496101c611b767427.webp",
     "static/media/azuredevops.webp": "/Portfolio/static/media/azuredevops.e791564aa580f746acef.webp",
     "static/media/nodejs.webp": "/Portfolio/static/media/nodejs.36072545b4e3d1e14cf4.webp",
@@ -34,16 +38,21 @@
     "static/media/logo.webp": "/Portfolio/static/media/logo.28e93fd8effcf5ba8c1a.webp",
     "static/media/azure.webp": "/Portfolio/static/media/azure.3aedff54b8be5bb800e8.webp",
     "static/media/csharp.webp": "/Portfolio/static/media/csharp.cfbc524291f3ce489875.webp",
+    "static/media/vector_db.webp": "/Portfolio/static/media/vector_db.10a2ba565696775ed58d.webp",
+    "static/media/tailwind.webp": "/Portfolio/static/media/tailwind.40ecb45e1abc50351bbb.webp",
+    "static/media/cosmosdb.webp": "/Portfolio/static/media/cosmosdb.181d22b34d20dfefad67.webp",
     "static/media/css.webp": "/Portfolio/static/media/css.4b3ad0b4e36ce594b702.webp",
     "static/media/html.webp": "/Portfolio/static/media/html.5f863fccf290c35b28a0.webp",
+    "static/media/llm.webp": "/Portfolio/static/media/llm.18ffd7608c7850982756.webp",
     "static/media/ts.webp": "/Portfolio/static/media/ts.0b561676e4d3d793d7b7.webp",
+    "static/media/embedding.webp": "/Portfolio/static/media/embedding.53afb5f8fe81ed694bea.webp",
     "static/media/js.webp": "/Portfolio/static/media/js.112e86014c0a1cf4e28e.webp",
     "index.html": "/Portfolio/index.html",
-    "main.9db8e068.css.map": "/Portfolio/static/css/main.9db8e068.css.map",
-    "main.eddbd259.js.map": "/Portfolio/static/js/main.eddbd259.js.map"
+    "main.b64a14f4.css.map": "/Portfolio/static/css/main.b64a14f4.css.map",
+    "main.facba81c.js.map": "/Portfolio/static/js/main.facba81c.js.map"
   },
   "entrypoints": [
-    "static/css/main.9db8e068.css",
-    "static/js/main.eddbd259.js"
+    "static/css/main.b64a14f4.css",
+    "static/js/main.facba81c.js"
   ]
 }
