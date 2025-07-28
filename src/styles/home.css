@@ -314,13 +314,7 @@
   }
 
   .discover-more-wrapper {
-    bottom: var(--space-lg);
-  }
-
-  .discover-more-btn {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: var(--font-size-xs);
-    gap: 2px;
+    display: none;
   }
 }
 
@@ -335,10 +329,7 @@
     justify-content: center;
   }
 
-  .discover-more-btn {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: var(--font-size-xs);
-    letter-spacing: 0.25px;
-    gap: 2px;
+  .discover-more-wrapper {
+    display: none;
   }
 }
