@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/Portfolio/static/css/main.b64a14f4.css",
-    "main.js": "/Portfolio/static/js/main.facba81c.js",
+    "main.css": "/Portfolio/static/css/main.d5626355.css",
+    "main.js": "/Portfolio/static/js/main.91acf34e.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/CodepenAI.mp4": "/Portfolio/static/media/CodepenAI.67099e612ecd577ff4f7.mp4",
     "static/media/plastic-slurg.mp4": "/Portfolio/static/media/plastic-slurg.a10eea5912762bdf2abc.mp4",
@@ -48,11 +48,11 @@
     "static/media/embedding.webp": "/Portfolio/static/media/embedding.53afb5f8fe81ed694bea.webp",
     "static/media/js.webp": "/Portfolio/static/media/js.112e86014c0a1cf4e28e.webp",
     "index.html": "/Portfolio/index.html",
-    "main.b64a14f4.css.map": "/Portfolio/static/css/main.b64a14f4.css.map",
-    "main.facba81c.js.map": "/Portfolio/static/js/main.facba81c.js.map"
+    "main.d5626355.css.map": "/Portfolio/static/css/main.d5626355.css.map",
+    "main.91acf34e.js.map": "/Portfolio/static/js/main.91acf34e.js.map"
   },
   "entrypoints": [
-    "static/css/main.b64a14f4.css",
-    "static/js/main.facba81c.js"
+    "static/css/main.d5626355.css",
+    "static/js/main.91acf34e.js"
   ]
 }
