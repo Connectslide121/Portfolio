@@ -528,7 +528,7 @@
 /* Specific styling for logos that need better contrast */
 .tool-card img[alt="github"],
 .tool-card img[alt="openai"],
-.tool-card img[alt="openai"],
+.tool-card img[alt="mcp"],
 .tool-card img[alt="aws"] {
   background: white;
   border-radius: var(--radius-sm);
