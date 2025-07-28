@@ -327,17 +327,6 @@ body.dark-theme .navbar-logo {
   background: var(--accentColor);
 }
 
-.resume-button {
-  transition: 0.1s;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.resume-button:hover {
-  opacity: 0.6;
-}
-
 @media screen and (max-width: 850px) {
   nav {
     padding: 8px 20px;
