@@ -10,9 +10,12 @@ export default function About() {
       <div className="about-header">
         <h2>About Me</h2>
         <p>
-          I'm a passionate full-stack developer with expertise in modern web
-          technologies. I love creating efficient, scalable solutions and
-          continuously learning new technologies.
+          I'm a passionate full-stack developer specializing in AI-powered
+          solutions and modern web technologies. With expertise in OpenAI APIs,
+          vector databases, embedding models, and LLMs, I create intelligent,
+          scalable applications that leverage the power of artificial
+          intelligence. I love building efficient solutions and continuously
+          exploring new AI technologies.
         </p>
       </div>
       <Tools />

@@ -228,10 +228,12 @@ a:hover {
 /* Section Spacing */
 section {
   padding: var(--space-3xl) 0;
+  scroll-margin-top: 80px; /* Account for fixed navbar height */
 }
 
 section:first-child {
   padding-top: var(--space-2xl);
+  scroll-margin-top: 0; /* Home section doesn't need scroll margin */
 }
 
 /* Modern Footer */

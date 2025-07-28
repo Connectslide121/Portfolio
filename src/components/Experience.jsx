@@ -22,21 +22,25 @@ export default function Experience() {
               </a>
             </div>
             <h3>
-              Sprinta Consulting AB, Sweden - Software Developer &amp; Platform
+              Sprinta Consulting AB, Sweden - AI Developer &amp; Platform
               Architect
             </h3>
             <p>
               • Sole developer of CertumHub, an AI-powered platform for
               e-learning and sustainability assessments with multilingual
-              support.
-              <br />• Architected and built complex modules like a course
-              builder, ISO26000 verification module, auditor workflows, and AI
-              chat assistants using Angular, Azure Functions, CosmosDB, and
-              OpenAI APIs.
-              <br />• Designed a vector database-powered AI content system for
-              real-time context-aware interactions.
+              support and advanced AI capabilities.
+              <br />• Architected and built complex AI modules including a
+              course builder, ISO26000 verification module, auditor workflows,
+              and intelligent AI chat assistants using Angular, Azure Functions,
+              CosmosDB, and OpenAI GPT models.
+              <br />• Designed and implemented a vector database-powered AI
+              content system for real-time context-aware interactions using
+              embedding models and RAG architecture.
+              <br />• Developed custom AI solutions integrating OpenAI APIs,
+              vector databases, and machine learning models for intelligent
+              content generation and user assistance.
               <br />• Took ownership of customer support and conducted product
-              demos for new clients.
+              demos for new clients, showcasing AI-powered features.
             </p>
           </li>
           <li>

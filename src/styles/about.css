@@ -20,7 +20,7 @@
 .about-header p {
   font-size: var(--font-size-lg);
   color: var(--textSecondary);
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   line-height: var(--leading-relaxed);
 }
@@ -46,11 +46,36 @@
   font-size: var(--font-size-base);
 }
 
+.tool-category {
+  margin-bottom: var(--space-2xl);
+}
+
+.category-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--textPrimary);
+  margin-bottom: var(--space-lg);
+  text-align: center;
+  position: relative;
+}
+
+.category-title::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--accentColor);
+  border-radius: 2px;
+}
+
 .tool-cards-wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: var(--space-lg);
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -78,6 +103,16 @@
   height: 48px;
   object-fit: contain;
   transition: transform 0.2s ease;
+}
+
+/* Specific styling for logos that need better contrast */
+.tool-card img[alt="github"],
+.tool-card img[alt="openai"],
+.tool-card img[alt="openai"],
+.tool-card img[alt="aws"] {
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 4px;
 }
 
 .tool-card:hover img {
@@ -239,6 +274,11 @@
   .tool-cards-wrapper {
     grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
     gap: var(--space-sm);
+  }
+
+  .category-title {
+    font-size: var(--font-size-md);
+    margin-bottom: var(--space-md);
   }
 
   .tool-card {

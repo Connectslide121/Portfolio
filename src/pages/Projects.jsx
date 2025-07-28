@@ -31,8 +31,48 @@ import LawnMowerRental from "../images/projects/lawn-mower-rental.webp";
 import PatisserieLente from "../images/projects/patisserie-lente.webp";
 import none from "../images/projects/none.jpg";
 
+// Import technology icons
+import html from "../images/tools/html.webp";
+import css from "../images/tools/css.webp";
+import js from "../images/tools/js.webp";
+import nodejs from "../images/tools/nodejs.webp";
+import reactjs from "../images/tools/reactjs.webp";
+import csharp from "../images/tools/csharp.webp";
+import sql from "../images/tools/sql.webp";
+import unity from "../images/tools/unity.webp";
+import aws from "../images/tools/aws.webp";
+import angular from "../images/tools/angular.webp";
+import ts from "../images/tools/ts.webp";
+import nosql from "../images/tools/nosql.webp";
+import azure from "../images/tools/azure.webp";
+import openai from "../images/tools/openai.webp";
+import tailwind from "../images/tools/tailwind.webp";
+
 export default function Projects() {
   const [showOtherProjects, setShowOtherProjects] = useState(false);
+
+  // Technology icon mapping
+  const techIcons = {
+    html: { icon: html, name: "HTML" },
+    css: { icon: css, name: "CSS" },
+    js: { icon: js, name: "JavaScript" },
+    javascript: { icon: js, name: "JavaScript" },
+    ts: { icon: ts, name: "TypeScript" },
+    typescript: { icon: ts, name: "TypeScript" },
+    node: { icon: nodejs, name: "Node.js" },
+    nodejs: { icon: nodejs, name: "Node.js" },
+    react: { icon: reactjs, name: "React.js" },
+    reactjs: { icon: reactjs, name: "React.js" },
+    angular: { icon: angular, name: "Angular" },
+    csharp: { icon: csharp, name: "C#" },
+    sql: { icon: sql, name: "SQL" },
+    nosql: { icon: nosql, name: "NoSQL" },
+    unity: { icon: unity, name: "Unity" },
+    aws: { icon: aws, name: "AWS" },
+    azure: { icon: azure, name: "Azure" },
+    ai: { icon: openai, name: "OpenAI" },
+    tailwind: { icon: tailwind, name: "Tailwind CSS" }
+  };
 
   const assignMedia = (project) => {
     // For video projects
@@ -52,6 +92,7 @@ export default function Projects() {
     const imageProjects = {
       Calculator: Calculator,
       "AI image generator": imageGenerator,
+      "AI Image Generator": imageGenerator,
       "Image search app": imageSearchApp,
       "Community portal": CommunityPortal,
       "Vending machine": VendingMachine,
@@ -76,7 +117,14 @@ export default function Projects() {
       <div className="project-card">
         <div className="project-media-container">
           {media.type === "video" ? (
-            <video className="project-media" autoPlay loop muted playsInline>
+            <video
+              className="project-media"
+              autoPlay
+              loop
+              muted
+              playsInline
+              controls
+            >
               <source src={media.src} type="video/mp4" />
             </video>
           ) : (
@@ -149,11 +197,18 @@ export default function Projects() {
 
           {project.technologies && (
             <div className="project-tech-stack">
-              {project.technologies.map((tech, index) => (
-                <span key={index} className="tech-tag">
-                  {tech}
-                </span>
-              ))}
+              {project.technologies.map((tech, index) => {
+                const techInfo = techIcons[tech.toLowerCase()];
+                return techInfo ? (
+                  <div key={index} className="tech-icon" title={techInfo.name}>
+                    <img src={techInfo.icon} alt={techInfo.name} />
+                  </div>
+                ) : (
+                  <span key={index} className="tech-tag">
+                    {tech}
+                  </span>
+                );
+              })}
             </div>
           )}
         </div>
@@ -166,9 +221,10 @@ export default function Projects() {
       <div className="projects-header">
         <h2>My Projects</h2>
         <p>
-          A collection of projects that showcase my skills in full-stack
-          development, from web applications to mobile apps and everything in
-          between.
+          A collection of AI-powered applications and full-stack solutions that
+          showcase my expertise in artificial intelligence, machine learning,
+          and modern web development. From intelligent chatbots to vector
+          databases and everything in between.
         </p>
       </div>
 

@@ -8,7 +8,7 @@ export const featuredProjects = [
       "OpenAI API used for code generation, API key required",
       "Unsplash API used for getting images"
     ],
-    technologies: ["html", "css", "js", "react", "csharp", "sql", "aws"],
+    technologies: ["ai", "react", "csharp", "sql", "aws", "html", "css", "js"],
     repository: "https://github.com/Connectslide121/CodepenAI",
     livedemo: "https://connectslide121.github.io/CodepenAI-livedemo",
     button: "Live demo",
@@ -19,7 +19,7 @@ export const featuredProjects = [
     media: "video",
     description:
       "A simple web application built with Angular that allows users to manage their contacts easily. This project is designed to demonstrate a simple CRUD (Create, Read, Update, Delete) operation using Angular as the front-end framework and CosmosDB with Azure functions for the back-end.",
-    technologies: ["html", "css", "ts", "angular", "csharp", "nosql", "azure"],
+    technologies: ["angular", "csharp", "nosql", "azure", "html", "css", "ts"],
     repository: "https://github.com/Connectslide121/contact-book",
     livedemo: "https://connectslide121.github.io/contact-book-live-demo/",
     button: "Live demo",
@@ -30,7 +30,7 @@ export const featuredProjects = [
     media: "video",
     description:
       "The Password Input Component is a reusable and secure UI component designed for user password input in web applications. It enhances security by including strength indication. The strength requirements default to the same as ASP.NET Core Identity and can be easily customized via props.",
-    technologies: ["js", "react", "node"],
+    technologies: ["react", "js", "node"],
     repository: "https://github.com/Connectslide121/password-input-component",
     livedemo: "https://www.npmjs.com/package/password-input-component",
     button: "Documentation",
@@ -55,7 +55,7 @@ export const allProjects = [
     media: "video",
     description:
       "An innovative recipe website where your culinary journey is personalized by AI. Whether you're searching for recipes by ingredient, cuisine, or dietary restrictions, DAIETpedia is here to suggest a whole menu tailored just for you!",
-    technologies: ["html", "css", "js", "react", "node"],
+    technologies: ["ai", "react", "node", "html", "css", "js"],
     repository: "https://github.com/Connectslide121/daietpedia",
     livedemo: "https://connectslide121.github.io/daietpedia",
     button: "Live demo",
@@ -66,7 +66,7 @@ export const allProjects = [
     media: "video",
     description:
       " A multi purpose list creator. Create your To-do lists, bug trackers, general lists... I always use it for my projects! Back-end consists of a REST API with a connection to a MySQL server using Entity Framework. No back-end in the live demo yet, the data resets on page reload.",
-    technologies: ["html", "css", "js", "react", "csharp", "sql"],
+    technologies: ["react", "csharp", "sql", "html", "css", "js"],
     repository: "https://github.com/Connectslide121/Listr",
     livedemo: "https://connectslide121.github.io/Listr-livedemo",
     button: "Live demo",
@@ -76,7 +76,7 @@ export const allProjects = [
     title: "Calculator",
     media: "image",
     description: "A calculator app made with React. My first ever React app.",
-    technologies: ["html", "css", "js", "react"],
+    technologies: ["react", "html", "css", "js"],
     repository: "https://github.com/Connectslide121/Calculator",
     livedemo: "https://connectslide121.github.io/Calculator",
     button: "Live demo",
@@ -87,7 +87,7 @@ export const allProjects = [
     media: "image",
     description:
       "An image generator that uses OpenAI API. A valid API key is required to use it.",
-    technologies: ["html", "css", "js"],
+    technologies: ["ai", "html", "css", "js"],
     repository: "https://github.com/Connectslide121/AI-image-generator",
     livedemo: "https://connectslide121.github.io/AI-image-generator",
     button: "Live demo",

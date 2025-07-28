@@ -15,6 +15,22 @@ export default function Navbar() {
   const [contactClass, setContactClass] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const NAVBAR_HEIGHT = 80; // Fixed navbar height
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const elementPosition = element.offsetTop;
+      const offsetPosition =
+        sectionId === "home" ? 0 : elementPosition - NAVBAR_HEIGHT;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
+
   window.onscroll = () => {
     setScrollY(window.scrollY);
 
@@ -61,33 +77,54 @@ export default function Navbar() {
     setMobileMenuOpen(false);
   };
 
+  const handleNavClick = (sectionId) => {
+    scrollToSection(sectionId);
+    closeMobileMenu();
+  };
+
   return (
     <>
       <nav>
-        <a href="#home" className="navbar-brand" onClick={closeMobileMenu}>
+        <button
+          className="navbar-brand"
+          onClick={() => handleNavClick("home")}
+          style={{ background: "none", border: "none", cursor: "pointer" }}
+        >
           <img src={logo} alt="Jon Mendizabal Logo" className="navbar-logo" />
-        </a>
+        </button>
 
         <ul className="nav-links">
           <li>
-            <a className={homeClass} href="#home">
+            <button
+              className={`nav-link-btn ${homeClass}`}
+              onClick={() => handleNavClick("home")}
+            >
               Home
-            </a>
+            </button>
           </li>
           <li>
-            <a className={aboutClass} href="#about">
+            <button
+              className={`nav-link-btn ${aboutClass}`}
+              onClick={() => handleNavClick("about")}
+            >
               About
-            </a>
+            </button>
           </li>
           <li>
-            <a className={projectsClass} href="#projects">
+            <button
+              className={`nav-link-btn ${projectsClass}`}
+              onClick={() => handleNavClick("projects")}
+            >
               Projects
-            </a>
+            </button>
           </li>
           <li>
-            <a className={contactClass} href="#contact">
+            <button
+              className={`nav-link-btn ${contactClass}`}
+              onClick={() => handleNavClick("contact")}
+            >
               Contact
-            </a>
+            </button>
           </li>
         </ul>
 
@@ -105,32 +142,36 @@ export default function Navbar() {
       <div className={`mobile-nav ${mobileMenuOpen ? "open" : ""}`}>
         <ul className="mobile-nav-links">
           <li>
-            <a className={homeClass} href="#home" onClick={closeMobileMenu}>
+            <button
+              className={`nav-link-btn ${homeClass}`}
+              onClick={() => handleNavClick("home")}
+            >
               Home
-            </a>
+            </button>
           </li>
           <li>
-            <a className={aboutClass} href="#about" onClick={closeMobileMenu}>
+            <button
+              className={`nav-link-btn ${aboutClass}`}
+              onClick={() => handleNavClick("about")}
+            >
               About
-            </a>
+            </button>
           </li>
           <li>
-            <a
-              className={projectsClass}
-              href="#projects"
-              onClick={closeMobileMenu}
+            <button
+              className={`nav-link-btn ${projectsClass}`}
+              onClick={() => handleNavClick("projects")}
             >
               Projects
-            </a>
+            </button>
           </li>
           <li>
-            <a
-              className={contactClass}
-              href="#contact"
-              onClick={closeMobileMenu}
+            <button
+              className={`nav-link-btn ${contactClass}`}
+              onClick={() => handleNavClick("contact")}
             >
               Contact
-            </a>
+            </button>
           </li>
         </ul>
       </div>

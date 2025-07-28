@@ -92,6 +92,51 @@ body.dark-theme .navbar-logo {
   width: 80%;
 }
 
+/* Button Navigation Links */
+.nav-link-btn {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--textSecondary);
+  border-radius: var(--radius-md);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+}
+
+.nav-link-btn:hover {
+  color: var(--accentColor);
+  background: var(--surfaceColor);
+  transform: translateY(-1px);
+}
+
+.nav-link-btn.active-nav-link {
+  color: var(--accentColor);
+  background: var(--surfaceColor);
+}
+
+.nav-link-btn::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--accentColor);
+  border-radius: 1px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%);
+}
+
+.nav-link-btn.active-nav-link::after,
+.nav-link-btn:hover::after {
+  width: 80%;
+}
+
 /* Navigation Controls */
 .nav-controls {
   display: flex;
