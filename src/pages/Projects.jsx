@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/projects.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -50,6 +50,22 @@ import tailwind from "../images/tools/tailwind.webp";
 
 export default function Projects() {
   const [showOtherProjects, setShowOtherProjects] = useState(false);
+
+  // Lock/unlock body scroll when modal opens/closes
+  useEffect(() => {
+    if (showOtherProjects) {
+      // Lock scroll
+      document.body.style.overflow = "hidden";
+    } else {
+      // Unlock scroll
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup function to ensure scroll is unlocked when component unmounts
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showOtherProjects]);
 
   // Technology icon mapping
   const techIcons = {
@@ -256,17 +272,8 @@ export default function Projects() {
             onClick={() => setShowOtherProjects(false)}
           ></div>
           <div className="other-projects-content">
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "var(--space-xl)"
-              }}
-            >
-              <h3 style={{ margin: 0, fontSize: "var(--font-size-2xl)" }}>
-                All Projects
-              </h3>
+            <div className="modal-header">
+              <h3>All Projects</h3>
               <button
                 className="modal-close"
                 onClick={() => setShowOtherProjects(false)}
@@ -276,10 +283,12 @@ export default function Projects() {
               </button>
             </div>
 
-            <div className="project-cards-wrapper">
-              {allProjects.map((project, index) => (
-                <ProjectCard key={index} project={project} />
-              ))}
+            <div className="modal-body">
+              <div className="project-cards-wrapper">
+                {allProjects.map((project, index) => (
+                  <ProjectCard key={index} project={project} />
+                ))}
+              </div>
             </div>
           </div>
         </div>

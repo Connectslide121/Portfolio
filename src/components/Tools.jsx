@@ -79,8 +79,8 @@ export default function Tools() {
 
   return (
     <div className="tools-wrapper">
-      <div className="tools-header">
-        <h3>Technologies & Tools</h3>
+      <div className="section-header">
+        <h2>Technologies & Tools</h2>
         <p>Specialized in AI-powered solutions and full-stack development</p>
       </div>
 
