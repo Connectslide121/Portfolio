@@ -1,25 +1,16 @@
 import React, { useState } from "react";
 import "../styles/projects.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink, faGamepad } from "@fortawesome/free-solid-svg-icons";
+import {
+  faGamepad,
+  faExternalLinkAlt,
+  faTimes
+} from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faNpm } from "@fortawesome/free-brands-svg-icons";
 
 import { featuredProjects, allProjects } from "../components/projectList";
 
-import html from "../images/tools/html.webp";
-import css from "../images/tools/css.webp";
-import javascript from "../images/tools/js.webp";
-import typescript from "../images/tools/ts.webp";
-import nodejs from "../images/tools/nodejs.webp";
-import reactjs from "../images/tools/reactjs.webp";
-import angular from "../images/tools/angular.webp";
-import csharp from "../images/tools/csharp.webp";
-import sql from "../images/tools/sql.webp";
-import nosql from "../images/tools/nosql.webp";
-import azure from "../images/tools/azure.webp";
-import aws from "../images/tools/aws.webp";
-import unity from "../images/tools/unity.webp";
-
+// Import project media
 import DAIETpedia from "../images/projects/daietpedia.mp4";
 import CodepenAI from "../images/projects/CodepenAI.mp4";
 import PasswordInput from "../images/projects/password-input.mp4";
@@ -43,267 +34,198 @@ import none from "../images/projects/none.jpg";
 export default function Projects() {
   const [showOtherProjects, setShowOtherProjects] = useState(false);
 
-  const assignVideo = (title) => {
-    switch (title) {
-      case "DAIETpedia":
-        return DAIETpedia;
-      case "CodepenAI":
-        return CodepenAI;
-      case "Password input npm package":
-        return PasswordInput;
-      case "Plastic Slurg":
-        return PlasticSlurg;
-      case "Listr":
-        return Listr;
-      case "Sokoban game":
-        return Sokoban;
-      case "Sliding puzzles":
-        return SlidingPuzzles;
-      case "Flapry Blirb":
-        return FlapryBlirb;
-      case "Contact book":
-        return ContactBook;
-      default:
-        return CodepenAI;
+  const assignMedia = (project) => {
+    // For video projects
+    const videoProjects = {
+      DAIETpedia: DAIETpedia,
+      CodepenAI: CodepenAI,
+      "Password input npm package": PasswordInput,
+      "Plastic Slurg": PlasticSlurg,
+      Listr: Listr,
+      "Sokoban game": Sokoban,
+      "Sliding puzzles": SlidingPuzzles,
+      "Flapry Blirb": FlapryBlirb,
+      "Contact book": ContactBook
+    };
+
+    // For image projects
+    const imageProjects = {
+      Calculator: Calculator,
+      "AI image generator": imageGenerator,
+      "Image search app": imageSearchApp,
+      "Community portal": CommunityPortal,
+      "Vending machine": VendingMachine,
+      "Spotify clone": SpotifyClone,
+      "Lawn mower rental": LawnMowerRental,
+      "Patisserie Lente": PatisserieLente
+    };
+
+    if (videoProjects[project.title]) {
+      return { type: "video", src: videoProjects[project.title] };
+    } else if (imageProjects[project.title]) {
+      return { type: "image", src: imageProjects[project.title] };
+    } else {
+      return { type: "image", src: none };
     }
   };
 
-  const assignImage = (title) => {
-    switch (title) {
-      case "Calculator":
-        return Calculator;
-      case "AI image generator":
-        return imageGenerator;
-      case "Image search app":
-        return imageSearchApp;
-      case "Community portal":
-        return CommunityPortal;
-      case "Vending machine":
-        return VendingMachine;
-      case "Spotify clone":
-        return SpotifyClone;
-      case "Lawn mower rental":
-        return LawnMowerRental;
-      case "Patisserie Lente":
-        return PatisserieLente;
-      default:
-        return CodepenAI;
-    }
-  };
+  const ProjectCard = ({ project }) => {
+    const media = assignMedia(project);
 
-  const assignTechnologies = (technologies) => {
-    switch (technologies) {
-      case "node":
-        return nodejs;
-      case "react":
-        return reactjs;
-      case "angular":
-        return angular;
-      case "csharp":
-        return csharp;
-      case "sql":
-        return sql;
-      case "unity":
-        return unity;
-      case "js":
-        return javascript;
-      case "ts":
-        return typescript;
-      case "html":
-        return html;
-      case "css":
-        return css;
-      case "aws":
-        return aws;
-      case "azure":
-        return azure;
-      case "nosql":
-        return nosql;
-      default:
-        return none;
-    }
-  };
+    return (
+      <div className="project-card">
+        <div className="project-media-container">
+          {media.type === "video" ? (
+            <video className="project-media" autoPlay loop muted playsInline>
+              <source src={media.src} type="video/mp4" />
+            </video>
+          ) : (
+            <img
+              className="project-media"
+              src={media.src}
+              alt={project.title}
+            />
+          )}
+          <div className="project-type-badge">
+            {project.category || "Web App"}
+          </div>
+        </div>
 
-  const assignIcon = (button) => {
-    switch (button) {
-      case "Documentation":
-        return faNpm;
-      case "Live demo":
-        return faLink;
-      case "Play game":
-        return faGamepad;
-      default:
-        return faGithub;
-    }
-  };
+        <div className="project-content">
+          <div className="project-header">
+            <h4 className="project-title">{project.title}</h4>
+            <div className="project-links">
+              {project.repository && (
+                <a
+                  href={project.repository}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-link"
+                  title="View on GitHub"
+                >
+                  <FontAwesomeIcon icon={faGithub} />
+                </a>
+              )}
+              {project.livedemo && (
+                <a
+                  href={project.livedemo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-link"
+                  title="View Live Demo"
+                >
+                  <FontAwesomeIcon icon={faExternalLinkAlt} />
+                </a>
+              )}
+              {project.npm && (
+                <a
+                  href={project.npm}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-link"
+                  title="View on NPM"
+                >
+                  <FontAwesomeIcon icon={faNpm} />
+                </a>
+              )}
+              {project.play && (
+                <a
+                  href={project.play}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-link"
+                  title="Play Game"
+                >
+                  <FontAwesomeIcon icon={faGamepad} />
+                </a>
+              )}
+            </div>
+          </div>
 
-  const openOtherProjects = () => {
-    setShowOtherProjects(true);
-    document.body.classList.add("other-projects-open");
-  };
+          <p className="project-description">
+            {project.description ||
+              "A modern web application built with cutting-edge technologies."}
+          </p>
 
-  const closeOtherProjects = () => {
-    setShowOtherProjects(false);
-    document.body.classList.remove("other-projects-open");
+          {project.technologies && (
+            <div className="project-tech-stack">
+              {project.technologies.map((tech, index) => (
+                <span key={index} className="tech-tag">
+                  {tech}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
     <section id="projects">
-      <h2>FEATURED PROJECTS</h2>
-      <div className="project-cards-wrapper">
-        {featuredProjects.map((project, index) => (
-          <div key={index} className="project-card">
-            {project.media === "video" ? (
-              <video
-                className="project-media"
-                muted
-                controls
-                playsInline
-              >
-                <source src={assignVideo(project.title)} type="video/mp4" />
-              </video>
-            ) : (
-              <img
-                className="project-media"
-                src={assignImage(project.title)}
-                alt={project.title}
-              />
-            )}
-            <div className="project-description">
-              <div className="project-header">
-                <div className="project-title">
-                  <h2>{project.title}</h2>
-                </div>
-                <div className="project-technologies">
-                  {project.technologies.map((technology, index) => (
-                    <img
-                      key={index}
-                      src={assignTechnologies(technology)}
-                      alt={technology}
-                      title={technology}
-                    ></img>
-                  ))}
-                </div>
-              </div>
-              <p>{project.description}</p>
-              {project.details && (
-                <ul className="project-details-list">
-                  {project.details.map((detail, index) => (
-                    <li key={index}>
-                      <p>{detail}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <div className="project-buttons">
-                <a
-                  href={project.repository}
-                  title="Repository"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <FontAwesomeIcon icon={faGithub} />
-                  <span>Source code</span>
-                </a>
-                {project.livedemo && (
-                  <a
-                    href={project.livedemo}
-                    title="Visit site"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <FontAwesomeIcon icon={assignIcon(project.button)} />
-                    <span>{project.button}</span>
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="projects-header">
+        <h2>My Projects</h2>
+        <p>
+          A collection of projects that showcase my skills in full-stack
+          development, from web applications to mobile apps and everything in
+          between.
+        </p>
       </div>
-      <button className="other-projects-button" onClick={openOtherProjects}>
-        - Other projects -
-      </button>
+
+      {/* Featured Projects */}
+      <div className="featured-projects">
+        <h3>Featured Projects</h3>
+        <div className="project-cards-wrapper">
+          {featuredProjects.map((project, index) => (
+            <ProjectCard key={index} project={project} />
+          ))}
+        </div>
+      </div>
+
+      {/* Show More Button */}
+      <div className="show-more-container">
+        <button
+          className="show-more-btn"
+          onClick={() => setShowOtherProjects(true)}
+        >
+          View All Projects
+        </button>
+      </div>
+
+      {/* Other Projects Modal */}
       {showOtherProjects && (
         <div className="other-projects-wrapper">
-          <div className="overlay" onClick={closeOtherProjects}></div>
+          <div
+            className="overlay"
+            onClick={() => setShowOtherProjects(false)}
+          ></div>
           <div className="other-projects-content">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "var(--space-xl)"
+              }}
+            >
+              <h3 style={{ margin: 0, fontSize: "var(--font-size-2xl)" }}>
+                All Projects
+              </h3>
+              <button
+                className="modal-close"
+                onClick={() => setShowOtherProjects(false)}
+                title="Close"
+              >
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+
             <div className="project-cards-wrapper">
               {allProjects.map((project, index) => (
-                <div key={index} className="project-card">
-                  {project.media === "video" ? (
-                    <video
-                      className="project-media"
-                      muted
-                      controls
-                      playsInline
-                    >
-                      <source src={assignVideo(project.title)} type="video/mp4" />
-                    </video>
-                  ) : (
-                    <img
-                      className="project-media"
-                      src={assignImage(project.title)}
-                      alt={project.title}
-                    />
-                  )}
-                  <div className="project-description">
-                    <div className="project-header">
-                      <div className="project-title">
-                        <h2>{project.title}</h2>
-                      </div>
-                      <div className="project-technologies">
-                        {project.technologies.map((technology, index) => (
-                          <img
-                            key={index}
-                            src={assignTechnologies(technology)}
-                            alt={technology}
-                            title={technology}
-                          ></img>
-                        ))}
-                      </div>
-                    </div>
-                    <p>{project.description}</p>
-                    {project.details && (
-                      <ul className="project-details-list">
-                        {project.details.map((detail, index) => (
-                          <li key={index}>{detail}</li>
-                        ))}
-                      </ul>
-                    )}
-                    <div className="project-buttons">
-                      <a
-                        href={project.repository}
-                        title="Repository"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <FontAwesomeIcon icon={faGithub} />
-                        <span>Source code</span>
-                      </a>
-                      {project.livedemo && (
-                        <a
-                          href={project.livedemo}
-                          title="Visit site"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <FontAwesomeIcon icon={assignIcon(project.button)} />
-                          <span>{project.button}</span>
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <ProjectCard key={index} project={project} />
               ))}
             </div>
           </div>
-          <button
-            className="other-projects-button"
-            onClick={closeOtherProjects}
-          >
-            - Close -
-          </button>
         </div>
       )}
     </section>

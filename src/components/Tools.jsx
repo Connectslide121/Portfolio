@@ -17,74 +17,38 @@ import azure from "../images/tools/azure.webp";
 import azuredevops from "../images/tools/azuredevops.webp";
 
 export default function Tools() {
+  const tools = [
+    { name: "HTML", image: html, alt: "html" },
+    { name: "CSS", image: css, alt: "css" },
+    { name: "JavaScript", image: js, alt: "javascript" },
+    { name: "TypeScript", image: ts, alt: "typescript" },
+    { name: "Node.js", image: nodejs, alt: "node.js" },
+    { name: "React.js", image: reactjs, alt: "react.js" },
+    { name: "Angular", image: angular, alt: "angular" },
+    { name: "C#", image: csharp, alt: "c-sharp" },
+    { name: "Azure", image: azure, alt: "azure" },
+    { name: "AWS", image: aws, alt: "aws" },
+    { name: "SQL", image: sql, alt: "sql" },
+    { name: "NoSQL", image: nosql, alt: "nosql" },
+    { name: "Unity", image: unity, alt: "unity" },
+    { name: "Git", image: git, alt: "git" },
+    { name: "GitHub", image: github, alt: "github" },
+    { name: "Azure DevOps", image: azuredevops, alt: "azure devops" }
+  ];
+
   return (
     <div className="tools-wrapper">
-      <h2>TECH STACK</h2>
+      <div className="tools-header">
+        <h3>Technologies & Tools</h3>
+        <p>Technologies I work with to build amazing digital experiences</p>
+      </div>
       <div className="tool-cards-wrapper">
-        <div className="tool-card">
-          <img src={html} alt="html" />
-          <h3>HTML</h3>
-        </div>
-        <div className="tool-card">
-          <img src={css} alt="css" />
-          <h3>CSS</h3>
-        </div>
-        <div className="tool-card">
-          <img src={js} alt="javascript" />
-          <h3>JavaScript</h3>
-        </div>
-        <div className="tool-card">
-          <img src={ts} alt="typescript" />
-          <h3>TypeScript</h3>
-        </div>
-        <div className="tool-card">
-          <img src={nodejs} alt="node.js" />
-          <h3>Node.js</h3>
-        </div>
-        <div className="tool-card">
-          <img src={reactjs} alt="react.js" />
-          <h3>React.js</h3>
-        </div>
-        <div className="tool-card">
-          <img src={angular} alt="angular.js" />
-          <h3>Angular</h3>
-        </div>
-        <div className="tool-card">
-          <img src={csharp} alt="c-sharp" />
-          <h3>C#</h3>
-        </div>
-        <div className="tool-card">
-          <img src={azure} alt="azure" />
-          <h3>Azure</h3>
-        </div>
-        <div className="tool-card">
-          <img src={aws} alt="aws" />
-          <h3>AWS</h3>
-        </div>
-        <div className="tool-card">
-          <img src={sql} alt="sql" />
-          <h3>SQL</h3>
-        </div>
-        <div className="tool-card">
-          <img src={nosql} alt="nosql" />
-          <h3>No SQL</h3>
-        </div>
-        <div className="tool-card">
-          <img src={unity} alt="unity" />
-          <h3>Unity</h3>
-        </div>
-        <div className="tool-card">
-          <img src={git} alt="git" />
-          <h3>Git</h3>
-        </div>
-        <div className="tool-card">
-          <img src={github} alt="github" />
-          <h3>GitHub</h3>
-        </div>
-        <div className="tool-card">
-          <img src={azuredevops} alt="azure devops" />
-          <h3>AzureDevOps</h3>
-        </div>
+        {tools.map((tool, index) => (
+          <div key={index} className="tool-card" title={tool.name}>
+            <img src={tool.image} alt={tool.alt} />
+            <h3>{tool.name}</h3>
+          </div>
+        ))}
       </div>
     </div>
   );

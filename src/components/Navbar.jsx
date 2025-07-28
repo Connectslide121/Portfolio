@@ -13,6 +13,7 @@ export default function Navbar() {
   const [projectsClass, setProjectsClass] = useState("");
   const [aboutClass, setAboutClass] = useState("");
   const [contactClass, setContactClass] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   window.onscroll = () => {
     setScrollY(window.scrollY);
@@ -52,40 +53,87 @@ export default function Navbar() {
     setAboutHeight(document.getElementById("about").offsetHeight);
   }, []);
 
-  return (
-    <nav>
-      <img
-        src={logo}
-        alt="logo"
-        className="navbar-logo"
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      />
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
 
-      <ul>
-        <li>
-          <a className={homeClass} href="#home">
-            Home
-          </a>
-        </li>
-        <li>
-          <a className={aboutClass} href="#about">
-            About
-          </a>
-        </li>
-        <li>
-          <a className={projectsClass} href="#projects">
-            Projects
-          </a>
-        </li>
-        <li>
-          <a className={contactClass} href="#contact">
-            Contact
-          </a>
-        </li>
-      </ul>
-      <div className="navbar-buttons">
-        <ThemeToggle />
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
+  return (
+    <>
+      <nav>
+        <a href="#home" className="navbar-brand" onClick={closeMobileMenu}>
+          <img src={logo} alt="Jon Mendizabal Logo" className="navbar-logo" />
+        </a>
+
+        <ul className="nav-links">
+          <li>
+            <a className={homeClass} href="#home">
+              Home
+            </a>
+          </li>
+          <li>
+            <a className={aboutClass} href="#about">
+              About
+            </a>
+          </li>
+          <li>
+            <a className={projectsClass} href="#projects">
+              Projects
+            </a>
+          </li>
+          <li>
+            <a className={contactClass} href="#contact">
+              Contact
+            </a>
+          </li>
+        </ul>
+
+        <div className="nav-controls">
+          <ThemeToggle />
+          <div className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Navigation */}
+      <div className={`mobile-nav ${mobileMenuOpen ? "open" : ""}`}>
+        <ul className="mobile-nav-links">
+          <li>
+            <a className={homeClass} href="#home" onClick={closeMobileMenu}>
+              Home
+            </a>
+          </li>
+          <li>
+            <a className={aboutClass} href="#about" onClick={closeMobileMenu}>
+              About
+            </a>
+          </li>
+          <li>
+            <a
+              className={projectsClass}
+              href="#projects"
+              onClick={closeMobileMenu}
+            >
+              Projects
+            </a>
+          </li>
+          <li>
+            <a
+              className={contactClass}
+              href="#contact"
+              onClick={closeMobileMenu}
+            >
+              Contact
+            </a>
+          </li>
+        </ul>
       </div>
-    </nav>
+    </>
   );
 }

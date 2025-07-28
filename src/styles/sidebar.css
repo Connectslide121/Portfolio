@@ -1,62 +1,202 @@
+/* Modern Sidebar */
 aside {
   position: fixed;
-  margin-top: 30vh;
-  width: 100px;
+  left: var(--space-xl);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  z-index: 50;
 }
 
 aside ul {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: var(--space-lg);
   width: 100%;
+  padding: var(--space-lg);
+  background: var(--cardBackground);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--borderColor);
+  box-shadow: var(--shadowSm);
+}
+
+aside ul li {
+  position: relative;
+}
+
+aside ul li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--surfaceColor);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--borderColor);
+  position: relative;
+  overflow: hidden;
+}
+
+aside ul li a::before {
+  content: attr(title);
+  position: absolute;
+  left: calc(100% + var(--space-md));
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--cardBackground);
+  color: var(--textPrimary);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--borderColor);
+  box-shadow: var(--shadowMd);
+  z-index: 100;
+}
+
+aside ul li a:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(8px);
 }
 
 aside ul li a svg {
-  transition: 0.15s;
-  height: 40px;
-  width: 100%;
-  fill: var(--mainColor);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 24px;
+  width: 24px;
+  fill: var(--textSecondary);
+}
+
+aside ul li a:hover {
+  background: var(--accentColor);
+  border-color: var(--accentColor);
+  transform: translateX(8px) scale(1.1);
+  box-shadow: var(--shadowLg);
 }
 
 aside ul li a:hover svg {
-  transform: translateX(8px);
-  fill: var(--accentColor);
+  fill: white;
+  transform: scale(1.1);
 }
 
-#sidebar-icon-gradient {
-  --color-stop: rgb(51, 107, 163);
-  --color-bot: violet;
+/* Specific icon colors on hover */
+aside ul li a[title="linkedin"]:hover {
+  background: #0077b5;
+  border-color: #0077b5;
 }
 
-@media screen and (max-width: 850px) {
+aside ul li a[title="github"]:hover {
+  background: #333;
+  border-color: #333;
+}
+
+aside ul li a[title="npm"]:hover {
+  background: #cb3837;
+  border-color: #cb3837;
+}
+
+aside ul li a[title="itch.io"]:hover {
+  background: #fa5c5c;
+  border-color: #fa5c5c;
+}
+
+/* Mobile Responsive */
+@media screen and (max-width: 1024px) {
   aside {
+    left: var(--space-md);
+    width: 50px;
+  }
+
+  aside ul {
+    padding: var(--space-md);
+    gap: var(--space-md);
+  }
+
+  aside ul li a {
+    width: 36px;
+    height: 36px;
+  }
+
+  aside ul li a svg {
+    height: 20px;
+    width: 20px;
+  }
+
+  aside ul li a:hover::before {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  aside {
+    position: fixed;
     bottom: 0;
-    margin-top: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    transform: none;
     width: 100%;
-    background: var(--barBackgroundGradient);
-    z-index: 10;
+    background: var(--cardBackground);
+    border-top: 1px solid var(--borderColor);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 90;
   }
 
   aside ul {
     flex-direction: row;
-    width: fit-content;
-    margin-inline: auto;
-    height: 50px;
-    gap: 20px;
+    justify-content: center;
     align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    gap: var(--space-xl);
+    height: 70px;
+  }
+
+  aside ul li a {
+    width: 44px;
+    height: 44px;
+    background: var(--surfaceColor);
+    border: 1px solid var(--borderColor);
+  }
+
+  aside ul li a:hover {
+    transform: translateY(-4px) scale(1.1);
+    background: var(--accentColor);
   }
 
   aside ul li a svg {
-    height: 30px;
+    height: 24px;
+    width: 24px;
   }
 
-  aside ul li a:hover svg {
-    transform: none;
-    fill: var(--mainColor);
+  aside ul li a:hover::before {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  aside ul {
+    gap: var(--space-lg);
+    padding: var(--space-sm) var(--space-md);
+    height: 60px;
   }
 
-  aside ul li a:active svg {
-    fill: var(--accentColor);
+  aside ul li a {
+    width: 40px;
+    height: 40px;
+  }
+
+  aside ul li a svg {
+    height: 20px;
+    width: 20px;
   }
 }

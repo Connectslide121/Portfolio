@@ -5,7 +5,7 @@ import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 export default function Education() {
   return (
     <div className="about-item-wrapper">
-      <h2>EDUCATION</h2>
+      <h2>Education</h2>
       <div>
         <ul>
           <li>

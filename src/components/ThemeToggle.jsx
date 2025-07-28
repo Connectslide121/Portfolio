@@ -10,17 +10,14 @@ export default function ThemeToggle() {
       document.body.classList.add("dark-theme");
     }
   };
+
   return (
-    <>
+    <div className="theme-toggle-wrapper">
       <input type="checkbox" id="darkmode-toggle" onChange={handleToggle} />
       <label htmlFor="darkmode-toggle" className="darkmode-toggle-label">
-        <p className="moon">
-          <FontAwesomeIcon icon={faMoon} />
-        </p>
-        <p className="sun">
-          <FontAwesomeIcon icon={faSun} />
-        </p>
+        <FontAwesomeIcon icon={faSun} className="sun" />
+        <FontAwesomeIcon icon={faMoon} className="moon" />
       </label>
-    </>
+    </div>
   );
 }
