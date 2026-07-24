@@ -25,6 +25,7 @@ import azureai from "../images/tools/azureai.webp";
 import cosmosdb from "../images/tools/cosmosdb.webp";
 import mongodb from "../images/tools/mongodb.webp";
 import mcp from "../images/tools/mcp.PNG";
+import mithriljs from "../images/tools/mithriljs.png";
 
 export default function Tools() {
   const toolCategories = [
@@ -37,20 +38,22 @@ export default function Tools() {
         { name: "Embedding Models", image: embedding, alt: "embedding" },
         { name: "Vector Databases", image: vectorDb, alt: "vector database" },
         { name: "RAG", image: rag, alt: "rag" },
-        { name: "MCP Servers", image: mcp, alt: "mcp servers" }
-      ]
+        { name: "MCP Servers", image: mcp, alt: "mcp servers" },
+      ],
     },
     {
       name: "Frontend Development",
       tools: [
         { name: "React.js", image: reactjs, alt: "react.js" },
+        { name: "React Native", image: reactjs, alt: "react native" },
         { name: "Angular", image: angular, alt: "angular" },
+        { name: "Mithril.js", image: mithriljs, alt: "mithril js" },
         { name: "Tailwind", image: tailwind, alt: "tailwind css" },
         { name: "HTML", image: html, alt: "html" },
         { name: "CSS", image: css, alt: "css" },
         { name: "JavaScript", image: js, alt: "javascript" },
-        { name: "TypeScript", image: ts, alt: "typescript" }
-      ]
+        { name: "TypeScript", image: ts, alt: "typescript" },
+      ],
     },
     {
       name: "Backend Development",
@@ -60,8 +63,8 @@ export default function Tools() {
         { name: "SQL", image: sql, alt: "sql" },
         { name: "NoSQL", image: nosql, alt: "nosql" },
         { name: "CosmosDB", image: cosmosdb, alt: "cosmos db" },
-        { name: "MongoDB", image: mongodb, alt: "mongodb" }
-      ]
+        { name: "MongoDB", image: mongodb, alt: "mongodb" },
+      ],
     },
     {
       name: "Cloud & DevOps",
@@ -70,13 +73,13 @@ export default function Tools() {
         { name: "AWS", image: aws, alt: "aws" },
         { name: "Azure DevOps", image: azuredevops, alt: "azure devops" },
         { name: "Git", image: git, alt: "git" },
-        { name: "GitHub", image: github, alt: "github" }
-      ]
+        { name: "GitHub", image: github, alt: "github" },
+      ],
     },
     {
       name: "Game Development",
-      tools: [{ name: "Unity", image: unity, alt: "unity" }]
-    }
+      tools: [{ name: "Unity", image: unity, alt: "unity" }],
+    },
   ];
 
   return (

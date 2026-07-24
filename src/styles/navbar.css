@@ -17,7 +17,7 @@ nav {
 }
 
 body.dark-theme nav {
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(3, 7, 18, 0.95);
   border-bottom-color: var(--borderColor);
 }
 

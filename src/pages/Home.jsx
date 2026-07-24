@@ -15,7 +15,7 @@ export default function Home() {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   };
@@ -40,13 +40,12 @@ export default function Home() {
           <br />
           MENDIZABAL
         </h1>
-        <h2>AI DEVELOPER & FULL-STACK ENGINEER</h2>
+        <h2>Lead Developer &amp; Platform Architect</h2>
         <p className="home-description">
-          Passionate about creating intelligent digital experiences with AI and
-          modern technologies. I specialize in building AI-powered applications,
-          working with OpenAI, Google Gemini, Anthropic Claude, vector
-          databases, embedding models, and LLMs to solve complex problems with
-          innovative solutions.
+          Building products end to end — thoughtful, intuitive UI/UX on the
+          front, scalable and secure backends underneath. I architect systems
+          that are a pleasure to use, robust at scale, and built to grow,
+          bringing AI in where it genuinely adds value.
         </p>
         <div className="home-cta">
           <button className="btn" onClick={scrollToProjects}>

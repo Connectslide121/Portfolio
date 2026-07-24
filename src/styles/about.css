@@ -156,8 +156,10 @@
 
 .experience-meta {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
 }
 
 .experience-date,
@@ -199,6 +201,18 @@
   transform: translateY(-1px);
   color: white !important;
   text-decoration: none;
+}
+
+.product-link {
+  color: var(--accentColor);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.product-link:hover {
+  border-bottom-color: var(--accentColor);
 }
 
 .experience-title {
@@ -259,6 +273,11 @@
 
 .experience-bullets li::before {
   display: none !important;
+}
+
+.experience-bullets li strong {
+  color: var(--textPrimary);
+  font-weight: 600;
 }
 
 .experience-bullets li:hover {
@@ -333,19 +352,20 @@
 /* Education Grid Styles */
 .education-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-xl);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
   max-width: 900px;
   margin: 0 auto;
 }
 
 .education-card {
   display: flex;
+  flex-direction: column;
   gap: var(--space-md);
   background: var(--cardBackground);
   border: 1px solid var(--borderColor);
   border-radius: var(--radius-xl);
-  padding: var(--space-lg);
+  padding: var(--space-md);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -377,12 +397,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
+  width: 44px;
+  height: 44px;
   background: linear-gradient(135deg, var(--accentColor), var(--accentHover));
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   color: white;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   flex-shrink: 0;
 }
 
@@ -425,14 +445,14 @@
 }
 
 .education-details h3 {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   color: var(--textPrimary);
   margin: 0 0 var(--space-xs) 0;
   font-weight: 600;
 }
 
 .education-details h4 {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   color: var(--accentColor);
   margin: 0 0 var(--space-sm) 0;
   font-weight: 500;
@@ -492,10 +512,11 @@
 }
 
 .tool-cards-wrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: var(--space-lg);
-  max-width: 900px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-md);
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -503,10 +524,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-lg);
+  justify-content: center;
+  gap: var(--space-xs);
+  width: 100px;
+  padding: var(--space-md) var(--space-sm);
   background: var(--cardBackground);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--borderColor);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
@@ -519,8 +542,8 @@
 }
 
 .tool-card img {
-  width: 48px;
-  height: 48px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
   transition: transform 0.2s ease;
 }
@@ -549,9 +572,46 @@
 
 /* Modern About Info Section */
 .about-info-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.about-tabs {
+  display: inline-flex;
+  align-self: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs);
+  background: var(--cardBackground);
+  border: 1px solid var(--borderColor);
+  border-radius: var(--radius-full);
+}
+
+.about-tab {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-sm) var(--space-xl);
+  border-radius: var(--radius-full);
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--textSecondary);
+  background: transparent;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.about-tab:hover {
+  color: var(--textPrimary);
+}
+
+.about-tab.active {
+  color: #fff;
+  background: var(--accentColor);
+}
+
+.about-tab-panels {
+  width: 100%;
 }
 
 .about-item-wrapper {
@@ -672,13 +732,12 @@
 /* Responsive Design */
 @media screen and (max-width: 1024px) {
   .about-info-wrapper {
-    grid-template-columns: 1fr;
     gap: var(--space-2xl);
   }
 
   .tool-cards-wrapper {
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: var(--space-md);
+    justify-content: center;
+    gap: var(--space-sm);
   }
 
   .timeline::before {
@@ -717,7 +776,7 @@
   }
 
   .tool-cards-wrapper {
-    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    justify-content: center;
     gap: var(--space-sm);
   }
 
@@ -727,12 +786,13 @@
   }
 
   .tool-card {
-    padding: var(--space-md);
+    width: 88px;
+    padding: var(--space-sm);
   }
 
   .tool-card img {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
   }
 
   .timeline::before {
@@ -783,8 +843,8 @@
 }
 
 @media screen and (max-width: 480px) {
-  .tool-cards-wrapper {
-    grid-template-columns: repeat(3, 1fr);
+  .tool-card {
+    width: 80px;
   }
 
   .experience-card,
