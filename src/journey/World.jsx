@@ -11,9 +11,11 @@ import {
   FADE_X0,
   FADE_W,
   FADE_EDGE,
+  OVERVIEW,
 } from "./config";
 import { JourneyDefs, Sky, Ground, Particles } from "./parts";
 import { SCENE_BY_BEAT, StackGraph } from "./scenes";
+import { heatColor } from "./heat";
 
 // Silhouette places plus the giant year numerals from the abstract study —
 // the blend chosen in session 2 (resolves O1).
@@ -26,6 +28,22 @@ const KINDS = {
   sprinta: "snow",
   architect: "snow",
   work: "snow",
+};
+
+/** Catmull-Rom through the overview spots, as one smooth cubic path. */
+const trail = (pts) => {
+  let d = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] || p2;
+    d +=
+      ` C ${p1.x + (p2.x - p0.x) / 6} ${p1.y + (p2.y - p0.y) / 6},` +
+      ` ${p2.x - (p3.x - p1.x) / 6} ${p2.y - (p3.y - p1.y) / 6},` +
+      ` ${p2.x} ${p2.y}`;
+  }
+  return d;
 };
 
 /** Ambient ridgeline for a whole layer — seeded so it stays stable per render. */
@@ -144,6 +162,28 @@ export default function World() {
             </g>
           );
         })}
+
+        {/* The trail joining the laid-out places, visible only from above.
+            Same molten-to-cold ramp as everything else, so the arc of the
+            journey is legible as one line. */}
+        <g data-ov-path opacity="0">
+          <defs>
+            <linearGradient id="jOvTrail" gradientUnits="userSpaceOnUse" x1={OVERVIEW[0].x} y1="0" x2={OVERVIEW[OVERVIEW.length - 1].x} y2="0">
+              {OVERVIEW.map((_, i) => (
+                <stop
+                  key={i}
+                  offset={`${(i / (OVERVIEW.length - 1)) * 100}%`}
+                  stopColor={heatColor(BEATS[i].heat)}
+                />
+              ))}
+            </linearGradient>
+          </defs>
+          <path d={trail(OVERVIEW)} fill="none" stroke="url(#jOvTrail)" strokeWidth="16" strokeLinecap="round" opacity="0.28" filter="url(#jGlow)" />
+          <path d={trail(OVERVIEW)} fill="none" stroke="url(#jOvTrail)" strokeWidth="3.5" strokeLinecap="round" />
+          {OVERVIEW.map((p, i) => (
+            <circle key={i} cx={p.x} cy={p.y} r="6" fill={heatColor(BEATS[i].heat)} />
+          ))}
+        </g>
 
         {/* ground — the continuous floor and the stream */}
         <g data-layer="ground">

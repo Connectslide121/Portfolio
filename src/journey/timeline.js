@@ -10,6 +10,7 @@ import {
   CURRENT_SCALE,
   DEPTH,
   PAST_MIN_OPACITY,
+  OVERVIEW,
 } from "./config";
 import { applyHeat } from "./heat";
 
@@ -26,7 +27,10 @@ gsap.registerPlugin(DrawSVGPlugin);
  * through beats feels identical to letting it autoplay.
  */
 export function buildJourney({ root }) {
-  const camera = { x: 0, heat: BEATS[0].heat };
+  // `overview` lifts the camera: 0 is the linear stage, 1 is the bird's-eye
+  // layout. Everything in between is a genuine blend, so toggling it reads as
+  // the camera rising rather than a different screen appearing.
+  const camera = { x: 0, heat: BEATS[0].heat, overview: 0 };
 
   // A portrait phone only shows roughly a quarter of the viewBox's width, so
   // the wide architecture graph cannot be read there however far the camera
@@ -68,6 +72,7 @@ export function buildJourney({ root }) {
       let scale = 1;
       let opacity = 1;
       let past = false;
+      const ov = camera.overview;
 
       let ax = CURRENT_ANCHOR.x;
       let ay = CURRENT_ANCHOR.y;
@@ -86,6 +91,22 @@ export function buildJourney({ root }) {
         opacity = Math.max(PAST_MIN_OPACITY, 1 - t * 0.27);
       }
 
+      // Blend toward the bird's-eye placement. Silhouettes stay upright —
+      // they are elevations, and laying them flat would read as broken — so
+      // the "camera lift" is carried by the layout and the scale, not by
+      // skewing the art.
+      if (ov > 0) {
+        const spot = OVERVIEW[i];
+        if (spot) {
+          ax += (spot.x - ax) * ov;
+          ay += (spot.y - ay) * ov;
+          scale += (spot.s - scale) * ov;
+          opacity += (1 - opacity) * ov; // everything is present up there
+        } else {
+          opacity *= 1 - ov; // no place to show (the work gallery)
+        }
+      }
+
       tx = ax - SCENE_ANCHOR.x * scale;
       ty = ay - SCENE_ANCHOR.y * scale;
 
@@ -97,7 +118,7 @@ export function buildJourney({ root }) {
 
       // Soften the edges once a beat starts receding, and only then — the
       // current scene must always be whole and hard-edged.
-      const wantMask = past && t > 0.2;
+      const wantMask = past && t > 0.2 && ov < 0.2;
       const applied = el.getAttribute("mask");
       const next = wantMask ? "url(#jFade)" : "";
       if (applied !== next) {
@@ -107,10 +128,19 @@ export function buildJourney({ root }) {
     }
   };
 
+  // The parallax environment belongs to the linear stage; from above it is
+  // just noise, so it recedes as the camera lifts.
+  const envLayers = root.querySelectorAll("[data-layer]");
+  const ovPath = root.querySelector("[data-ov-path]");
+
   const render = () => {
     setters.forEach((s) => s.set(camera.x * s.k));
     projectScenes();
     applyHeat(root, camera.heat);
+
+    const env = (1 - camera.overview * 0.82).toFixed(3);
+    envLayers.forEach((el) => el.setAttribute("opacity", env));
+    if (ovPath) ovPath.setAttribute("opacity", (camera.overview * 0.9).toFixed(3));
   };
 
   // Every scene-specific group for a beat — props, numerals, particles — is

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import "../styles/journey.css";
 import { stack } from "../data/journey";
 
@@ -26,6 +27,7 @@ const beatFromHash = () => {
 export default function JourneyStage({ onExit }) {
   const stageRef = useRef(null);
   const [tl, setTl] = useState(null);
+  const built = useRef(null);
 
   // No timeline at all under reduced motion — the beats are served as a
   // readable list instead (guardrail in docs/JOURNEY_PLAN.md §8).
@@ -37,23 +39,39 @@ export default function JourneyStage({ onExit }) {
     const root = stageRef.current;
     if (!root) return;
 
-    const built = buildJourney({ root });
-    setTl(built.tl);
+    const b = buildJourney({ root });
+    built.current = b;
+    setTl(b.tl);
 
     if (start === 0) {
-      built.tl.tweenTo(BEATS[0].id, { duration: 1.2 });
+      b.tl.tweenTo(BEATS[0].id, { duration: 1.2 });
     } else {
-      built.tl.seek(BEATS[start].id);
-      built.render();
+      b.tl.seek(BEATS[start].id);
+      b.render();
     }
 
     return () => {
-      built.tl.kill();
+      b.tl.kill();
+      built.current = null;
       setTl(null);
     };
   }, [reduced, start]);
 
   const [overview, setOverview] = useState(false);
+
+  // Tween the camera between the linear stage and the bird's-eye layout. The
+  // scenes themselves move, so this reads as the camera rising.
+  useEffect(() => {
+    const b = built.current;
+    if (!b) return;
+    const tween = gsap.to(b.camera, {
+      overview: overview ? 1 : 0,
+      duration: overview ? 1.15 : 0.95,
+      ease: "power3.inOut",
+      onUpdate: b.render,
+    });
+    return () => tween.kill();
+  }, [overview, tl]);
 
   // Stepping inputs are muted while the overview is open, so arrows and the
   // wheel drive the map's own affordances rather than the stage behind it.
@@ -102,7 +120,7 @@ export default function JourneyStage({ onExit }) {
   if (reduced) return <JourneyStatic onExit={onExit} />;
 
   return (
-    <div className="j-stage" ref={stageRef}>
+    <div className="j-stage" ref={stageRef} data-overview={overview ? "true" : "false"}>
       <World />
 
       {/* Beat content lives in real DOM over the SVG — selectable, readable,

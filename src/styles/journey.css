@@ -770,9 +770,16 @@
   flex-direction: column;
   padding: clamp(1rem, 3vw, 2.25rem);
   padding-top: clamp(3.6rem, 7vh, 5rem);
-  background: color-mix(in srgb, #04070c 72%, transparent);
-  backdrop-filter: blur(16px) saturate(0.8);
-  animation: j-ov-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  padding-bottom: 5.5rem; /* clear of the rail */
+  pointer-events: none;
+  /* No panel: the lifted world IS the view. Just a wash so the labels read. */
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, #04070c 78%, transparent),
+    color-mix(in srgb, #04070c 12%, transparent) 32%,
+    color-mix(in srgb, #04070c 55%, transparent)
+  );
+  animation: j-ov-in 0.5s ease both;
 }
 
 @keyframes j-ov-in {
@@ -787,6 +794,7 @@
   justify-content: space-between;
   gap: 1rem;
   flex: none;
+  pointer-events: auto;
 }
 
 .j-overview h2 {
@@ -813,6 +821,7 @@
   border-radius: 999px;
   border: 1px solid rgb(255 255 255 / 0.18);
   background: rgb(255 255 255 / 0.06);
+  backdrop-filter: blur(8px);
 }
 
 .j-ov-close:hover {
@@ -820,39 +829,33 @@
   color: #fff;
 }
 
-.j-ov-map {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  margin-top: 0.5rem;
-}
-
-.j-ov-map svg {
+.j-ov-spots {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
 }
 
-/* Label cards sit above their plinth, anchored to its centre. */
+/* Each label sits on the ground just in front of its place, so it never
+   covers the silhouette standing behind it. */
 .j-ov-node {
   position: absolute;
-  translate: -50% calc(-100% - 2.2rem);
+  translate: -50% 0.6rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.18rem;
   width: max-content;
-  max-width: 12.5rem;
-  padding: 0.5rem 0.7rem;
+  max-width: 12rem;
+  padding: 0.45rem 0.65rem;
   border-radius: 0.7rem;
-  border: 1px solid color-mix(in srgb, var(--tint) 40%, transparent);
-  background: color-mix(in srgb, #05070c 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tint) 45%, transparent);
+  background: color-mix(in srgb, #05070c 80%, transparent);
+  backdrop-filter: blur(6px);
   cursor: pointer;
+  pointer-events: auto;
   text-align: left;
   font: inherit;
   color: #eef3fa;
-  animation: j-ov-node-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: j-ov-node-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--delay);
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -860,7 +863,7 @@
 @keyframes j-ov-node-in {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.96);
+    transform: translateY(-10px) scale(0.94);
   }
 }
 
@@ -872,49 +875,62 @@
 }
 
 .j-ov-node.on {
-  border-color: var(--tint);
   box-shadow: 0 0 0 1px var(--tint), 0 16px 36px -16px rgb(0 0 0 / 0.9);
 }
 
 .j-ov-year {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--tint);
 }
 
 .j-ov-role {
-  font-size: 0.84rem;
+  font-size: 0.8rem;
   font-weight: 650;
   line-height: 1.2;
 }
 
 .j-ov-org {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   color: #93a3b8;
   margin-bottom: 0.2rem;
 }
 
 .j-ov-hint {
   flex: none;
+  margin-top: auto;
   text-align: center;
   font-size: 0.62rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgb(255 255 255 / 0.3);
+  color: rgb(255 255 255 / 0.32);
 }
 
-/* An isometric map needs width a phone does not have, and absolutely-placed
-   labels detach from a scrolling map. Below this the overview becomes what it
-   is really for — the whole arc in one view — as a tinted vertical list. */
+/* The stage's own furniture belongs to the linear view. */
+.j-stage[data-overview="true"] .j-cards,
+.j-stage[data-overview="true"] .j-progress {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+/* The laid-out view needs width a phone has not got, and labels pinned to
+   world coordinates are unreadable at that size. Below this the same beats
+   are simply listed, tinted the same way. */
 @media (max-width: 900px) {
   .j-ov-open span {
     display: none;
   }
   .j-overview {
     padding-top: 3.4rem;
+    background: color-mix(in srgb, #04070c 82%, transparent);
+    backdrop-filter: blur(14px);
+    pointer-events: auto;
   }
-  .j-ov-map {
+  .j-ov-spots {
+    position: relative;
+    inset: auto;
     display: flex;
     flex-direction: column;
     gap: 0.45rem;
@@ -922,14 +938,12 @@
     margin-top: 0.75rem;
     padding-right: 0.2rem;
   }
-  .j-ov-map svg {
-    display: none;
-  }
   .j-ov-node {
-    position: static;
+    position: static !important;
     translate: none;
     width: 100%;
     max-width: none;
+    opacity: 1 !important;
     border-left: 3px solid var(--tint);
     animation-delay: 0ms;
   }
