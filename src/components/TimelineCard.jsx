@@ -7,6 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { renderRichText } from "./richText";
 import OrgMark from "./OrgMark";
+import { orgById } from "../data/orgLogos";
 
 /**
  * One entry in the résumé timeline, rendered from src/data/journey.js.
@@ -17,6 +18,8 @@ import OrgMark from "./OrgMark";
  */
 export default function TimelineCard({ entry, current = false }) {
   const { quest } = entry;
+  // One canonical link per organisation, shared with the logo marks.
+  const org = orgById(entry.orgId);
 
   return (
     <div className="timeline-item" style={{ "--cardHeat": entry.heat }}>
@@ -34,16 +37,18 @@ export default function TimelineCard({ entry, current = false }) {
                 <span>{entry.location}</span>
               </div>
             </div>
-            <a
-              href={entry.orgUrl}
-              target="_blank"
-              rel="noreferrer"
-              title={entry.orgUrlTitle}
-              className="visit-link"
-            >
-              Visit site
-              <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-            </a>
+            {org?.url && (
+              <a
+                href={org.url}
+                target="_blank"
+                rel="noreferrer"
+                title={`${org.label} — opens in a new tab`}
+                className="visit-link"
+              >
+                Visit site
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+              </a>
+            )}
           </div>
 
           <div className="experience-title">
