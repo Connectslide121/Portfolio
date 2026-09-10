@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/journey.css";
-import { architecture } from "../data/journey";
+import { stack } from "../data/journey";
+
 import { BEATS } from "./config";
 import { buildJourney } from "./timeline";
 import { useJourneyDriver } from "./useJourneyDriver";
 import World from "./World";
+import { ProgressStream } from "./parts";
+import ProjectGallery from "./ProjectGallery";
 import JourneyStatic from "./JourneyStatic";
 
 const prefersReducedMotion = () =>
@@ -62,6 +65,16 @@ export default function JourneyStage({ onExit }) {
     if (id) window.history.replaceState(null, "", `#journey/${id}`);
   }, [index, reduced]);
 
+  // Leave the journey and land on the projects section of the CV.
+  const exitToProjects = () => {
+    onExit();
+    requestAnimationFrame(() => {
+      document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+    });
+  };
+
+  const nearEnd = index >= BEATS.length - 2;
+
   if (reduced) return <JourneyStatic onExit={onExit} />;
 
   return (
@@ -70,48 +83,73 @@ export default function JourneyStage({ onExit }) {
 
       {/* Beat cards live in real DOM over the SVG — selectable, readable,
           indexable (D8) */}
+      {/* Beat content lives in real DOM over the SVG — selectable, readable,
+          indexable (D8). The slot carries data-card so GSAP animates the
+          wrapper: it owns the transform, leaving the content free to be
+          centred by flexbox. (GSAP writes `translate: none` when it takes over
+          transforms, so a CSS `translate: 0 -50%` on the animated element is
+          wiped out.) */}
       <div className="j-cards">
         {BEATS.map((beat) => (
-          <article className="j-card" data-card={beat.id} key={beat.id}>
-            <div className="j-card-head">
-              <span className="j-year">{beat.year}</span>
-            </div>
-            <h2>{beat.role}</h2>
-            <h3>
-              {beat.org} <span className="j-dot">·</span> {beat.place}
-            </h3>
-            <dl>
-              <dt>Constraint</dt>
-              <dd>{beat.constraint}</dd>
-              <dt>Objective</dt>
-              <dd>{beat.objective}</dd>
-            </dl>
-            {beat.id === "architect" && (
-              <ul className="j-arch-chips">
-                {architecture.nodes.map((n) => (
-                  <li key={n.id} data-kind={n.kind}>
-                    {n.label}
-                  </li>
-                ))}
-              </ul>
+          <div
+            className="j-card-slot"
+            data-card={beat.id}
+            data-kind={beat.kind || "story"}
+            key={beat.id}
+          >
+            {beat.kind === "projects" ? (
+              <ProjectGallery playable={nearEnd} onSeeAll={exitToProjects} />
+            ) : (
+              <article className="j-card">
+                <div className="j-card-head">
+                  <span className="j-year">{beat.year}</span>
+                </div>
+                <h2>{beat.role}</h2>
+                <h3>
+                  {beat.org} <span className="j-dot">·</span> {beat.place}
+                </h3>
+
+                <dl>
+                  <dt>Constraint</dt>
+                  <dd>{beat.constraint}</dd>
+                  <dt>Objective</dt>
+                  <dd>{beat.objective}</dd>
+                </dl>
+
+                {beat.id === "architect" && (
+                  <ul className="j-arch-chips">
+                    {stack.flatMap((group) =>
+                      group.items.map((item) => (
+                        <li key={item} data-kind={group.tint}>
+                          {item}
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                )}
+
+                <p className="j-material">
+                  material: <strong>{beat.material}</strong>
+                  <span
+                    className={`j-status${beat.status === "In progress" ? " active" : ""}`}
+                  >
+                    {beat.status}
+                  </span>
+                </p>
+              </article>
             )}
-            <p className="j-material">
-              material: <strong>{beat.material}</strong>
-              <span className={`j-status${beat.status === "In progress" ? " active" : ""}`}>
-                {beat.status}
-              </span>
-            </p>
-          </article>
+          </div>
         ))}
       </div>
 
-      {/* chrome */}
+      {/* chrome. Journey mode is the default landing (D17), so the way out to
+          the CV has to be unmissable: centred, filled, and plainly labelled. */}
       <div className="j-topbar">
         <p className="j-brand">
           Jon Mendizabal <span className="j-dot">·</span> the journey
         </p>
         <button className="j-exit" onClick={onExit}>
-          Skip to CV →
+          View the full CV <span aria-hidden="true">→</span>
         </button>
       </div>
 
@@ -146,6 +184,8 @@ export default function JourneyStage({ onExit }) {
           {playing ? "Pause" : "Play"}
         </button>
       </div>
+
+      <ProgressStream />
 
       <p className="j-hint">scroll · arrows · swipe · space to play</p>
     </div>

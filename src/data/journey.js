@@ -229,7 +229,7 @@ export const beats = [
     year: "2005 — 2010",
     railLabel: "2005",
     numeral: "2005",
-    place: "Basque Country, Spain",
+    place: "Spain",
     org: "London Met · Lea-Artibai",
     role: "Engineering Studies",
     material: "polymers & metal",
@@ -244,7 +244,7 @@ export const beats = [
     year: "2011 — 2023",
     railLabel: "2011",
     numeral: "2011",
-    place: "Basque Country, Spain",
+    place: "Spain",
     org: "AML SA",
     role: "Plant Manager / Product Designer",
     material: "steel",
@@ -309,31 +309,91 @@ export const beats = [
     role: "Lead Developer & Platform Architect",
     material: "systems",
     constraint: "Sole architect across a whole portfolio, mid-pivot to product-led growth.",
-    objective: "One shared stack. Podium 2.0, SAGE, Larademy, Jambiz Hub, Govensa.",
+    objective: "One shared stack behind Podium 2.0, Larademy, Jambiz Hub and Govensa.",
     status: "In progress",
     heat: 0,
     entryIds: ["exp-sprinta-lead"],
   },
+  // Closing beat: the journey ends on things you can actually go and open.
+  {
+    id: "work",
+    year: "2023 — today",
+    railLabel: "Work",
+    place: "github.com/Connectslide121",
+    org: "Side projects, games & packages",
+    role: "Selected Work",
+    material: "whatever fits the problem",
+    kind: "projects",
+    status: "Ongoing",
+    heat: 0,
+    entryIds: [],
+  },
 ];
 
-/** Nodes revealed when the camera pulls back on the final beat. */
-export const architecture = {
-  nodes: [
-    { id: "client", label: "Angular 21", x: 120, y: 250, kind: "client" },
-    { id: "mobile", label: "React Native", x: 120, y: 430, kind: "client" },
-    { id: "sage", label: "SAGE", x: 420, y: 340, kind: "shared" },
-    { id: "fn", label: "Azure Functions", x: 720, y: 340, kind: "compute" },
-    { id: "cosmos", label: "CosmosDB", x: 1010, y: 230, kind: "data" },
-    { id: "vector", label: "Vector Store", x: 1010, y: 400, kind: "data" },
-    { id: "ai", label: "Azure AI Foundry", x: 1010, y: 560, kind: "ai" },
-  ],
-  edges: [
-    ["client", "sage"],
-    ["mobile", "sage"],
-    ["sage", "fn"],
-    ["fn", "cosmos"],
-    ["fn", "vector"],
-    ["fn", "ai"],
-    ["vector", "ai"],
-  ],
+/**
+ * The closing gallery, in display order. Titles resolve against
+ * src/components/projectList.js and src/data/projectMedia.js, so a project
+ * only needs listing here to appear.
+ */
+export const galleryProjects = [
+  "CodepenAI",
+  "DAIETpedia",
+  "Contact book",
+  "Plastic Slurg",
+  "Listr",
+  "Sokoban game",
+  "Password input npm package",
+  "AI image generator",
+];
+
+/**
+ * One-line framings for the journey's closing beat. Keyed by the title in
+ * src/components/projectList.js so the two cannot drift; the long-form
+ * descriptions stay there for Résumé mode.
+ */
+export const projectBlurbs = {
+  CodepenAI: "AI code editor — build and edit web apps by prompt, or write it yourself.",
+  "Contact book": "Angular CRUD on CosmosDB + Azure Functions, end to end.",
+  "Password input npm package":
+    "Published npm component with configurable password-strength rules.",
+  "Plastic Slurg": "A Metal Slug-style 2D shooter platformer, made in Unity.",
+  DAIETpedia: "Recipe site where an AI builds a menu around your ingredients and diet.",
+  Listr: "Shared list app on React with a C# API and SQL behind it.",
+  "Sokoban game": "The classic crate-pushing puzzle, rebuilt from scratch.",
+  "AI image generator": "Prompt-to-image generation against an external model API.",
 };
+
+/**
+ * Revealed when the camera pulls back on the final beat.
+ *
+ * Deliberately the tech STACK, not the internal architecture: a recruiter
+ * reading this is usually not an engineer, so it uses the names they will
+ * recognise on a job spec. Internal tooling (SAGE) is left to the CV, where
+ * there is room to say what it is.
+ */
+export const stack = [
+  {
+    id: "frontend",
+    label: "Frontend",
+    tint: "client",
+    items: ["Angular", "React", "React Native", "Mithril.js", "TypeScript"],
+  },
+  {
+    id: "backend",
+    label: "Backend",
+    tint: "compute",
+    items: ["C#", ".NET", "Azure Functions", "Node.js"],
+  },
+  {
+    id: "data",
+    label: "Data",
+    tint: "data",
+    items: ["SQL", "CosmosDB", "MongoDB", "Vector databases"],
+  },
+  {
+    id: "ai",
+    label: "AI",
+    tint: "ai",
+    items: ["OpenAI", "Azure AI", "RAG", "Embeddings"],
+  },
+];

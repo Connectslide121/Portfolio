@@ -40,11 +40,22 @@
   pointer-events: none;
 }
 
-.j-card {
+.j-card-slot {
   position: absolute;
-  top: 50%;
-  left: clamp(1rem, 6vw, 6rem);
-  transform: translateY(-50%);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-inline: clamp(1rem, 6vw, 6rem);
+  pointer-events: none;
+}
+
+.j-card-slot[data-kind="projects"] {
+  justify-content: center;
+  padding-inline: 1.25rem;
+}
+
+.j-card {
   width: min(30rem, calc(100vw - 2rem));
   padding: 1.75rem 1.75rem 1.5rem;
   border-radius: 1rem;
@@ -169,22 +180,38 @@
 }
 
 .j-exit {
+  position: absolute;
+  top: clamp(0.75rem, 2vw, 1.5rem);
+  left: 50%;
+  translate: -50% 0;
   font: inherit;
   cursor: pointer;
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
-  color: #cdd7e6;
+  font-size: 0.9rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: #0a0705;
   text-decoration: none;
-  padding: 0.45rem 0.95rem;
+  padding: 0.6rem 1.4rem;
   border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 0.16);
-  background: rgb(255 255 255 / 0.05);
-  backdrop-filter: blur(10px);
+  border: 1px solid transparent;
+  background: var(--j-accent);
+  box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--j-accent) 70%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.j-exit:hover {
-  border-color: var(--j-accent);
-  color: #fff;
+.j-exit:hover,
+.j-exit:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--j-accent) 85%, transparent);
+}
+
+.j-exit span {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.j-exit:hover span {
+  transform: translateX(3px);
 }
 
 .j-rail {
@@ -273,10 +300,11 @@
 }
 
 @media (max-width: 768px) {
+  .j-card-slot {
+    align-items: flex-end;
+    padding-bottom: 8.25rem;
+  }
   .j-card {
-    top: auto;
-    bottom: 6.5rem;
-    transform: none;
     padding: 1.25rem;
   }
   .j-card dl {
@@ -439,4 +467,236 @@
   .j-arch-chips li[data-kind="compute"] { color: #93c5fd; }
   .j-arch-chips li[data-kind="data"] { color: #86efac; }
   .j-arch-chips li[data-kind="ai"] { color: #fca5a5; }
+}
+
+/* ==========================================================================
+   Progress stream. Screen-anchored, not part of the parallax world, so the
+   drawn length actually reads as how far through the journey you are.
+   ========================================================================== */
+
+.j-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 5.25rem;
+  height: 60px;
+  width: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .j-progress {
+    bottom: 4.25rem;
+    height: 44px;
+  }
+
+  .j-exit {
+    font-size: 0.82rem;
+    padding: 0.5rem 1.1rem;
+  }
+}
+
+
+/* ==========================================================================
+   Closing beat — the gallery wall. Real screenshots and clips in uneven
+   tiles, each opening a detail overlay on hover or keyboard focus.
+   ========================================================================== */
+
+.j-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: min(76rem, calc(100vw - 3rem));
+  pointer-events: auto;
+}
+
+.j-gallery header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.j-gallery h2 {
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.j-gallery header p {
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  color: #9aa7bd;
+  margin-top: 0.25rem;
+}
+
+.j-gallery header button {
+  flex: none;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 650;
+  cursor: pointer;
+  color: var(--j-accent);
+  background: none;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--j-accent) 40%, transparent);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.j-gallery header button:hover {
+  background: var(--j-accent);
+  color: #0a0705;
+}
+
+.j-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  grid-auto-flow: dense;
+  gap: 0.7rem;
+  /* Three explicit rows, matching the span table in ProjectGallery.jsx. */
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  height: min(54vh, 31rem);
+}
+
+.j-tile {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--j-accent) 26%, transparent);
+  background: #070b12;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.j-tile:hover,
+.j-tile:focus-within {
+  border-color: var(--j-accent);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.9);
+  z-index: 2;
+}
+
+.j-tile-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.85) brightness(0.85);
+  transition: filter 0.25s ease, transform 0.4s ease;
+}
+
+.j-tile:hover .j-tile-media,
+.j-tile:focus-within .j-tile-media {
+  filter: saturate(1.05) brightness(1);
+  transform: scale(1.04);
+}
+
+/* Readable without hovering — the wall is not a guessing game. */
+.j-tile-label {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 1.6rem 0.7rem 0.5rem;
+  font-size: 0.76rem;
+  font-weight: 650;
+  color: #eef3fa;
+  background: linear-gradient(to top, rgb(4 7 12 / 0.92), transparent);
+  transition: opacity 0.2s ease;
+}
+
+.j-tile-detail {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  padding: 0.85rem;
+  background: linear-gradient(to top, rgb(4 7 12 / 0.96) 45%, rgb(4 7 12 / 0.7));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.j-tile:hover .j-tile-detail,
+.j-tile:focus-within .j-tile-detail {
+  opacity: 1;
+}
+
+.j-tile:hover .j-tile-label,
+.j-tile:focus-within .j-tile-label {
+  opacity: 0;
+}
+
+.j-tile-detail h4 {
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.j-tile-detail p {
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: #cfd8e6;
+}
+
+.j-tile-tech {
+  font-size: 0.66rem !important;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--j-accent) 75%, #ffffff) !important;
+}
+
+.j-tile-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+}
+
+.j-tile-links a {
+  font-size: 0.68rem;
+  font-weight: 650;
+  text-decoration: none;
+  color: var(--j-accent);
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--j-accent) 45%, transparent);
+}
+
+.j-tile-links a:hover {
+  background: var(--j-accent);
+  color: #0a0705;
+}
+
+/* Touch devices get no hover, so show the detail permanently on the tiles
+   that have room for it and keep the label everywhere else. */
+@media (hover: none) {
+  .j-tile-detail {
+    opacity: 1;
+    justify-content: flex-end;
+  }
+  .j-tile-detail p,
+  .j-tile-tech {
+    display: none;
+  }
+  .j-tile-label {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .j-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: min(46vh, 24rem);
+  }
+  .j-tile {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+  .j-gallery header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 }

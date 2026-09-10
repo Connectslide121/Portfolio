@@ -1,6 +1,6 @@
 import gsap from "gsap";
 import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
-import { BEATS, LAYERS, SCENE_W, PATH_START, PATH_SPAN } from "./config";
+import { BEATS, LAYERS, SCENE_W } from "./config";
 import { applyHeat } from "./heat";
 
 gsap.registerPlugin(DrawSVGPlugin);
@@ -62,23 +62,10 @@ export function buildJourney({ root }) {
   gsap.set(archEdges, { drawSVG: "0% 0%" });
   gsap.set(cameraGroup, { scale: 1, svgOrigin: `${SCENE_W / 2} 540` });
 
-  /**
-   * How far the stream should be drawn on arriving at beat i.
-   *
-   * DrawSVG works in percentages of path LENGTH, but the path overdraws well
-   * past the world on both sides (see OVERDRAW), so a naive (i+1)/n runs the
-   * leading edge ahead of the camera — by the third beat it has already left
-   * the frame and you stop seeing it draw at all. Derive the percentage from
-   * the world x we actually want the leading edge at instead: just inside the
-   * right-hand edge of the view, so the tip stays visible on every beat.
-   */
-  const LEAD = 0.82; // fraction across the settled view
-  const drawTo = (i) => {
-    if (i === BEATS.length - 1) return "0% 100%"; // reach the architecture
-    const leadX = i * SCENE_W + SCENE_W * LEAD;
-    const pct = ((leadX - PATH_START) / PATH_SPAN) * 100;
-    return `0% ${pct.toFixed(1)}%`;
-  };
+  // The stream is screen-anchored now, so its fill is simply how far through
+  // the journey you are: it starts at the left and reaches the right edge on
+  // the final beat, reading as a progress bar.
+  const drawTo = (i) => `0% ${(((i + 1) / BEATS.length) * 100).toFixed(1)}%`;
 
   // --- beat 0 --------------------------------------------------------------
   tl.to(stream, { drawSVG: drawTo(0), duration: 1.4 }, 0)
@@ -88,7 +75,10 @@ export function buildJourney({ root }) {
   // --- beats 1..n ----------------------------------------------------------
   BEATS.slice(1).forEach((beat, idx) => {
     const i = idx + 1;
-    const isFinal = i === BEATS.length - 1;
+    // Key the special-case on the beat ID, never the index — adding the
+    // closing "work" beat silently moved this onto the wrong beat when it
+    // was `i === BEATS.length - 1`.
+    const isArchitect = beat.id === "architect";
 
     tl.to(cards[i - 1], { autoAlpha: 0, y: -24, duration: 0.5 })
       // Camera and heat travel together: one tween, everything follows.
@@ -97,16 +87,22 @@ export function buildJourney({ root }) {
       .to(atmos[i], { autoAlpha: 1, duration: 1.3 }, "<0.5")
       .to(atmos[i - 1], { autoAlpha: 0, duration: 1.3 }, "<");
 
-    if (isFinal && !narrow) {
+    if (isArchitect && !narrow) {
       // The payoff: the camera pulls back and the stream stops being a line —
       // it branches into the system that actually shipped.
-      tl.to(cameraGroup, { scale: 0.82, duration: 2.2 }, "<0.6")
-        .to(archEdges, { drawSVG: "0% 100%", duration: 1.6, stagger: 0.08 }, "<0.5")
+      tl.to(cameraGroup, { scale: 0.7, duration: 2.2 }, "<0.6")
+        .to(archEdges, { drawSVG: "0% 100%", duration: 1.1, stagger: 0.03 }, "<0.7")
         .to(
           archNodes,
-          { autoAlpha: 1, scale: 1, duration: 0.7, stagger: 0.09, ease: "back.out(1.6)" },
-          "<0.2"
+          { autoAlpha: 1, scale: 1, duration: 0.5, stagger: 0.04, ease: "back.out(1.6)" },
+          "<0.1"
         );
+    }
+
+    // Come back to normal framing once past the stack, so the closing beat
+    // is not viewed through a zoomed-out camera.
+    if (beat.id === "work" && !narrow) {
+      tl.to(cameraGroup, { scale: 1, duration: 1.8 }, "<0.3");
     }
 
     tl.to(cards[i], { autoAlpha: 1, y: 0, duration: 0.7 }, "-=0.5").addLabel(beat.id);

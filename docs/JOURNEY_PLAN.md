@@ -71,12 +71,21 @@ Recorded so they are not re-litigated in a later session.
 | D14 | **No "Level N" badges anywhere** | User disliked the framing. Quest *names* plus Constraint / Objective / Status stay — they carry the substance without the game scoring |
 | D15 | Heat ramps through **three poles** (cold → warm → hot), not two | A straight blue→orange RGB lerp passes through grey mud at the midpoint, which made the middle beats look washed out |
 | D16 | On phones the final beat lists the stack as **DOM chips**, not the SVG graph | A 400px portrait viewport shows only ~527 of the 1800 viewBox units. No amount of pull-back makes a wide graph readable there |
+| D17 | **Journey mode is the default landing.** Choosing the CV is remembered in `localStorage`; the hero teaser always goes back in | User's call, overriding the original "Résumé is default" framing. Mitigated by D18 — and the CV markup is always in the DOM behind the overlay, so crawlers and screen readers still get it |
+| D18 | The way out is **centred at the top, filled with the accent, labelled "View the full CV"** | It has to be unmissable now that the journey is the landing experience. The accent fill means it also travels molten → blue with the story |
+| D19 | The stream is **screen-anchored, not part of the parallax world**, and fills left → right as a progress bar | A world-anchored line always spans the full frame however much of it is drawn, so it could never read as progress. Fill is simply `(i + 1) / beats` |
+| D20 | The closing beat is **Selected Work** — the featured projects as real, clickable cards | The journey should end on things a visitor can go and open. Links through to the CV's full project list |
+| D21 | The final diagram shows the **tech stack in recognisable names**, not the internal architecture | Recruiters are usually not engineers. Internal tooling (SAGE) is left to the CV, which has room to explain what it is |
+| D22 | That diagram is a **flow of fully-rounded pills joined by S-curves**, with **no group headers**. Frontend converges into the backend, which then **branches two ways — data and AI as siblings** | A four-column table with headers read as rigid and square, and it implied AI sat downstream of the database. AI is a sibling concern, not a consequence of storage |
+| D23 | The closing beat is a **gallery wall of real screenshots and clips** in uneven tiles, with a detail overlay on hover / keyboard focus | Replaced both the placeholder SVG frames and the text-only card grid. Video plays only while a tile is hovered or focused, so eight clips never decode at once |
+| D24 | Project media lives in **`src/data/projectMedia.js`**, shared by Résumé mode and the gallery | The title→media mapping was hardcoded inside `Projects.jsx`; duplicating it for the journey would have guaranteed drift |
+| D25 | Locations read as **"Spain"**, not "Basque Country, Spain" | User's preference — simpler, and recognisable to a wider audience |
 
 ### Still open
 
 - [x] **O1** ~~Art style final pick~~ — **resolved: silhouette + giant year numerals** (D11)
 - [ ] **O2** CRA → Vite migration? `react-scripts` 5 is unmaintained. ~1h. Recommended before Phase 2, not blocking
-- [ ] **O3** Does Résumé mode stay the default, or does a first-time visitor get actively offered the journey?
+- [x] **O3** ~~Résumé vs Journey as default~~ — **resolved: Journey is the default** (D17)
 - [ ] **O4** Phase 5 (RAG "ask my portfolio") — needs a backend + API key. Separate project
 
 ---
@@ -246,7 +255,7 @@ Fix, now encoded in `config.js`:
 - `FOCAL = 700` — the beat card covers roughly the left 700 viewBox units, so
   scene props must be authored in local `0..1080` to the right of it.
 
-#### More gotchas found in session 2
+#### More gotchas (sessions 2-3)
 
 1. **Stream draw fraction must be derived from world x, not `(i+1)/n`.**
    `DrawSVG` works in percentages of path *length*, but the stream path
@@ -276,6 +285,23 @@ Fix, now encoded in `config.js`:
 
 6. **The stage needs an explicit `z-index`.** `position: fixed` alone left the
    navbar (100) and sidebar painting over it. Stage is `2000`.
+
+7. **GSAP writes `translate: none` when it takes over transforms.** The beat
+   card was never actually vertically centred: its CSS `transform:
+   translateY(-50%)` was replaced by GSAP's `y` tween, and moving it to the
+   standalone `translate` property did not help either. Fixed by wrapping each
+   card in a full-height `.j-card-slot` that carries `data-card` — GSAP
+   animates the slot, flexbox centres the card inside it.
+
+8. **Never key a beat special-case on the index.** `isFinal = i === BEATS.length
+   - 1` silently moved the stack reveal and the camera pull-back onto the new
+   closing "work" beat the moment it was added. Key on `beat.id`.
+
+9. **A hash-only URL change is a same-document navigation.** Pasting
+   `#journey/india` while the page is already open did nothing, because React
+   never re-read it. `App.jsx` now listens for `hashchange`. Note
+   `replaceState` (which the stage uses to keep the URL current) does *not*
+   fire the event, so there is no loop.
 
 ### Phase 2 — Full journey · Status: ☑ done
 
@@ -398,12 +424,14 @@ animation, and seamless parallax layering.
 | Date | Session did | Next up |
 |---|---|---|
 | 2026-09-10 | Brainstorm → locked D1–D10. Branch `feat/interactive-journey`, gsap 3.15.0, this plan. Phase 1 prototype built and rendered in both art styles. Found and fixed the parallax scene-bleed gotcha. Footer year made dynamic (separate commit, cherry-pick to master). | Resolve **O1** art style, then Phase 0 before Phase 2 |
+| 2026-09-10 (4) | Closing beat became a real media gallery (D23): eight uneven tiles of the actual screenshots and clips, hover/focus detail overlays, hover-gated video playback. Extracted the shared project-media map (D24) and pointed `Projects.jsx` at it. Simplified locations (D25). Removed the dead text-grid CSS. | **Phase 4** game mechanics; then **O2** Vite, **O4** |
+| 2026-09-10 (3) | Journey is now the default landing (D17) with a prominent centred way out (D18). Stream reworked into a screen-anchored progress bar (D19). Added the **Selected Work** closing beat linking through to the full project list (D20). Replaced the internal architecture graph with a recognisable tech stack (D21), then reshaped it from rigid columns into a pill-and-curve flow with AI branching off the backend (D22). Fixed the never-actually-centred beat card, an index-keyed special case that broke when the new beat was added, and hash-only navigation. | **Phase 4** game mechanics; then **O2** Vite, **O4** |
 | 2026-09-10 (cont.) | **O1 resolved** (D11). Phases 0, 2 and 3 all landed: data extraction, all six beats, architecture pull-back, hero teaser, rail / keyboard / swipe / autoplay / deep links, reduced-motion fallback, and the hot→cold résumé timeline with quest framing. Fixed scrub pacing (D12), rail instant-jump (D13), removed level badges (D14), three-pole heat ramp (D15), mobile architecture chips (D16). Six current renders in `docs/prototype-shots/`. | **Phase 4** game mechanics — skill tree and Ctrl+K palette are the cheap wins; the architecture puzzle is the headline one. Then **O2** Vite, **O3**, **O4** |
 
 ### Current renders
 
-`docs/prototype-shots/beat-0.png` … `beat-5.png` — one per beat, plus
-`resume-experience.png`, `resume-education.png` and `mobile-final.png`.
+`docs/prototype-shots/` — one per beat (`beat-0-origin` … `beat-6-work`),
+plus `beat-6-work-hover.png` showing a tile's detail overlay, and `mobile.png`.
 
 ### Verified
 

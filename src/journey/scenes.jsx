@@ -164,59 +164,115 @@ export function Office({ ax }) {
   );
 }
 
+export const TINTS = {
+  client: "#7dd3fc",
+  compute: "#93c5fd",
+  data: "#86efac",
+  ai: "#fca5a5",
+};
+
+const PILL_H = 48;
+const PILL_R = PILL_H / 2; // fully rounded — no square corners anywhere
+
+// Local layout. Frontend converges into the backend, which then branches two
+// ways: data one side, AI the other. AI is a sibling of the data layer, not
+// something downstream of it.
+const COLUMNS = {
+  frontend: { x: 0, w: 212, gap: 74, mid: 390 },
+  backend: { x: 396, w: 222, gap: 74, mid: 390 },
+  data: { x: 836, w: 240, gap: 74, mid: 196 },
+  ai: { x: 836, w: 240, gap: 74, mid: 604 },
+};
+
+const J1 = [318, 390]; // frontend -> backend waist
+const J2 = [682, 390]; // backend exit
+const J3 = [772, 196]; // into the data branch
+const J4 = [772, 604]; // into the AI branch
+
+const laidOut = (group) => {
+  const col = COLUMNS[group.id];
+  const n = group.items.length;
+  const top = col.mid - ((n - 1) * col.gap) / 2;
+  return group.items.map((label, i) => ({
+    label,
+    tint: group.tint,
+    x: col.x,
+    w: col.w,
+    cy: top + i * col.gap,
+  }));
+};
+
+/** Smooth S-curve between two points — the connector shape from the study. */
+const link = ([x1, y1], [x2, y2]) => {
+  const mx = x1 + (x2 - x1) / 2;
+  return `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+};
+
 /**
- * 2025 — the pull-back. The stream stops being a line and becomes a system:
- * the architecture actually shipped. This is the payoff of the whole journey.
+ * 2025 — the pull-back. The journey stops being a line and becomes the stack
+ * that came out of it: recognisable names rather than internal architecture
+ * (see the note on `stack` in src/data/journey.js), wired as a flow rather
+ * than laid out as a table.
  */
-export function ArchitectSystem({ ax, nodes, edges }) {
-  const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
-  const tint = {
-    client: "#7dd3fc",
-    shared: "#a5b4fc",
-    compute: "#93c5fd",
-    data: "#86efac",
-    ai: "#fca5a5",
-  };
+export function StackGraph({ ax, oy = 70, groups }) {
+  const byId = Object.fromEntries(groups.map((g) => [g.id, laidOut(g)]));
+  const { frontend = [], backend = [], data = [], ai = [] } = byId;
+
+  const edges = [
+    ...frontend.map((p) => link([p.x + p.w, p.cy], J1)),
+    ...backend.map((p) => link(J1, [p.x, p.cy])),
+    ...backend.map((p) => link([p.x + p.w, p.cy], J2)),
+    link(J2, J3),
+    link(J2, J4),
+    ...data.map((p) => link(J3, [p.x, p.cy])),
+    ...ai.map((p) => link(J4, [p.x, p.cy])),
+  ];
+
+  const pills = [...frontend, ...backend, ...data, ...ai];
+
   return (
-    <g>
-      {/* edges first, so nodes sit on top */}
-      <g data-arch-edge stroke="var(--j-stream)" strokeWidth="2.5" opacity="0.55" fill="none">
-        {edges.map(([a, b], i) => {
-          const from = byId[a];
-          const to = byId[b];
-          const mx = (from.x + to.x) / 2;
-          return (
-            <path
-              key={i}
-              d={`M ${ax + from.x + 82} ${from.y} C ${ax + mx} ${from.y}, ${ax + mx} ${to.y}, ${
-                ax + to.x - 82
-              } ${to.y}`}
-            />
-          );
-        })}
+    <g transform={`translate(${ax},${oy})`}>
+      <g
+        data-arch-edge
+        fill="none"
+        stroke="var(--j-stream)"
+        strokeWidth="1.6"
+        opacity="0.45"
+      >
+        {edges.map((d, i) => (
+          <path key={i} d={d} />
+        ))}
       </g>
-      {nodes.map((n) => (
-        <g key={n.id} data-arch-node>
+
+      {/* junction dots, where the flow gathers and splits */}
+      <g fill="var(--j-stream)" opacity="0.5">
+        {[J1, J2, J3, J4].map(([x, y], i) => (
+          <circle key={i} cx={x} cy={y} r="4" />
+        ))}
+      </g>
+
+      {pills.map((pill) => (
+        <g key={pill.label} data-arch-node>
           <rect
-            x={ax + n.x - 82}
-            y={n.y - 27}
-            width="164"
-            height="54"
-            rx="10"
+            x={pill.x}
+            y={pill.cy - PILL_H / 2}
+            width={pill.w}
+            height={PILL_H}
+            rx={PILL_R}
             fill="var(--j-ground)"
-            stroke={tint[n.kind]}
-            strokeWidth="1.6"
+            stroke={TINTS[pill.tint]}
+            strokeWidth="1.5"
             opacity="0.95"
           />
           <text
-            x={ax + n.x}
-            y={n.y + 5}
+            x={pill.x + pill.w / 2}
+            y={pill.cy + 7}
             textAnchor="middle"
-            fill={tint[n.kind]}
-            fontSize="19"
+            fill={TINTS[pill.tint]}
+            fontSize="21"
             fontWeight="600"
           >
-            {n.label}
+            {pill.label}
           </text>
         </g>
       ))}
@@ -224,4 +280,13 @@ export function ArchitectSystem({ ax, nodes, edges }) {
   );
 }
 
-export const SCENES = [Origin, Foundry, IndiaCity, SwedenForest, Office, null];
+/** Keyed by beat id, so adding or reordering beats cannot shift the mapping. */
+export const SCENE_BY_BEAT = {
+  origin: Origin,
+  foundry: Foundry,
+  india: IndiaCity,
+  sweden: SwedenForest,
+  sprinta: Office,
+  architect: null, // the stack diagram is drawn from data instead
+  work: null, // the closing gallery is real DOM — see ProjectGallery.jsx
+};

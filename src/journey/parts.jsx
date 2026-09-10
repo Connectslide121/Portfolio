@@ -37,43 +37,59 @@ const wave = (span, y, amp, step, seed) => {
 };
 
 /**
- * The protagonist (D6). One path, three strokes: outer glow, body, hot core.
- * The main timeline draws it progressively and heat drains its glow as the
- * journey cools — molten steel freezing into a solid rail.
+ * The protagonist (D6), and the journey's progress indicator.
+ *
+ * It used to live inside the parallax world, but a world-anchored line always
+ * spans the full frame no matter how much of it is drawn, so it could never
+ * read as progress. It is screen-anchored instead: fixed width, starting at
+ * the left, filling rightwards a beat at a time. Still one path, three
+ * strokes — outer glow, body, hot core — and heat still drains the glow as
+ * the journey cools, so molten steel visibly freezes into a solid rail.
  */
-export function Stream({ span = SCENE_W * 6 }) {
-  const d = wave(span, 818, 34, 460, 97);
+const PROGRESS_D =
+  "M 8 34 C 180 34 260 20 430 26 S 720 44 900 30 S 1130 18 1292 28";
+
+export function ProgressStream() {
   return (
-    <g>
+    <svg
+      className="j-progress"
+      viewBox="0 0 1300 60"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <defs>
+        <filter id="jProgGlow" x="-10%" y="-400%" width="120%" height="900%">
+          <feGaussianBlur stdDeviation="7" />
+        </filter>
+      </defs>
       <path
         data-stream
-        d={d}
+        d={PROGRESS_D}
         fill="none"
         stroke="var(--j-stream)"
-        strokeWidth="30"
+        strokeWidth="14"
         strokeLinecap="round"
-        filter="url(#jGlow)"
+        filter="url(#jProgGlow)"
         style={{ opacity: "calc(0.25 + var(--jHeat) * 0.75)" }}
       />
       <path
         data-stream
-        d={d}
+        d={PROGRESS_D}
         fill="none"
         stroke="var(--j-stream)"
-        strokeWidth="11"
+        strokeWidth="5"
         strokeLinecap="round"
-        filter="url(#jGlowSoft)"
       />
       <path
         data-stream
-        d={d}
+        d={PROGRESS_D}
         fill="none"
         stroke="var(--j-streamCore)"
-        strokeWidth="4"
+        strokeWidth="2"
         strokeLinecap="round"
         style={{ opacity: "calc(0.45 + var(--jHeat) * 0.55)" }}
       />
-    </g>
+    </svg>
   );
 }
 

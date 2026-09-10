@@ -1,13 +1,21 @@
 import React from "react";
-import { architecture } from "../data/journey";
+import { stack } from "../data/journey";
 import { BEATS, SCENE_W, VIEW_H, FOCAL, anchor, OVERDRAW, FLOOR } from "./config";
-import { JourneyDefs, Sky, Stream, Ground, Particles } from "./parts";
-import { SCENES, ArchitectSystem } from "./scenes";
+import { JourneyDefs, Sky, Ground, Particles } from "./parts";
+import { SCENE_BY_BEAT, StackGraph } from "./scenes";
 
 // Silhouette places plus the giant year numerals from the abstract study —
 // the blend chosen in session 2 (resolves O1).
 
-const KINDS = ["dust", "spark", "dust", "snow", "snow", "snow"];
+const KINDS = {
+  origin: "dust",
+  foundry: "spark",
+  india: "dust",
+  sweden: "snow",
+  sprinta: "snow",
+  architect: "snow",
+  work: "snow",
+};
 
 /** Ambient ridgeline for a whole layer — seeded so it stays stable per render. */
 const ridge = (y, amp, step, seed) => {
@@ -41,21 +49,23 @@ export default function World() {
 
         {/* type — the year, huge and slow, crossfaded so neighbours never leak */}
         <g data-layer="type">
-          {BEATS.map((beat, i) => (
-            <text
-              key={beat.id}
-              data-atmos={beat.id}
-              x={anchor(i, 0.38) + FOCAL + 30}
-              y={584}
-              fill="var(--j-far)"
-              fontSize="392"
-              fontWeight="800"
-              letterSpacing="10"
-              opacity="0.62"
-            >
-              {beat.numeral}
-            </text>
-          ))}
+          {BEATS.map((beat, i) =>
+            beat.numeral ? (
+              <text
+                key={beat.id}
+                data-atmos={beat.id}
+                x={anchor(i, 0.38) + FOCAL + 30}
+                y={584}
+                fill="var(--j-far)"
+                fontSize="392"
+                fontWeight="800"
+                letterSpacing="10"
+                opacity="0.62"
+              >
+                {beat.numeral}
+              </text>
+            ) : null
+          )}
         </g>
 
         {/* mid — a second, nearer ridge for depth */}
@@ -66,7 +76,7 @@ export default function World() {
         {/* scene — the places, crossfaded per beat */}
         <g data-layer="scene">
           {BEATS.map((beat, i) => {
-            const Scene = SCENES[i];
+            const Scene = SCENE_BY_BEAT[beat.id];
             const ax = anchor(i, 0.9) + FOCAL;
             return (
               <g key={beat.id} data-atmos={beat.id}>
@@ -74,16 +84,12 @@ export default function World() {
                 {beat.id === "india" && (
                   <circle cx={ax + 590} cy="316" r="236" fill="var(--j-accent)" opacity="0.2" />
                 )}
-                {Scene ? (
-                  <Scene ax={ax} />
-                ) : (
+                {beat.id === "architect" ? (
                   <g data-arch>
-                    <ArchitectSystem
-                      ax={ax - 60}
-                      nodes={architecture.nodes}
-                      edges={architecture.edges}
-                    />
+                    <StackGraph ax={ax} groups={stack} />
                   </g>
+                ) : (
+                  Scene && <Scene ax={ax} />
                 )}
               </g>
             );
@@ -93,7 +99,6 @@ export default function World() {
         {/* ground — the continuous floor and the stream */}
         <g data-layer="ground">
           <Ground span={SCENE_W * BEATS.length} />
-          <Stream span={SCENE_W * BEATS.length} />
         </g>
 
         {/* fore — scrub and particles */}
@@ -112,7 +117,7 @@ export default function World() {
             </g>
           ))}
           {BEATS.map((beat, i) => (
-            <Particles key={beat.id} scene={{ id: beat.id, i }} kind={KINDS[i]} />
+            <Particles key={beat.id} scene={{ id: beat.id, i }} kind={KINDS[beat.id]} />
           ))}
         </g>
       </g>
