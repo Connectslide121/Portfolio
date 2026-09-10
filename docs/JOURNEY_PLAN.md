@@ -198,17 +198,36 @@ Each phase ships standalone. Never sit on a half-finished rewrite.
 
 *Optional to fold in here: **O2** CRA → Vite.*
 
-### Phase 1 — Journey prototype (3 beats, both art styles) · Status: ☑ in progress
+### Phase 1 — Journey prototype (3 beats, both art styles) · Status: ☑ built, awaiting **O1**
 
 1. `gsap` installed (3.15.0). ✅
-2. Standalone route so the live site cannot destabilise. ✅
-3. Build `foundry → india → sweden` — contains every hard problem (parallax
-   camera, stream freeze, heat shift, driver plumbing) and none of the busywork.
-4. Build the world twice: `WorldAbstract` + `WorldSilhouette`, switchable live.
-5. Screenshot both, pick a direction (**O1**).
+2. Opt-in via `?journey`, mounted in `src/index.js`, `React.lazy`-loaded. ✅
+3. `foundry → india → sweden` built — parallax camera, stream draw + freeze,
+   heat shift, and the full driver set (wheel / arrows / swipe / rail / Play). ✅
+4. Both worlds built and switchable live from the top-left toggle. ✅
+5. Renders captured in `docs/prototype-shots/`. Pick a direction (**O1**). ⬅ next
 
-**Test:** if the stream-freezing moment gives a small thrill when it moves, the
-concept is sound and the remaining beats are just more of the same.
+**Run it:** `npm start` then open `http://localhost:3000/?journey`.
+
+**Verified:** main bundle grew only 1.28 kB — GSAP (28.8 kB gz) and the journey
+(5.5 kB gz) land in separate lazy chunks, so a Résumé-mode visitor pays nothing.
+No console errors.
+
+#### Gotcha found while building (do not re-discover this)
+
+Parallax anchoring: a layer moving at rate `k` must have its scene clusters
+authored at `i * SCENE_W * k` to stay aligned when the camera arrives. But that
+also means **scene spacing on a slow layer is narrower than the viewport**, so
+neighbouring scenes bleed into frame — the first build showed the India skyline
+sitting behind the foundry beat.
+
+Fix, now encoded in `config.js`:
+
+- Slow layers (`far` 0.22, `mid` 0.55) carry **only ambient, repeating** content.
+- Anything scene-specific lives on `scene` (k 0.9) or faster **and** is tagged
+  `data-atmos={beat.id}` so the timeline crossfades it per beat.
+- `FOCAL = 700` — the beat card covers roughly the left 700 viewBox units, so
+  scene props must be authored in local `0..1080` to the right of it.
 
 ### Phase 2 — Full journey · Status: ☐ not started
 
@@ -320,4 +339,12 @@ animation, and seamless parallax layering.
 
 | Date | Session did | Next up |
 |---|---|---|
-| 2026-09-10 | Brainstorm → locked D1–D10. Branch `feat/interactive-journey`, gsap 3.15.0 installed, this plan written. Phase 1 prototype started. | Finish Phase 1, screenshot both art styles, resolve **O1** |
+| 2026-09-10 | Brainstorm → locked D1–D10. Branch `feat/interactive-journey`, gsap 3.15.0, this plan. Phase 1 prototype built and rendered in both art styles (`docs/prototype-shots/`). Found and fixed the parallax scene-bleed gotcha. Footer year made dynamic (separate commit, cherry-pick to master). | Resolve **O1** art style, then Phase 0 data extraction before Phase 2 |
+
+### Prototype renders
+
+| | Abstract | Silhouette |
+|---|---|---|
+| Foundry, 2011 | `docs/prototype-shots/abstract-0.png` | `docs/prototype-shots/silhouette-0.png` |
+| India, 2017 | `abstract-1.png` | `silhouette-1.png` |
+| Sweden, 2023 | `abstract-2.png` | `silhouette-2.png` |
