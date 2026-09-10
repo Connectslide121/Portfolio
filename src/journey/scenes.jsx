@@ -312,25 +312,6 @@ export function StackGraph({ ax, oy = 70, groups }) {
   );
 }
 
-/**
- * The one shape that identifies each place, as a local-x centre. A receding
- * scene is narrowed to a slice around this point: a full 1080-wide
- * composition shrunk into the distance still sprawls across the current
- * scene and disappears behind it, whereas a single landmark reads clearly.
- *
- * The slice is a soft MASK, not a clip. A hard edge looked like the scene had
- * been cut in half; a gradient reads as the rest of it fading off into haze.
- */
-export const LANDMARK_X = {
-  origin: 700, // the stair tower
-  foundry: 300, // chimney and the sawtooth hall
-  india: 590, // the dome
-  sweden: 400, // the pines
-  sprinta: 880, // the tallest block
-};
-
-export const LANDMARK_W = 640;
-
 /** Keyed by beat id, so adding or reordering beats cannot shift the mapping. */
 export const SCENE_BY_BEAT = {
   origin: Origin,

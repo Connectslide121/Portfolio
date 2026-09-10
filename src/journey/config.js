@@ -68,6 +68,15 @@ export const VANISH = { x: 120, y: 686 };
 export const DEPTH = 0.85; // how fast the past shrinks — bigger recedes faster
 export const PAST_MIN_OPACITY = 0.2;
 
+// A receding scene is softened at its extreme edges so it melts into the
+// distance rather than ending abruptly. This is deliberately WIDER than the
+// scene itself (which spans FOCAL..FOCAL+SCENE_SPAN): the fade only touches
+// the outermost sliver, so nothing is actually cut away. An earlier version
+// narrowed scenes to a single landmark, which read as slicing them in half.
+export const FADE_X0 = FOCAL - 90;
+export const FADE_W = SCENE_SPAN + 180;
+export const FADE_EDGE = 0.11; // fraction of the span spent fading, each side
+
 // Total world width, and where full-width paths start/end.
 export const WORLD_W = SCENE_W * BEATS.length;
 export const PATH_START = -OVERDRAW;

@@ -41,7 +41,6 @@ export function buildJourney({ root }) {
   }));
 
   const sceneEls = BEATS.map((_, i) => root.querySelector(`[data-scene="${i}"]`));
-  const masks = BEATS.map((_, i) => root.querySelector(`#jlm-${i}`));
 
   /**
    * Places every scene from the camera position.
@@ -84,7 +83,7 @@ export function buildJourney({ root }) {
         const u = scale / CURRENT_SCALE;
         ax = VANISH.x + (CURRENT_ANCHOR.x - VANISH.x) * u;
         ay = VANISH.y + (CURRENT_ANCHOR.y - VANISH.y) * u;
-        opacity = Math.max(PAST_MIN_OPACITY, 1 - t * 0.21);
+        opacity = Math.max(PAST_MIN_OPACITY, 1 - t * 0.27);
       }
 
       tx = ax - SCENE_ANCHOR.x * scale;
@@ -96,11 +95,11 @@ export function buildJourney({ root }) {
       );
       el.setAttribute("opacity", opacity.toFixed(3));
 
-      // Narrow to the beat's landmark once it starts receding, and only then —
-      // the current scene must always be whole.
-      const wantMask = past && t > 0.25 && masks[i];
+      // Soften the edges once a beat starts receding, and only then — the
+      // current scene must always be whole and hard-edged.
+      const wantMask = past && t > 0.2;
       const applied = el.getAttribute("mask");
-      const next = wantMask ? `url(#jlm-${i})` : "";
+      const next = wantMask ? "url(#jFade)" : "";
       if (applied !== next) {
         if (next) el.setAttribute("mask", next);
         else el.removeAttribute("mask");

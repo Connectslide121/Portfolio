@@ -1,8 +1,19 @@
 import React from "react";
 import { stack } from "../data/journey";
-import { BEATS, SCENE_W, VIEW_H, FOCAL, anchor, OVERDRAW, FLOOR } from "./config";
+import {
+  BEATS,
+  SCENE_W,
+  VIEW_H,
+  FOCAL,
+  anchor,
+  OVERDRAW,
+  FLOOR,
+  FADE_X0,
+  FADE_W,
+  FADE_EDGE,
+} from "./config";
 import { JourneyDefs, Sky, Ground, Particles } from "./parts";
-import { SCENE_BY_BEAT, StackGraph, LANDMARK_X, LANDMARK_W } from "./scenes";
+import { SCENE_BY_BEAT, StackGraph } from "./scenes";
 
 // Silhouette places plus the giant year numerals from the abstract study —
 // the blend chosen in session 2 (resolves O1).
@@ -39,36 +50,35 @@ export default function World() {
     >
       <JourneyDefs />
 
-      {/* One soft mask per beat, applied only while that beat is receding.
-          Feathered at both edges so the rest of the scene reads as fading
-          into haze rather than being sliced off. */}
+      {/* Applied only while a beat is receding: opaque across the whole
+          silhouette, feathering only at the extreme edges so it hazes out
+          instead of being cut off. */}
       <defs>
-        {BEATS.map((beat, i) => {
-          const lx = LANDMARK_X[beat.id];
-          if (lx === undefined) return null;
-          const x0 = FOCAL + lx - LANDMARK_W / 2;
-          return (
-            <React.Fragment key={beat.id}>
-              <linearGradient
-                id={`jlmg-${i}`}
-                gradientUnits="userSpaceOnUse"
-                x1={x0}
-                y1="0"
-                x2={x0 + LANDMARK_W}
-                y2="0"
-              >
-                <stop offset="0%" stopColor="#000" />
-                <stop offset="22%" stopColor="#fff" />
-                <stop offset="78%" stopColor="#fff" />
-                <stop offset="100%" stopColor="#000" />
-              </linearGradient>
-              <mask id={`jlm-${i}`} maskUnits="userSpaceOnUse" x={x0} y="0" width={LANDMARK_W} height={VIEW_H}>
-                <rect x={x0} y="0" width={LANDMARK_W} height={VIEW_H} fill={`url(#jlmg-${i})`} />
-              </mask>
-            </React.Fragment>
-          );
-        })}
+        <linearGradient
+          id="jFadeGrad"
+          gradientUnits="userSpaceOnUse"
+          x1={FADE_X0}
+          y1="0"
+          x2={FADE_X0 + FADE_W}
+          y2="0"
+        >
+          <stop offset="0%" stopColor="#000" />
+          <stop offset={`${FADE_EDGE * 100}%`} stopColor="#fff" />
+          <stop offset={`${(1 - FADE_EDGE) * 100}%`} stopColor="#fff" />
+          <stop offset="100%" stopColor="#000" />
+        </linearGradient>
+        <mask
+          id="jFade"
+          maskUnits="userSpaceOnUse"
+          x={FADE_X0}
+          y="0"
+          width={FADE_W}
+          height={VIEW_H}
+        >
+          <rect x={FADE_X0} y="0" width={FADE_W} height={VIEW_H} fill="url(#jFadeGrad)" />
+        </mask>
       </defs>
+
       <Sky />
 
       {/* Everything inside the camera group so the final beat can pull back. */}
