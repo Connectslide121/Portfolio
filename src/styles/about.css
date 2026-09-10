@@ -1008,3 +1008,15 @@
     margin-left: 0;
   }
 }
+
+/* Organisation mark beside the employer / school name. */
+.experience-org {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.experience-org h4 {
+  margin: 0;
+}

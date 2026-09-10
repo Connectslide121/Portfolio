@@ -6,6 +6,7 @@ import {
   faMapMarkerAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { renderRichText } from "./richText";
+import OrgMark from "./OrgMark";
 
 /**
  * One entry in the résumé timeline, rendered from src/data/journey.js.
@@ -47,7 +48,10 @@ export default function TimelineCard({ entry, current = false }) {
 
           <div className="experience-title">
             <h3>{entry.title}</h3>
-            <h4>{entry.org}</h4>
+            <div className="experience-org">
+              <OrgMark id={entry.orgId} size="md" />
+              <h4>{entry.org}</h4>
+            </div>
           </div>
 
           {quest && (

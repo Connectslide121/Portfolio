@@ -11,6 +11,7 @@
 export const experience = [
   {
     id: "exp-sprinta-lead",
+    orgId: "sprinta",
     dateLabel: "2025 - Present",
     location: "Sweden",
     org: "Sprinta Consulting AB",
@@ -68,6 +69,7 @@ export const experience = [
   },
   {
     id: "exp-sprinta-ai",
+    orgId: "sprinta",
     dateLabel: "2024 - 2025",
     location: "Sweden",
     org: "Sprinta Consulting AB",
@@ -114,6 +116,7 @@ export const experience = [
   },
   {
     id: "exp-aml",
+    orgId: "aml",
     dateLabel: "2011 - 2023",
     location: "Spain & India",
     org: "AML SA",
@@ -153,6 +156,7 @@ export const experience = [
 export const education = [
   {
     id: "edu-lexicon",
+    orgId: "lexicon",
     dateLabel: "2023 - 2024",
     location: "Sweden",
     org: "Lexicon Växjö",
@@ -173,6 +177,7 @@ export const education = [
   },
   {
     id: "edu-leartik",
+    orgId: "lea-artibai",
     dateLabel: "2008 - 2010",
     location: "Spain",
     org: "Lea-Artibai",
@@ -193,6 +198,7 @@ export const education = [
   },
   {
     id: "edu-polymers",
+    orgId: "london-met",
     dateLabel: "2005 - 2008",
     location: "Spain",
     org: "London Metropolitan University (Spain Campus)",
@@ -226,6 +232,7 @@ export const education = [
 export const beats = [
   {
     id: "origin",
+    orgs: ["london-met", "lea-artibai"],
     year: "2005 — 2010",
     railLabel: "2005",
     numeral: "2005",
@@ -241,6 +248,7 @@ export const beats = [
   },
   {
     id: "foundry",
+    orgs: ["aml"],
     year: "2011 — 2023",
     railLabel: "2011",
     numeral: "2011",
@@ -256,6 +264,7 @@ export const beats = [
   },
   {
     id: "india",
+    orgs: ["aml"],
     year: "2017",
     railLabel: "2017",
     numeral: "2017",
@@ -271,6 +280,7 @@ export const beats = [
   },
   {
     id: "sweden",
+    orgs: ["lexicon"],
     year: "2023 — 2024",
     railLabel: "2023",
     numeral: "2023",
@@ -286,6 +296,7 @@ export const beats = [
   },
   {
     id: "sprinta",
+    orgs: ["sprinta"],
     year: "2024 — 2025",
     railLabel: "2024",
     numeral: "2024",
@@ -301,6 +312,7 @@ export const beats = [
   },
   {
     id: "architect",
+    orgs: ["sprinta"],
     year: "2025 — Present",
     railLabel: "2025",
     numeral: "2025",
@@ -317,6 +329,7 @@ export const beats = [
   // Closing beat: the journey ends on things you can actually go and open.
   {
     id: "work",
+    orgs: ["github"],
     year: "2023 — today",
     railLabel: "Work",
     place: "github.com/Connectslide121",
@@ -381,7 +394,7 @@ export const stack = [
     id: "backend",
     label: "Backend",
     tint: "compute",
-    items: ["C#", ".NET", "Azure Functions", "Node.js"],
+    items: ["C# / .NET", "Azure Functions", "Node.js"],
   },
   {
     id: "data",

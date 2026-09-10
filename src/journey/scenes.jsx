@@ -1,5 +1,6 @@
 import React from "react";
 import { BASE } from "./config";
+import { logoFor } from "../data/techLogos";
 
 // Every place is authored as coordinates — no drawing tool, no raster assets
 // (D7). Each scene fits local 0..1080, to the right of the beat card.
@@ -173,21 +174,23 @@ export const TINTS = {
 
 const PILL_H = 48;
 const PILL_R = PILL_H / 2; // fully rounded — no square corners anywhere
+const LOGO = 24; // logo box inside the pill
+const LOGO_R = 17; // the light disc behind it
 
 // Local layout. Frontend converges into the backend, which then branches two
 // ways: data one side, AI the other. AI is a sibling of the data layer, not
 // something downstream of it.
 const COLUMNS = {
-  frontend: { x: 0, w: 212, gap: 74, mid: 390 },
-  backend: { x: 396, w: 222, gap: 74, mid: 390 },
-  data: { x: 836, w: 240, gap: 74, mid: 196 },
-  ai: { x: 836, w: 240, gap: 74, mid: 604 },
+  frontend: { x: 0, w: 234, gap: 74, mid: 390 },
+  backend: { x: 400, w: 238, gap: 74, mid: 390 },
+  data: { x: 844, w: 260, gap: 74, mid: 196 },
+  ai: { x: 844, w: 260, gap: 74, mid: 604 },
 };
 
-const J1 = [318, 390]; // frontend -> backend waist
-const J2 = [682, 390]; // backend exit
-const J3 = [772, 196]; // into the data branch
-const J4 = [772, 604]; // into the AI branch
+const J1 = [328, 390]; // frontend -> backend waist
+const J2 = [702, 390]; // backend exit
+const J3 = [784, 196]; // into the data branch
+const J4 = [784, 604]; // into the AI branch
 
 const laidOut = (group) => {
   const col = COLUMNS[group.id];
@@ -251,31 +254,60 @@ export function StackGraph({ ax, oy = 70, groups }) {
         ))}
       </g>
 
-      {pills.map((pill) => (
-        <g key={pill.label} data-arch-node>
-          <rect
-            x={pill.x}
-            y={pill.cy - PILL_H / 2}
-            width={pill.w}
-            height={PILL_H}
-            rx={PILL_R}
-            fill="var(--j-ground)"
-            stroke={TINTS[pill.tint]}
-            strokeWidth="1.5"
-            opacity="0.95"
-          />
-          <text
-            x={pill.x + pill.w / 2}
-            y={pill.cy + 7}
-            textAnchor="middle"
-            fill={TINTS[pill.tint]}
-            fontSize="21"
-            fontWeight="600"
-          >
-            {pill.label}
-          </text>
-        </g>
-      ))}
+      {pills.map((pill) => {
+        const logo = logoFor(pill.label);
+        return (
+          <g key={pill.label} data-arch-node>
+            <rect
+              x={pill.x}
+              y={pill.cy - PILL_H / 2}
+              width={pill.w}
+              height={PILL_H}
+              rx={PILL_R}
+              fill="var(--j-ground)"
+              stroke={TINTS[pill.tint]}
+              strokeWidth="1.5"
+              opacity="0.95"
+            />
+            {/* Logo sits in a disc whose colour is chosen from the artwork's
+                tone, so both near-white and near-black marks stay legible
+                (see src/data/techLogos.js). Label reads left-aligned beside
+                it. */}
+            {logo && (
+              <>
+                <circle
+                  cx={pill.x + PILL_H / 2}
+                  cy={pill.cy}
+                  r={LOGO_R}
+                  fill={logo.tone === "light" ? "#111827" : "#ffffff"}
+                  stroke={TINTS[pill.tint]}
+                  strokeOpacity="0.35"
+                  strokeWidth="1"
+                  opacity="0.96"
+                />
+                <image
+                  href={logo.src}
+                  x={pill.x + PILL_H / 2 - LOGO / 2}
+                  y={pill.cy - LOGO / 2}
+                  width={LOGO}
+                  height={LOGO}
+                  preserveAspectRatio="xMidYMid meet"
+                />
+              </>
+            )}
+            <text
+              x={logo ? pill.x + PILL_H + 4 : pill.x + pill.w / 2}
+              y={pill.cy + 7}
+              textAnchor={logo ? "start" : "middle"}
+              fill={TINTS[pill.tint]}
+              fontSize="20"
+              fontWeight="600"
+            >
+              {pill.label}
+            </text>
+          </g>
+        );
+      })}
     </g>
   );
 }

@@ -8,6 +8,7 @@ import { useJourneyDriver } from "./useJourneyDriver";
 import World from "./World";
 import { ProgressStream } from "./parts";
 import ProjectGallery from "./ProjectGallery";
+import { OrgMarks } from "../components/OrgMark";
 import JourneyStatic from "./JourneyStatic";
 
 const prefersReducedMotion = () =>
@@ -100,6 +101,7 @@ export default function JourneyStage({ onExit }) {
             <article className="j-card">
               <div className="j-card-head">
                 <span className="j-year">{beat.year}</span>
+                <OrgMarks ids={beat.orgs} size="lg" />
               </div>
               <h2>{beat.role}</h2>
               <h3>
