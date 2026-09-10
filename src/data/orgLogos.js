@@ -15,11 +15,20 @@ import leaArtibai from "../images/orgs/lea-artibai.webp";
 import sprinta from "../images/orgs/sprinta.webp";
 import lexicon from "../images/orgs/lexicon.svg";
 import londonMet from "../images/orgs/london-met.svg";
+import atpl from "../images/orgs/atpl.webp";
 import github from "../images/tools/github.webp";
 
 export const ORGS = {
   aml: { src: aml, tone: "light", label: "AML SA — Aceros Moldeados de Lacunza" },
   "lea-artibai": { src: leaArtibai, tone: "colour", label: "Lea-Artibai Ikastetxea" },
+  // Opaque, with a white background baked in, so a white plate is seamless.
+  // Note the luminance test misreads files like this — see the caveat in
+  // docs/JOURNEY_PLAN.md §8b.
+  atpl: {
+    src: atpl,
+    tone: "dark",
+    label: "Arihant Technocast Private Limited (ATPL)",
+  },
   "london-met": { src: londonMet, tone: "dark", label: "London Metropolitan University" },
   lexicon: { src: lexicon, tone: "colour", label: "Lexicon" },
   sprinta: { src: sprinta, tone: "dark", label: "Sprinta Consulting AB" },

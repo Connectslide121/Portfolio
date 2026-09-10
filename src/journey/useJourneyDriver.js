@@ -1,4 +1,3 @@
-import gsap from "gsap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BEATS } from "./config";
 
@@ -10,7 +9,6 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
   // startIndex matters: a deep link seeks the timeline directly, and if the
   // driver still believed it was at beat 0 it would ignore a click on beat 0.
   const [index, setIndex] = useState(startIndex);
-  const [playing, setPlaying] = useState(false);
   const busy = useRef(false);
   const idx = useRef(startIndex);
   const lastSeek = useRef(1);
@@ -30,7 +28,6 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
 
       idx.current = clamped;
       setIndex(clamped);
-      setPlaying(false);
 
       if (instant) {
         // Picking a year off the rail should land on it, not replay the years
@@ -63,44 +60,6 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
   const next = useCallback(() => goTo(idx.current + 1), [goTo]);
   const prev = useCallback(() => goTo(idx.current - 1), [goTo]);
   const jumpTo = useCallback((i) => goTo(i, { instant: true }), [goTo]);
-
-  // Autoplay: same timeline, just let it run and keep the rail in sync.
-  const togglePlay = useCallback(() => {
-    if (!tl) return;
-    seekTween.current?.kill();
-    busy.current = false;
-    if (playing) {
-      tl.pause();
-      setPlaying(false);
-      return;
-    }
-    if (idx.current === BEATS.length - 1) {
-      idx.current = 0;
-      setIndex(0);
-      tl.pause(0);
-    }
-    setPlaying(true);
-    tl.play();
-  }, [tl, playing]);
-
-  // Keep the rail honest while autoplaying. Uses the ticker rather than
-  // hijacking the timeline's onUpdate, which already belongs to render().
-  useEffect(() => {
-    if (!tl || !playing) return;
-    const sync = () => {
-      let at = 0;
-      BEATS.forEach((b, i) => {
-        if (tl.time() >= tl.labels[b.id] - 0.01) at = i;
-      });
-      if (at !== idx.current) {
-        idx.current = at;
-        setIndex(at);
-      }
-      if (!tl.isActive()) setPlaying(false);
-    };
-    gsap.ticker.add(sync);
-    return () => gsap.ticker.remove(sync);
-  }, [tl, playing]);
 
   // --- wheel: one gesture = one beat, so you always land on a beat ---------
   useEffect(() => {
@@ -135,9 +94,10 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
         ArrowUp: prev,
         PageUp: prev,
       };
+      // Space reads as "next" in anything slideshow-shaped.
       if (e.key === " ") {
         e.preventDefault();
-        togglePlay();
+        next();
         return;
       }
       if (map[e.key]) {
@@ -147,7 +107,7 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev, togglePlay, disabled]);
+  }, [next, prev, disabled]);
 
   // --- touch swipe ---------------------------------------------------------
   useEffect(() => {
@@ -172,5 +132,5 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
   // Kill any in-flight scrub when the stage unmounts.
   useEffect(() => () => seekTween.current?.kill(), []);
 
-  return { index, goTo, jumpTo, next, prev, playing, togglePlay };
+  return { index, goTo, jumpTo, next, prev };
 }

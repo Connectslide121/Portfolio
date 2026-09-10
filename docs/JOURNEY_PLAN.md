@@ -59,7 +59,7 @@ Recorded so they are not re-litigated in a later session.
 | D2 | The hero holds a **live idling miniature** of the world; clicking expands the *same* SVG to fullscreen | Hero becomes "beat 0". Shared-element transition, no jarring context switch |
 | D3 | **GSAP** for the journey cinematic | Only library with the needed primitive: timeline **labels** + `tweenTo(label)`. Free including formerly-paid plugins (DrawSVG, MotionPath, MorphSVG, SplitText) |
 | D4 | One **paused timeline**, many **drivers** | Animation code knows nothing about input. Add wheel/keys/swipe/autoplay/deep-links later without touching animation |
-| D5 | Default driver: **wheel advances one beat** (debounced), plus progress rail, arrow keys, swipe, and a `Play` autoplay | Feels like scrolling (nothing to learn) but always lands cleanly on a beat |
+| D5 | Default driver: **wheel advances one beat** (debounced), plus progress rail, arrow keys and swipe | Feels like scrolling (nothing to learn) but always lands cleanly on a beat. Autoplay was tried and removed — see D30 |
 | D6 | **The molten stream is the protagonist**, not a character | Character art and walk cycles are what kill these projects. Animating one path is ~40 lines and looks expensive |
 | D7 | Art is **authored as SVG in code**. No AI raster images | Rasters kill the heat-shift recolor, kill per-element animation, kill seamless parallax layers, and weigh MBs vs ~30KB |
 | D8 | Text lives in **real DOM** over the SVG, never inside it | Selectable, translatable, screen-readable, indexable |
@@ -80,6 +80,7 @@ Recorded so they are not re-litigated in a later session.
 | D23 | The closing beat keeps its **explainer card** and puts a **wall of pinned work** beside it: six tiles, absolutely placed at uneven sizes and slight angles | A tidy grid read as a spreadsheet. Hovering straightens a tile and lifts it, like picking a print off a wall. Positions live in the `LAYOUT` table in `ProjectGallery.jsx` |
 | D27 | **Logos everywhere**: a mark per organisation on both card types, and a tech logo inside every stack pill | Sourced from each organisation's own site (see below). Tech marks reuse `src/images/tools/` so both modes draw from the same assets |
 | D28 | Every logo declares a **`tone`** describing its ARTWORK, and is drawn on a plate/disc coloured from that tone | Not a guess — measured from each file's mean non-transparent luminance, threshold 0.55. Near-white marks (Mithril 0.90, RAG 0.78) were invisible on a white disc; AML's white wordmark is invisible on a light theme. One component then works on the journey's dark scenes and the CV's light theme with no filters and no per-theme assets |
+| D30 | **No autoplay.** The Play button is gone, along with the ticker that kept the rail in sync; `Space` now means "next" | At the timeline's authored rate you could not finish reading a beat's title before it moved on, and slowing it down would have meant per-beat dwell logic for a feature nobody needs on a seven-beat journey. Stepping is smooth and takes one keypress |
 | D29 | `.NET` shares one pill with C# as **"C# / .NET"** | No .NET mark exists in the repo and none is cleanly obtainable. Two identical C# discs side by side looked like a bug; a recruiter reads the two together anyway |
 | D26 | Gallery clips **autoplay while the beat is on screen**, and the detail overlay is a **drawer over the lower part only** | With a full-cover overlay there was no hover left to start a video with, so nothing ever played. Autoplay is gated on the beat being current — six clips do not decode through the whole journey — and the drawer leaves the clip visible above it |
 | D24 | Project media lives in **`src/data/projectMedia.js`**, shared by Résumé mode and the gallery | The title→media mapping was hardcoded inside `Projects.jsx`; duplicating it for the journey would have guaranteed drift |
@@ -415,6 +416,7 @@ from 108 kB to 2.8 kB. SVGs are kept as vectors.
 | `lea-artibai` | `lea-artibai.webp` | leartik.eus `/images/logo_header_lea_2026.png` | colour |
 | `london-met` | `london-met.svg` | londonmet.ac.uk site-assets | dark |
 | `lexicon` | `lexicon.svg` | lexicongruppen.se `/media/wi5hphtd/lexicon-logo.svg` | colour |
+| `atpl` | `atpl.webp` | arihanttechnocastindia.com `/wp-content/themes/atpl/images/logo.png` | dark |
 | `sprinta` | `sprinta.webp` | sprinta.se `/assets/Sprinta_webb.png` (found in the Angular bundle) | dark |
 | `github` | reuses `tools/github.webp` | already in the repo | dark |
 
@@ -429,6 +431,13 @@ vis = [(r,g,b) for r,g,b,a in im.getdata() if a > 40]
 print(sum(0.2126*r + 0.7152*g + 0.0722*b for r,g,b in vis) / len(vis) / 255)
 # > 0.55 -> tone "light" (dark plate);  <= 0.55 -> tone "dark" (light plate)
 ```
+
+**Caveat:** the test assumes transparency. A fully opaque file has its
+background baked in, which dominates the mean and gives the wrong answer —
+ATPL reads 0.59 ("light") despite being black text, because it carries a
+white background. Check alpha coverage first: if the file is ~100% opaque,
+match the plate to its baked background instead (white background -> tone
+`"dark"`, so the white plate blends in seamlessly).
 
 ---
 
@@ -457,7 +466,8 @@ animation, and seamless parallax layering.
 | Date | Session did | Next up |
 |---|---|---|
 | 2026-09-10 | Brainstorm → locked D1–D10. Branch `feat/interactive-journey`, gsap 3.15.0, this plan. Phase 1 prototype built and rendered in both art styles. Found and fixed the parallax scene-bleed gotcha. Footer year made dynamic (separate commit, cherry-pick to master). | Resolve **O1** art style, then Phase 0 before Phase 2 |
-| 2026-09-11 | Logos throughout (D27–D29). Pulled the five real organisation logos from their own sites, optimised them into `src/images/orgs/` (AML went 108 kB → 2.8 kB), and added marks to the journey beat cards and the CV timeline cards. Every stack pill now carries its tech logo on a tone-matched disc. | **ATPL** — unidentified, needs the user. Then **Phase 4**, **O2** Vite, **O4** |
+| 2026-09-11 (2) | Added the ATPL mark: **Arihant Technocast Private Limited**, AML's Indian foundry — the plant stood up in 2017. The India beat now carries both marks and names the entity in the CV bullet. Removed autoplay entirely (D30). | **Phase 4**, **O2** Vite, **O4** |
+| 2026-09-11 | Logos throughout (D27–D29). Pulled the five real organisation logos from their own sites, optimised them into `src/images/orgs/` (AML went 108 kB → 2.8 kB), and added marks to the journey beat cards and the CV timeline cards. Every stack pill now carries its tech logo on a tone-matched disc. | ~~ATPL~~ resolved next session |
 | 2026-09-10 (5) | Reworked the closing beat to what it is now (D23, D26): explainer card restored beside a scattered, tilted wall of six tiles; clips autoplay while the beat is current; the detail overlay became a bottom drawer so the clip stays visible. Fixed the touch branch, which set the drawer opaque without sliding it in — on a real phone the tiles showed nothing. | **Phase 4** game mechanics; then **O2** Vite, **O4** |
 | 2026-09-10 (4) | Closing beat became a media gallery: real screenshots and clips, detail overlays, shared project-media map (D24) with `Projects.jsx` pointed at it. Simplified locations (D25). | superseded next session by D23/D26 |
 | 2026-09-10 (3) | Journey is now the default landing (D17) with a prominent centred way out (D18). Stream reworked into a screen-anchored progress bar (D19). Added the **Selected Work** closing beat linking through to the full project list (D20). Replaced the internal architecture graph with a recognisable tech stack (D21), then reshaped it from rigid columns into a pill-and-curve flow with AI branching off the backend (D22). Fixed the never-actually-centred beat card, an index-keyed special case that broke when the new beat was added, and hash-only navigation. | **Phase 4** game mechanics; then **O2** Vite, **O4** |

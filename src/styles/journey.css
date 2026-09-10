@@ -172,7 +172,6 @@
   padding: clamp(0.75rem, 2vw, 1.5rem);
 }
 
-.j-play,
 .j-nav {
   font: inherit;
   font-size: 0.78rem;
@@ -289,11 +288,6 @@
   cursor: default;
 }
 
-.j-play {
-  border: 1px solid rgb(255 255 255 / 0.16);
-  margin-left: 0.25rem;
-}
-
 .j-hint {
   position: absolute;
   bottom: 0.35rem;
@@ -336,10 +330,6 @@
   }
   .j-tick {
     width: 1.35rem;
-  }
-  .j-play {
-    margin-left: 0.15rem;
-    padding: 0.4rem 0.7rem;
   }
 }
 

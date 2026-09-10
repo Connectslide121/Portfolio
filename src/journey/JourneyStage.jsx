@@ -52,7 +52,7 @@ export default function JourneyStage({ onExit }) {
     };
   }, [reduced, start]);
 
-  const { index, jumpTo, next, prev, playing, togglePlay } = useJourneyDriver(
+  const { index, jumpTo, next, prev } = useJourneyDriver(
     tl,
     stageRef,
     reduced,
@@ -197,14 +197,11 @@ export default function JourneyStage({ onExit }) {
         >
           ›
         </button>
-        <button className="j-play" onClick={togglePlay}>
-          {playing ? "Pause" : "Play"}
-        </button>
       </div>
 
       <ProgressStream />
 
-      <p className="j-hint">scroll · arrows · swipe · space to play</p>
+      <p className="j-hint">scroll · arrows · swipe</p>
     </div>
   );
 }
