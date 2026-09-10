@@ -53,6 +53,12 @@
 .j-card-slot[data-kind="projects"] {
   justify-content: flex-start;
   gap: clamp(1rem, 2.5vw, 2.25rem);
+  /* The closing beat is a reading surface, not a scene. Scrim the world back
+     so the receding stack and the stack diagram stop competing with the
+     project tiles. The slot spans the stage, so this blurs everything behind
+     it while the rail and topbar — later siblings — stay crisp. */
+  background: color-mix(in srgb, #05070c 62%, transparent);
+  backdrop-filter: blur(14px) saturate(0.85);
 }
 
 .j-card-slot[data-kind="projects"] .j-card {

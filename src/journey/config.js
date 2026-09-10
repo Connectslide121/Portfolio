@@ -56,10 +56,15 @@ export const FLOOR = 1600;
 //
 // A scene's ground-contact point (SCENE_ANCHOR) is what travels toward VANISH,
 // so a receding scene keeps sitting ON the ground rather than floating.
+//
+// CURRENT_ANCHOR/CURRENT_SCALE are also what keep the active scene inside the
+// frame. preserveAspectRatio="slice" crops the SIDES hard on a tall window —
+// a 1704x1290 viewport only shows viewBox x 186..1613, not the full 0..1800 —
+// so the scene is placed and sized to survive that band, not the 16:9 one.
 export const SCENE_ANCHOR = { x: FOCAL + SCENE_SPAN / 2, y: BASE };
-export const CURRENT_ANCHOR = { x: 1420, y: BASE };
-export const CURRENT_SCALE = 0.82;
-export const VANISH = { x: 330, y: 690 };
+export const CURRENT_ANCHOR = { x: 1150, y: BASE };
+export const CURRENT_SCALE = 0.76;
+export const VANISH = { x: 120, y: 686 };
 export const DEPTH = 0.85; // how fast the past shrinks — bigger recedes faster
 export const PAST_MIN_OPACITY = 0.2;
 

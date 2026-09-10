@@ -39,20 +39,35 @@ export default function World() {
     >
       <JourneyDefs />
 
-      {/* One clip per beat, used only while that beat is receding. */}
+      {/* One soft mask per beat, applied only while that beat is receding.
+          Feathered at both edges so the rest of the scene reads as fading
+          into haze rather than being sliced off. */}
       <defs>
-        {BEATS.map((beat, i) =>
-          LANDMARK_X[beat.id] === undefined ? null : (
-            <clipPath key={beat.id} id={`jlm-${i}`} clipPathUnits="userSpaceOnUse">
-              <rect
-                x={FOCAL + LANDMARK_X[beat.id] - LANDMARK_W / 2}
-                y="120"
-                width={LANDMARK_W}
-                height="820"
-              />
-            </clipPath>
-          )
-        )}
+        {BEATS.map((beat, i) => {
+          const lx = LANDMARK_X[beat.id];
+          if (lx === undefined) return null;
+          const x0 = FOCAL + lx - LANDMARK_W / 2;
+          return (
+            <React.Fragment key={beat.id}>
+              <linearGradient
+                id={`jlmg-${i}`}
+                gradientUnits="userSpaceOnUse"
+                x1={x0}
+                y1="0"
+                x2={x0 + LANDMARK_W}
+                y2="0"
+              >
+                <stop offset="0%" stopColor="#000" />
+                <stop offset="22%" stopColor="#fff" />
+                <stop offset="78%" stopColor="#fff" />
+                <stop offset="100%" stopColor="#000" />
+              </linearGradient>
+              <mask id={`jlm-${i}`} maskUnits="userSpaceOnUse" x={x0} y="0" width={LANDMARK_W} height={VIEW_H}>
+                <rect x={x0} y="0" width={LANDMARK_W} height={VIEW_H} fill={`url(#jlmg-${i})`} />
+              </mask>
+            </React.Fragment>
+          );
+        })}
       </defs>
       <Sky />
 

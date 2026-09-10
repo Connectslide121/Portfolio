@@ -41,7 +41,7 @@ export function buildJourney({ root }) {
   }));
 
   const sceneEls = BEATS.map((_, i) => root.querySelector(`[data-scene="${i}"]`));
-  const clips = BEATS.map((_, i) => root.querySelector(`#jlm-${i}`));
+  const masks = BEATS.map((_, i) => root.querySelector(`#jlm-${i}`));
 
   /**
    * Places every scene from the camera position.
@@ -96,14 +96,14 @@ export function buildJourney({ root }) {
       );
       el.setAttribute("opacity", opacity.toFixed(3));
 
-      // Clip to the beat's landmark once it starts receding, and only then —
+      // Narrow to the beat's landmark once it starts receding, and only then —
       // the current scene must always be whole.
-      const wantClip = past && t > 0.3 && clips[i];
-      const current = el.getAttribute("clip-path");
-      const next = wantClip ? `url(#jlm-${i})` : "";
-      if (current !== next) {
-        if (next) el.setAttribute("clip-path", next);
-        else el.removeAttribute("clip-path");
+      const wantMask = past && t > 0.25 && masks[i];
+      const applied = el.getAttribute("mask");
+      const next = wantMask ? `url(#jlm-${i})` : "";
+      if (applied !== next) {
+        if (next) el.setAttribute("mask", next);
+        else el.removeAttribute("mask");
       }
     }
   };
@@ -169,7 +169,7 @@ export function buildJourney({ root }) {
     if (isArchitect && !narrow) {
       // The payoff: the camera pulls back and the stream stops being a line —
       // it branches into the system that actually shipped.
-      tl.to(cameraGroup, { scale: 0.7, duration: 2.2 }, "<0.6")
+      tl.to(cameraGroup, { scale: 0.86, duration: 2.2 }, "<0.6")
         .to(archEdges, { drawSVG: "0% 100%", duration: 1.1, stagger: 0.03 }, "<0.7")
         .to(
           archNodes,

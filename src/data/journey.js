@@ -341,8 +341,8 @@ export const beats = [
 export const galleryProjects = [
   "CodepenAI",
   "DAIETpedia",
-  "Plastic Slurg",
   "Contact book",
+  "Plastic Slurg",
   "Sokoban game",
   "Password input npm package",
 ];
