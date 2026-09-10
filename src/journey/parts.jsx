@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { SCENE_W, VIEW_H, anchor } from "./config";
+import { SCENE_W, VIEW_H, anchor, OVERDRAW, FLOOR } from "./config";
 
 /** Shared defs. Gradient stops read CSS vars, so heat recolours them for free. */
 export function JourneyDefs() {
@@ -24,20 +24,30 @@ export function Sky() {
   return <rect x="0" y="0" width={SCENE_W} height={VIEW_H} fill="url(#jSky)" />;
 }
 
+/** A gently undulating path across the whole world strip. */
+const wave = (span, y, amp, step, seed) => {
+  let n = seed;
+  const rnd = () => ((n = (n * 9301 + 49297) % 233280) / 233280);
+  const pts = [`M ${-OVERDRAW} ${y}`];
+  for (let x = -OVERDRAW + step; x <= span + OVERDRAW; x += step) {
+    const cy = y + (rnd() - 0.5) * amp * 2;
+    pts.push(`Q ${x - step / 2} ${cy} ${x} ${y + (rnd() - 0.5) * amp}`);
+  }
+  return pts.join(" ");
+};
+
 /**
  * The protagonist (D6). One path, three strokes: outer glow, body, hot core.
  * The main timeline draws it progressively and heat drains its glow as the
  * journey cools — molten steel freezing into a solid rail.
  */
-const STREAM_D =
-  "M -200 832 C 180 832 460 788 900 802 S 1480 864 1800 822 S 2360 764 2900 808 S 3500 860 4000 820 S 4720 788 5600 814";
-
-export function Stream() {
+export function Stream({ span = SCENE_W * 6 }) {
+  const d = wave(span, 818, 34, 460, 97);
   return (
     <g>
       <path
         data-stream
-        d={STREAM_D}
+        d={d}
         fill="none"
         stroke="var(--j-stream)"
         strokeWidth="30"
@@ -47,7 +57,7 @@ export function Stream() {
       />
       <path
         data-stream
-        d={STREAM_D}
+        d={d}
         fill="none"
         stroke="var(--j-stream)"
         strokeWidth="11"
@@ -56,7 +66,7 @@ export function Stream() {
       />
       <path
         data-stream
-        d={STREAM_D}
+        d={d}
         fill="none"
         stroke="var(--j-streamCore)"
         strokeWidth="4"
@@ -68,16 +78,17 @@ export function Stream() {
 }
 
 /** Continuous ground so scenes read as one connected world, not slides. */
-const GROUND_EDGE =
-  "M -200 900 C 400 884 900 906 1500 892 S 2500 880 3100 898 S 4200 886 5600 900";
-
-export function Ground() {
+export function Ground({ span = SCENE_W * 6 }) {
+  const edge = wave(span, 896, 14, 620, 41);
   return (
     <g>
-      <path d={`${GROUND_EDGE} L 5600 1080 L -200 1080 Z`} fill="var(--j-ground)" />
+      <path
+        d={`${edge} L ${span + OVERDRAW} ${FLOOR} L ${-OVERDRAW} ${FLOOR} Z`}
+        fill="var(--j-ground)"
+      />
       {/* rim light along the horizon, so the floor catches the stream's heat */}
       <path
-        d={GROUND_EDGE}
+        d={edge}
         fill="none"
         stroke="var(--j-accent)"
         strokeWidth="2.5"
@@ -98,6 +109,8 @@ export function Particles({ scene, kind, count = 22 }) {
   useEffect(() => {
     const dots = ref.current?.children;
     if (!dots) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     const tweens = [];
     Array.from(dots).forEach((dot, i) => {
       const cfg = {
@@ -140,11 +153,7 @@ export function Particles({ scene, kind, count = 22 }) {
   }[kind];
 
   return (
-    <g
-      data-atmos={scene.id}
-      ref={ref}
-      transform={`translate(${anchor(scene.i, 1.35)},0)`}
-    >
+    <g data-atmos={scene.id} ref={ref} transform={`translate(${anchor(scene.i, 1.35)},0)`}>
       {Array.from({ length: count }).map((_, i) => (
         <circle
           key={i}

@@ -3,8 +3,9 @@ import "../styles/home.css";
 import home from "../images/home-image.webp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import HeroTeaser from "../journey/HeroTeaser";
 
-export default function Home() {
+export default function Home({ onEnterJourney }) {
   const NAVBAR_HEIGHT = 80; // Fixed navbar height
 
   const scrollToSection = (sectionId) => {
@@ -55,6 +56,7 @@ export default function Home() {
             Get In Touch
           </button>
         </div>
+        <HeroTeaser onEnter={onEnterJourney} />
       </div>
       <div className="home-image-wrapper">
         <img

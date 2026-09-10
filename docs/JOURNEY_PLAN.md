@@ -65,10 +65,16 @@ Recorded so they are not re-litigated in a later session.
 | D8 | Text lives in **real DOM** over the SVG, never inside it | Selectable, translatable, screen-readable, indexable |
 | D9 | All career facts extracted to **`src/data/journey.js`**, consumed by both modes | Currently hardcoded in ~350 lines of JSX. This is the blocker for everything else |
 | D10 | Art style: **build both abstract + silhouette, compare real renders** | User chose to decide from screenshots, not descriptions |
+| D11 | **Silhouette places + the giant year numerals** from the abstract study | Resolves **O1**. Silhouettes carry the story warmth; the numerals give the scale and typographic punch |
+| D12 | Stepping scrubs the timeline at its **own natural rate** (`duration` = actual time distance, `ease: "none"`) | A fixed seek duration replayed beats faster than the Play button, and the mismatch was immediately noticeable |
+| D13 | **Rail clicks jump instantly** (`tl.seek(target, false)`); wheel / arrows / swipe stay smooth | Picking a year should land on that year, not replay the two decades in between. Note `suppressEvents` must be `false` or `onUpdate` never fires and the camera never moves |
+| D14 | **No "Level N" badges anywhere** | User disliked the framing. Quest *names* plus Constraint / Objective / Status stay — they carry the substance without the game scoring |
+| D15 | Heat ramps through **three poles** (cold → warm → hot), not two | A straight blue→orange RGB lerp passes through grey mud at the midpoint, which made the middle beats look washed out |
+| D16 | On phones the final beat lists the stack as **DOM chips**, not the SVG graph | A 400px portrait viewport shows only ~527 of the 1800 viewBox units. No amount of pull-back makes a wide graph readable there |
 
 ### Still open
 
-- [ ] **O1** Art style final pick (abstract vs silhouette vs blend) — pending render comparison
+- [x] **O1** ~~Art style final pick~~ — **resolved: silhouette + giant year numerals** (D11)
 - [ ] **O2** CRA → Vite migration? `react-scripts` 5 is unmaintained. ~1h. Recommended before Phase 2, not blocking
 - [ ] **O3** Does Résumé mode stay the default, or does a first-time visitor get actively offered the journey?
 - [ ] **O4** Phase 5 (RAG "ask my portfolio") — needs a backend + API key. Separate project
@@ -188,7 +194,7 @@ so it can ship independently of everything else.
 
 Each phase ships standalone. Never sit on a half-finished rewrite.
 
-### Phase 0 — Data extraction · Status: ☐ not started
+### Phase 0 — Data extraction · Status: ☑ done
 
 1. Create `src/data/journey.js` with all 6 beats plus education entries.
 2. Refactor `Experience.jsx` to `.map()` over it. Delete the literal markup.
@@ -196,16 +202,27 @@ Each phase ships standalone. Never sit on a half-finished rewrite.
 4. Verify the rendered site is **visually identical** (screenshot before/after).
 5. Commit — invisible change, unblocks everything else.
 
-*Optional to fold in here: **O2** CRA → Vite.*
+Landed as `src/data/journey.js` exporting `experience`, `education`, `beats`
+and `architecture`. `Experience.jsx` / `Education.jsx` are now ~15 lines each,
+both mapping over the data through a shared `TimelineCard`. Inline links inside
+bullets survived via `{Label}` / `*bold*` placeholders resolved by
+`src/components/richText.jsx`.
 
-### Phase 1 — Journey prototype (3 beats, both art styles) · Status: ☑ built, awaiting **O1**
+Beats do **not** map 1:1 onto résumé entries (the AML years are two beats, the
+two engineering degrees are one), so each beat carries `entryIds` pointing at
+the entries it came from.
+
+*Still optional: **O2** CRA → Vite.*
+
+### Phase 1 — Journey prototype (3 beats, both art styles) · Status: ☑ done, **O1** resolved
 
 1. `gsap` installed (3.15.0). ✅
 2. Opt-in via `?journey`, mounted in `src/index.js`, `React.lazy`-loaded. ✅
 3. `foundry → india → sweden` built — parallax camera, stream draw + freeze,
    heat shift, and the full driver set (wheel / arrows / swipe / rail / Play). ✅
 4. Both worlds built and switchable live from the top-left toggle. ✅
-5. Renders captured in `docs/prototype-shots/`. Pick a direction (**O1**). ⬅ next
+5. Renders compared; **silhouette + giant numerals** chosen (D11). The two
+   `World*` prototypes were replaced by a single `World.jsx` + `scenes.jsx`.
 
 **Run it:** `npm start` then open `http://localhost:3000/?journey`.
 
@@ -229,16 +246,52 @@ Fix, now encoded in `config.js`:
 - `FOCAL = 700` — the beat card covers roughly the left 700 viewBox units, so
   scene props must be authored in local `0..1080` to the right of it.
 
-### Phase 2 — Full journey · Status: ☐ not started
+#### More gotchas found in session 2
 
-1. Remaining beats: `origin`, `sprinta`, `architect`.
-2. Architect pull-back reveal (camera zooms out into the architecture diagram).
-3. Hero idling miniature + expand transition (**D2**).
-4. Progress rail, keyboard nav, `Play` autoplay, deep links.
-5. Reduced-motion fallback: static illustrated beat list, timeline never built.
-6. `React.lazy` the journey bundle so GSAP never touches first paint.
+1. **Stream draw fraction must be derived from world x, not `(i+1)/n`.**
+   `DrawSVG` works in percentages of path *length*, but the stream path
+   overdraws far past the world on both sides (`OVERDRAW`). A naive `(i+1)/n`
+   therefore ran the leading edge ahead of the camera — by the third beat the
+   tip had already left the frame and you stopped seeing it draw at all.
+   `drawTo()` in `timeline.js` now converts a target world x into a percentage
+   using `PATH_START` / `PATH_SPAN`.
 
-### Phase 3 — Résumé mode twist · Status: ☐ not started
+2. **Eagerly importing GSAP anywhere pulls it into the main bundle.** The hero
+   teaser originally used GSAP; because `Home.jsx` imports it eagerly, the main
+   bundle grew +30 kB and the lazy split was defeated. The teaser is CSS-only
+   now. *If you add motion to anything the hero renders, use CSS.*
+
+3. **`tl.seek(t)` suppresses events by default.** The camera and heat are
+   applied in the timeline's `onUpdate`, so a plain `seek()` moved the playhead
+   without moving the world. Must be `tl.seek(t, false)`.
+
+4. **A deep link must tell the driver its index.** `JourneyStage` seeks straight
+   to the hash's beat, but `useJourneyDriver` kept its own `idx` at 0, so
+   clicking beat 0 on the rail was a no-op (`clamped === idx.current`). The
+   driver now takes a `startIndex`.
+
+5. **The camera pull-back reveals the world's edges.** Scaling the camera group
+   to 0.82 widens the visible content box past the nominal frame. Every
+   full-width shape overdraws by `OVERDRAW` horizontally and down to `FLOOR`.
+
+6. **The stage needs an explicit `z-index`.** `position: fixed` alone left the
+   navbar (100) and sidebar painting over it. Stage is `2000`.
+
+### Phase 2 — Full journey · Status: ☑ done
+
+1. All six beats live: `origin`, `foundry`, `india`, `sweden`, `sprinta`, `architect`. ✅
+2. Architect pull-back reveal — camera scales to 0.82 and the stream branches
+   into the real architecture graph (Angular 21 / React Native → SAGE → Azure
+   Functions → CosmosDB / Vector Store / Azure AI Foundry). ✅
+3. Hero teaser + expand into the stage (**D2**). Deliberately **CSS-animated**,
+   not GSAP — see the bundle gotcha below. ✅
+4. Rail (instant jumps), keyboard, wheel, swipe, `Play`, `#journey/<id>` deep
+   links, `Esc` / "Skip to CV" to exit. ✅
+5. Reduced-motion fallback: `JourneyStatic.jsx`, no timeline ever built. ✅
+6. `React.lazy` in `App.jsx`; `body` scroll locked while open; stage at
+   `z-index: 2000` (the projects modal is 1000). ✅
+
+### Phase 3 — Résumé mode twist · Status: ☑ done
 
 1. `.timeline` rail vertical gradient — molten at the 2008 end, blue at 2025.
    Note the timeline renders newest-first, so orange sits at the **bottom**.
@@ -248,8 +301,13 @@ Fix, now encoded in `config.js`:
 3. `IntersectionObserver` sets section heat from the centred card, so the accent
    drifts as you read down. Subtle by design — most people will not notice
    consciously, which is why it works.
-4. Quest-log restyle of the cards (section 5).
-5. One `material:` line per card — *steel*, *steel + CAD*, *C#*, *TypeScript*.
+4. Quest-log restyle of the cards (section 5) — quest name + Constraint /
+   Objective / Status, no level badge (D14).
+5. One `material:` line per card — *steel*, *cast iron & steel*, *C#*,
+   *TypeScript + vectors*, *systems*.
+
+All five landed. `useTimelineHeat.jsx` drives `--sectionHeat`; each card carries
+`--cardHeat` and derives `--heatAccent` via `color-mix`.
 
 ### Phase 4 — Game mechanics · Status: ☐ not started
 
@@ -339,12 +397,19 @@ animation, and seamless parallax layering.
 
 | Date | Session did | Next up |
 |---|---|---|
-| 2026-09-10 | Brainstorm → locked D1–D10. Branch `feat/interactive-journey`, gsap 3.15.0, this plan. Phase 1 prototype built and rendered in both art styles (`docs/prototype-shots/`). Found and fixed the parallax scene-bleed gotcha. Footer year made dynamic (separate commit, cherry-pick to master). | Resolve **O1** art style, then Phase 0 data extraction before Phase 2 |
+| 2026-09-10 | Brainstorm → locked D1–D10. Branch `feat/interactive-journey`, gsap 3.15.0, this plan. Phase 1 prototype built and rendered in both art styles. Found and fixed the parallax scene-bleed gotcha. Footer year made dynamic (separate commit, cherry-pick to master). | Resolve **O1** art style, then Phase 0 before Phase 2 |
+| 2026-09-10 (cont.) | **O1 resolved** (D11). Phases 0, 2 and 3 all landed: data extraction, all six beats, architecture pull-back, hero teaser, rail / keyboard / swipe / autoplay / deep links, reduced-motion fallback, and the hot→cold résumé timeline with quest framing. Fixed scrub pacing (D12), rail instant-jump (D13), removed level badges (D14), three-pole heat ramp (D15), mobile architecture chips (D16). Six current renders in `docs/prototype-shots/`. | **Phase 4** game mechanics — skill tree and Ctrl+K palette are the cheap wins; the architecture puzzle is the headline one. Then **O2** Vite, **O3**, **O4** |
 
-### Prototype renders
+### Current renders
 
-| | Abstract | Silhouette |
-|---|---|---|
-| Foundry, 2011 | `docs/prototype-shots/abstract-0.png` | `docs/prototype-shots/silhouette-0.png` |
-| India, 2017 | `abstract-1.png` | `silhouette-1.png` |
-| Sweden, 2023 | `abstract-2.png` | `silhouette-2.png` |
+`docs/prototype-shots/beat-0.png` … `beat-5.png` — one per beat, plus
+`resume-experience.png`, `resume-education.png` and `mobile-final.png`.
+
+### Verified
+
+- Main bundle 92.3 kB gz (was 89.5 kB before any of this); GSAP 28.8 kB and the
+  journey 6.2 kB sit in separate lazy chunks.
+- No console errors across all six beats, résumé mode, and both tabs.
+- No horizontal overflow at 400px; rail fits (290px of 400px).
+- Rail jump 2025 → 2005 lands in under 400ms (heat 0 → 0.400) instead of
+  scrubbing the whole timeline.

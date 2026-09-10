@@ -1,4 +1,4 @@
-/* Journey prototype — stage chrome. All colour comes from --j-* custom
+/* Journey mode — stage chrome. All colour comes from --j-* custom
    properties written by heat.js each frame (4.3 in docs/JOURNEY_PLAN.md). */
 
 .j-stage {
@@ -8,6 +8,9 @@
 
   position: fixed;
   inset: 0;
+  /* Above every other stacking context on the site — the projects modal is
+     the current maximum at 1000. */
+  z-index: 2000;
   overflow: hidden;
   background: #0a0705;
   color: #f5f7fa;
@@ -59,20 +62,9 @@
   margin-bottom: 0.9rem;
 }
 
-.j-level {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  color: var(--j-accent);
-  background: color-mix(in srgb, var(--j-accent) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--j-accent) 40%, transparent);
-}
-
 .j-year {
   font-size: 0.8rem;
+  font-weight: 600;
   letter-spacing: 0.1em;
   color: #9aa7bd;
 }
@@ -116,6 +108,9 @@
 }
 
 .j-material {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   font-size: 0.78rem;
   letter-spacing: 0.06em;
   color: #8593a9;
@@ -125,6 +120,25 @@
 
 .j-material strong {
   color: var(--j-accent);
+}
+
+.j-status {
+  margin-left: auto;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7c8a9f;
+}
+
+.j-status.active {
+  color: var(--j-accent);
+  font-weight: 700;
+}
+
+.j-brand {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: #9aa7bd;
 }
 
 /* --- chrome -------------------------------------------------------------- */
@@ -141,17 +155,6 @@
   padding: clamp(0.75rem, 2vw, 1.5rem);
 }
 
-.j-switch {
-  display: flex;
-  padding: 0.25rem;
-  gap: 0.25rem;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 0.06);
-  border: 1px solid rgb(255 255 255 / 0.12);
-  backdrop-filter: blur(10px);
-}
-
-.j-switch button,
 .j-play,
 .j-nav {
   font: inherit;
@@ -165,13 +168,9 @@
   transition: background 0.2s, color 0.2s;
 }
 
-.j-switch button.on {
-  background: var(--j-accent);
-  color: #0a0705;
-  font-weight: 600;
-}
-
 .j-exit {
+  font: inherit;
+  cursor: pointer;
   font-size: 0.78rem;
   letter-spacing: 0.04em;
   color: #cdd7e6;
@@ -284,8 +283,29 @@
     gap: 0.4rem 0;
   }
   .j-hint,
-  .j-rail-label {
+  .j-rail-label,
+  .j-brand {
     display: none;
+  }
+
+  /* The rail must fit 6 beats plus Play inside a phone. Swipe and the
+     keyboard already cover stepping, so the arrows are the first to go. */
+  .j-nav {
+    display: none;
+  }
+  .j-rail {
+    max-width: calc(100vw - 1.5rem);
+    padding: 0.35rem 0.4rem;
+  }
+  .j-rail ol button {
+    padding: 0.45rem 0.4rem;
+  }
+  .j-tick {
+    width: 1.35rem;
+  }
+  .j-play {
+    margin-left: 0.15rem;
+    padding: 0.4rem 0.7rem;
   }
 }
 
@@ -293,4 +313,130 @@
   .j-world [data-layer] {
     will-change: auto;
   }
+}
+
+/* ==========================================================================
+   Reduced-motion fallback. No timeline is built at all; the same six beats
+   read as a list, with heat carried by CSS alone.
+   ========================================================================== */
+
+.j-static {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  overflow-y: auto;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: #0a0e15;
+  color: #eef3fa;
+  font-family: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.j-static header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.j-static-lede {
+  max-width: 42rem;
+  margin: 0 auto 2.5rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #b3c0d4;
+}
+
+.j-static-list {
+  list-style: none;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.j-static-list li {
+  --j-accent: color-mix(in srgb, #ff6a00 calc(var(--jHeat) * 100%), #3b82f6);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--j-accent) 32%, transparent);
+  background: color-mix(in srgb, var(--j-accent) 6%, #0d131d);
+}
+
+.j-static-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.j-static-list h2 {
+  font-size: 1.35rem;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.j-static-list h3 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #b3c0d4;
+  margin-bottom: 1rem;
+}
+
+.j-static-list dl {
+  display: grid;
+  gap: 0.5rem 0;
+  margin-bottom: 1rem;
+}
+
+.j-static-list dt {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--j-accent) 80%, #ffffff);
+}
+
+.j-static-list dd {
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: #dbe3ef;
+}
+
+/* The architecture graph is a landscape object. On phones the final beat
+   lists the same stack as text in the card and the SVG graph is hidden. */
+.j-arch-chips {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .j-world [data-arch] {
+    display: none;
+  }
+
+  .j-arch-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+  }
+
+  .j-arch-chips li {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    opacity: 0.9;
+  }
+
+  .j-arch-chips li[data-kind="client"] { color: #7dd3fc; }
+  .j-arch-chips li[data-kind="shared"] { color: #a5b4fc; }
+  .j-arch-chips li[data-kind="compute"] { color: #93c5fd; }
+  .j-arch-chips li[data-kind="data"] { color: #86efac; }
+  .j-arch-chips li[data-kind="ai"] { color: #fca5a5; }
 }

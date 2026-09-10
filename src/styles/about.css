@@ -867,3 +867,144 @@
     padding: 4px 8px;
   }
 }
+
+/* ==========================================================================
+   Hot -> cold résumé timeline (Phase 3, docs/JOURNEY_PLAN.md)
+
+   Each card carries --cardHeat (1 = the foundry, 0 = today) from
+   src/data/journey.js, and --heatAccent mixes the site accent toward molten
+   orange by that amount. useTimelineHeat.jsx additionally tracks the centred
+   card in --sectionHeat so the rail drifts as you read down.
+   ========================================================================== */
+
+.heat-timeline {
+  --moltenColor: #f97316;
+  --cardHeat: 0;
+}
+
+.heat-timeline .timeline-item {
+  --heatAccent: color-mix(
+    in srgb,
+    var(--moltenColor) calc(var(--cardHeat) * 100%),
+    var(--accentColor)
+  );
+}
+
+/* The rail runs cold at the top (most recent) to molten at the bottom. */
+.heat-timeline::before {
+  background: linear-gradient(
+    to bottom,
+    var(--accentColor),
+    color-mix(in srgb, var(--moltenColor) 55%, var(--accentColor)) 70%,
+    color-mix(in srgb, var(--moltenColor) 85%, transparent)
+  );
+}
+
+.heat-timeline .timeline-marker {
+  border-color: var(--heatAccent);
+}
+
+.heat-timeline .timeline-marker.current {
+  background: var(--heatAccent);
+}
+
+.heat-timeline .experience-card::before {
+  background: var(--heatAccent);
+}
+
+.heat-timeline .experience-card:hover {
+  border-color: var(--heatAccent);
+}
+
+.heat-timeline .experience-date svg,
+.heat-timeline .experience-location svg {
+  color: var(--heatAccent);
+}
+
+.heat-timeline .tech-tag {
+  background: color-mix(in srgb, var(--heatAccent) 10%, transparent);
+  color: var(--heatAccent);
+  border-color: color-mix(in srgb, var(--heatAccent) 25%, transparent);
+}
+
+.heat-timeline .tech-tag:hover {
+  background: var(--heatAccent);
+  color: #fff;
+}
+
+/* --- quest framing ------------------------------------------------------- */
+
+.quest-block {
+  margin: var(--space-md) 0 var(--space-lg);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--heatAccent) 22%, transparent);
+  background: color-mix(in srgb, var(--heatAccent) 5%, transparent);
+}
+
+.quest-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.quest-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--textPrimary);
+}
+
+.quest-status {
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--textMuted);
+  margin-left: auto;
+}
+
+.quest-status.active {
+  color: var(--heatAccent);
+  font-weight: 600;
+}
+
+.quest-brief {
+  display: grid;
+  gap: 2px;
+}
+
+.quest-brief dt {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--heatAccent);
+  margin-top: var(--space-xs);
+}
+
+.quest-brief dd {
+  font-size: var(--font-size-sm);
+  line-height: var(--leading-normal);
+  color: var(--textSecondary);
+}
+
+.card-material {
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--borderColor);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.06em;
+  color: var(--textMuted);
+}
+
+.card-material strong {
+  color: var(--heatAccent);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .quest-status {
+    margin-left: 0;
+  }
+}

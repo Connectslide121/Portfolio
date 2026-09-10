@@ -1,0 +1,121 @@
+import React from "react";
+import { architecture } from "../data/journey";
+import { BEATS, SCENE_W, VIEW_H, FOCAL, anchor, OVERDRAW, FLOOR } from "./config";
+import { JourneyDefs, Sky, Stream, Ground, Particles } from "./parts";
+import { SCENES, ArchitectSystem } from "./scenes";
+
+// Silhouette places plus the giant year numerals from the abstract study —
+// the blend chosen in session 2 (resolves O1).
+
+const KINDS = ["dust", "spark", "dust", "snow", "snow", "snow"];
+
+/** Ambient ridgeline for a whole layer — seeded so it stays stable per render. */
+const ridge = (y, amp, step, seed) => {
+  const pts = [];
+  let n = seed;
+  const rnd = () => ((n = (n * 9301 + 49297) % 233280) / 233280);
+  const end = SCENE_W * BEATS.length + OVERDRAW;
+  for (let x = -OVERDRAW; x <= end; x += step) {
+    pts.push(`${x},${(y - rnd() * amp).toFixed(0)}`);
+  }
+  return `M ${pts.join(" L ")} L ${end} ${FLOOR} L ${-OVERDRAW} ${FLOOR} Z`;
+};
+
+export default function World() {
+  return (
+    <svg
+      className="j-world"
+      viewBox={`0 0 ${SCENE_W} ${VIEW_H}`}
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true"
+    >
+      <JourneyDefs />
+      <Sky />
+
+      {/* Everything inside the camera group so the final beat can pull back. */}
+      <g data-camera>
+        {/* far — ambient ridgeline only, never scene-specific */}
+        <g data-layer="far">
+          <path d={ridge(660, 150, 240, 7)} fill="var(--j-far)" />
+        </g>
+
+        {/* type — the year, huge and slow, crossfaded so neighbours never leak */}
+        <g data-layer="type">
+          {BEATS.map((beat, i) => (
+            <text
+              key={beat.id}
+              data-atmos={beat.id}
+              x={anchor(i, 0.38) + FOCAL + 30}
+              y={584}
+              fill="var(--j-far)"
+              fontSize="392"
+              fontWeight="800"
+              letterSpacing="10"
+              opacity="0.62"
+            >
+              {beat.numeral}
+            </text>
+          ))}
+        </g>
+
+        {/* mid — a second, nearer ridge for depth */}
+        <g data-layer="mid">
+          <path d={ridge(778, 70, 180, 31)} fill="var(--j-far)" opacity="0.6" />
+        </g>
+
+        {/* scene — the places, crossfaded per beat */}
+        <g data-layer="scene">
+          {BEATS.map((beat, i) => {
+            const Scene = SCENES[i];
+            const ax = anchor(i, 0.9) + FOCAL;
+            return (
+              <g key={beat.id} data-atmos={beat.id}>
+                {/* the Indian sun, behind its skyline */}
+                {beat.id === "india" && (
+                  <circle cx={ax + 590} cy="316" r="236" fill="var(--j-accent)" opacity="0.2" />
+                )}
+                {Scene ? (
+                  <Scene ax={ax} />
+                ) : (
+                  <g data-arch>
+                    <ArchitectSystem
+                      ax={ax - 60}
+                      nodes={architecture.nodes}
+                      edges={architecture.edges}
+                    />
+                  </g>
+                )}
+              </g>
+            );
+          })}
+        </g>
+
+        {/* ground — the continuous floor and the stream */}
+        <g data-layer="ground">
+          <Ground span={SCENE_W * BEATS.length} />
+          <Stream span={SCENE_W * BEATS.length} />
+        </g>
+
+        {/* fore — scrub and particles */}
+        <g data-layer="fore">
+          {BEATS.map((beat, i) => (
+            <g key={beat.id} data-atmos={beat.id} fill="var(--j-ground)">
+              {Array.from({ length: 12 }).map((_, r) => (
+                <ellipse
+                  key={r}
+                  cx={anchor(i, 1.35) + 90 + r * 156}
+                  cy={944 + (r % 4) * 16}
+                  rx={38 + (r % 3) * 18}
+                  ry={12}
+                />
+              ))}
+            </g>
+          ))}
+          {BEATS.map((beat, i) => (
+            <Particles key={beat.id} scene={{ id: beat.id, i }} kind={KINDS[i]} />
+          ))}
+        </g>
+      </g>
+    </svg>
+  );
+}

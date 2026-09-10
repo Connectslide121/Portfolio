@@ -1,49 +1,79 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/journey.css";
+import { architecture } from "../data/journey";
 import { BEATS } from "./config";
 import { buildJourney } from "./timeline";
 import { useJourneyDriver } from "./useJourneyDriver";
-import WorldAbstract from "./WorldAbstract";
-import WorldSilhouette from "./WorldSilhouette";
+import World from "./World";
+import JourneyStatic from "./JourneyStatic";
 
-const STYLES = [
-  { id: "abstract", label: "Abstract", World: WorldAbstract },
-  { id: "silhouette", label: "Silhouette", World: WorldSilhouette },
-];
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export default function JourneyStage() {
+/** #journey/india deep-links straight to that beat. */
+const beatFromHash = () => {
+  const id = window.location.hash.replace(/^#\/?journey\/?/, "");
+  const i = BEATS.findIndex((b) => b.id === id);
+  return i < 0 ? 0 : i;
+};
+
+export default function JourneyStage({ onExit }) {
   const stageRef = useRef(null);
-  const [styleId, setStyleId] = useState("abstract");
   const [tl, setTl] = useState(null);
 
-  const { World } = STYLES.find((s) => s.id === styleId);
+  // No timeline at all under reduced motion — the beats are served as a
+  // readable list instead (guardrail in docs/JOURNEY_PLAN.md §8).
+  const [reduced] = useState(prefersReducedMotion);
+  const [start] = useState(beatFromHash);
 
-  // Rebuild the timeline when the art style swaps — same beats, same labels,
-  // different world. Proves the animation is independent of the art.
   useEffect(() => {
+    if (reduced) return;
     const root = stageRef.current;
     if (!root) return;
+
     const built = buildJourney({ root });
     setTl(built.tl);
-    built.tl.tweenTo(BEATS[0].id, { duration: 1.2 });
+
+    if (start === 0) {
+      built.tl.tweenTo(BEATS[0].id, { duration: 1.2 });
+    } else {
+      built.tl.seek(BEATS[start].id);
+      built.render();
+    }
+
     return () => {
       built.tl.kill();
       setTl(null);
     };
-  }, [styleId]);
+  }, [reduced, start]);
 
-  const { index, goTo, next, prev, playing, togglePlay } = useJourneyDriver(tl, stageRef);
+  const { index, jumpTo, next, prev, playing, togglePlay } = useJourneyDriver(
+    tl,
+    stageRef,
+    reduced,
+    start
+  );
+
+  // Keep the URL shareable as you move.
+  useEffect(() => {
+    if (reduced) return;
+    const id = BEATS[index]?.id;
+    if (id) window.history.replaceState(null, "", `#journey/${id}`);
+  }, [index, reduced]);
+
+  if (reduced) return <JourneyStatic onExit={onExit} />;
 
   return (
-    <div className="j-stage" ref={stageRef} data-style={styleId}>
-      <World key={styleId} />
+    <div className="j-stage" ref={stageRef}>
+      <World />
 
-      {/* Beat cards live in real DOM over the SVG — selectable, readable, indexable (D8) */}
+      {/* Beat cards live in real DOM over the SVG — selectable, readable,
+          indexable (D8) */}
       <div className="j-cards">
         {BEATS.map((beat) => (
           <article className="j-card" data-card={beat.id} key={beat.id}>
             <div className="j-card-head">
-              <span className="j-level">Level {beat.level}</span>
               <span className="j-year">{beat.year}</span>
             </div>
             <h2>{beat.role}</h2>
@@ -56,8 +86,20 @@ export default function JourneyStage() {
               <dt>Objective</dt>
               <dd>{beat.objective}</dd>
             </dl>
+            {beat.id === "architect" && (
+              <ul className="j-arch-chips">
+                {architecture.nodes.map((n) => (
+                  <li key={n.id} data-kind={n.kind}>
+                    {n.label}
+                  </li>
+                ))}
+              </ul>
+            )}
             <p className="j-material">
               material: <strong>{beat.material}</strong>
+              <span className={`j-status${beat.status === "In progress" ? " active" : ""}`}>
+                {beat.status}
+              </span>
             </p>
           </article>
         ))}
@@ -65,20 +107,12 @@ export default function JourneyStage() {
 
       {/* chrome */}
       <div className="j-topbar">
-        <div className="j-switch" role="group" aria-label="Art style">
-          {STYLES.map((s) => (
-            <button
-              key={s.id}
-              className={s.id === styleId ? "on" : ""}
-              onClick={() => setStyleId(s.id)}
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
-        <a className="j-exit" href="./">
+        <p className="j-brand">
+          Jon Mendizabal <span className="j-dot">·</span> the journey
+        </p>
+        <button className="j-exit" onClick={onExit}>
           Skip to CV →
-        </a>
+        </button>
       </div>
 
       <div className="j-rail">
@@ -90,11 +124,12 @@ export default function JourneyStage() {
             <li key={beat.id}>
               <button
                 className={i === index ? "on" : ""}
-                onClick={() => goTo(i)}
+                onClick={() => jumpTo(i)}
                 aria-current={i === index}
+                title={`${beat.year} — ${beat.role}`}
               >
                 <span className="j-tick" />
-                <span className="j-rail-label">{beat.year.split(" ")[0]}</span>
+                <span className="j-rail-label">{beat.railLabel}</span>
               </button>
             </li>
           ))}
