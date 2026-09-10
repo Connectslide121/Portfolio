@@ -323,6 +323,7 @@ export const beats = [
     org: "Side projects, games & packages",
     role: "Selected Work",
     material: "whatever fits the problem",
+    note: "Things built to learn with, outside the day job — web apps, a couple of games, and a published npm package. Every tile links to its code and, where there is one, a live demo.",
     kind: "projects",
     status: "Ongoing",
     heat: 0,
@@ -338,12 +339,10 @@ export const beats = [
 export const galleryProjects = [
   "CodepenAI",
   "DAIETpedia",
-  "Contact book",
   "Plastic Slurg",
-  "Listr",
+  "Contact book",
   "Sokoban game",
   "Password input npm package",
-  "AI image generator",
 ];
 
 /**

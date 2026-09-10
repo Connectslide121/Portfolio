@@ -55,7 +55,7 @@ export default function JourneyStage({ onExit }) {
     tl,
     stageRef,
     reduced,
-    start
+    start,
   );
 
   // Keep the URL shareable as you move.
@@ -69,7 +69,9 @@ export default function JourneyStage({ onExit }) {
   const exitToProjects = () => {
     onExit();
     requestAnimationFrame(() => {
-      document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+      document
+        .getElementById("projects")
+        ?.scrollIntoView({ behavior: "smooth" });
     });
   };
 
@@ -81,8 +83,6 @@ export default function JourneyStage({ onExit }) {
     <div className="j-stage" ref={stageRef}>
       <World />
 
-      {/* Beat cards live in real DOM over the SVG — selectable, readable,
-          indexable (D8) */}
       {/* Beat content lives in real DOM over the SVG — selectable, readable,
           indexable (D8). The slot carries data-card so GSAP animates the
           wrapper: it owns the transform, leaving the content free to be
@@ -97,46 +97,56 @@ export default function JourneyStage({ onExit }) {
             data-kind={beat.kind || "story"}
             key={beat.id}
           >
-            {beat.kind === "projects" ? (
-              <ProjectGallery playable={nearEnd} onSeeAll={exitToProjects} />
-            ) : (
-              <article className="j-card">
-                <div className="j-card-head">
-                  <span className="j-year">{beat.year}</span>
-                </div>
-                <h2>{beat.role}</h2>
-                <h3>
-                  {beat.org} <span className="j-dot">·</span> {beat.place}
-                </h3>
+            <article className="j-card">
+              <div className="j-card-head">
+                <span className="j-year">{beat.year}</span>
+              </div>
+              <h2>{beat.role}</h2>
+              <h3>
+                {beat.org} <span className="j-dot">·</span> {beat.place}
+              </h3>
 
+              {beat.note ? (
+                <p className="j-card-note">{beat.note}</p>
+              ) : (
                 <dl>
                   <dt>Constraint</dt>
                   <dd>{beat.constraint}</dd>
                   <dt>Objective</dt>
                   <dd>{beat.objective}</dd>
                 </dl>
+              )}
 
-                {beat.id === "architect" && (
-                  <ul className="j-arch-chips">
-                    {stack.flatMap((group) =>
-                      group.items.map((item) => (
-                        <li key={item} data-kind={group.tint}>
-                          {item}
-                        </li>
-                      ))
-                    )}
-                  </ul>
-                )}
+              {beat.id === "architect" && (
+                <ul className="j-arch-chips">
+                  {stack.flatMap((group) =>
+                    group.items.map((item) => (
+                      <li key={item} data-kind={group.tint}>
+                        {item}
+                      </li>
+                    )),
+                  )}
+                </ul>
+              )}
 
-                <p className="j-material">
-                  material: <strong>{beat.material}</strong>
-                  <span
-                    className={`j-status${beat.status === "In progress" ? " active" : ""}`}
-                  >
-                    {beat.status}
-                  </span>
-                </p>
-              </article>
+              <p className="j-material">
+                material: <strong>{beat.material}</strong>
+                <span
+                  className={`j-status${beat.status === "In progress" ? " active" : ""}`}
+                >
+                  {beat.status}
+                </span>
+              </p>
+            </article>
+
+            {/* The closing beat keeps its explainer card and puts the wall of
+                actual work beside it. */}
+            {beat.kind === "projects" && (
+              <ProjectGallery
+                mounted={nearEnd}
+                active={BEATS[index]?.id === "work"}
+                onSeeAll={exitToProjects}
+              />
             )}
           </div>
         ))}
@@ -154,7 +164,12 @@ export default function JourneyStage({ onExit }) {
       </div>
 
       <div className="j-rail">
-        <button className="j-nav" onClick={prev} disabled={index === 0} aria-label="Previous beat">
+        <button
+          className="j-nav"
+          onClick={prev}
+          disabled={index === 0}
+          aria-label="Previous beat"
+        >
           ‹
         </button>
         <ol>

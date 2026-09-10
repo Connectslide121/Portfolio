@@ -1,47 +1,46 @@
-import React, { useCallback, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { galleryProjects, projectBlurbs } from "../data/journey";
 import { mediaFor } from "../data/projectMedia";
 import { featuredProjects, allProjects } from "../components/projectList";
 
-// An editorial gallery wall: uneven tiles of real screenshots and clips, each
-// opening a detail overlay on hover or keyboard focus. This replaces the
-// placeholder SVG frames that used to sit behind the closing beat.
+// A wall of pinned work: real screenshots and clips at deliberately uneven
+// sizes, angles and positions. A tidy grid read as a spreadsheet; this is
+// closer to prints tacked up on a wall.
 
 const ALL = [...featuredProjects, ...allProjects];
 const byTitle = (title) => ALL.find((p) => p.title === title);
 
-// Uneven spans so the wall reads as a gallery rather than a spreadsheet.
-// These tile a 4x3 grid exactly (4 + 1 + 1 + 1 + 1 + 2 + 1 + 1 = 12 cells),
-// so dense auto-placement leaves no holes:
-//   row 1: [ hero    ][ 1 ][ 2 ]
-//   row 2: [ hero    ][ 3 ][ 4 ]
-//   row 3: [ wide    ][ 6 ][ 7 ]
-const SPANS = [
-  { column: "span 2", row: "span 2" }, // hero
-  { column: "span 1", row: "span 1" },
-  { column: "span 1", row: "span 1" },
-  { column: "span 1", row: "span 1" },
-  { column: "span 1", row: "span 1" },
-  { column: "span 2", row: "span 1" }, // wide
-  { column: "span 1", row: "span 1" },
-  { column: "span 1", row: "span 1" },
+// Hand-placed, as percentages of the wall. Kept inside 0..100 on both axes,
+// with only slight overlaps so the arrangement looks casual rather than
+// broken. Hovering straightens a tile and lifts it above its neighbours.
+const LAYOUT = [
+  { l: "0%", t: "5%", w: "45%", h: "53%", rot: "-1.6deg", z: 3 },
+  { l: "48%", t: "0%", w: "31%", h: "39%", rot: "1.5deg", z: 2 },
+  { l: "79%", t: "9%", w: "21%", h: "35%", rot: "-2.4deg", z: 1 },
+  { l: "5%", t: "62%", w: "35%", h: "37%", rot: "2deg", z: 2 },
+  { l: "43%", t: "45%", w: "34%", h: "43%", rot: "-1.1deg", z: 4 },
+  { l: "78%", t: "52%", w: "22%", h: "37%", rot: "2.6deg", z: 2 },
 ];
 
-function Tile({ project, span, playable }) {
+function Tile({ project, place, active }) {
   const media = mediaFor(project.title);
   const videoRef = useRef(null);
 
-  // Only play on pointer/focus, so eight clips are not decoding at once.
-  const play = useCallback(() => {
-    const el = videoRef.current;
-    if (el) el.play().catch(() => {});
-  }, []);
-  const pause = useCallback(() => {
+  // Autoplay, but only while this beat is on screen — six clips decoding
+  // through the whole journey would be wasteful, and the overlay means there
+  // is no hover left to start them with.
+  useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
-    el.pause();
-    el.currentTime = 0;
-  }, []);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    if (active) {
+      el.play().catch(() => {});
+    } else {
+      el.pause();
+      el.currentTime = 0;
+    }
+  }, [active]);
 
   const links = [
     project.repository && { label: "Code", href: project.repository },
@@ -51,39 +50,41 @@ function Tile({ project, span, playable }) {
   return (
     <figure
       className="j-tile"
-      style={{ gridColumn: span.column, gridRow: span.row }}
-      onMouseEnter={play}
-      onMouseLeave={pause}
-      onFocus={play}
-      onBlur={pause}
+      style={{
+        "--l": place.l,
+        "--t": place.t,
+        "--w": place.w,
+        "--h": place.h,
+        "--rot": place.rot,
+        zIndex: place.z,
+      }}
     >
-      {playable && media.type === "video" ? (
+      {media.type === "video" ? (
         <video
           ref={videoRef}
           className="j-tile-media"
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           aria-label={project.title}
         >
           <source src={media.src} type="video/mp4" />
         </video>
       ) : (
-        playable && (
-          <img className="j-tile-media" src={media.src} alt={project.title} loading="lazy" />
-        )
+        <img className="j-tile-media" src={media.src} alt={project.title} loading="lazy" />
       )}
 
-      {/* Always-visible label, so the wall is readable without hovering */}
+      {/* Readable without hovering — the wall is not a guessing game. */}
       <figcaption className="j-tile-label">{project.title}</figcaption>
 
-      {/* Detail overlay, revealed on hover or keyboard focus */}
+      {/* Detail drawer. Covers the lower part only, so the clip keeps playing
+          in view above it. */}
       <div className="j-tile-detail">
         <h4>{project.title}</h4>
         <p>{projectBlurbs[project.title] || project.description}</p>
         {project.technologies && (
-          <p className="j-tile-tech">{project.technologies.slice(0, 6).join(" · ")}</p>
+          <p className="j-tile-tech">{project.technologies.slice(0, 5).join(" · ")}</p>
         )}
         <div className="j-tile-links">
           {links.map((link) => (
@@ -97,31 +98,26 @@ function Tile({ project, span, playable }) {
   );
 }
 
-export default function ProjectGallery({ playable, onSeeAll }) {
+export default function ProjectGallery({ mounted, active, onSeeAll }) {
   const projects = galleryProjects.map(byTitle).filter(Boolean);
 
   return (
     <div className="j-gallery">
-      <header>
-        <div>
-          <h2>Selected Work</h2>
-          <p>Side projects, games &amp; packages · hover any tile for detail</p>
-        </div>
-        <button type="button" onClick={onSeeAll}>
-          See all {ALL.length} projects <span aria-hidden="true">→</span>
-        </button>
-      </header>
-
-      <div className="j-tiles">
-        {projects.map((project, i) => (
-          <Tile
-            key={project.title}
-            project={project}
-            span={SPANS[i % SPANS.length]}
-            playable={playable}
-          />
-        ))}
+      <div className="j-wall">
+        {mounted &&
+          projects.map((project, i) => (
+            <Tile
+              key={project.title}
+              project={project}
+              place={LAYOUT[i % LAYOUT.length]}
+              active={active}
+            />
+          ))}
       </div>
+
+      <button type="button" className="j-see-all" onClick={onSeeAll}>
+        See all {ALL.length} projects <span aria-hidden="true">→</span>
+      </button>
     </div>
   );
 }
