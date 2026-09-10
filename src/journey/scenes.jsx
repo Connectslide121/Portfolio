@@ -319,6 +319,6 @@ export const SCENE_BY_BEAT = {
   india: IndiaCity,
   sweden: SwedenForest,
   sprinta: Office,
-  architect: null, // the stack diagram is drawn from data instead
-  work: null, // the closing gallery is real DOM — see ProjectGallery.jsx
+  architect: Office, // same office as 2024; the stack sits over it
+  recap: null, // the closing slide is the lifted overview + the work wall
 };

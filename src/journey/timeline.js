@@ -28,8 +28,9 @@ gsap.registerPlugin(DrawSVGPlugin);
  */
 export function buildJourney({ root }) {
   // `overview` lifts the camera: 0 is the linear stage, 1 is the bird's-eye
-  // layout. Everything in between is a genuine blend, so toggling it reads as
-  // the camera rising rather than a different screen appearing.
+  // layout of the closing recap. It is tweened by the timeline itself rather
+  // than by a button, so arriving at the last beat IS the camera rising, and
+  // stepping back lowers it again.
   const camera = { x: 0, heat: BEATS[0].heat, overview: 0 };
 
   // A portrait phone only shows roughly a quarter of the viewBox's width, so
@@ -132,15 +133,36 @@ export function buildJourney({ root }) {
   // just noise, so it recedes as the camera lifts.
   const envLayers = root.querySelectorAll("[data-layer]");
   const ovPath = root.querySelector("[data-ov-path]");
+  const ovTrail = root.querySelectorAll("[data-ov-trail]");
+  const ovDots = root.querySelectorAll("[data-ov-dot]");
 
   const render = () => {
     setters.forEach((s) => s.set(camera.x * s.k));
     projectScenes();
     applyHeat(root, camera.heat);
 
-    const env = (1 - camera.overview * 0.82).toFixed(3);
+    const ov = camera.overview;
+    const env = (1 - ov * 0.82).toFixed(3);
     envLayers.forEach((el) => el.setAttribute("opacity", env));
-    if (ovPath) ovPath.setAttribute("opacity", (camera.overview * 0.9).toFixed(3));
+    // The stack is a diagram, not a place — unreadable once laid out, so it
+    // goes as the camera rises and the office behind it carries the beat.
+    if (archGroup) archGroup.setAttribute("opacity", (1 - Math.min(1, ov * 1.6)).toFixed(3));
+
+    if (ovPath) {
+      ovPath.setAttribute("opacity", Math.min(1, ov * 1.4).toFixed(3));
+      // Draw the trail on as the camera rises; the road appears as you gain
+      // the height to see it.
+      const drawn = Math.max(0, Math.min(1, (ov - 0.15) / 0.7));
+      ovTrail.forEach((el) => {
+        el.setAttribute("stroke-dasharray", "1 1");
+        el.setAttribute("stroke-dashoffset", (1 - drawn).toFixed(4));
+      });
+      ovDots.forEach((el, i) => {
+        const lit = Math.max(0, Math.min(1, drawn * OVERVIEW.length - i));
+        el.setAttribute("opacity", lit.toFixed(3));
+        el.setAttribute("r", (3 + lit * 3).toFixed(2));
+      });
+    }
   };
 
   // Every scene-specific group for a beat — props, numerals, particles — is
@@ -152,6 +174,7 @@ export function buildJourney({ root }) {
   const cards = BEATS.map((b) => root.querySelector(`[data-card="${b.id}"]`));
   const stream = root.querySelectorAll("[data-stream]");
   const cameraGroup = root.querySelector("[data-camera]");
+  const archGroup = root.querySelector("[data-arch]");
   const archNodes = root.querySelectorAll("[data-arch-node]");
   const archEdges = root.querySelectorAll("[data-arch-edge] path");
 
@@ -190,7 +213,16 @@ export function buildJourney({ root }) {
 
     tl.to(cards[i - 1], { autoAlpha: 0, y: -24, duration: 0.5 })
       // Camera and heat travel together: one tween, everything follows.
-      .to(camera, { x: -i * SCENE_W, heat: beat.heat, duration: 2.4 }, "<")
+      .to(
+        camera,
+        {
+          x: -i * SCENE_W,
+          heat: beat.heat,
+          overview: beat.id === "recap" ? 1 : 0,
+          duration: 2.4,
+        },
+        "<"
+      )
       .to(stream, { drawSVG: drawTo(i), duration: 2.4 }, "<")
       .to(atmos[i], { autoAlpha: 1, duration: 1.3 }, "<0.5")
       .to(atmos[i - 1], { autoAlpha: 0, duration: 1.3 }, "<");

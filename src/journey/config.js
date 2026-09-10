@@ -85,15 +85,16 @@ export const FADE_EDGE = 0.11; // fraction of the span spent fading, each side
 // meanders like ground that was walked, not a tidy arc. Each entry is where
 // that scene's ground-contact point lands, plus how small it gets — the
 // variation in scale is what gives the plane its depth.
-// Only the six career beats are laid out. "My Work" is a gallery, not a
-// place, so it has no silhouette to show here and drops out of the view.
+// Only the six career beats are laid out — the recap itself is not a place.
+// They sit in the LOWER half: the recap slide puts the project wall above
+// them, so the closing frame is the work and the road that led to it.
 export const OVERVIEW = [
-  { x: 238, y: 452, s: 0.235 },
-  { x: 470, y: 628, s: 0.285 },
-  { x: 726, y: 548, s: 0.255 },
-  { x: 980, y: 726, s: 0.3 },
-  { x: 1232, y: 508, s: 0.245 },
-  { x: 1516, y: 664, s: 0.285 },
+  { x: 240, y: 660, s: 0.195 },
+  { x: 466, y: 792, s: 0.235 },
+  { x: 722, y: 710, s: 0.21 },
+  { x: 972, y: 836, s: 0.245 },
+  { x: 1230, y: 678, s: 0.2 },
+  { x: 1512, y: 800, s: 0.235 },
 ];
 
 // Total world width, and where full-width paths start/end.

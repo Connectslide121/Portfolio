@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
 import "../styles/journey.css";
 import { stack } from "../data/journey";
 
@@ -57,46 +56,14 @@ export default function JourneyStage({ onExit }) {
     };
   }, [reduced, start]);
 
-  const [overview, setOverview] = useState(false);
-
-  // Tween the camera between the linear stage and the bird's-eye layout. The
-  // scenes themselves move, so this reads as the camera rising.
-  useEffect(() => {
-    const b = built.current;
-    if (!b) return;
-    const tween = gsap.to(b.camera, {
-      overview: overview ? 1 : 0,
-      duration: overview ? 1.15 : 0.95,
-      ease: "power3.inOut",
-      onUpdate: b.render,
-    });
-    return () => tween.kill();
-  }, [overview, tl]);
-
-  // Stepping inputs are muted while the overview is open, so arrows and the
-  // wheel drive the map's own affordances rather than the stage behind it.
   const { index, jumpTo, next, prev } = useJourneyDriver(
     tl,
     stageRef,
-    reduced || overview,
+    reduced,
     start,
   );
 
-  // O toggles the overview; Esc closes it before it would leave the journey.
-  useEffect(() => {
-    if (reduced) return;
-    const onKey = (e) => {
-      if (e.key === "o" || e.key === "O") {
-        e.preventDefault();
-        setOverview((v) => !v);
-      } else if (e.key === "Escape" && overview) {
-        e.stopPropagation();
-        setOverview(false);
-      }
-    };
-    window.addEventListener("keydown", onKey, true);
-    return () => window.removeEventListener("keydown", onKey, true);
-  }, [reduced, overview]);
+  const atRecap = BEATS[index]?.id === "recap";
 
   // Keep the URL shareable as you move.
   useEffect(() => {
@@ -120,7 +87,11 @@ export default function JourneyStage({ onExit }) {
   if (reduced) return <JourneyStatic onExit={onExit} />;
 
   return (
-    <div className="j-stage" ref={stageRef} data-overview={overview ? "true" : "false"}>
+    <div
+      className="j-stage"
+      ref={stageRef}
+      data-recap={atRecap ? "true" : "false"}
+    >
       <World />
 
       {/* Beat content lives in real DOM over the SVG — selectable, readable,
@@ -137,55 +108,56 @@ export default function JourneyStage({ onExit }) {
             data-kind={beat.kind || "story"}
             key={beat.id}
           >
-            <article className="j-card">
-              <div className="j-card-head">
-                <span className="j-year">{beat.year}</span>
-                <OrgMarks ids={beat.orgs} size="lg" />
-              </div>
-              <h2>{beat.role}</h2>
-              <h3>
-                {beat.org} <span className="j-dot">·</span> {beat.place}
-              </h3>
+            {beat.kind === "projects" ? null : (
+              <article className="j-card">
+                <div className="j-card-head">
+                  <span className="j-year">{beat.year}</span>
+                  <OrgMarks ids={beat.orgs} size="lg" />
+                </div>
+                <h2>{beat.role}</h2>
+                <h3>
+                  {beat.org} <span className="j-dot">·</span> {beat.place}
+                </h3>
 
-              {beat.note ? (
-                <p className="j-card-note">{beat.note}</p>
-              ) : (
-                <dl>
-                  <dt>Constraint</dt>
-                  <dd>{beat.constraint}</dd>
-                  <dt>Objective</dt>
-                  <dd>{beat.objective}</dd>
-                </dl>
-              )}
+                {beat.note ? (
+                  <p className="j-card-note">{beat.note}</p>
+                ) : (
+                  <dl>
+                    <dt>Constraint</dt>
+                    <dd>{beat.constraint}</dd>
+                    <dt>Objective</dt>
+                    <dd>{beat.objective}</dd>
+                  </dl>
+                )}
 
-              {beat.id === "architect" && (
-                <ul className="j-arch-chips">
-                  {stack.flatMap((group) =>
-                    group.items.map((item) => (
-                      <li key={item} data-kind={group.tint}>
-                        {item}
-                      </li>
-                    )),
-                  )}
-                </ul>
-              )}
+                {beat.id === "architect" && (
+                  <ul className="j-arch-chips">
+                    {stack.flatMap((group) =>
+                      group.items.map((item) => (
+                        <li key={item} data-kind={group.tint}>
+                          {item}
+                        </li>
+                      )),
+                    )}
+                  </ul>
+                )}
 
-              <p className="j-material">
-                material: <strong>{beat.material}</strong>
-                <span
-                  className={`j-status${beat.status === "In progress" ? " active" : ""}`}
-                >
-                  {beat.status}
-                </span>
-              </p>
-            </article>
+                <p className="j-material">
+                  material: <strong>{beat.material}</strong>
+                  <span
+                    className={`j-status${beat.status === "In progress" ? " active" : ""}`}
+                  >
+                    {beat.status}
+                  </span>
+                </p>
+              </article>
+            )}
 
-            {/* The closing beat keeps its explainer card and puts the wall of
-                actual work beside it. */}
+            {/* The recap: the work wall above, the journey laid out below. */}
             {beat.kind === "projects" && (
               <ProjectGallery
                 mounted={nearEnd}
-                active={BEATS[index]?.id === "work"}
+                active={atRecap}
                 onSeeAll={exitToProjects}
               />
             )}
@@ -201,13 +173,6 @@ export default function JourneyStage({ onExit }) {
         </p>
         <button className="j-exit" onClick={onExit}>
           View the full CV <span aria-hidden="true">→</span>
-        </button>
-        <button
-          className="j-ov-open"
-          onClick={() => setOverview(true)}
-          aria-label="See the whole journey at once"
-        >
-          <span aria-hidden="true">⬔</span> Overview
         </button>
       </div>
 
@@ -247,18 +212,10 @@ export default function JourneyStage({ onExit }) {
 
       <ProgressStream />
 
-      <p className="j-hint">scroll · arrows · swipe · O for the overview</p>
+      {/* The recap's labels stand on the places laid out below the work. */}
+      {atRecap && <JourneyOverview index={index} onPick={jumpTo} />}
 
-      {overview && (
-        <JourneyOverview
-          index={index}
-          onClose={() => setOverview(false)}
-          onPick={(i) => {
-            setOverview(false);
-            jumpTo(i);
-          }}
-        />
-      )}
+      <p className="j-hint">scroll · arrows · swipe</p>
     </div>
   );
 }

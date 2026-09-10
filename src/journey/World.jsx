@@ -27,7 +27,7 @@ const KINDS = {
   sweden: "snow",
   sprinta: "snow",
   architect: "snow",
-  work: "snow",
+  recap: "snow",
 };
 
 /** Catmull-Rom through the overview spots, as one smooth cubic path. */
@@ -152,12 +152,11 @@ export default function World() {
                   opacity="0.2"
                 />
               )}
-              {beat.id === "architect" ? (
+              {Scene && <Scene ax={FOCAL} />}
+              {beat.id === "architect" && (
                 <g data-arch>
                   <StackGraph ax={FOCAL} groups={stack} />
                 </g>
-              ) : (
-                Scene && <Scene ax={FOCAL} />
               )}
             </g>
           );
@@ -178,10 +177,30 @@ export default function World() {
               ))}
             </linearGradient>
           </defs>
-          <path d={trail(OVERVIEW)} fill="none" stroke="url(#jOvTrail)" strokeWidth="16" strokeLinecap="round" opacity="0.28" filter="url(#jGlow)" />
-          <path d={trail(OVERVIEW)} fill="none" stroke="url(#jOvTrail)" strokeWidth="3.5" strokeLinecap="round" />
+          {/* pathLength=1 so the render loop can draw it straight from the
+              lift progress, no plugin and no second timeline */}
+          <path
+            data-ov-trail
+            d={trail(OVERVIEW)}
+            pathLength="1"
+            fill="none"
+            stroke="url(#jOvTrail)"
+            strokeWidth="16"
+            strokeLinecap="round"
+            opacity="0.28"
+            filter="url(#jGlow)"
+          />
+          <path
+            data-ov-trail
+            d={trail(OVERVIEW)}
+            pathLength="1"
+            fill="none"
+            stroke="url(#jOvTrail)"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
           {OVERVIEW.map((p, i) => (
-            <circle key={i} cx={p.x} cy={p.y} r="6" fill={heatColor(BEATS[i].heat)} />
+            <circle key={i} data-ov-dot={i} cx={p.x} cy={p.y} r="6" fill={heatColor(BEATS[i].heat)} />
           ))}
         </g>
 

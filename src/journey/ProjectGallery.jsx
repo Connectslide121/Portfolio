@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { galleryProjects, projectBlurbs } from "../data/journey";
+import { galleryProjects, projectBlurbs, beats } from "../data/journey";
 import { mediaFor } from "../data/projectMedia";
 import { featuredProjects, allProjects } from "../components/projectList";
 
@@ -14,12 +14,12 @@ const byTitle = (title) => ALL.find((p) => p.title === title);
 // with only slight overlaps so the arrangement looks casual rather than
 // broken. Hovering straightens a tile and lifts it above its neighbours.
 const LAYOUT = [
-  { l: "0%", t: "5%", w: "45%", h: "53%", rot: "-1.6deg", z: 3 },
-  { l: "48%", t: "0%", w: "31%", h: "39%", rot: "1.5deg", z: 2 },
-  { l: "79%", t: "9%", w: "21%", h: "35%", rot: "-2.4deg", z: 1 },
-  { l: "5%", t: "62%", w: "35%", h: "37%", rot: "2deg", z: 2 },
-  { l: "43%", t: "45%", w: "34%", h: "43%", rot: "-1.1deg", z: 4 },
-  { l: "78%", t: "52%", w: "22%", h: "37%", rot: "2.6deg", z: 2 },
+  { l: "0%", t: "4%", w: "37%", h: "56%", rot: "-1.6deg", z: 3 },
+  { l: "40%", t: "0%", w: "27%", h: "43%", rot: "1.5deg", z: 2 },
+  { l: "70%", t: "7%", w: "19%", h: "39%", rot: "-2.4deg", z: 1 },
+  { l: "3%", t: "64%", w: "31%", h: "36%", rot: "2deg", z: 2 },
+  { l: "37%", t: "47%", w: "30%", h: "48%", rot: "-1.1deg", z: 4 },
+  { l: "70%", t: "51%", w: "20%", h: "42%", rot: "2.6deg", z: 2 },
 ];
 
 function Tile({ project, place, active }) {
@@ -101,8 +101,20 @@ function Tile({ project, place, active }) {
 export default function ProjectGallery({ mounted, active, onSeeAll }) {
   const projects = galleryProjects.map(byTitle).filter(Boolean);
 
+  const recap = beats.find((b) => b.id === "recap");
+
   return (
     <div className="j-gallery">
+      <header>
+        <div>
+          <h2>My Work</h2>
+          <p>{recap?.note}</p>
+        </div>
+        <button type="button" className="j-see-all" onClick={onSeeAll}>
+          See all {ALL.length} projects <span aria-hidden="true">→</span>
+        </button>
+      </header>
+
       <div className="j-wall">
         {mounted &&
           projects.map((project, i) => (
@@ -115,9 +127,6 @@ export default function ProjectGallery({ mounted, active, onSeeAll }) {
           ))}
       </div>
 
-      <button type="button" className="j-see-all" onClick={onSeeAll}>
-        See all {ALL.length} projects <span aria-hidden="true">→</span>
-      </button>
     </div>
   );
 }

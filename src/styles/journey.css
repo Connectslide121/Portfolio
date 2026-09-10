@@ -51,19 +51,18 @@
 }
 
 .j-card-slot[data-kind="projects"] {
-  justify-content: flex-start;
-  gap: clamp(1rem, 2.5vw, 2.25rem);
-  /* The closing beat is a reading surface, not a scene. Scrim the world back
-     so the receding stack and the stack diagram stop competing with the
-     project tiles. The slot spans the stage, so this blurs everything behind
-     it while the rail and topbar — later siblings — stay crisp. */
-  background: color-mix(in srgb, #05070c 62%, transparent);
-  backdrop-filter: blur(14px) saturate(0.85);
-}
-
-.j-card-slot[data-kind="projects"] .j-card {
-  flex: none;
-  width: min(24rem, 34vw);
+  /* The recap holds the work wall in the top half and leaves the lower half
+     to the laid-out journey. Only the top is washed back, so the silhouettes
+     underneath stay legible. */
+  align-items: flex-start;
+  justify-content: stretch;
+  padding-block: clamp(3.4rem, 7vh, 5rem) 0;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, #05070c 82%, transparent),
+    color-mix(in srgb, #05070c 68%, transparent) 46%,
+    transparent 62%
+  );
 }
 
 .j-card {
@@ -510,18 +509,38 @@
   position: relative;
   flex: 1;
   min-width: 0;
-  align-self: stretch;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   pointer-events: auto;
+}
+
+.j-gallery header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: none;
+}
+
+.j-gallery h2 {
+  font-size: clamp(1.3rem, 2.3vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.j-gallery header p {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #b3c0d4;
+  max-width: 44rem;
+  margin-top: 0.3rem;
 }
 
 .j-wall {
   position: relative;
   width: 100%;
-  height: min(60vh, 30rem);
+  height: min(44vh, 23rem);
 }
 
 .j-see-all {
@@ -769,17 +788,23 @@
   display: flex;
   flex-direction: column;
   padding: clamp(1rem, 3vw, 2.25rem);
-  padding-top: clamp(3.6rem, 7vh, 5rem);
   padding-bottom: 5.5rem; /* clear of the rail */
+  justify-content: flex-end;
   pointer-events: none;
-  /* No panel: the lifted world IS the view. Just a wash so the labels read. */
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, #04070c 78%, transparent),
-    color-mix(in srgb, #04070c 12%, transparent) 32%,
-    color-mix(in srgb, #04070c 55%, transparent)
-  );
-  animation: j-ov-in 0.5s ease both;
+  /* No panel of its own — the lifted world is the view. */
+  animation: j-ov-in 0.6s ease both;
+}
+
+.j-ov-caption {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  top: 47%;
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.34);
+  white-space: nowrap;
 }
 
 @keyframes j-ov-in {
@@ -907,12 +932,10 @@
   color: rgb(255 255 255 / 0.32);
 }
 
-/* The stage's own furniture belongs to the linear view. */
-.j-stage[data-overview="true"] .j-cards,
-.j-stage[data-overview="true"] .j-progress {
+/* The travelling stream belongs to the linear view, not the lifted one. */
+.j-stage[data-recap="true"] .j-progress {
   opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
+  transition: opacity 0.5s ease;
 }
 
 /* The laid-out view needs width a phone has not got, and labels pinned to

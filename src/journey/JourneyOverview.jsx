@@ -4,13 +4,13 @@ import { heatColor } from "./heat";
 import { OrgMarks } from "../components/OrgMark";
 
 /**
- * Chrome for the bird's-eye view.
+ * Labels for the recap's laid-out places.
  *
- * The map itself is the real world — the camera lifts and the actual
- * silhouettes lay out across the ground (see projectScenes in timeline.js).
- * All this adds is the labels standing on each place and a way back, so it
- * has no background of its own: you are looking at the journey, not a
- * diagram of it.
+ * The map itself is the real world — arriving at the last beat lifts the
+ * camera and the actual silhouettes lay out across the lower half of the
+ * frame (see projectScenes in timeline.js), with the work wall above them.
+ * All this adds is a label standing on each place, so it has no background
+ * of its own: you are looking at the journey, not a diagram of it.
  *
  * Below 900px there is no room for the layout, so the same beats are listed
  * vertically instead.
@@ -30,7 +30,7 @@ const project = (box, x, y) => {
   };
 };
 
-export default function JourneyOverview({ index, onPick, onClose }) {
+export default function JourneyOverview({ index, onPick }) {
   const ref = useRef(null);
   const [box, setBox] = useState(null);
 
@@ -46,15 +46,9 @@ export default function JourneyOverview({ index, onPick, onClose }) {
 
   return (
     <div className="j-overview" ref={ref} role="dialog" aria-label="The whole journey">
-      <header>
-        <div>
-          <h2>The whole journey</h2>
-          <p>Steel to software · Spain to Sweden · 2005 to today</p>
-        </div>
-        <button type="button" className="j-ov-close" onClick={onClose}>
-          Back <span aria-hidden="true">✕</span>
-        </button>
-      </header>
+      <p className="j-ov-caption">
+        The whole journey · steel to software · Spain to Sweden
+      </p>
 
       <div className="j-ov-spots">
         {OVERVIEW.map((spot, i) => {
@@ -82,7 +76,7 @@ export default function JourneyOverview({ index, onPick, onClose }) {
         })}
       </div>
 
-      <p className="j-ov-hint">pick a place to drop back into it · O or Esc to return</p>
+      <p className="j-ov-hint">pick a place to go back to it</p>
     </div>
   );
 }

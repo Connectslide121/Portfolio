@@ -315,12 +315,13 @@ export const beats = [
     heat: 0,
     entryIds: ["exp-sprinta-lead"],
   },
-  // Closing beat: the journey ends on things you can actually go and open.
+  // Closing beat: the camera lifts to show the whole journey laid out, with
+  // the things you can actually go and open sitting above it.
   {
-    id: "work",
+    id: "recap",
     orgs: ["github"],
-    year: "2023 — today",
-    railLabel: "Work",
+    year: "2005 — today",
+    railLabel: "Recap",
     place: "github.com/Connectslide121",
     org: "Side projects, games & packages",
     role: "My Work",
