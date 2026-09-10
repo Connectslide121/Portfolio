@@ -119,12 +119,18 @@ export function Ground({ span = SCENE_W * 6 }) {
  * looping tweens, not the main timeline — atmosphere should keep breathing
  * while the camera sits still.
  */
+const PARTICLE = {
+  spark: { tint: "var(--j-streamCore)", x: 1500, y: 812, spread: 220, rise: 40 },
+  dust: { tint: "#d9b382", x: 700, y: 700, spread: 1100, rise: 260 },
+  snow: { tint: "#eaf2ff", x: 0, y: 90, spread: 1800, rise: 300 },
+};
+
 export function Particles({ scene, kind, count = 22 }) {
   const ref = useRef(null);
 
   useEffect(() => {
     const dots = ref.current?.children;
-    if (!dots) return;
+    if (!dots || !PARTICLE[kind]) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const tweens = [];
@@ -154,19 +160,12 @@ export function Particles({ scene, kind, count = 22 }) {
     return () => tweens.forEach((t) => t.kill());
   }, [kind, count]);
 
-  const tint = {
-    spark: "var(--j-streamCore)",
-    dust: "#d9b382",
-    snow: "#eaf2ff",
-  }[kind];
-
   // A beat's particles are only visible at that beat, where its layer offset
   // and its anchor cancel out — so these are effectively screen coordinates.
-  const origin = {
-    spark: { x: 1500, y: 812, spread: 220, rise: 40 }, // rising off the ladle
-    dust: { x: 700, y: 700, spread: 1100, rise: 260 },
-    snow: { x: 0, y: 90, spread: 1800, rise: 300 },
-  }[kind];
+  // A beat with no kind simply has no weather.
+  const origin = PARTICLE[kind];
+  if (!origin) return null;
+  const { tint } = origin;
 
   return (
     <g data-atmos={scene.id} ref={ref} transform={`translate(${anchor(scene.i, 1.35)},0)`}>

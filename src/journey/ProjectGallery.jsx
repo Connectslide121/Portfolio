@@ -98,7 +98,7 @@ function Tile({ project, place, active }) {
   );
 }
 
-export default function ProjectGallery({ mounted, active, onSeeAll }) {
+export default function ProjectGallery({ mounted, active }) {
   const projects = galleryProjects.map(byTitle).filter(Boolean);
 
   const recap = beats.find((b) => b.id === "recap");
@@ -106,13 +106,8 @@ export default function ProjectGallery({ mounted, active, onSeeAll }) {
   return (
     <div className="j-gallery">
       <header>
-        <div>
-          <h2>My Work</h2>
-          <p>{recap?.note}</p>
-        </div>
-        <button type="button" className="j-see-all" onClick={onSeeAll}>
-          See all {ALL.length} projects <span aria-hidden="true">→</span>
-        </button>
+        <h2>My Work</h2>
+        <p>{recap?.note}</p>
       </header>
 
       <div className="j-wall">

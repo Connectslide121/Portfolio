@@ -8,6 +8,14 @@
 // `heat` is the hot -> cold position of an entry, 1 = the foundry, 0 = today.
 // It drives the accent colour in both modes.
 
+/** The headline, shared by the static hero and the journey's landing beat. */
+export const profile = {
+  name: "Jon Mendizabal",
+  title: "Lead Developer & Platform Architect",
+  blurb:
+    "Building products end to end — thoughtful, intuitive UI/UX on the front, scalable and secure backends underneath. I architect systems that are a pleasure to use, robust at scale, and built to grow, bringing AI in where it genuinely adds value.",
+};
+
 export const experience = [
   {
     id: "exp-sprinta-lead",
@@ -218,6 +226,22 @@ export const education = [
  * each beat points at the entries it came from via `entryIds`.
  */
 export const beats = [
+  // Landing card. Not a place and not a year — the same headline the static
+  // hero carries, so arriving in either mode says the same thing.
+  {
+    id: "intro",
+    kind: "intro",
+    orgs: [],
+    year: "",
+    railLabel: "Intro",
+    place: "Växjö, Sweden",
+    org: "Sprinta Consulting AB",
+    role: profile.title,
+    material: "",
+    status: "",
+    heat: 0.05,
+    entryIds: [],
+  },
   {
     id: "origin",
     orgs: ["london-met", "lea-artibai"],

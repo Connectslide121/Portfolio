@@ -85,17 +85,23 @@ export const FADE_EDGE = 0.11; // fraction of the span spent fading, each side
 // meanders like ground that was walked, not a tidy arc. Each entry is where
 // that scene's ground-contact point lands, plus how small it gets — the
 // variation in scale is what gives the plane its depth.
-// Only the six career beats are laid out — the recap itself is not a place.
+// Only the six career beats are laid out — neither the landing card nor the
+// recap itself is a place. Keyed by beat id, never by index: an index-keyed
+// table silently breaks the moment a beat is inserted.
 // They sit in the LOWER half: the recap slide puts the project wall above
 // them, so the closing frame is the work and the road that led to it.
 export const OVERVIEW = [
-  { x: 240, y: 660, s: 0.195 },
-  { x: 466, y: 792, s: 0.235 },
-  { x: 722, y: 710, s: 0.21 },
-  { x: 972, y: 836, s: 0.245 },
-  { x: 1230, y: 678, s: 0.2 },
-  { x: 1512, y: 800, s: 0.235 },
+  { id: "origin", x: 240, y: 660, s: 0.195 },
+  { id: "foundry", x: 466, y: 792, s: 0.235 },
+  { id: "india", x: 722, y: 710, s: 0.21 },
+  { id: "sweden", x: 972, y: 836, s: 0.245 },
+  { id: "sprinta", x: 1230, y: 678, s: 0.2 },
+  { id: "architect", x: 1512, y: 800, s: 0.235 },
 ];
+
+export const OVERVIEW_BY_ID = Object.fromEntries(
+  OVERVIEW.map((spot) => [spot.id, spot])
+);
 
 // Total world width, and where full-width paths start/end.
 export const WORLD_W = SCENE_W * BEATS.length;

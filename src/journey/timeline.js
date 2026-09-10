@@ -11,6 +11,7 @@ import {
   DEPTH,
   PAST_MIN_OPACITY,
   OVERVIEW,
+  OVERVIEW_BY_ID,
 } from "./config";
 import { applyHeat } from "./heat";
 
@@ -97,7 +98,7 @@ export function buildJourney({ root }) {
       // the "camera lift" is carried by the layout and the scale, not by
       // skewing the art.
       if (ov > 0) {
-        const spot = OVERVIEW[i];
+        const spot = OVERVIEW_BY_ID[BEATS[i].id];
         if (spot) {
           ax += (spot.x - ax) * ov;
           ay += (spot.y - ay) * ov;

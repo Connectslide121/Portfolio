@@ -51,7 +51,8 @@ export default function JourneyOverview({ index, onPick }) {
       </p>
 
       <div className="j-ov-spots">
-        {OVERVIEW.map((spot, i) => {
+        {OVERVIEW.map((spot) => {
+          const i = BEATS.findIndex((b) => b.id === spot.id);
           const beat = BEATS[i];
           const at = box ? project(box, spot.x, spot.y) : null;
           return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/journey.css";
-import { stack } from "../data/journey";
+import { stack, profile } from "../data/journey";
 
 import { BEATS } from "./config";
 import { buildJourney } from "./timeline";
@@ -72,16 +72,6 @@ export default function JourneyStage({ onExit }) {
     if (id) window.history.replaceState(null, "", `#journey/${id}`);
   }, [index, reduced]);
 
-  // Leave the journey and land on the projects section of the CV.
-  const exitToProjects = () => {
-    onExit();
-    requestAnimationFrame(() => {
-      document
-        .getElementById("projects")
-        ?.scrollIntoView({ behavior: "smooth" });
-    });
-  };
-
   const nearEnd = index >= BEATS.length - 2;
 
   if (reduced) return <JourneyStatic onExit={onExit} />;
@@ -108,7 +98,17 @@ export default function JourneyStage({ onExit }) {
             data-kind={beat.kind || "story"}
             key={beat.id}
           >
-            {beat.kind === "projects" ? null : (
+            {beat.kind === "intro" ? (
+              <article className="j-card j-intro">
+                <p className="j-intro-eyebrow">the journey</p>
+                <h1>{profile.name}</h1>
+                <h2>{profile.title}</h2>
+                <p className="j-intro-blurb">{profile.blurb}</p>
+                <button type="button" className="j-intro-go" onClick={next}>
+                  Walk me through it <span aria-hidden="true">→</span>
+                </button>
+              </article>
+            ) : beat.kind === "projects" ? null : (
               <article className="j-card">
                 <div className="j-card-head">
                   <span className="j-year">{beat.year}</span>
@@ -155,11 +155,7 @@ export default function JourneyStage({ onExit }) {
 
             {/* The recap: the work wall above, the journey laid out below. */}
             {beat.kind === "projects" && (
-              <ProjectGallery
-                mounted={nearEnd}
-                active={atRecap}
-                onSeeAll={exitToProjects}
-              />
+              <ProjectGallery mounted={nearEnd} active={atRecap} />
             )}
           </div>
         ))}
@@ -172,7 +168,7 @@ export default function JourneyStage({ onExit }) {
           Jon Mendizabal <span className="j-dot">·</span> the journey
         </p>
         <button className="j-exit" onClick={onExit}>
-          View the full CV <span aria-hidden="true">→</span>
+          Static page <span aria-hidden="true">→</span>
         </button>
       </div>
 

@@ -21,6 +21,7 @@ import { heatColor } from "./heat";
 // the blend chosen in session 2 (resolves O1).
 
 const KINDS = {
+  intro: "snow",
   origin: "dust",
   foundry: "spark",
   india: "dust",
@@ -172,7 +173,7 @@ export default function World() {
                 <stop
                   key={i}
                   offset={`${(i / (OVERVIEW.length - 1)) * 100}%`}
-                  stopColor={heatColor(BEATS[i].heat)}
+                  stopColor={heatColor(BEATS.find((b) => b.id === OVERVIEW[i].id).heat)}
                 />
               ))}
             </linearGradient>
@@ -200,7 +201,14 @@ export default function World() {
             strokeLinecap="round"
           />
           {OVERVIEW.map((p, i) => (
-            <circle key={i} data-ov-dot={i} cx={p.x} cy={p.y} r="6" fill={heatColor(BEATS[i].heat)} />
+            <circle
+              key={i}
+              data-ov-dot={i}
+              cx={p.x}
+              cy={p.y}
+              r="6"
+              fill={heatColor(BEATS.find((b) => b.id === p.id).heat)}
+            />
           ))}
         </g>
 
