@@ -9,6 +9,7 @@ import World from "./World";
 import { ProgressStream } from "./parts";
 import ProjectGallery from "./ProjectGallery";
 import { OrgMarks } from "../components/OrgMark";
+import JourneyOverview from "./JourneyOverview";
 import JourneyStatic from "./JourneyStatic";
 
 const prefersReducedMotion = () =>
@@ -52,12 +53,32 @@ export default function JourneyStage({ onExit }) {
     };
   }, [reduced, start]);
 
+  const [overview, setOverview] = useState(false);
+
+  // Stepping inputs are muted while the overview is open, so arrows and the
+  // wheel drive the map's own affordances rather than the stage behind it.
   const { index, jumpTo, next, prev } = useJourneyDriver(
     tl,
     stageRef,
-    reduced,
+    reduced || overview,
     start,
   );
+
+  // O toggles the overview; Esc closes it before it would leave the journey.
+  useEffect(() => {
+    if (reduced) return;
+    const onKey = (e) => {
+      if (e.key === "o" || e.key === "O") {
+        e.preventDefault();
+        setOverview((v) => !v);
+      } else if (e.key === "Escape" && overview) {
+        e.stopPropagation();
+        setOverview(false);
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [reduced, overview]);
 
   // Keep the URL shareable as you move.
   useEffect(() => {
@@ -163,6 +184,13 @@ export default function JourneyStage({ onExit }) {
         <button className="j-exit" onClick={onExit}>
           View the full CV <span aria-hidden="true">→</span>
         </button>
+        <button
+          className="j-ov-open"
+          onClick={() => setOverview(true)}
+          aria-label="See the whole journey at once"
+        >
+          <span aria-hidden="true">⬔</span> Overview
+        </button>
       </div>
 
       <div className="j-rail">
@@ -201,7 +229,18 @@ export default function JourneyStage({ onExit }) {
 
       <ProgressStream />
 
-      <p className="j-hint">scroll · arrows · swipe</p>
+      <p className="j-hint">scroll · arrows · swipe · O for the overview</p>
+
+      {overview && (
+        <JourneyOverview
+          index={index}
+          onClose={() => setOverview(false)}
+          onPick={(i) => {
+            setOverview(false);
+            jumpTo(i);
+          }}
+        />
+      )}
     </div>
   );
 }

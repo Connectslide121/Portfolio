@@ -735,3 +735,209 @@
     scale: 1;
   }
 }
+
+/* ==========================================================================
+   Overview — the whole arc at once, isometric. Opens over the stage, which
+   stays visible but scrimmed back.
+   ========================================================================== */
+
+.j-ov-open {
+  position: absolute;
+  right: clamp(0.75rem, 2vw, 1.5rem);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #cdd7e6;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  background: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(10px);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.j-ov-open:hover {
+  border-color: var(--j-accent);
+  color: #fff;
+}
+
+.j-overview {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1rem, 3vw, 2.25rem);
+  padding-top: clamp(3.6rem, 7vh, 5rem);
+  background: color-mix(in srgb, #04070c 72%, transparent);
+  backdrop-filter: blur(16px) saturate(0.8);
+  animation: j-ov-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes j-ov-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.j-overview header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: none;
+}
+
+.j-overview h2 {
+  font-size: clamp(1.3rem, 2.4vw, 1.9rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.j-overview header p {
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: #9aa7bd;
+  margin-top: 0.3rem;
+}
+
+.j-ov-close {
+  flex: none;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #cdd7e6;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.18);
+  background: rgb(255 255 255 / 0.06);
+}
+
+.j-ov-close:hover {
+  border-color: var(--j-accent);
+  color: #fff;
+}
+
+.j-ov-map {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin-top: 0.5rem;
+}
+
+.j-ov-map svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Label cards sit above their plinth, anchored to its centre. */
+.j-ov-node {
+  position: absolute;
+  translate: -50% calc(-100% - 2.2rem);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.18rem;
+  width: max-content;
+  max-width: 12.5rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--tint) 40%, transparent);
+  background: color-mix(in srgb, #05070c 82%, transparent);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: #eef3fa;
+  animation: j-ov-node-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--delay);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+@keyframes j-ov-node-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+}
+
+.j-ov-node:hover,
+.j-ov-node:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--tint);
+  box-shadow: 0 14px 34px -14px rgb(0 0 0 / 0.9);
+}
+
+.j-ov-node.on {
+  border-color: var(--tint);
+  box-shadow: 0 0 0 1px var(--tint), 0 16px 36px -16px rgb(0 0 0 / 0.9);
+}
+
+.j-ov-year {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--tint);
+}
+
+.j-ov-role {
+  font-size: 0.84rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.j-ov-org {
+  font-size: 0.68rem;
+  color: #93a3b8;
+  margin-bottom: 0.2rem;
+}
+
+.j-ov-hint {
+  flex: none;
+  text-align: center;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.3);
+}
+
+/* An isometric map needs width a phone does not have, and absolutely-placed
+   labels detach from a scrolling map. Below this the overview becomes what it
+   is really for — the whole arc in one view — as a tinted vertical list. */
+@media (max-width: 900px) {
+  .j-ov-open span {
+    display: none;
+  }
+  .j-overview {
+    padding-top: 3.4rem;
+  }
+  .j-ov-map {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    overflow-y: auto;
+    margin-top: 0.75rem;
+    padding-right: 0.2rem;
+  }
+  .j-ov-map svg {
+    display: none;
+  }
+  .j-ov-node {
+    position: static;
+    translate: none;
+    width: 100%;
+    max-width: none;
+    border-left: 3px solid var(--tint);
+    animation-delay: 0ms;
+  }
+  .j-ov-node:hover,
+  .j-ov-node:focus-visible {
+    transform: none;
+  }
+  .j-ov-role {
+    font-size: 0.82rem;
+  }
+}

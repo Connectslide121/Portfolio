@@ -120,11 +120,11 @@ export const experience = [
     material: "steel",
     heat: 1,
     quest: {
-      name: "8000 km From Home",
+      name: "Twelve Years In The Foundry",
       constraint:
-        "Sand casting steel foundry, make-to-order, no margin for scrap. Then: an Indian plant 8000 km away with no shared process.",
+        "Sand casting steel foundry, make-to-order, no margin for scrap — and later a second plant in India to bring up to the same standard.",
       objective:
-        "Run production end to end, then bring AML’s Indian foundry up to the same standard.",
+        "Run production end to end — MTO planning, CAD design, process simulation — and the teams on both sites.",
       status: "Complete",
     },
     summary:
@@ -323,7 +323,7 @@ export const beats = [
     railLabel: "Work",
     place: "github.com/Connectslide121",
     org: "Side projects, games & packages",
-    role: "Selected Work",
+    role: "My Work",
     material: "whatever fits the problem",
     note: "Things built to learn with, outside the day job — web apps, a couple of games, and a published npm package. Every tile links to its code and, where there is one, a live demo.",
     kind: "projects",

@@ -25,6 +25,19 @@ const POLES = Object.keys(PALETTE.hot).reduce((acc, key) => {
 const MID = 0.5;
 
 /**
+ * The same cold -> warm -> hot ramp as a value, for anything that needs a
+ * single colour rather than CSS variables on a root — the overview tints each
+ * beat by its own heat, all seven visible at once.
+ */
+export function heatColor(heat, key = "accent") {
+  const t = Math.max(0, Math.min(1, heat));
+  const lower = t <= MID;
+  const local = lower ? t / MID : (t - MID) / (1 - MID);
+  const [cold, warm, hot] = POLES[key];
+  return toHex(lerp(lower ? cold : warm, lower ? warm : hot, local));
+}
+
+/**
  * Heat is one number (see 4.3 in the plan). Everything visual derives from it
  * via CSS custom properties, so the whole scene recolours in one pass and the
  * existing design system's variables keep working.
