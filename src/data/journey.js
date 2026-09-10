@@ -120,21 +120,21 @@ export const experience = [
     material: "steel",
     heat: 1,
     quest: {
-      name: "Greenfield, 8000 km From Home",
+      name: "8000 km From Home",
       constraint:
-        "Sand casting steel foundry, make-to-order, no margin for scrap. Then: no facility, no team, no local process.",
+        "Sand casting steel foundry, make-to-order, no margin for scrap. Then: an Indian plant 8000 km away with no shared process.",
       objective:
-        "Run production end to end, then stand up a second plant in India from the ground up.",
+        "Run production end to end, then bring AML’s Indian foundry up to the same standard.",
       status: "Complete",
     },
     summary:
-      "Successfully established and managed production facilities across Spain and India, leading international expansion and cross-cultural operations.",
+      "Managed production across Spain and India, leading AML’s international expansion and its cross-cultural operations.",
     bullets: [
       {
         text: "Managed sand casting steel foundry production including MTO planning, CAD design, and process simulation",
       },
       {
-        text: "Led international expansion to India in 2017, establishing *Arihant Technocast Private Limited* — AML’s Indian foundry — from the ground up",
+        text: "Led AML’s expansion into India in 2017, establishing operations at *Arihant Technocast Private Limited* — transferring production processes and bringing the plant up to standard",
       },
       {
         text: "Trained international teams and coordinated cross-cultural operations between countries",
@@ -260,8 +260,9 @@ export const beats = [
     org: "AML SA → Arihant Technocast",
     role: "International Expansion",
     material: "steel + CAD",
-    constraint: "No facility, no team, no local process. Greenfield, 8000 km from home.",
-    objective: "Stand up Arihant Technocast, AML’s Indian foundry, from the ground up and train the team.",
+    constraint:
+      "An existing plant 8000 km from home, with no shared process and no trained team.",
+    objective: "Get Arihant Technocast running to AML’s standard — transfer the process, train the team.",
     status: "Complete",
     heat: 0.82,
     entryIds: ["exp-aml"],

@@ -41,6 +41,28 @@ export const BASE = 848;
 export const OVERDRAW = 1400;
 export const FLOOR = 1600;
 
+// Past beats are not panned off to the side — they recede toward a vanishing
+// point near the horizon, staying faintly visible behind the current scene.
+//
+// For that to be visible at all, the current scene has to leave room: it is
+// drawn at CURRENT_SCALE and anchored right of centre (CURRENT_ANCHOR), which
+// opens a corridor between the beat card and the current place.
+//
+// VANISH is back and to the LEFT, roughly behind the beat card. The effect is
+// a line of places trailing off that way: the beat you just left sits clearly
+// in the corridor, the one before it half-peeks past the card's edge, and
+// anything older is a ghost behind the card, which is 78% opaque so they
+// still register.
+//
+// A scene's ground-contact point (SCENE_ANCHOR) is what travels toward VANISH,
+// so a receding scene keeps sitting ON the ground rather than floating.
+export const SCENE_ANCHOR = { x: FOCAL + SCENE_SPAN / 2, y: BASE };
+export const CURRENT_ANCHOR = { x: 1420, y: BASE };
+export const CURRENT_SCALE = 0.82;
+export const VANISH = { x: 330, y: 690 };
+export const DEPTH = 0.85; // how fast the past shrinks — bigger recedes faster
+export const PAST_MIN_OPACITY = 0.2;
+
 // Total world width, and where full-width paths start/end.
 export const WORLD_W = SCENE_W * BEATS.length;
 export const PATH_START = -OVERDRAW;

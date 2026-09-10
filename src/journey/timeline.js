@@ -1,6 +1,16 @@
 import gsap from "gsap";
 import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
-import { BEATS, LAYERS, SCENE_W } from "./config";
+import {
+  BEATS,
+  LAYERS,
+  SCENE_W,
+  VANISH,
+  SCENE_ANCHOR,
+  CURRENT_ANCHOR,
+  CURRENT_SCALE,
+  DEPTH,
+  PAST_MIN_OPACITY,
+} from "./config";
 import { applyHeat } from "./heat";
 
 gsap.registerPlugin(DrawSVGPlugin);
@@ -30,8 +40,77 @@ export function buildJourney({ root }) {
     k: l.k,
   }));
 
+  const sceneEls = BEATS.map((_, i) => root.querySelector(`[data-scene="${i}"]`));
+  const clips = BEATS.map((_, i) => root.querySelector(`#jlm-${i}`));
+
+  /**
+   * Places every scene from the camera position.
+   *
+   * A beat that is still ahead waits off to the right at full size and slides
+   * in. A beat that has passed does NOT keep panning off to the left — it
+   * recedes: its ground-contact point travels toward VANISH near the horizon
+   * while it shrinks, so the journey builds up a row of earlier places
+   * dwindling into the distance instead of throwing them away.
+   *
+   * This is a perspective divide, not a lerp: scale is 1/(1 + t·DEPTH), and
+   * the anchor moves by that same factor, which is what keeps a shrinking
+   * scene sitting on the ground rather than sliding along it.
+   */
+  const projectScenes = () => {
+    const p = -camera.x / SCENE_W; // continuous position along the beats
+    for (let i = 0; i < sceneEls.length; i++) {
+      const el = sceneEls[i];
+      if (!el) continue;
+      const d = i - p; // < 0 past, 0 current, > 0 still to come
+      const t = -d;
+
+      let tx = 0;
+      let ty = 0;
+      let scale = 1;
+      let opacity = 1;
+      let past = false;
+
+      let ax = CURRENT_ANCHOR.x;
+      let ay = CURRENT_ANCHOR.y;
+
+      if (d >= 0) {
+        scale = CURRENT_SCALE;
+        ax += d * SCENE_W * CURRENT_SCALE; // waiting off-stage right
+        opacity = d > 0.85 ? 0 : 1;
+      } else {
+        past = true;
+        scale = CURRENT_SCALE / (1 + t * DEPTH);
+        // u falls 1 -> 0 with depth, carrying the anchor to the vanishing point.
+        const u = scale / CURRENT_SCALE;
+        ax = VANISH.x + (CURRENT_ANCHOR.x - VANISH.x) * u;
+        ay = VANISH.y + (CURRENT_ANCHOR.y - VANISH.y) * u;
+        opacity = Math.max(PAST_MIN_OPACITY, 1 - t * 0.21);
+      }
+
+      tx = ax - SCENE_ANCHOR.x * scale;
+      ty = ay - SCENE_ANCHOR.y * scale;
+
+      el.setAttribute(
+        "transform",
+        `translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${scale.toFixed(4)})`
+      );
+      el.setAttribute("opacity", opacity.toFixed(3));
+
+      // Clip to the beat's landmark once it starts receding, and only then —
+      // the current scene must always be whole.
+      const wantClip = past && t > 0.3 && clips[i];
+      const current = el.getAttribute("clip-path");
+      const next = wantClip ? `url(#jlm-${i})` : "";
+      if (current !== next) {
+        if (next) el.setAttribute("clip-path", next);
+        else el.removeAttribute("clip-path");
+      }
+    }
+  };
+
   const render = () => {
     setters.forEach((s) => s.set(camera.x * s.k));
+    projectScenes();
     applyHeat(root, camera.heat);
   };
 

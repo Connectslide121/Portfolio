@@ -2,7 +2,7 @@ import React from "react";
 import { stack } from "../data/journey";
 import { BEATS, SCENE_W, VIEW_H, FOCAL, anchor, OVERDRAW, FLOOR } from "./config";
 import { JourneyDefs, Sky, Ground, Particles } from "./parts";
-import { SCENE_BY_BEAT, StackGraph } from "./scenes";
+import { SCENE_BY_BEAT, StackGraph, LANDMARK_X, LANDMARK_W } from "./scenes";
 
 // Silhouette places plus the giant year numerals from the abstract study —
 // the blend chosen in session 2 (resolves O1).
@@ -38,6 +38,22 @@ export default function World() {
       aria-hidden="true"
     >
       <JourneyDefs />
+
+      {/* One clip per beat, used only while that beat is receding. */}
+      <defs>
+        {BEATS.map((beat, i) =>
+          LANDMARK_X[beat.id] === undefined ? null : (
+            <clipPath key={beat.id} id={`jlm-${i}`} clipPathUnits="userSpaceOnUse">
+              <rect
+                x={FOCAL + LANDMARK_X[beat.id] - LANDMARK_W / 2}
+                y="120"
+                width={LANDMARK_W}
+                height="820"
+              />
+            </clipPath>
+          )
+        )}
+      </defs>
       <Sky />
 
       {/* Everything inside the camera group so the final beat can pull back. */}
@@ -73,28 +89,36 @@ export default function World() {
           <path d={ridge(778, 70, 180, 31)} fill="var(--j-far)" opacity="0.6" />
         </g>
 
-        {/* scene — the places, crossfaded per beat */}
-        <g data-layer="scene">
-          {BEATS.map((beat, i) => {
-            const Scene = SCENE_BY_BEAT[beat.id];
-            const ax = anchor(i, 0.9) + FOCAL;
-            return (
-              <g key={beat.id} data-atmos={beat.id}>
-                {/* the Indian sun, behind its skyline */}
-                {beat.id === "india" && (
-                  <circle cx={ax + 590} cy="316" r="236" fill="var(--j-accent)" opacity="0.2" />
-                )}
-                {beat.id === "architect" ? (
-                  <g data-arch>
-                    <StackGraph ax={ax} groups={stack} />
-                  </g>
-                ) : (
-                  Scene && <Scene ax={ax} />
-                )}
-              </g>
-            );
-          })}
-        </g>
+        {/* scene — the places. Not parallax-translated: each one is placed
+            every frame by projectScenes() in timeline.js, which slides the
+            next one in from the right and lets the previous ones recede
+            toward the horizon. Authored in one shared local space (ax =
+            FOCAL) so the projection is the only thing that positions them.
+            DOM order matters: earlier beats paint behind later ones. */}
+        {BEATS.map((beat, i) => {
+          const Scene = SCENE_BY_BEAT[beat.id];
+          return (
+            <g key={beat.id} data-scene={i}>
+              {/* the Indian sun, behind its skyline */}
+              {beat.id === "india" && (
+                <circle
+                  cx={FOCAL + 590}
+                  cy="316"
+                  r="236"
+                  fill="var(--j-accent)"
+                  opacity="0.2"
+                />
+              )}
+              {beat.id === "architect" ? (
+                <g data-arch>
+                  <StackGraph ax={FOCAL} groups={stack} />
+                </g>
+              ) : (
+                Scene && <Scene ax={FOCAL} />
+              )}
+            </g>
+          );
+        })}
 
         {/* ground — the continuous floor and the stream */}
         <g data-layer="ground">
