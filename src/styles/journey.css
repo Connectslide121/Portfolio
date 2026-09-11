@@ -19,7 +19,12 @@
   overflow: hidden;
   background: #0a0705;
   color: #f5f7fa;
-  font-family: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   overscroll-behavior: none;
   touch-action: pan-y;
 }
@@ -202,17 +207,29 @@
 
 /* In journey mode the toggle belongs to the active scene rather than the
    site's fixed blue UI palette. --j-accent is updated continuously by the
-   heat ramp, so the thumb changes naturally during every transition. */
+   heat ramp, so the track and icons travel molten → cold with the story. */
+.j-stage .darkmode-toggle-label {
+  background: color-mix(in srgb, var(--j-accent) 12%, transparent);
+  border-color: color-mix(in srgb, var(--j-accent) 45%, transparent);
+}
+
 .j-stage .darkmode-toggle-label::after {
   background: var(--j-accent);
   box-shadow: 0 3px 10px color-mix(in srgb, var(--j-accent) 48%, transparent);
-  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+  transition:
+    left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .j-stage .darkmode-toggle-label:hover {
   border-color: var(--j-accent);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--j-accent) 12%, transparent);
+}
+
+/* The glyphs ride the same ramp instead of the static page's amber/indigo. */
+.j-stage .darkmode-toggle-label .sun,
+.j-stage .darkmode-toggle-label .moon {
+  color: var(--j-accent);
 }
 
 .j-nav {
@@ -224,7 +241,9 @@
   cursor: pointer;
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .j-exit {
@@ -244,8 +263,11 @@
   border: 1px solid color-mix(in srgb, var(--j-accent) 62%, transparent);
   background: transparent;
   box-shadow: none;
-  transition: transform 0.2s ease, border-color 0.2s ease,
-    background-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .j-exit:hover,
@@ -253,7 +275,8 @@
   transform: translateY(-2px);
   border-color: var(--j-accent);
   background: color-mix(in srgb, var(--j-accent) 7%, transparent);
-  box-shadow: 0 8px 24px -18px color-mix(in srgb, var(--j-accent) 80%, transparent);
+  box-shadow: 0 8px 24px -18px
+    color-mix(in srgb, var(--j-accent) 80%, transparent);
 }
 
 .j-exit span {
@@ -398,7 +421,12 @@
   padding: clamp(1rem, 4vw, 3rem);
   background: #0a0e15;
   color: #eef3fa;
-  font-family: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
 }
 
 .j-static header {
@@ -504,11 +532,21 @@
     opacity: 0.9;
   }
 
-  .j-arch-chips li[data-kind="client"] { color: #7dd3fc; }
-  .j-arch-chips li[data-kind="shared"] { color: #a5b4fc; }
-  .j-arch-chips li[data-kind="compute"] { color: #93c5fd; }
-  .j-arch-chips li[data-kind="data"] { color: #86efac; }
-  .j-arch-chips li[data-kind="ai"] { color: #fca5a5; }
+  .j-arch-chips li[data-kind="client"] {
+    color: #7dd3fc;
+  }
+  .j-arch-chips li[data-kind="shared"] {
+    color: #a5b4fc;
+  }
+  .j-arch-chips li[data-kind="compute"] {
+    color: #93c5fd;
+  }
+  .j-arch-chips li[data-kind="data"] {
+    color: #86efac;
+  }
+  .j-arch-chips li[data-kind="ai"] {
+    color: #fca5a5;
+  }
 }
 
 /* ==========================================================================
@@ -538,7 +576,6 @@
     padding: 0.5rem 1.1rem;
   }
 }
-
 
 /* ==========================================================================
    Closing beat — the wall of work. Absolutely placed, slightly tilted tiles
@@ -593,7 +630,10 @@
   border: 1px solid color-mix(in srgb, var(--j-accent) 24%, transparent);
   background: #070b12;
   box-shadow: 0 14px 30px -16px rgb(0 0 0 / 0.85);
-  transition: rotate 0.3s ease, scale 0.3s ease, border-color 0.25s ease,
+  transition:
+    rotate 0.3s ease,
+    scale 0.3s ease,
+    border-color 0.25s ease,
     box-shadow 0.3s ease;
 }
 
@@ -640,10 +680,16 @@
   flex-direction: column;
   gap: 0.3rem;
   padding: 0.7rem 0.75rem 0.75rem;
-  background: linear-gradient(to top, rgb(4 7 12 / 0.97) 55%, rgb(4 7 12 / 0.82));
+  background: linear-gradient(
+    to top,
+    rgb(4 7 12 / 0.97) 55%,
+    rgb(4 7 12 / 0.82)
+  );
   translate: 0 100%;
   opacity: 0;
-  transition: translate 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+  transition:
+    translate 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.25s ease;
 }
 
 .j-tile:hover .j-tile-detail,
@@ -790,7 +836,9 @@
   border: 1px solid rgb(255 255 255 / 0.16);
   background: rgb(255 255 255 / 0.05);
   backdrop-filter: blur(10px);
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .j-ov-open:hover {
@@ -899,7 +947,10 @@
   color: #eef3fa;
   animation: j-ov-node-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--delay);
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 @keyframes j-ov-node-in {
@@ -917,7 +968,9 @@
 }
 
 .j-ov-node.on {
-  box-shadow: 0 0 0 1px var(--tint), 0 16px 36px -16px rgb(0 0 0 / 0.9);
+  box-shadow:
+    0 0 0 1px var(--tint),
+    0 16px 36px -16px rgb(0 0 0 / 0.9);
 }
 
 .j-ov-year {
@@ -1070,7 +1123,8 @@
   border: 0;
   padding: 0.6rem 1.3rem;
   border-radius: 999px;
-  box-shadow: 0 10px 28px -12px color-mix(in srgb, var(--j-accent) 75%, transparent);
+  box-shadow: 0 10px 28px -12px
+    color-mix(in srgb, var(--j-accent) 75%, transparent);
   transition: transform 0.2s ease;
 }
 
@@ -1407,9 +1461,15 @@ body:not(.dark-theme) .j-intro-art {
   animation: network-flow 3.4s linear infinite;
 }
 
-.network-line--2 { animation-delay: -0.8s; }
-.network-line--3 { animation-delay: -1.6s; }
-.network-line--4 { animation-delay: -2.4s; }
+.network-line--2 {
+  animation-delay: -0.8s;
+}
+.network-line--3 {
+  animation-delay: -1.6s;
+}
+.network-line--4 {
+  animation-delay: -2.4s;
+}
 
 @keyframes network-flow {
   to {

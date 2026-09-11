@@ -48,11 +48,17 @@ export function buildJourney({ root }) {
 
   // quickSetter avoids per-frame property lookups on the hot path.
   const setters = LAYERS.map((l) => ({
-    set: gsap.quickSetter(root.querySelectorAll(`[data-layer="${l.id}"]`), "x", "px"),
+    set: gsap.quickSetter(
+      root.querySelectorAll(`[data-layer="${l.id}"]`),
+      "x",
+      "px",
+    ),
     k: l.k,
   }));
 
-  const sceneEls = BEATS.map((_, i) => root.querySelector(`[data-scene="${i}"]`));
+  const sceneEls = BEATS.map((_, i) =>
+    root.querySelector(`[data-scene="${i}"]`),
+  );
 
   /**
    * Places every scene from the camera position.
@@ -130,7 +136,7 @@ export function buildJourney({ root }) {
 
       el.setAttribute(
         "transform",
-        `translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${scale.toFixed(4)})`
+        `translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${scale.toFixed(4)})`,
       );
       el.setAttribute("opacity", opacity.toFixed(3));
 
@@ -162,12 +168,19 @@ export function buildJourney({ root }) {
 
     // Only the nearest beat's atmosphere needs to consume animation frames.
     // Previously every hidden scene kept 12-22 GSAP particle tweens alive.
-    const nearestScene = Math.max(0, Math.min(BEATS.length - 1, Math.round(-camera.x / SCENE_W)));
+    const nearestScene = Math.max(
+      0,
+      Math.min(BEATS.length - 1, Math.round(-camera.x / SCENE_W)),
+    );
     if (nearestScene !== activeParticleScene) {
       activeParticleScene = nearestScene;
+      // Published for Particles: switching season recreates a group's tweens
+      // after this loop last ran, and they need to know who is on stage.
+      root.dataset.activeScene = String(nearestScene);
       particleGroups.forEach((group) => {
         group.__setParticleActive?.(
-          Number(group.getAttribute("data-particle-scene")) === activeParticleScene
+          Number(group.getAttribute("data-particle-scene")) ===
+            activeParticleScene,
         );
       });
     }
@@ -177,7 +190,8 @@ export function buildJourney({ root }) {
     envLayers.forEach((el) => el.setAttribute("opacity", env));
     // The stack is a diagram, not a place — unreadable once laid out, so it
     // goes as the camera rises and the office behind it carries the beat.
-    if (archGroup) archGroup.setAttribute("opacity", (1 - Math.min(1, ov * 1.6)).toFixed(3));
+    if (archGroup)
+      archGroup.setAttribute("opacity", (1 - Math.min(1, ov * 1.6)).toFixed(3));
 
     if (ovPath) {
       ovPath.setAttribute("opacity", Math.min(1, ov * 1.4).toFixed(3));
@@ -200,7 +214,7 @@ export function buildJourney({ root }) {
   // tagged data-atmos and crossfaded together, which also hides the scene
   // bleed that slow parallax layers unavoidably produce (see config.js).
   const atmos = BEATS.map((b) =>
-    Array.from(root.querySelectorAll(`[data-atmos="${b.id}"]`))
+    Array.from(root.querySelectorAll(`[data-atmos="${b.id}"]`)),
   );
   const cards = BEATS.map((b) => root.querySelector(`[data-card="${b.id}"]`));
   const stream = root.querySelectorAll("[data-stream]");
@@ -224,7 +238,11 @@ export function buildJourney({ root }) {
     scale: 1 / ARCHITECT_SCALE,
     svgOrigin: `${ARCHITECT_PIVOT.x} ${ARCHITECT_PIVOT.y}`,
   });
-  gsap.set(archNodes, { autoAlpha: 0, scale: 0.86, transformOrigin: "50% 50%" });
+  gsap.set(archNodes, {
+    autoAlpha: 0,
+    scale: 0.86,
+    transformOrigin: "50% 50%",
+  });
   gsap.set(archEdges, { drawSVG: "0% 0%" });
 
   // The stream is screen-anchored now, so its fill is simply how far through
@@ -255,7 +273,7 @@ export function buildJourney({ root }) {
           overview: beat.id === "recap" ? 1 : 0,
           duration: 2.4,
         },
-        "<"
+        "<",
       )
       .to(stream, { drawSVG: drawTo(i), duration: 2.4 }, "<")
       .to(atmos[i], { autoAlpha: 1, duration: 1.3 }, "<0.5")
@@ -266,15 +284,27 @@ export function buildJourney({ root }) {
       // surrounding optimisations reduce contention without flattening this
       // signature transition.
       tl.to(architectVisual, { scale: 1, duration: 2.2 }, "<0.6")
-        .to(archEdges, { drawSVG: "0% 100%", duration: 1.1, stagger: 0.03 }, "<0.7")
+        .to(
+          archEdges,
+          { drawSVG: "0% 100%", duration: 1.1, stagger: 0.03 },
+          "<0.7",
+        )
         .to(
           archNodes,
-          { autoAlpha: 1, scale: 1, duration: 0.5, stagger: 0.04, ease: "back.out(1.6)" },
-          "<0.1"
+          {
+            autoAlpha: 1,
+            scale: 1,
+            duration: 0.5,
+            stagger: 0.04,
+            ease: "back.out(1.6)",
+          },
+          "<0.1",
         );
     }
 
-    tl.to(cards[i], { autoAlpha: 1, y: 0, duration: 0.7 }, "-=0.5").addLabel(beat.id);
+    tl.to(cards[i], { autoAlpha: 1, y: 0, duration: 0.7 }, "-=0.5").addLabel(
+      beat.id,
+    );
   });
 
   render();

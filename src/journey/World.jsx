@@ -24,25 +24,24 @@ import { heatColor } from "./heat";
 // in Europe, so the ambient weather follows the current local calendar rather
 // than permanently equating the colder chapters with snow.
 const month = new Date().getMonth();
-const CURRENT_SEASON =
+export const CURRENT_SEASON =
   month === 11 || month <= 1
-    ? "snow"
+    ? "winter"
     : month <= 4
-      ? "blossom"
+      ? "spring"
       : month <= 7
-        ? "sun"
-        : "leaf";
+        ? "summer"
+        : "autumn";
 
-const KINDS = {
-  intro: CURRENT_SEASON,
-  origin: "dust",
-  foundry: "spark",
-  india: "dust",
-  sweden: CURRENT_SEASON,
-  sprinta: CURRENT_SEASON,
-  architect: CURRENT_SEASON,
-  recap: CURRENT_SEASON,
+const SEASON_AMBIENT = {
+  winter: "snow",
+  spring: "blossom",
+  summer: "sun",
+  autumn: "leaf",
 };
+
+// The four override choices offered by the season picker, in calendar order.
+export const SEASONS = ["winter", "spring", "summer", "autumn"];
 
 /** Catmull-Rom through the overview spots, as one smooth cubic path. */
 const trail = (pts) => {
@@ -64,7 +63,7 @@ const trail = (pts) => {
 const ridge = (y, amp, step, seed) => {
   const pts = [];
   let n = seed;
-  const rnd = () => ((n = (n * 9301 + 49297) % 233280) / 233280);
+  const rnd = () => (n = (n * 9301 + 49297) % 233280) / 233280;
   const end = SCENE_W * BEATS.length + OVERDRAW;
   for (let x = -OVERDRAW; x <= end; x += step) {
     pts.push(`${x},${(y - rnd() * amp).toFixed(0)}`);
@@ -72,7 +71,21 @@ const ridge = (y, amp, step, seed) => {
   return `M ${pts.join(" L ")} L ${end} ${FLOOR} L ${-OVERDRAW} ${FLOOR} Z`;
 };
 
-export default function World() {
+export default function World({ season = "auto" }) {
+  const selectedSeason = season === "auto" ? CURRENT_SEASON : season;
+  const seasonalAmbient =
+    SEASON_AMBIENT[selectedSeason] || SEASON_AMBIENT[CURRENT_SEASON];
+  const kinds = {
+    intro: seasonalAmbient,
+    origin: "dust",
+    foundry: "spark",
+    india: "dust",
+    sweden: seasonalAmbient,
+    sprinta: seasonalAmbient,
+    architect: seasonalAmbient,
+    recap: seasonalAmbient,
+  };
+
   return (
     <svg
       className="j-world"
@@ -107,7 +120,13 @@ export default function World() {
           width={FADE_W}
           height={VIEW_H}
         >
-          <rect x={FADE_X0} y="0" width={FADE_W} height={VIEW_H} fill="url(#jFadeGrad)" />
+          <rect
+            x={FADE_X0}
+            y="0"
+            width={FADE_W}
+            height={VIEW_H}
+            fill="url(#jFadeGrad)"
+          />
         </mask>
       </defs>
 
@@ -143,7 +162,7 @@ export default function World() {
               >
                 {beat.numeral}
               </text>
-            ) : null
+            ) : null,
           )}
         </g>
 
@@ -186,12 +205,21 @@ export default function World() {
             journey is legible as one line. */}
         <g data-ov-path opacity="0">
           <defs>
-            <linearGradient id="jOvTrail" gradientUnits="userSpaceOnUse" x1={OVERVIEW[0].x} y1="0" x2={OVERVIEW[OVERVIEW.length - 1].x} y2="0">
+            <linearGradient
+              id="jOvTrail"
+              gradientUnits="userSpaceOnUse"
+              x1={OVERVIEW[0].x}
+              y1="0"
+              x2={OVERVIEW[OVERVIEW.length - 1].x}
+              y2="0"
+            >
               {OVERVIEW.map((_, i) => (
                 <stop
                   key={i}
                   offset={`${(i / (OVERVIEW.length - 1)) * 100}%`}
-                  stopColor={heatColor(BEATS.find((b) => b.id === OVERVIEW[i].id).heat)}
+                  stopColor={heatColor(
+                    BEATS.find((b) => b.id === OVERVIEW[i].id).heat,
+                  )}
                 />
               ))}
             </linearGradient>
@@ -254,7 +282,7 @@ export default function World() {
             <Particles
               key={beat.id}
               scene={{ id: beat.id, i }}
-              kind={KINDS[beat.id]}
+              kind={kinds[beat.id]}
               count={beat.id === "foundry" ? 12 : undefined}
             />
           ))}
