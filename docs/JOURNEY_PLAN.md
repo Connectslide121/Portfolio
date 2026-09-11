@@ -95,6 +95,14 @@ Recorded so they are not re-litigated in a later session.
 | D24 | Project media lives in **`src/data/projectMedia.js`**, shared by Résumé mode and the gallery | The title→media mapping was hardcoded inside `Projects.jsx`; duplicating it for the journey would have guaranteed drift |
 | D25 | Locations read as **"Spain"**, not "Basque Country, Spain" | User's preference — simpler, and recognisable to a wider audience |
 
+### Confirmed
+
+- **ATPL framing** — the plant already existed; the entry reads as establishing
+  operations there, transferring the process and training the team. Wording
+  confirmed by Jon, 2026-09-11.
+- **Shipped.** Merged to `master` and deployed via
+  `.github/workflows/deploy.yml` on 2026-09-11.
+
 ### Still open
 
 - [x] **O1** ~~Art style final pick~~ — **resolved: silhouette + giant year numerals** (D11)
