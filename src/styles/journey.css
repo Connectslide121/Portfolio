@@ -61,7 +61,7 @@
      empty enough that the tiles carry on their own. */
   align-items: flex-start;
   justify-content: stretch;
-  padding-block: clamp(5rem, 9vh, 8rem) 0;
+  padding-block: clamp(3rem, 7vh, 8rem) 0;
 }
 
 .j-card {
@@ -537,7 +537,7 @@
 .j-wall {
   position: relative;
   width: 100%;
-  height: min(44vh, 23rem);
+  height: min(34vh, 21rem);
 }
 
 .j-tile {
@@ -776,9 +776,7 @@
 
 .j-ov-caption {
   position: absolute;
-  left: 50%;
-  translate: -50% 0;
-  top: 47%;
+  translate: -50% -100%;
   font-size: 0.66rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -899,16 +897,6 @@
   font-size: 0.66rem;
   color: #93a3b8;
   margin-bottom: 0.2rem;
-}
-
-.j-ov-hint {
-  flex: none;
-  margin-top: auto;
-  text-align: center;
-  font-size: 0.62rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgb(255 255 255 / 0.32);
 }
 
 /* The travelling stream belongs to the linear view, not the lifted one. */

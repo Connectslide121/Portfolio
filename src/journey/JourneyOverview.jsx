@@ -18,6 +18,11 @@ import { OrgMarks } from "../components/OrgMark";
 
 const EDGE = 116; // half a label, so the outermost ones stay on screen
 
+// Sits just above the highest laid-out place. Anchored in world coordinates
+// like the labels are: a fixed percentage collided with the work wall on
+// shorter viewports.
+const CAPTION_Y = 604;
+
 /** viewBox -> screen, matching preserveAspectRatio="xMidYMid slice". */
 const project = (box, x, y) => {
   const scale = Math.max(box.w / SCENE_W, box.h / VIEW_H);
@@ -46,7 +51,17 @@ export default function JourneyOverview({ index, onPick }) {
 
   return (
     <div className="j-overview" ref={ref} role="dialog" aria-label="The whole journey">
-      <p className="j-ov-caption">
+      <p
+        className="j-ov-caption"
+        style={
+          box
+            ? (() => {
+                const at = project(box, SCENE_W / 2, CAPTION_Y);
+                return { left: `${at.left}px`, top: `${at.top}px` };
+              })()
+            : { opacity: 0 }
+        }
+      >
         The whole journey · steel to software · Spain to Sweden
       </p>
 
@@ -76,8 +91,6 @@ export default function JourneyOverview({ index, onPick }) {
           );
         })}
       </div>
-
-      <p className="j-ov-hint">pick a place to go back to it</p>
     </div>
   );
 }
