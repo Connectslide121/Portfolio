@@ -10,26 +10,7 @@ import { faGithub, faNpm } from "@fortawesome/free-brands-svg-icons";
 
 import { featuredProjects, allProjects } from "../components/projectList";
 
-// Import project media
-import DAIETpedia from "../images/projects/daietpedia.mp4";
-import CodepenAI from "../images/projects/CodepenAI.mp4";
-import PasswordInput from "../images/projects/password-input.mp4";
-import PlasticSlurg from "../images/projects/plastic-slurg.mp4";
-import Listr from "../images/projects/listr.mp4";
-import Sokoban from "../images/projects/Sokoban.mp4";
-import SlidingPuzzles from "../images/projects/sliding-puzzles.mp4";
-import FlapryBlirb from "../images/projects/flapry-blirb.mp4";
-import ContactBook from "../images/projects/contact-book.mp4";
-
-import Calculator from "../images/projects/calculator.webp";
-import imageGenerator from "../images/projects/ai-image-generator.webp";
-import imageSearchApp from "../images/projects/image-search-app.webp";
-import CommunityPortal from "../images/projects/community-portal.webp";
-import VendingMachine from "../images/projects/vending-machine.webp";
-import SpotifyClone from "../images/projects/spotify-clone.webp";
-import LawnMowerRental from "../images/projects/lawn-mower-rental.webp";
-import PatisserieLente from "../images/projects/patisserie-lente.webp";
-import none from "../images/projects/none.jpg";
+import { mediaFor } from "../data/projectMedia";
 
 // Import technology icons
 import html from "../images/tools/html.webp";
@@ -90,44 +71,8 @@ export default function Projects() {
     tailwind: { icon: tailwind, name: "Tailwind CSS" }
   };
 
-  const assignMedia = (project) => {
-    // For video projects
-    const videoProjects = {
-      DAIETpedia: DAIETpedia,
-      CodepenAI: CodepenAI,
-      "Password input npm package": PasswordInput,
-      "Plastic Slurg": PlasticSlurg,
-      Listr: Listr,
-      "Sokoban game": Sokoban,
-      "Sliding puzzles": SlidingPuzzles,
-      "Flapry Blirb": FlapryBlirb,
-      "Contact book": ContactBook
-    };
-
-    // For image projects
-    const imageProjects = {
-      Calculator: Calculator,
-      "AI image generator": imageGenerator,
-      "AI Image Generator": imageGenerator,
-      "Image search app": imageSearchApp,
-      "Community portal": CommunityPortal,
-      "Vending machine": VendingMachine,
-      "Spotify clone": SpotifyClone,
-      "Lawn mower rental": LawnMowerRental,
-      "Patisserie Lente": PatisserieLente
-    };
-
-    if (videoProjects[project.title]) {
-      return { type: "video", src: videoProjects[project.title] };
-    } else if (imageProjects[project.title]) {
-      return { type: "image", src: imageProjects[project.title] };
-    } else {
-      return { type: "image", src: none };
-    }
-  };
-
   const ProjectCard = ({ project }) => {
-    const media = assignMedia(project);
+    const media = mediaFor(project.title);
 
     return (
       <div className="project-card">

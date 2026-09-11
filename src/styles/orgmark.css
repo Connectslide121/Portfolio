@@ -1,0 +1,98 @@
+/* Organisation logo badges. The plate is picked from the artwork's tone, so
+   no per-theme assets or filters are needed. */
+
+.org-marks {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.org-mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.45rem;
+  overflow: hidden;
+  flex: none;
+  line-height: 0;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, outline-color 0.2s ease;
+  outline: 1.5px solid transparent;
+  outline-offset: 1px;
+}
+
+/* Only the linked variant is interactive. */
+a.org-mark:hover,
+a.org-mark:focus-visible {
+  transform: translateY(-2px);
+  outline-color: currentColor;
+  box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.6);
+}
+
+/* A small "opens elsewhere" cue, revealed on hover so the badge stays clean. */
+.org-mark-cue {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.5rem;
+  line-height: 1;
+  padding: 1px 2px;
+  border-bottom-left-radius: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+a.org-mark:hover .org-mark-cue,
+a.org-mark:focus-visible .org-mark-cue {
+  opacity: 0.85;
+}
+
+.org-mark[data-tone="dark"] .org-mark-cue,
+.org-mark[data-tone="colour"] .org-mark-cue {
+  color: #0a0f18;
+  background: rgb(0 0 0 / 0.08);
+}
+
+.org-mark[data-tone="light"] .org-mark-cue {
+  color: #e8eef7;
+  background: rgb(255 255 255 / 0.14);
+}
+
+.org-mark img {
+  display: block;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Dark ink and full-colour artwork both need a light plate. */
+.org-mark[data-tone="dark"],
+.org-mark[data-tone="colour"] {
+  background: #ffffff;
+  padding: 0.3rem 0.45rem;
+  box-shadow: 0 2px 10px -4px rgb(0 0 0 / 0.45);
+  color: #64748b;
+}
+
+/* Light ink needs a dark one. */
+.org-mark[data-tone="light"] {
+  background: #141a24;
+  padding: 0.3rem 0.5rem;
+  box-shadow: 0 2px 10px -4px rgb(0 0 0 / 0.45);
+  color: #93a3b8;
+}
+
+.org-mark[data-size="sm"] img {
+  height: 15px;
+  max-width: 82px;
+}
+
+.org-mark[data-size="md"] img {
+  height: 20px;
+  max-width: 108px;
+}
+
+.org-mark[data-size="lg"] img {
+  height: 26px;
+  max-width: 140px;
+}

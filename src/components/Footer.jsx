@@ -6,7 +6,8 @@ export default function Footer() {
   return (
     <div className="footer">
       <h4>
-        2024 - Made with <FontAwesomeIcon icon={faHeart} /> by Jon Mendizabal
+        {new Date().getFullYear()} - Made with <FontAwesomeIcon icon={faHeart} />{" "}
+        by Jon Mendizabal
       </h4>
     </div>
   );
