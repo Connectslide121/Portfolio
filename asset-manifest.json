@@ -1,7 +1,10 @@
 {
   "files": {
-    "main.css": "/Portfolio/static/css/main.6c30cc81.css",
-    "main.js": "/Portfolio/static/js/main.8b9ffc81.js",
+    "main.css": "/Portfolio/static/css/main.b1bd55aa.css",
+    "main.js": "/Portfolio/static/js/main.89dc86a4.js",
+    "static/css/988.60c0d7c5.chunk.css": "/Portfolio/static/css/988.60c0d7c5.chunk.css",
+    "static/js/988.8968aa9f.chunk.js": "/Portfolio/static/js/988.8968aa9f.chunk.js",
+    "static/js/516.ca072e3f.chunk.js": "/Portfolio/static/js/516.ca072e3f.chunk.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/CodepenAI.mp4": "/Portfolio/static/media/CodepenAI.67099e612ecd577ff4f7.mp4",
     "static/media/plastic-slurg.mp4": "/Portfolio/static/media/plastic-slurg.a10eea5912762bdf2abc.mp4",
@@ -24,6 +27,7 @@
     "static/media/rag.webp": "/Portfolio/static/media/rag.35d20de8ab7414b15a26.webp",
     "static/media/calculator.webp": "/Portfolio/static/media/calculator.947191452e1000ceea4d.webp",
     "static/media/openai.webp": "/Portfolio/static/media/openai.7e81fc1d916da3b50e3b.webp",
+    "static/media/london-met.svg": "/Portfolio/static/media/london-met.635bfda6d142c68f8637861331c95eec.svg",
     "static/media/reactjs.webp": "/Portfolio/static/media/reactjs.67dfd81581974d545a90.webp",
     "static/media/sql.webp": "/Portfolio/static/media/sql.4dd3f8bd82f1c74a8516.webp",
     "static/media/aws.webp": "/Portfolio/static/media/aws.009497f44b7452469810.webp",
@@ -43,17 +47,25 @@
     "static/media/tailwind.webp": "/Portfolio/static/media/tailwind.40ecb45e1abc50351bbb.webp",
     "static/media/cosmosdb.webp": "/Portfolio/static/media/cosmosdb.181d22b34d20dfefad67.webp",
     "static/media/css.webp": "/Portfolio/static/media/css.4b3ad0b4e36ce594b702.webp",
+    "static/media/lea-artibai.webp": "/Portfolio/static/media/lea-artibai.f62d3167bd646b77ce34.webp",
     "static/media/html.webp": "/Portfolio/static/media/html.5f863fccf290c35b28a0.webp",
     "static/media/llm.webp": "/Portfolio/static/media/llm.18ffd7608c7850982756.webp",
     "static/media/ts.webp": "/Portfolio/static/media/ts.0b561676e4d3d793d7b7.webp",
     "static/media/embedding.webp": "/Portfolio/static/media/embedding.53afb5f8fe81ed694bea.webp",
+    "static/media/sprinta.webp": "/Portfolio/static/media/sprinta.599b231f04c2607063af.webp",
     "static/media/js.webp": "/Portfolio/static/media/js.112e86014c0a1cf4e28e.webp",
+    "static/media/aml.webp": "/Portfolio/static/media/aml.1cbafe59a2ee29f24347.webp",
+    "static/media/atpl.webp": "/Portfolio/static/media/atpl.4afdb6ed8e16fa6f6a94.webp",
+    "static/media/lexicon.svg": "/Portfolio/static/media/lexicon.a3a9394e0035213881511dbb09bbe4ab.svg",
     "index.html": "/Portfolio/index.html",
-    "main.6c30cc81.css.map": "/Portfolio/static/css/main.6c30cc81.css.map",
-    "main.8b9ffc81.js.map": "/Portfolio/static/js/main.8b9ffc81.js.map"
+    "main.b1bd55aa.css.map": "/Portfolio/static/css/main.b1bd55aa.css.map",
+    "main.89dc86a4.js.map": "/Portfolio/static/js/main.89dc86a4.js.map",
+    "988.60c0d7c5.chunk.css.map": "/Portfolio/static/css/988.60c0d7c5.chunk.css.map",
+    "988.8968aa9f.chunk.js.map": "/Portfolio/static/js/988.8968aa9f.chunk.js.map",
+    "516.ca072e3f.chunk.js.map": "/Portfolio/static/js/516.ca072e3f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.6c30cc81.css",
-    "static/js/main.8b9ffc81.js"
+    "static/css/main.b1bd55aa.css",
+    "static/js/main.89dc86a4.js"
   ]
 }
