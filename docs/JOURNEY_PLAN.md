@@ -96,6 +96,34 @@ Recorded so they are not re-litigated in a later session.
 | D24 | Project media lives in **`src/data/projectMedia.js`**, shared by Résumé mode and the gallery | The title→media mapping was hardcoded inside `Projects.jsx`; duplicating it for the journey would have guaranteed drift |
 | D25 | Locations read as **"Spain"**, not "Basque Country, Spain" | User's preference — simpler, and recognisable to a wider audience |
 
+### Static page restyle (2026-09-12)
+
+The journey became the landing, which left the static page looking like a
+different product — its 3D isometric hero render and violet gradients had
+nothing to do with the journey's flat silhouettes and molten→cold ramp.
+
+- **Palette**: gradients run molten → cold, the same two poles the journey
+  travels. Violet is gone. Interpolated `in oklab`, because sRGB takes
+  orange → blue through grey and washed out the middle of the name and every
+  section heading.
+- **Hero art**: `HeroPanorama.jsx` replaces the 3D render — a foundry, a city,
+  and the stream cooling between them. It carries **its own sky** (warm at the
+  foundry end, cold at the city end) so the silhouettes can be dark ink the way
+  they are in the journey. Without a sky they were light shapes on a dark page,
+  which reads inside out — and the panel then works unchanged in either theme.
+- **Teaser**: reduced to a pill with one molten dot. It used to carry its own
+  stream, which was pure repetition once the hero art carried that motif.
+- **Shape language**: buttons are pills, matching the journey's controls.
+
+Two latent bugs fell out of it:
+
+1. `--radius-full` was used by the tech tags and quest pills but **never
+   defined**, so they had been rendering square.
+2. Theme persistence never worked. `public/index.html` hardcodes
+   `<body class="dark-theme">`, and the init code only ever *added* the class —
+   so a stored "light" preference could not take effect on reload. It toggles
+   both ways now.
+
 ### Confirmed
 
 - **ATPL framing** — the plant already existed; the entry reads as establishing
