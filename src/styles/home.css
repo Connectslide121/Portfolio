@@ -22,9 +22,29 @@
   z-index: -1;
 }
 
+/* A warm glow behind the illustration — the foundry end of the journey
+   bleeding into the static page, without touching the artwork itself. */
+#home::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 6%;
+  width: min(34rem, 40vw);
+  aspect-ratio: 1;
+  translate: 0 -50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--moltenColor) 18%, transparent),
+    transparent 62%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
 .home-text-wrapper {
   flex: 1;
   max-width: 600px;
+  position: relative;
   z-index: 2;
 }
 
@@ -55,9 +75,13 @@
   position: absolute;
   bottom: -8px;
   left: 0;
-  width: 60px;
+  width: 84px;
   height: 3px;
-  background: var(--accentColor);
+  background: linear-gradient(
+    90deg in oklab,
+    var(--moltenColor),
+    var(--accentColor)
+  );
   border-radius: 2px;
 }
 

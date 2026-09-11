@@ -19,6 +19,8 @@ body {
   --secondaryColor: #334155;
   --accentColor: #3b82f6;
   --accentHover: #2563eb;
+  /* The journey's hot pole, for accents that reference it. */
+  --moltenColor: #f97316;
   --backgroundColor: #ffffff;
   --surfaceColor: #f8fafc;
   --cardBackground: #ffffff;
@@ -89,6 +91,7 @@ body.dark-theme {
   --secondaryColor: #e2e8f0;
   --accentColor: #60a5fa;
   --accentHover: #3b82f6;
+  --moltenColor: #fb923c;
   --backgroundColor: #030712;
   --surfaceColor: #0b1120;
   --cardBackground: #0f172a;
