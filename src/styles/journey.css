@@ -1096,3 +1096,96 @@
     display: none;
   }
 }
+
+/* ==========================================================================
+   Per-beat accents. Each scene gets one thing that is actually happening in
+   it, and it is the brightest element in the frame.
+   ========================================================================== */
+
+/* Foundry: a brighter slug running down the pour, so the stream reads as
+   flowing rather than as a static line. */
+.fy-pour-run {
+  stroke-dasharray: 18 150;
+  stroke-dashoffset: 168;
+  opacity: 0.9;
+  animation: accent-run 1.5s linear infinite;
+}
+
+@keyframes accent-run {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* The pool swells as metal lands in it. */
+.fy-pool {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: accent-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes accent-pulse {
+  50% {
+    transform: scale(1.12);
+    opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fy-pour-run,
+  .fy-pool {
+    animation: none;
+  }
+}
+
+/* Shared accent motion. Every beat's accent is a light source, so they all
+   breathe rather than sit still. */
+.acc-flicker {
+  animation: acc-flicker 4.5s ease-in-out infinite;
+}
+
+@keyframes acc-flicker {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  40% {
+    opacity: 1;
+  }
+  62% {
+    opacity: 0.72;
+  }
+}
+
+.acc-run {
+  stroke-dasharray: 14 120;
+  stroke-dashoffset: 134;
+  opacity: 0.9;
+  animation: accent-run 1.7s linear infinite;
+}
+
+.acc-beacon {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: acc-beacon 2.6s ease-in-out infinite;
+}
+
+@keyframes acc-beacon {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acc-flicker,
+  .acc-run,
+  .acc-beacon {
+    animation: none;
+  }
+}

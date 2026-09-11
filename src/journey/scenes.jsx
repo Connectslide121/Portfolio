@@ -14,6 +14,20 @@ const sawtooth = (x, y, teeth, w, h) => {
   return `${d} L ${x + teeth * w} ${BASE} L ${x} ${BASE} Z`;
 };
 
+/**
+ * Light spilled onto the floor in front of a source. Every accent uses one:
+ * a glow with nothing under it looks pasted on, whereas light landing on the
+ * ground places it in the scene.
+ */
+const Spill = ({ x, y, rx = 110, ry = 18, tint = "var(--j-stream)", opacity = 0.32 }) => (
+  <ellipse cx={x} cy={y} rx={rx} ry={ry} fill={tint} filter="url(#jGlow)" opacity={opacity} />
+);
+
+/** The bright edge a nearby light throws along a silhouette facing it. */
+const Rim = ({ d, width = 2.5, opacity = 0.7, tint = "var(--j-streamCore)" }) => (
+  <path d={d} fill="none" stroke={tint} strokeWidth={width} strokeLinecap="round" opacity={opacity} />
+);
+
 /** A grid of lit windows — reused by the school and the office. */
 const windows = (x, y, cols, rows, gap = 34, size = 16) =>
   Array.from({ length: cols * rows }).map((_, i) => ({
@@ -46,32 +60,161 @@ export function Origin({ ax }) {
           (w, i) => w.lit && <rect key={`t${i}`} x={w.x} y={w.y} width={w.size} height="20" />
         )}
       </g>
+
+      {/* Accent: the workshop door, open, with the forge inside. The first
+          time the story meets heat — small, because this is only the start. */}
+      <g className="acc">
+        <Spill x={ax + 862} y={BASE + 2} rx="104" ry="17" opacity="0.26" />
+        <rect
+          className="acc-flicker"
+          x={ax + 840}
+          y="752"
+          width="44"
+          height={BASE - 752}
+          fill="var(--j-stream)"
+          filter="url(#jGlowSoft)"
+        />
+        <rect x={ax + 848} y="762" width="28" height={BASE - 762} fill="var(--j-streamCore)" />
+        <Rim d={`M ${ax + 838} 750 L ${ax + 838} ${BASE}`} width="2.5" />
+        <Rim d={`M ${ax + 886} 750 L ${ax + 886} ${BASE}`} width="2.5" opacity={0.45} />
+        <Rim d={`M ${ax + 838} 750 L ${ax + 886} 750`} width="2.5" opacity={0.55} />
+      </g>
     </g>
   );
 }
 
-/** 2011-2023 — the steel foundry. */
+/**
+ * 2011-2023 — the steel foundry.
+ *
+ * The accent is the pour: a tilted ladle running molten steel into a sand
+ * mould, with the stream the brightest thing in the frame.
+ *
+ * The technique that makes it read is RIM LIGHT. The stream is a light
+ * source, so the edges facing it catch a bright line while the rest of the
+ * silhouette stays dark. Without that the props were unlit cut-outs sitting
+ * near a glow; with it they belong to the same scene.
+ */
 export function Foundry({ ax }) {
+  const POUR = `M ${ax + 880} 700 C ${ax + 866} 736 ${ax + 846} 768 ${ax + 818} 800`;
   return (
-    <g fill="var(--j-mid)">
-      {/* chimney + cap */}
-      <polygon points={`${ax + 40},${BASE} ${ax + 56},262 ${ax + 112},262 ${ax + 128},${BASE}`} />
-      <rect x={ax + 28} y="240" width="112" height="26" />
-      {/* main hall with north-light roof */}
-      <path d={sawtooth(ax + 176, 576, 4, 118, 76)} />
-      {/* annex + gantry crane */}
-      <rect x={ax + 676} y="648" width="196" height={BASE - 648} />
-      <rect x={ax + 658} y="620" width="232" height="18" />
-      {/* ladle on its stand, tipped toward the stream */}
-      <polygon points={`${ax + 916},688 ${ax + 1028},688 ${ax + 1006},798 ${ax + 938},798`} />
-      <rect x={ax + 962} y="798" width="20" height="42" />
-      <rect x={ax + 926} y={BASE - 14} width="92" height="16" />
+    <g>
+      <g fill="var(--j-mid)">
+        {/* chimney + cap */}
+        <polygon points={`${ax + 40},${BASE} ${ax + 56},262 ${ax + 112},262 ${ax + 128},${BASE}`} />
+        <rect x={ax + 28} y="240" width="112" height="26" />
+        {/* main hall with north-light roof */}
+        <path d={sawtooth(ax + 176, 576, 4, 118, 76)} />
+        {/* annex */}
+        <rect x={ax + 640} y="648" width="150" height={BASE - 648} />
+        <rect x={ax + 624} y="620" width="184" height="18" />
+        {/* the ladle, tilted to pour, hung on its trunnion post */}
+        <polygon
+          points={`${ax + 880},700 ${ax + 1024},652 ${ax + 1010},754 ${ax + 908},790`}
+        />
+        <rect x={ax + 1030} y="672" width="16" height={BASE - 672} />
+        <rect x={ax + 1004} y="678" width="34" height="16" />
+        {/* the sand mould receiving it */}
+        <path
+          d={`M ${ax + 760} ${BASE} L ${ax + 772} 796 L ${ax + 872} 796 L ${ax + 884} ${BASE} Z`}
+        />
+      </g>
+
+      {/* --- the accent ------------------------------------------------- */}
+      <g className="fy-pour">
+        {/* light thrown onto the floor around the mould */}
+        <ellipse
+          cx={ax + 820}
+          cy={BASE - 4}
+          rx="170"
+          ry="26"
+          fill="var(--j-stream)"
+          filter="url(#jGlow)"
+          opacity="0.3"
+        />
+
+        {/* rim light: the edges facing the stream catch it */}
+        <g
+          fill="none"
+          stroke="var(--j-streamCore)"
+          strokeLinecap="round"
+          opacity="0.75"
+        >
+          <path d={`M ${ax + 880} 700 L ${ax + 908} 790`} strokeWidth="3" />
+          <path d={`M ${ax + 880} 700 L ${ax + 1024} 652`} strokeWidth="2" opacity="0.5" />
+          <path d={`M ${ax + 772} 796 L ${ax + 872} 796`} strokeWidth="3" />
+          <path d={`M ${ax + 760} ${BASE} L ${ax + 772} 796`} strokeWidth="2" opacity="0.6" />
+        </g>
+
+        <path
+          d={POUR}
+          fill="none"
+          stroke="var(--j-stream)"
+          strokeWidth="24"
+          strokeLinecap="round"
+          filter="url(#jGlow)"
+          opacity="0.8"
+        />
+        <path
+          d={POUR}
+          fill="none"
+          stroke="var(--j-stream)"
+          strokeWidth="8"
+          strokeLinecap="round"
+          filter="url(#jGlowSoft)"
+        />
+        <path
+          d={POUR}
+          fill="none"
+          stroke="var(--j-streamCore)"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+        />
+        {/* a brighter slug running down, so the stream reads as flowing */}
+        <path
+          className="fy-pour-run"
+          d={POUR}
+          fill="none"
+          stroke="#ffffff"
+          strokeWidth="5"
+          strokeLinecap="round"
+        />
+
+        {/* molten pool in the mould, and the glow off the ladle's lip */}
+        <ellipse
+          className="fy-pool"
+          cx={ax + 820}
+          cy="796"
+          rx="54"
+          ry="11"
+          fill="var(--j-stream)"
+          filter="url(#jGlowSoft)"
+        />
+        <ellipse cx={ax + 820} cy="796" rx="40" ry="6.5" fill="var(--j-streamCore)" />
+        <ellipse
+          cx={ax + 886}
+          cy="698"
+          rx="20"
+          ry="10"
+          fill="var(--j-streamCore)"
+          filter="url(#jGlowSoft)"
+          opacity="0.9"
+        />
+      </g>
     </g>
   );
 }
 
 /** 2017 — the second plant, India. */
 export function IndiaCity({ ax }) {
+  return (
+    <g>
+      <IndiaSilhouette ax={ax} />
+      <IndiaAccent ax={ax} />
+    </g>
+  );
+}
+
+function IndiaSilhouette({ ax }) {
   const towers = [
     [20, 566, 108],
     [148, 624, 84],
@@ -93,6 +236,33 @@ export function IndiaCity({ ax }) {
       <rect x={ax + 768} y="596" width="26" height={BASE - 596} />
       <path d={`M ${ax + 386} 596 A 13 13 0 0 1 ${ax + 412} 596 Z`} />
       <path d={`M ${ax + 768} 596 A 13 13 0 0 1 ${ax + 794} 596 Z`} />
+    </g>
+  );
+}
+
+/** India's accent, kept separate so the silhouette group stays one fill. */
+function IndiaAccent({ ax }) {
+  const TAP = `M ${ax + 612} 792 C ${ax + 624} 812 ${ax + 636} 826 ${ax + 650} 838`;
+  return (
+    <g className="acc">
+      <Spill x={ax + 646} y={BASE + 2} rx="126" ry="19" opacity="0.3" />
+      {/* the furnace mouth, and the tap running out of it */}
+      <rect
+        className="acc-flicker"
+        x={ax + 566}
+        y="778"
+        width="52"
+        height={BASE - 778}
+        fill="var(--j-stream)"
+        filter="url(#jGlowSoft)"
+      />
+      <rect x={ax + 574} y="788" width="36" height={BASE - 788} fill="var(--j-streamCore)" />
+      <path d={TAP} fill="none" stroke="var(--j-stream)" strokeWidth="14" strokeLinecap="round" filter="url(#jGlow)" opacity="0.7" />
+      <path d={TAP} fill="none" stroke="var(--j-streamCore)" strokeWidth="3" strokeLinecap="round" />
+      <path className="acc-run" d={TAP} fill="none" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" />
+      <ellipse cx={ax + 652} cy={BASE - 6} rx="34" ry="6" fill="var(--j-streamCore)" />
+      <Rim d={`M ${ax + 564} 776 L ${ax + 620} 776`} width="2.5" />
+      <Rim d={`M ${ax + 420} ${BASE} L ${ax + 560} ${BASE}`} width="2" opacity={0.4} />
     </g>
   );
 }
@@ -125,8 +295,26 @@ export function SwedenForest({ ax }) {
       <g opacity="0.86">
         <polygon points={`${ax + 812},706 ${ax + 900},640 ${ax + 988},706`} fill="#5c2018" />
         <rect x={ax + 828} y="706" width="144" height={BASE - 706} fill="#6b271e" />
-        <rect x={ax + 866} y="742" width="38" height="38" fill="#d8c48a" opacity="0.75" />
         <rect x={ax + 922} y="760" width="30" height={BASE - 760} fill="#c9d5e6" opacity="0.6" />
+      </g>
+
+      {/* Accent: the window is lit by a SCREEN, not a hearth — the one cold
+          light in a cold scene, which is the whole point of this beat. */}
+      <g className="acc">
+        <Spill x={ax + 886} y={BASE - 2} rx="118" ry="18" tint="var(--j-streamCore)" opacity="0.22" />
+        <rect
+          className="acc-flicker"
+          x={ax + 862}
+          y="738"
+          width="46"
+          height="46"
+          fill="var(--j-streamCore)"
+          filter="url(#jGlowSoft)"
+        />
+        <rect x={ax + 868} y="744" width="34" height="34" fill="#eaf2ff" />
+        <Rim d={`M ${ax + 860} 736 L ${ax + 860} 786`} width="2.5" tint="#eaf2ff" opacity={0.7} />
+        <Rim d={`M ${ax + 860} 736 L ${ax + 910} 736`} width="2" tint="#eaf2ff" opacity={0.5} />
+        <Rim d={`M ${ax + 812} 706 L ${ax + 900} 640`} width="2" tint="#eaf2ff" opacity={0.32} />
       </g>
     </g>
   );
@@ -160,6 +348,31 @@ export function Office({ ax }) {
           ...windows(ax + 722, 462, 4, 9),
           ...windows(ax + 912, 372, 3, 11),
         ].map((w, i) => w.lit && <rect key={i} x={w.x} y={w.y} width="14" height="18" />)}
+      </g>
+
+      {/* Accent: one window far brighter than the rest, and a beacon on the
+          mast. Someone is still working. */}
+      <g className="acc">
+        <rect
+          className="acc-flicker"
+          x={ax + 724}
+          y="474"
+          width="44"
+          height="52"
+          fill="var(--j-streamCore)"
+          filter="url(#jGlowSoft)"
+        />
+        <rect x={ax + 732} y="482" width="28" height="36" fill="#eaf2ff" />
+        <Rim d={`M ${ax + 722} 472 L ${ax + 722} 528`} width="2.5" tint="#eaf2ff" opacity={0.65} />
+        <Rim d={`M ${ax + 700} 430 L ${ax + 868} 430`} width="2" tint="#eaf2ff" opacity={0.3} />
+        <circle
+          className="acc-beacon"
+          cx={ax + 937}
+          cy="238"
+          r="6"
+          fill="var(--j-streamCore)"
+          filter="url(#jGlowSoft)"
+        />
       </g>
     </g>
   );
