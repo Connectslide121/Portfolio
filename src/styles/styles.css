@@ -51,6 +51,7 @@ body {
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
+  --radius-full: 999px;
 
   /* Typography */
   --font-size-xs: 0.75rem;
