@@ -4,6 +4,7 @@ import home from "../images/home-image.webp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import HeroTeaser from "../journey/HeroTeaser";
+import HeroAccents from "../components/HeroAccents";
 import { profile } from "../data/journey";
 
 export default function Home({ onEnterJourney }) {
@@ -36,6 +37,7 @@ export default function Home({ onEnterJourney }) {
 
   return (
     <section id="home">
+      <HeroAccents />
       <div className="home-text-wrapper">
         <h1>
           {profile.name.split(" ").map((word, i) => (

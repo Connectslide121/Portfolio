@@ -1,0 +1,74 @@
+/* Journey atmosphere over the static hero. Additive only — the hero's own
+   illustration and the teaser are untouched. */
+
+.hero-accents {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ha-mote {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--accentColor);
+  opacity: 0.2;
+  animation: ha-twinkle 7s ease-in-out infinite;
+}
+
+.ha-mote.warm {
+  background: var(--moltenColor);
+}
+
+/* A soft halo makes a 3px dot read as an ember rather than a stray pixel. */
+.ha-mote::after {
+  content: "";
+  position: absolute;
+  inset: -170%;
+  border-radius: 50%;
+  background: radial-gradient(circle, currentColor, transparent 65%);
+  opacity: 0.28;
+}
+
+.ha-mote {
+  color: var(--accentColor);
+}
+
+.ha-mote.warm {
+  color: var(--moltenColor);
+}
+
+@keyframes ha-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* The journey's horizon rim light, thinned to a hairline. */
+.ha-horizon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg in oklab,
+    transparent,
+    color-mix(in srgb, var(--moltenColor) 70%, transparent) 22%,
+    color-mix(in srgb, var(--accentColor) 70%, transparent) 72%,
+    transparent
+  );
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ha-mote {
+    animation: none;
+    opacity: 0.3;
+  }
+}

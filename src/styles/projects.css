@@ -201,7 +201,9 @@ video:-ms-fullscreen {
   padding: var(--space-xs) var(--space-sm);
   background: var(--surfaceColor);
   border: 1px solid var(--borderColor);
-  border-radius: var(--radius-md);
+  /* about.css styles the same class as a pill; they used to disagree, so the
+     shape depended on which stylesheet loaded last. */
+  border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
   color: var(--textMuted);
   font-weight: 500;
