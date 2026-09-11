@@ -56,17 +56,12 @@
 
 .j-card-slot[data-kind="projects"] {
   /* The recap holds the work wall in the top half and leaves the lower half
-     to the laid-out journey. Only the top is washed back, so the silhouettes
-     underneath stay legible. */
+     to the laid-out journey. No scrim: once the column became bounded the
+     wash read as a floating panel with hard edges, and the sky up there is
+     empty enough that the tiles carry on their own. */
   align-items: flex-start;
   justify-content: stretch;
   padding-block: clamp(5rem, 9vh, 8rem) 0;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, #05070c 82%, transparent),
-    color-mix(in srgb, #05070c 68%, transparent) 46%,
-    transparent 62%
-  );
 }
 
 .j-card {
