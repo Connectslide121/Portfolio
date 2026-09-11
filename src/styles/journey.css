@@ -40,9 +40,13 @@
   pointer-events: none;
 }
 
+/* Content is centred in a bounded column. Past ~100rem the card and the work
+   wall were pinned to opposite edges of the screen with a void between them. */
 .j-card-slot {
   position: absolute;
   inset: 0;
+  max-width: 100rem;
+  margin-inline: auto;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -170,6 +174,8 @@
   top: 0;
   left: 0;
   right: 0;
+  max-width: 100rem;
+  margin-inline: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -757,6 +763,8 @@
   color: #fff;
 }
 
+/* NOT bounded: its labels are projected from the world SVG's geometry, so it
+   has to keep the SVG's box or they drift off the silhouettes. */
 .j-overview {
   position: absolute;
   inset: 0;
@@ -1063,5 +1071,45 @@
   .j-intro-blurb {
     font-size: 0.86rem;
     margin-bottom: 1.1rem;
+  }
+}
+
+/* Painted while the lazy journey chunk loads, so the static page never shows
+   through underneath it. */
+.j-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: #070b12;
+}
+
+/* Landing beat: card left, the hero artwork right, mirroring the static
+   hero's composition. */
+.j-card-slot[data-kind="intro"] {
+  justify-content: space-between;
+  gap: clamp(1rem, 4vw, 4rem);
+}
+
+.j-intro-art {
+  flex: 0 1 auto;
+  width: min(34rem, 38vw);
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  animation: j-intro-art-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.25s;
+  filter: drop-shadow(0 30px 60px rgb(0 0 0 / 0.55));
+}
+
+@keyframes j-intro-art-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+}
+
+@media (max-width: 900px) {
+  .j-intro-art {
+    display: none;
   }
 }

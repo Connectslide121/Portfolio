@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/journey.css";
 import { stack, profile } from "../data/journey";
+import heroArt from "../images/home-image.webp";
 
 import { BEATS } from "./config";
 import { buildJourney } from "./timeline";
@@ -99,15 +100,18 @@ export default function JourneyStage({ onExit }) {
             key={beat.id}
           >
             {beat.kind === "intro" ? (
-              <article className="j-card j-intro">
-                <p className="j-intro-eyebrow">the journey</p>
-                <h1>{profile.name}</h1>
-                <h2>{profile.title}</h2>
-                <p className="j-intro-blurb">{profile.blurb}</p>
-                <button type="button" className="j-intro-go" onClick={next}>
-                  Walk me through it <span aria-hidden="true">→</span>
-                </button>
-              </article>
+              <>
+                <article className="j-card j-intro">
+                  <p className="j-intro-eyebrow">the journey</p>
+                  <h1>{profile.name}</h1>
+                  <h2>{profile.title}</h2>
+                  <p className="j-intro-blurb">{profile.blurb}</p>
+                  <button type="button" className="j-intro-go" onClick={next}>
+                    Walk me through it <span aria-hidden="true">→</span>
+                  </button>
+                </article>
+                <img className="j-intro-art" src={heroArt} alt="" />
+              </>
             ) : beat.kind === "projects" ? null : (
               <article className="j-card">
                 <div className="j-card-head">

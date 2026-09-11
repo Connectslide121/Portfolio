@@ -100,8 +100,12 @@ export default function App() {
         <Footer />
       </div>
 
+      {/* The journey chunk is lazy, and a null fallback meant the static page
+          painted first and then got covered — it read as landing on the wrong
+          page. The curtain paints in the same commit as the page behind it, so
+          there is nothing to see underneath while the chunk arrives. */}
       {journeyOpen && (
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="j-curtain" aria-hidden="true" />}>
           <JourneyStage onExit={closeJourney} />
         </Suspense>
       )}
