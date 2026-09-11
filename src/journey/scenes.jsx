@@ -37,47 +37,64 @@ const windows = (x, y, cols, rows, gap = 34, size = 16) =>
     lit: (i * 7) % 5 !== 0,
   }));
 
-/** 2005-2010 — the engineering school on the Basque coast. */
+/** 2005-2010 — an academic campus, intentionally unlike the later factory. */
 export function Origin({ ax }) {
   return (
     <g>
       <g fill="var(--j-mid)">
-        {/* long teaching block */}
-        <rect x={ax + 120} y="556" width="520" height={BASE - 556} />
-        <rect x={ax + 100} y="536" width="560" height="24" />
-        {/* stair tower */}
-        <rect x={ax + 660} y="452" width="120" height={BASE - 452} />
-        <rect x={ax + 650} y="436" width="140" height="20" />
-        {/* low workshop annex with a saw roof — where the metal was */}
-        <path d={sawtooth(ax + 800, 700, 3, 92, 52)} />
+        {/* broad teaching block */}
+        <rect x={ax + 96} y="556" width="570" height={BASE - 556} rx="3" />
+        <rect x={ax + 76} y="534" width="610" height="24" rx="3" />
+        {/* a regular human-scale double entrance */}
+        <rect x={ax + 144} y="766" width="76" height={BASE - 766} rx="2" fill="var(--j-ground)" opacity="0.76" />
+        {/* library / clock tower: a pitched cap keeps it civic, not industrial */}
+        <rect x={ax + 684} y="484" width="132" height={BASE - 484} />
+        <polygon points={`${ax + 672},484 ${ax + 750},420 ${ax + 828},484`} />
+        {/* curved lecture theatre */}
+        <path d={`M ${ax + 836} ${BASE} V 704 Q ${ax + 952} 622 ${ax + 1068} 704 V ${BASE} Z`} />
       </g>
-      {/* lit windows: study, not industry */}
-      <g fill="var(--j-streamCore)" opacity="0.34">
-        {windows(ax + 156, 596, 13, 5).map(
+      {/* regular classroom windows and the clock face */}
+      <g className="building-windows" fill="var(--j-streamCore)" opacity="0.34">
+        {[
+          ...windows(ax + 268, 596, 2, 5),
+          ...windows(ax + 466, 596, 6, 5),
+        ].map(
           (w, i) => w.lit && <rect key={i} x={w.x} y={w.y} width={w.size} height="22" />
         )}
-        {windows(ax + 690, 492, 2, 8).map(
-          (w, i) => w.lit && <rect key={`t${i}`} x={w.x} y={w.y} width={w.size} height="20" />
+        {windows(ax + 708, 532, 3, 7, 34, 15).map(
+          (w, i) => w.lit && <rect key={`t${i}`} x={w.x} y={w.y} width={w.size} height="19" />
         )}
       </g>
+      <g className="campus-details" fill="none" stroke="var(--j-streamCore)" opacity="0.42">
+        <circle cx={ax + 750} cy="466" r="22" strokeWidth="3" />
+        <path d={`M ${ax + 750} 452 V 467 L ${ax + 762} 474`} strokeWidth="3" strokeLinecap="round" />
+        {/* two glazed door leaves, a centre seam and one shallow step */}
+        <rect x={ax + 148} y="770" width="68" height={BASE - 770} rx="1" strokeWidth="2.5" />
+        <path d={`M ${ax + 182} 770 V ${BASE} M ${ax + 154} 794 H ${ax + 210} M ${ax + 136} ${BASE} H ${ax + 228}`} strokeWidth="2" />
+      </g>
+      <g fill="var(--j-streamCore)" opacity="0.55">
+        <circle cx={ax + 176} cy="812" r="2.5" />
+        <circle cx={ax + 188} cy="812" r="2.5" />
+      </g>
 
-      {/* Accent: the workshop door, open, with the forge inside. The first
-          time the story meets heat — small, because this is only the start. */}
-      <g className="acc">
-        <Spill x={ax + 862} y={BASE + 2} rx="104" ry="17" opacity="0.26" />
-        <rect
-          className="acc-flicker"
-          x={ax + 840}
-          y="752"
-          width="44"
-          height={BASE - 752}
-          fill="var(--j-stream)"
-          filter="url(#jGlowSoft)"
-        />
-        <rect x={ax + 848} y="762" width="28" height={BASE - 762} fill="var(--j-streamCore)" />
-        <Rim d={`M ${ax + 838} 750 L ${ax + 838} ${BASE}`} width="2.5" />
-        <Rim d={`M ${ax + 886} 750 L ${ax + 886} ${BASE}`} width="2.5" opacity={0.45} />
-        <Rim d={`M ${ax + 838} 750 L ${ax + 886} 750`} width="2.5" opacity={0.55} />
+      {/* A dark inset window contains the study scene without becoming a
+          bright screen-like panel. */}
+      <g className="acc study-lamp">
+        <rect x={ax + 326} y="550" width="128" height="138" rx="3" fill="var(--j-ground)" opacity="0.54" />
+        <rect x={ax + 326} y="550" width="128" height="138" rx="3" fill="none" stroke="var(--j-streamCore)" strokeWidth="2" opacity="0.3" />
+        <path d={`M ${ax + 320} 688 H ${ax + 460}`} stroke="var(--j-streamCore)" strokeWidth="4" opacity="0.32" />
+        {/* hanging lamp and its soft cone */}
+        <path d={`M ${ax + 390} 568 V 598`} stroke="var(--j-streamCore)" strokeWidth="2" opacity="0.5" />
+        <path d={`M ${ax + 378} 610 Q ${ax + 390} 594 ${ax + 402} 610 Z`} fill="var(--j-streamCore)" />
+        <circle cx={ax + 390} cy="610" r="4" fill="#fff7e8" filter="url(#jGlowSoft)" />
+        <path d={`M ${ax + 380} 612 L ${ax + 350} 674 H ${ax + 430} L ${ax + 400} 612 Z`} fill="var(--j-stream)" filter="url(#jGlowSoft)" opacity="0.2" />
+        <g fill="var(--j-ground)" opacity="0.94">
+          <rect x={ax + 382} y="654" width="52" height="6" rx="2" />
+          <rect x={ax + 426} y="660" width="5" height="23" />
+          <circle cx={ax + 362} cy="628" r="9" />
+          <path d={`M ${ax + 351} 642 Q ${ax + 362} 636 ${ax + 373} 642 L ${ax + 380} 658 H ${ax + 348} Z`} />
+          <path d={`M ${ax + 371} 645 L ${ax + 390} 654`} fill="none" stroke="var(--j-ground)" strokeWidth="7" strokeLinecap="round" />
+        </g>
       </g>
     </g>
   );
@@ -95,7 +112,7 @@ export function Origin({ ax }) {
  * near a glow; with it they belong to the same scene.
  */
 export function Foundry({ ax }) {
-  const POUR = `M ${ax + 880} 700 C ${ax + 866} 736 ${ax + 846} 768 ${ax + 818} 800`;
+  const POUR = `M ${ax + 895} 714 C ${ax + 884} 742 ${ax + 862} 772 ${ax + 824} 801`;
   return (
     <g>
       <g fill="var(--j-mid)">
@@ -107,16 +124,19 @@ export function Foundry({ ax }) {
         {/* annex */}
         <rect x={ax + 640} y="648" width="150" height={BASE - 648} />
         <rect x={ax + 624} y="620" width="184" height="18" />
-        {/* the ladle, tilted to pour, hung on its trunnion post */}
-        <polygon
-          points={`${ax + 880},700 ${ax + 1024},652 ${ax + 1010},754 ${ax + 908},790`}
-        />
-        <rect x={ax + 1030} y="672" width="16" height={BASE - 672} />
-        <rect x={ax + 1004} y="678" width="34" height="16" />
-        {/* the sand mould receiving it */}
-        <path
-          d={`M ${ax + 760} ${BASE} L ${ax + 772} 796 L ${ax + 872} 796 L ${ax + 884} ${BASE} Z`}
-        />
+        {/* overhead crane, hook and a bowl-shaped ladle */}
+        <rect x={ax + 748} y="566" width="298" height="12" />
+        <rect x={ax + 958} y="578" width="8" height="42" />
+        <path d={`M ${ax + 962} 618 C ${ax + 962} 648 ${ax + 948} 652 ${ax + 936} 664`} fill="none" stroke="var(--j-mid)" strokeWidth="9" />
+        <g transform={`rotate(-19 ${ax + 946} 700)`}>
+          <path d={`M ${ax + 876} 662 L ${ax + 1018} 662 L ${ax + 994} 738 Q ${ax + 946} 770 ${ax + 898} 738 Z`} />
+          <rect x={ax + 864} y="650" width="166" height="18" rx="8" />
+          <circle cx={ax + 884} cy="696" r="13" />
+          <circle cx={ax + 1008} cy="696" r="13" />
+        </g>
+        {/* cope and drag: the two halves of a sand mould */}
+        <path d={`M ${ax + 758} ${BASE} L ${ax + 766} 812 H ${ax + 878} L ${ax + 888} ${BASE} Z`} />
+        <rect x={ax + 750} y="806" width="138" height="12" rx="3" />
       </g>
 
       {/* --- the accent ------------------------------------------------- */}
@@ -139,10 +159,9 @@ export function Foundry({ ax }) {
           strokeLinecap="round"
           opacity="0.75"
         >
-          <path d={`M ${ax + 880} 700 L ${ax + 908} 790`} strokeWidth="3" />
-          <path d={`M ${ax + 880} 700 L ${ax + 1024} 652`} strokeWidth="2" opacity="0.5" />
-          <path d={`M ${ax + 772} 796 L ${ax + 872} 796`} strokeWidth="3" />
-          <path d={`M ${ax + 760} ${BASE} L ${ax + 772} 796`} strokeWidth="2" opacity="0.6" />
+          <path d={`M ${ax + 895} 714 Q ${ax + 936} 766 ${ax + 994} 738`} strokeWidth="3" />
+          <path d={`M ${ax + 766} 812 H ${ax + 878}`} strokeWidth="3" />
+          <path d={`M ${ax + 758} ${BASE} L ${ax + 766} 812`} strokeWidth="2" opacity="0.6" />
         </g>
 
         <path
@@ -182,17 +201,17 @@ export function Foundry({ ax }) {
         {/* molten pool in the mould, and the glow off the ladle's lip */}
         <ellipse
           className="fy-pool"
-          cx={ax + 820}
-          cy="796"
+          cx={ax + 824}
+          cy="811"
           rx="54"
           ry="11"
           fill="var(--j-stream)"
           filter="url(#jGlowSoft)"
         />
-        <ellipse cx={ax + 820} cy="796" rx="40" ry="6.5" fill="var(--j-streamCore)" />
+        <ellipse cx={ax + 824} cy="811" rx="40" ry="6.5" fill="var(--j-streamCore)" />
         <ellipse
-          cx={ax + 886}
-          cy="698"
+          cx={ax + 898}
+          cy="711"
           rx="20"
           ry="10"
           fill="var(--j-streamCore)"
@@ -240,29 +259,52 @@ function IndiaSilhouette({ ax }) {
   );
 }
 
-/** India's accent, kept separate so the silhouette group stays one fill. */
+/** India's accent: one production standard installed in a new plant, then
+ * taught to the local team. The visual reads left-to-right as
+ * specification -> CAD -> mould -> approved part. */
 function IndiaAccent({ ax }) {
-  const TAP = `M ${ax + 612} 792 C ${ax + 624} 812 ${ax + 636} 826 ${ax + 650} 838`;
   return (
-    <g className="acc">
-      <Spill x={ax + 646} y={BASE + 2} rx="126" ry="19" opacity="0.3" />
-      {/* the furnace mouth, and the tap running out of it */}
-      <rect
-        className="acc-flicker"
-        x={ax + 566}
-        y="778"
-        width="52"
-        height={BASE - 778}
-        fill="var(--j-stream)"
-        filter="url(#jGlowSoft)"
-      />
-      <rect x={ax + 574} y="788" width="36" height={BASE - 788} fill="var(--j-streamCore)" />
-      <path d={TAP} fill="none" stroke="var(--j-stream)" strokeWidth="14" strokeLinecap="round" filter="url(#jGlow)" opacity="0.7" />
-      <path d={TAP} fill="none" stroke="var(--j-streamCore)" strokeWidth="3" strokeLinecap="round" />
-      <path className="acc-run" d={TAP} fill="none" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" />
-      <ellipse cx={ax + 652} cy={BASE - 6} rx="34" ry="6" fill="var(--j-streamCore)" />
-      <Rim d={`M ${ax + 564} 776 L ${ax + 620} 776`} width="2.5" />
-      <Rim d={`M ${ax + 420} ${BASE} L ${ax + 560} ${BASE}`} width="2" opacity={0.4} />
+    <g className="acc india-rollout">
+      <Spill x={ax + 616} y={BASE - 1} rx="188" ry="22" opacity="0.2" />
+
+      {/* A single illuminated process board inside the plant. */}
+      <rect x={ax + 458} y="612" width="284" height="126" rx="8" fill="var(--j-ground)" opacity="0.56" />
+      <rect x={ax + 458} y="612" width="284" height="126" rx="8" fill="none" stroke="var(--j-streamCore)" strokeWidth="2" opacity="0.38" />
+
+      {/* the controlled specification entering the workflow */}
+      <g fill="none" stroke="var(--j-streamCore)" strokeLinecap="round" strokeLinejoin="round">
+        <rect x={ax + 476} y="636" width="38" height="58" rx="3" strokeWidth="3" />
+        <path d={`M ${ax + 487} 636 V 630 H ${ax + 503} V 636`} strokeWidth="4" />
+        <path d={`M ${ax + 485} 652 L ${ax + 490} 657 L ${ax + 499} 647 M ${ax + 485} 672 L ${ax + 490} 677 L ${ax + 499} 667`} strokeWidth="2.5" />
+      </g>
+
+      {/* specification -> CAD -> mould -> approved casting */}
+      <path d={`M ${ax + 516} 665 H ${ax + 708}`} fill="none" stroke="var(--j-stream)" strokeWidth="8" filter="url(#jGlowSoft)" opacity="0.54" />
+      <path className="india-process-flow" d={`M ${ax + 516} 665 H ${ax + 708}`} fill="none" stroke="var(--j-streamCore)" strokeWidth="3" strokeLinecap="round" />
+      {[552, 616, 680].map((x, i) => (
+        <circle key={x} className={`india-process-node india-process-node--${i + 1}`} cx={ax + x} cy="665" r="22" fill="var(--j-ground)" stroke="var(--j-streamCore)" strokeWidth="3" />
+      ))}
+      {/* CAD drawing */}
+      <path d={`M ${ax + 540} 674 V 653 H ${ax + 562} M ${ax + 542} 670 L ${ax + 558} 655 M ${ax + 542} 655 H ${ax + 558} V 671`} fill="none" stroke="var(--j-streamCore)" strokeWidth="2" />
+      {/* two mould halves */}
+      <path d={`M ${ax + 603} 653 H ${ax + 613} L ${ax + 617} 661 L ${ax + 621} 653 H ${ax + 631} V 677 H ${ax + 621} L ${ax + 617} 669 L ${ax + 613} 677 H ${ax + 603} Z`} fill="none" stroke="var(--j-streamCore)" strokeWidth="2" />
+      {/* approved finished part */}
+      <circle cx={ax + 680} cy="665" r="11" fill="none" stroke="var(--j-streamCore)" strokeWidth="4" />
+      <path d={`M ${ax + 691} 651 L ${ax + 697} 657 L ${ax + 708} 644`} fill="none" stroke="var(--j-streamCore)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+
+      {/* one trainer and a local team: rollout rather than negotiation */}
+      <g fill="var(--j-ground)" opacity="0.96">
+        <circle cx={ax + 488} cy="774" r="15" />
+        <path d={`M ${ax + 470} 795 Q ${ax + 488} 784 ${ax + 506} 795 L ${ax + 514} ${BASE} H ${ax + 462} Z`} />
+        <circle cx={ax + 570} cy="810" r="13" />
+        <path d={`M ${ax + 552} 828 Q ${ax + 570} 818 ${ax + 588} 828 L ${ax + 594} ${BASE} H ${ax + 546} Z`} />
+        <circle cx={ax + 638} cy="810" r="13" />
+        <path d={`M ${ax + 620} 828 Q ${ax + 638} 818 ${ax + 656} 828 L ${ax + 662} ${BASE} H ${ax + 614} Z`} />
+        <circle cx={ax + 706} cy="810" r="13" />
+        <path d={`M ${ax + 688} 828 Q ${ax + 706} 818 ${ax + 724} 828 L ${ax + 730} ${BASE} H ${ax + 682} Z`} />
+      </g>
+      <path className="india-pointer" d={`M ${ax + 501} 794 L ${ax + 544} 681`} fill="none" stroke="var(--j-streamCore)" strokeWidth="5" strokeLinecap="round" />
+      <Rim d={`M ${ax + 467} 796 Q ${ax + 488} 784 ${ax + 506} 795`} width="2" opacity={0.62} />
     </g>
   );
 }
@@ -298,29 +340,68 @@ export function SwedenForest({ ax }) {
         <rect x={ax + 922} y="760" width="30" height={BASE - 760} fill="#c9d5e6" opacity="0.6" />
       </g>
 
-      {/* Accent: the window is lit by a SCREEN, not a hearth — the one cold
-          light in a cold scene, which is the whole point of this beat. */}
-      <g className="acc">
-        <Spill x={ax + 886} y={BASE - 2} rx="118" ry="18" tint="var(--j-streamCore)" opacity="0.22" />
-        <rect
-          className="acc-flicker"
-          x={ax + 862}
-          y="738"
-          width="46"
-          height="46"
-          fill="var(--j-streamCore)"
-          filter="url(#jGlowSoft)"
-        />
-        <rect x={ax + 868} y="744" width="34" height="34" fill="#eaf2ff" />
-        <Rim d={`M ${ax + 860} 736 L ${ax + 860} 786`} width="2.5" tint="#eaf2ff" opacity={0.7} />
-        <Rim d={`M ${ax + 860} 736 L ${ax + 910} 736`} width="2" tint="#eaf2ff" opacity={0.5} />
-        <Rim d={`M ${ax + 812} 706 L ${ax + 900} 640`} width="2" tint="#eaf2ff" opacity={0.32} />
+      {/* The reset happens at a real desk: a lone figure studies beside a
+          laptop, framed by a cold Swedish night. */}
+      <g className="acc study-window study-window--code">
+        <Spill x={ax + 876} y={BASE - 2} rx="126" ry="18" tint="var(--j-streamCore)" opacity="0.2" />
+        <rect x={ax + 846} y="726" width="76" height="66" fill="var(--j-streamCore)" filter="url(#jGlowSoft)" opacity="0.72" />
+        <rect x={ax + 852} y="732" width="64" height="54" fill="#eaf2ff" opacity="0.9" />
+        <g fill="var(--j-ground)" opacity="0.96">
+          <rect x={ax + 856} y="770" width="54" height="5" />
+          <rect x={ax + 861} y="775" width="4" height="11" />
+          <rect x={ax + 902} y="775" width="4" height="11" />
+          <path d={`M ${ax + 890} 755 H ${ax + 905} L ${ax + 908} 768 H ${ax + 887} Z`} />
+          <circle cx={ax + 869} cy="750" r="7" />
+          <path d={`M ${ax + 865} 757 Q ${ax + 874} 755 ${ax + 881} 763 L ${ax + 886} 775 H ${ax + 866} Z`} />
+        </g>
+        <rect className="screen-glow" x={ax + 891} y="757" width="13" height="8" fill="#ffffff" filter="url(#jGlowSoft)" />
+        <path d={`M ${ax + 884} 732 V 786`} stroke="var(--j-mid)" strokeWidth="4" opacity="0.8" />
+        <Rim d={`M ${ax + 844} 724 H ${ax + 924} V 794`} width="2" tint="#eaf2ff" opacity={0.65} />
+        <Rim d={`M ${ax + 812} 706 L ${ax + 900} 640`} width="2" tint="#eaf2ff" opacity={0.28} />
       </g>
     </g>
   );
 }
 
-/** 2024 — Sprinta. The city at night; the work is inside now. */
+/** 2024 — the first Sprinta chapter: one developer and a makeshift setup. */
+export function SoloStudio({ ax }) {
+  return (
+    <g>
+      {/* A modest top-floor room, deliberately smaller than the office that
+          follows it. The sloped roof and odd furniture keep it homemade. */}
+      <g fill="var(--j-mid)">
+        <path d={`M ${ax + 430} ${BASE} V 604 L ${ax + 706} 482 L ${ax + 982} 604 V ${BASE} Z`} />
+        <rect x={ax + 404} y="594" width="602" height="18" />
+        <rect x={ax + 944} y="520" width="20" height="76" />
+        <rect x={ax + 930} y="508" width="48" height="14" />
+      </g>
+      <g className="acc solo-studio">
+        <Spill x={ax + 720} y={BASE - 2} rx="220" ry="24" tint="var(--j-streamCore)" opacity="0.18" />
+        {/* lit attic room / cutaway */}
+        <path d={`M ${ax + 536} 626 L ${ax + 706} 550 L ${ax + 876} 626 V 826 H ${ax + 536} Z`} fill="var(--j-stream)" filter="url(#jGlowSoft)" opacity="0.22" />
+        <path d={`M ${ax + 548} 632 L ${ax + 706} 562 L ${ax + 864} 632 V 814 H ${ax + 548} Z`} fill="var(--j-streamCore)" opacity="0.2" />
+        {/* folding table, laptop, cable and a single developer */}
+        <g fill="var(--j-ground)" opacity="0.97">
+          <rect x={ax + 650} y="730" width="154" height="12" rx="3" />
+          <path d={`M ${ax + 670} 742 L ${ax + 650} 814 H ${ax + 662} L ${ax + 682} 742 Z M ${ax + 782} 742 L ${ax + 802} 814 H ${ax + 814} L ${ax + 794} 742 Z`} />
+          <path d={`M ${ax + 724} 690 H ${ax + 774} L ${ax + 786} 730 H ${ax + 716} Z`} />
+          <rect x={ax + 576} y="744" width="54" height="8" />
+          <path d={`M ${ax + 582} 752 V 814 H ${ax + 592} V 752 Z M ${ax + 616} 752 V 814 H ${ax + 626} V 752 Z`} />
+          <circle cx={ax + 624} cy="685" r="18" />
+          <path d={`M ${ax + 606} 706 Q ${ax + 626} 696 ${ax + 646} 711 L ${ax + 670} 778 H ${ax + 596} Z`} />
+          <path d={`M ${ax + 643} 716 L ${ax + 716} 733`} fill="none" stroke="var(--j-ground)" strokeWidth="14" strokeLinecap="round" />
+        </g>
+        <rect className="screen-glow" x={ax + 731} y="696" width="38" height="25" rx="2" fill="#eef6ff" filter="url(#jGlowSoft)" />
+        {/* loose charger cable and the mug are the amateur details */}
+        <path className="solo-cable" d={`M ${ax + 770} 724 C ${ax + 836} 740 ${ax + 820} 784 ${ax + 850} 800`} fill="none" stroke="var(--j-streamCore)" strokeWidth="3" strokeLinecap="round" />
+        <path d={`M ${ax + 676} 716 H ${ax + 694} V 730 H ${ax + 676} Z M ${ax + 694} 719 Q ${ax + 705} 719 ${ax + 700} 728`} fill="none" stroke="var(--j-ground)" strokeWidth="4" />
+        <Rim d={`M ${ax + 646} 712 L ${ax + 716} 730`} width="2" tint="#eef6ff" opacity={0.75} />
+      </g>
+    </g>
+  );
+}
+
+/** 2025 — the mature portfolio: several products, one shared architecture. */
 export function Office({ ax }) {
   const blocks = [
     [40, 470, 150],
@@ -341,7 +422,7 @@ export function Office({ ax }) {
         <rect x={ax + 934} y="238" width="6" height="66" />
       </g>
       {/* lit windows — the only warmth in the frame */}
-      <g fill="var(--j-streamCore)" opacity="0.3">
+      <g className="building-windows" fill="var(--j-streamCore)" opacity="0.3">
         {[
           ...windows(ax + 62, 500, 4, 8),
           ...windows(ax + 232, 428, 3, 10),
@@ -350,29 +431,28 @@ export function Office({ ax }) {
         ].map((w, i) => w.lit && <rect key={i} x={w.x} y={w.y} width="14" height="18" />)}
       </g>
 
-      {/* Accent: one window far brighter than the rest, and a beacon on the
-          mast. Someone is still working. */}
-      <g className="acc">
-        <rect
-          className="acc-flicker"
-          x={ax + 724}
-          y="474"
-          width="44"
-          height="52"
-          fill="var(--j-streamCore)"
-          filter="url(#jGlowSoft)"
-        />
-        <rect x={ax + 732} y="482" width="28" height="36" fill="#eaf2ff" />
-        <Rim d={`M ${ax + 722} 472 L ${ax + 722} 528`} width="2.5" tint="#eaf2ff" opacity={0.65} />
-        <Rim d={`M ${ax + 700} 430 L ${ax + 868} 430`} width="2" tint="#eaf2ff" opacity={0.3} />
-        <circle
-          className="acc-beacon"
-          cx={ax + 937}
-          cy="238"
-          r="6"
-          fill="var(--j-streamCore)"
-          filter="url(#jGlowSoft)"
-        />
+      {/* Four product windows converge on one bright platform node. */}
+      <g className="acc office-network">
+        <g fill="none" stroke="var(--j-stream)" strokeWidth="10" opacity="0.22">
+          <path d={`M ${ax + 148} 690 C ${ax + 360} 690 ${ax + 470} 748 ${ax + 610} 748`} />
+          <path d={`M ${ax + 292} 610 C ${ax + 430} 610 ${ax + 478} 720 ${ax + 610} 748`} />
+          <path d={`M ${ax + 610} 748 C ${ax + 732} 716 ${ax + 792} 620 ${ax + 808} 566`} />
+          <path d={`M ${ax + 610} 748 C ${ax + 780} 748 ${ax + 902} 684 ${ax + 946} 610`} />
+        </g>
+        <g fill="none" stroke="var(--j-streamCore)" strokeWidth="2.5" opacity="0.85">
+          <path className="network-line" d={`M ${ax + 148} 690 C ${ax + 360} 690 ${ax + 470} 748 ${ax + 610} 748`} />
+          <path className="network-line network-line--2" d={`M ${ax + 292} 610 C ${ax + 430} 610 ${ax + 478} 720 ${ax + 610} 748`} />
+          <path className="network-line network-line--3" d={`M ${ax + 610} 748 C ${ax + 732} 716 ${ax + 792} 620 ${ax + 808} 566`} />
+          <path className="network-line network-line--4" d={`M ${ax + 610} 748 C ${ax + 780} 748 ${ax + 902} 684 ${ax + 946} 610`} />
+        </g>
+        <g fill="var(--j-streamCore)" filter="url(#jGlowSoft)">
+          <circle cx={ax + 148} cy="690" r="7" />
+          <circle cx={ax + 292} cy="610" r="7" />
+          <circle cx={ax + 808} cy="566" r="7" />
+          <circle cx={ax + 946} cy="610" r="7" />
+          <circle className="platform-node" cx={ax + 610} cy="748" r="13" />
+        </g>
+        <circle cx={ax + 610} cy="748" r="5" fill="#ffffff" />
       </g>
     </g>
   );
@@ -531,7 +611,7 @@ export const SCENE_BY_BEAT = {
   foundry: Foundry,
   india: IndiaCity,
   sweden: SwedenForest,
-  sprinta: Office,
-  architect: Office, // same office as 2024; the stack sits over it
+  sprinta: SoloStudio,
+  architect: Office, // mature shared platform; the stack sits over it
   recap: null, // the closing slide is the lifted overview + the work wall
 };

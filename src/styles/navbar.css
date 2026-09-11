@@ -201,7 +201,7 @@ body.dark-theme .navbar-logo {
   color: #6366f1;
 }
 
-#darkmode-toggle {
+.theme-toggle-input {
   opacity: 0;
   position: absolute;
   width: 0;
@@ -209,30 +209,30 @@ body.dark-theme .navbar-logo {
   pointer-events: none;
 }
 
-#darkmode-toggle:checked + .darkmode-toggle-label {
+.theme-toggle-input:checked + .darkmode-toggle-label {
   background: var(--surfaceColor);
 }
 
-#darkmode-toggle:checked + .darkmode-toggle-label::after {
+.theme-toggle-input:checked + .darkmode-toggle-label::after {
   left: calc(100% - 25px);
 }
 
-#darkmode-toggle:checked + .darkmode-toggle-label .sun {
+.theme-toggle-input:checked + .darkmode-toggle-label .sun {
   transform: scale(0.8);
 }
 
-#darkmode-toggle:checked + .darkmode-toggle-label .moon {
+.theme-toggle-input:checked + .darkmode-toggle-label .moon {
   opacity: 1;
   transform: scale(1.1);
 }
 
 /* Light mode - moon should be less visible */
-#darkmode-toggle:not(:checked) + .darkmode-toggle-label .sun {
+.theme-toggle-input:not(:checked) + .darkmode-toggle-label .sun {
   opacity: 1;
   transform: scale(1.1);
 }
 
-#darkmode-toggle:not(:checked) + .darkmode-toggle-label .moon {
+.theme-toggle-input:not(:checked) + .darkmode-toggle-label .moon {
   transform: scale(0.8);
 }
 
@@ -347,7 +347,7 @@ body.dark-theme .navbar-logo {
     left: 3px;
   }
 
-  #darkmode-toggle:checked + .darkmode-toggle-label::after {
+  .theme-toggle-input:checked + .darkmode-toggle-label::after {
     left: calc(100% - 21px);
   }
 

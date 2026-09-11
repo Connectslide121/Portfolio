@@ -54,6 +54,17 @@
   pointer-events: none;
 }
 
+/* On ultrawide displays the SVG uses the viewport width as its scale driver,
+   while the HTML cards stop at the shared 100rem content column. That pulls
+   the architect card inward until it meets the graph's left column. Give only
+   this beat a wider alignment rail; ordinary laptop/desktop framing stays
+   exactly where it is. */
+@media (min-width: 1800px) and (min-aspect-ratio: 2 / 1) {
+  .j-card-slot[data-card="architect"] {
+    max-width: 120rem;
+  }
+}
+
 .j-card-slot[data-kind="projects"] {
   /* The recap holds the work wall in the top half and leaves the lower half
      to the laid-out journey. No scrim: once the column became bounded the
@@ -176,6 +187,12 @@
   align-items: center;
   gap: 1rem;
   padding: clamp(0.75rem, 2vw, 1.5rem);
+  z-index: 40;
+  pointer-events: none;
+}
+
+.j-topbar .theme-toggle-wrapper {
+  pointer-events: auto;
 }
 
 .j-nav {
@@ -200,20 +217,23 @@
   font-size: 0.9rem;
   font-weight: 650;
   letter-spacing: 0.02em;
-  color: #0a0705;
+  color: var(--j-accent);
   text-decoration: none;
   padding: 0.6rem 1.4rem;
   border-radius: 999px;
-  border: 1px solid transparent;
-  background: var(--j-accent);
-  box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--j-accent) 70%, transparent);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid color-mix(in srgb, var(--j-accent) 62%, transparent);
+  background: transparent;
+  box-shadow: none;
+  transition: transform 0.2s ease, border-color 0.2s ease,
+    background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .j-exit:hover,
 .j-exit:focus-visible {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--j-accent) 85%, transparent);
+  border-color: var(--j-accent);
+  background: color-mix(in srgb, var(--j-accent) 7%, transparent);
+  box-shadow: 0 8px 24px -18px color-mix(in srgb, var(--j-accent) 80%, transparent);
 }
 
 .j-exit span {
@@ -1025,7 +1045,7 @@
   font-size: 0.86rem;
   font-weight: 650;
   cursor: pointer;
-  color: #0a0705;
+  color: #fff;
   background: var(--j-accent);
   border: 0;
   padding: 0.6rem 1.3rem;
@@ -1138,6 +1158,113 @@
   }
 }
 
+/* ==========================================================================
+   Light journey. The heat engine supplies the scene colours; these are the
+   interface surfaces that sit above it.
+   ========================================================================== */
+
+body:not(.dark-theme) .j-stage,
+body:not(.dark-theme) .j-static,
+body:not(.dark-theme) .j-curtain {
+  background: #f8fafc;
+  color: #172033;
+  color-scheme: light;
+}
+
+body:not(.dark-theme) .j-card {
+  background: color-mix(in srgb, #ffffff 88%, transparent);
+  border-color: color-mix(in srgb, var(--j-accent) 42%, #d7dee8);
+  box-shadow: 0 24px 60px -28px rgb(37 48 68 / 0.34);
+}
+
+body:not(.dark-theme) .j-year,
+body:not(.dark-theme) .j-material,
+body:not(.dark-theme) .j-status,
+body:not(.dark-theme) .j-brand,
+body:not(.dark-theme) .j-gallery header p,
+body:not(.dark-theme) .j-overview header p,
+body:not(.dark-theme) .j-ov-org {
+  color: #5f6f85;
+}
+
+body:not(.dark-theme) .j-card h3,
+body:not(.dark-theme) .j-static-list h3,
+body:not(.dark-theme) .j-static-lede {
+  color: #526176;
+}
+
+body:not(.dark-theme) .j-card dd,
+body:not(.dark-theme) .j-static-list dd,
+body:not(.dark-theme) .j-card-note,
+body:not(.dark-theme) .j-intro-blurb {
+  color: #2f3d51;
+}
+
+body:not(.dark-theme) .j-card dt,
+body:not(.dark-theme) .j-static-list dt {
+  color: color-mix(in srgb, var(--j-accent) 88%, #172033);
+}
+
+body:not(.dark-theme) .j-material {
+  border-top-color: rgb(23 32 51 / 0.11);
+}
+
+body:not(.dark-theme) .j-rail {
+  background: rgb(255 255 255 / 0.76);
+  border-color: rgb(71 85 105 / 0.2);
+  box-shadow: 0 10px 30px -18px rgb(37 48 68 / 0.34);
+}
+
+body:not(.dark-theme) .j-tick {
+  background: rgb(71 85 105 / 0.25);
+}
+
+body:not(.dark-theme) .j-rail-label {
+  color: #6b778b;
+}
+
+body:not(.dark-theme) .j-rail ol button.on .j-rail-label,
+body:not(.dark-theme) .j-nav,
+body:not(.dark-theme) .j-ov-open,
+body:not(.dark-theme) .j-ov-close {
+  color: #1f2c3f;
+}
+
+body:not(.dark-theme) .j-hint,
+body:not(.dark-theme) .j-ov-caption {
+  color: rgb(31 44 63 / 0.48);
+}
+
+body:not(.dark-theme) .j-ov-open,
+body:not(.dark-theme) .j-ov-close {
+  background: rgb(255 255 255 / 0.62);
+  border-color: rgb(71 85 105 / 0.22);
+}
+
+body:not(.dark-theme) .j-ov-node {
+  color: #172033;
+  background: color-mix(in srgb, #ffffff 88%, transparent);
+  box-shadow: 0 12px 30px -22px rgb(37 48 68 / 0.4);
+}
+
+body:not(.dark-theme) .j-static-list li {
+  background: color-mix(in srgb, var(--j-accent) 5%, #ffffff);
+}
+
+body:not(.dark-theme) .j-intro-art {
+  filter: drop-shadow(0 24px 42px rgb(37 48 68 / 0.2));
+}
+
+@media (max-width: 900px) {
+  body:not(.dark-theme) .j-overview {
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, #ffffff 82%, transparent) 10%
+    );
+  }
+}
+
 /* Shared accent motion. Every beat's accent is a light source, so they all
    breathe rather than sit still. */
 .acc-flicker {
@@ -1170,6 +1297,78 @@
   animation: acc-beacon 2.6s ease-in-out infinite;
 }
 
+/* The human-scale accents move sparingly: a screen breathes, a process moves
+   through the India rollout board, and pulses travel from four products into
+   one shared platform. The motion explains the scene instead of decorating it. */
+.screen-glow {
+  animation: screen-work 3.8s steps(2, end) infinite;
+}
+
+@keyframes screen-work {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  38% {
+    opacity: 1;
+  }
+  68% {
+    opacity: 0.84;
+  }
+}
+
+.india-pointer {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: explain-process 3.2s ease-in-out infinite;
+}
+
+.india-process-flow {
+  stroke-dasharray: 9 13;
+  animation: india-process-transfer 2.2s linear infinite;
+}
+
+@keyframes india-process-transfer {
+  to {
+    stroke-dashoffset: -44;
+  }
+}
+
+@keyframes explain-process {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+.solo-cable {
+  stroke-dasharray: 4 7;
+}
+
+.network-line {
+  stroke-dasharray: 10 28;
+  animation: network-flow 3.4s linear infinite;
+}
+
+.network-line--2 { animation-delay: -0.8s; }
+.network-line--3 { animation-delay: -1.6s; }
+.network-line--4 { animation-delay: -2.4s; }
+
+@keyframes network-flow {
+  to {
+    stroke-dashoffset: -76;
+  }
+}
+
+.platform-node {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: accent-pulse 2.8s ease-in-out infinite;
+}
+
 @keyframes acc-beacon {
   0%,
   100% {
@@ -1185,7 +1384,12 @@
 @media (prefers-reduced-motion: reduce) {
   .acc-flicker,
   .acc-run,
-  .acc-beacon {
+  .acc-beacon,
+  .screen-glow,
+  .india-pointer,
+  .india-process-flow,
+  .network-line,
+  .platform-node {
     animation: none;
   }
 }

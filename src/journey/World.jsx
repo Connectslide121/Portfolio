@@ -20,15 +20,28 @@ import { heatColor } from "./heat";
 // Silhouette places plus the giant year numerals from the abstract study —
 // the blend chosen in session 2 (resolves O1).
 
+// Meteorological seasons for the northern hemisphere. The journey is rooted
+// in Europe, so the ambient weather follows the current local calendar rather
+// than permanently equating the colder chapters with snow.
+const month = new Date().getMonth();
+const CURRENT_SEASON =
+  month === 11 || month <= 1
+    ? "snow"
+    : month <= 4
+      ? "blossom"
+      : month <= 7
+        ? "sun"
+        : "leaf";
+
 const KINDS = {
-  intro: "snow",
+  intro: CURRENT_SEASON,
   origin: "dust",
   foundry: "spark",
   india: "dust",
-  sweden: "snow",
-  sprinta: "snow",
-  architect: "snow",
-  recap: "snow",
+  sweden: CURRENT_SEASON,
+  sprinta: CURRENT_SEASON,
+  architect: CURRENT_SEASON,
+  recap: CURRENT_SEASON,
 };
 
 /** Catmull-Rom through the overview spots, as one smooth cubic path. */
@@ -153,12 +166,16 @@ export default function World() {
                   opacity="0.2"
                 />
               )}
-              {Scene && <Scene ax={FOCAL} />}
-              {beat.id === "architect" && (
-                <g data-arch>
-                  <StackGraph ax={FOCAL} groups={stack} />
+              {beat.id === "architect" ? (
+                <g data-architect-visual>
+                  {Scene && <Scene ax={FOCAL} />}
+                  <g data-arch>
+                    <StackGraph ax={FOCAL} groups={stack} />
+                  </g>
                 </g>
-              )}
+              ) : Scene ? (
+                <Scene ax={FOCAL} />
+              ) : null}
             </g>
           );
         })}

@@ -143,3 +143,38 @@ export const PALETTE = {
     streamCore: "#eaf2ff",
   },
 };
+
+// Light keeps the same temperature story, but swaps luminous night skies for
+// paper-like atmospheres and uses darker silhouettes/streams for contrast.
+export const LIGHT_PALETTE = {
+  warm: {
+    accent: "#b45309",
+    sky0: "#fffaf7",
+    sky1: "#eadbd8",
+    far: "#dbc8c7",
+    mid: "#59404a",
+    ground: "#2c2028",
+    stream: "#d97706",
+    streamCore: "#92400e",
+  },
+  hot: {
+    accent: "#c2410c",
+    sky0: "#fff7ed",
+    sky1: "#fed7aa",
+    far: "#edb98d",
+    mid: "#672b18",
+    ground: "#35170f",
+    stream: "#ea580c",
+    streamCore: "#9a3412",
+  },
+  cold: {
+    accent: "#2563eb",
+    sky0: "#f8fbff",
+    sky1: "#dbeafe",
+    far: "#c7d7eb",
+    mid: "#334b68",
+    ground: "#172235",
+    stream: "#3b82f6",
+    streamCore: "#1d4ed8",
+  },
+};

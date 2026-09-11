@@ -12,6 +12,7 @@ import ProjectGallery from "./ProjectGallery";
 import { OrgMarks } from "../components/OrgMark";
 import JourneyOverview from "./JourneyOverview";
 import JourneyStatic from "./JourneyStatic";
+import ThemeToggle from "../components/ThemeToggle";
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
@@ -56,6 +57,14 @@ export default function JourneyStage({ onExit }) {
       setTl(null);
     };
   }, [reduced, start]);
+
+  // Heat writes the active palette as inline SVG variables. Repaint once when
+  // the shared theme changes so a stationary scene switches immediately too.
+  useEffect(() => {
+    const refreshTheme = () => built.current?.render();
+    window.addEventListener("jm-theme-change", refreshTheme);
+    return () => window.removeEventListener("jm-theme-change", refreshTheme);
+  }, []);
 
   const { index, jumpTo, next, prev } = useJourneyDriver(
     tl,
@@ -171,6 +180,7 @@ export default function JourneyStage({ onExit }) {
         <p className="j-brand">
           Jon Mendizabal <span className="j-dot">·</span> the journey
         </p>
+        <ThemeToggle id="journey-theme-toggle" />
         <button className="j-exit" onClick={onExit}>
           Static page <span aria-hidden="true">→</span>
         </button>

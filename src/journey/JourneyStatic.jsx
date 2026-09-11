@@ -1,5 +1,6 @@
 import React from "react";
 import { BEATS } from "./config";
+import ThemeToggle from "../components/ThemeToggle";
 
 /**
  * Reduced-motion fallback. No timeline is ever built — the same six beats are
@@ -13,6 +14,7 @@ export default function JourneyStatic({ onExit }) {
         <p className="j-brand">
           Jon Mendizabal <span className="j-dot">·</span> the journey
         </p>
+        <ThemeToggle id="journey-static-theme-toggle" />
         <button className="j-exit" onClick={onExit}>
           Skip to CV →
         </button>

@@ -1,4 +1,4 @@
-import { PALETTE } from "./config";
+import { LIGHT_PALETTE, PALETTE } from "./config";
 
 const hex = (h) => [
   parseInt(h.slice(1, 3), 16),
@@ -12,15 +12,15 @@ const toHex = ([r, g, b]) =>
 
 const lerp = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
 
-// Pre-parse so the render loop does no string work.
-const POLES = Object.keys(PALETTE.hot).reduce((acc, key) => {
-  acc[key] = [
-    hex(PALETTE.cold[key]),
-    hex(PALETTE.warm[key]),
-    hex(PALETTE.hot[key]),
-  ];
-  return acc;
-}, {});
+// Pre-parse so the render loop does no colour conversion work.
+const parsePoles = (palette) =>
+  Object.keys(palette.hot).reduce((acc, key) => {
+    acc[key] = [hex(palette.cold[key]), hex(palette.warm[key]), hex(palette.hot[key])];
+    return acc;
+  }, {});
+
+const DARK_POLES = parsePoles(PALETTE);
+const LIGHT_POLES = parsePoles(LIGHT_PALETTE);
 
 const MID = 0.5;
 
@@ -33,7 +33,7 @@ export function heatColor(heat, key = "accent") {
   const t = Math.max(0, Math.min(1, heat));
   const lower = t <= MID;
   const local = lower ? t / MID : (t - MID) / (1 - MID);
-  const [cold, warm, hot] = POLES[key];
+  const [cold, warm, hot] = DARK_POLES[key];
   return toHex(lerp(lower ? cold : warm, lower ? warm : hot, local));
 }
 
@@ -52,8 +52,9 @@ export function applyHeat(root, heat) {
   const lower = t <= MID;
   const local = lower ? t / MID : (t - MID) / (1 - MID);
 
-  for (const key in POLES) {
-    const [cold, warm, hot] = POLES[key];
+  const poles = document.body.classList.contains("dark-theme") ? DARK_POLES : LIGHT_POLES;
+  for (const key in poles) {
+    const [cold, warm, hot] = poles[key];
     const from = lower ? cold : warm;
     const to = lower ? warm : hot;
     root.style.setProperty(`--j-${key}`, toHex(lerp(from, to, local)));

@@ -17,6 +17,12 @@ import { applyHeat } from "./heat";
 
 gsap.registerPlugin(DrawSVGPlugin);
 
+// The architect scene used to achieve this framing by scaling the entire
+// multi-slide SVG world during its reveal. Keeping the scale local preserves
+// the composition without repainting every scene, ridge and particle.
+const ARCHITECT_SCALE = 0.86;
+const ARCHITECT_PIVOT = { x: SCENE_W / 2, y: 540 };
+
 /**
  * Builds the whole journey as ONE PAUSED timeline with a label per beat.
  *
@@ -109,6 +115,16 @@ export function buildJourney({ root }) {
         }
       }
 
+      if (BEATS[i].id === "architect") {
+        // Ease the local framing back to 1 as the recap camera rises; a hard
+        // cutoff here would simply move the hitch to the following slide.
+        const restore = Math.min(1, ov / 0.2);
+        const localScale = ARCHITECT_SCALE + (1 - ARCHITECT_SCALE) * restore;
+        scale *= localScale;
+        ax = ARCHITECT_PIVOT.x + (ax - ARCHITECT_PIVOT.x) * localScale;
+        ay = ARCHITECT_PIVOT.y + (ay - ARCHITECT_PIVOT.y) * localScale;
+      }
+
       tx = ax - SCENE_ANCHOR.x * scale;
       ty = ay - SCENE_ANCHOR.y * scale;
 
@@ -174,7 +190,7 @@ export function buildJourney({ root }) {
   );
   const cards = BEATS.map((b) => root.querySelector(`[data-card="${b.id}"]`));
   const stream = root.querySelectorAll("[data-stream]");
-  const cameraGroup = root.querySelector("[data-camera]");
+  const architectVisual = root.querySelector("[data-architect-visual]");
   const archGroup = root.querySelector("[data-arch]");
   const archNodes = root.querySelectorAll("[data-arch-node]");
   const archEdges = root.querySelectorAll("[data-arch-edge] path");
@@ -190,9 +206,12 @@ export function buildJourney({ root }) {
   gsap.set(atmos.slice(1).flat(), { autoAlpha: 0 });
   gsap.set(atmos[0], { autoAlpha: 1 });
   gsap.set(stream, { drawSVG: "0% 0%" });
+  gsap.set(architectVisual, {
+    scale: 1 / ARCHITECT_SCALE,
+    svgOrigin: `${ARCHITECT_PIVOT.x} ${ARCHITECT_PIVOT.y}`,
+  });
   gsap.set(archNodes, { autoAlpha: 0, scale: 0.86, transformOrigin: "50% 50%" });
   gsap.set(archEdges, { drawSVG: "0% 0%" });
-  gsap.set(cameraGroup, { scale: 1, svgOrigin: `${SCENE_W / 2} 540` });
 
   // The stream is screen-anchored now, so its fill is simply how far through
   // the journey you are: it starts at the left and reaches the right edge on
@@ -229,21 +248,15 @@ export function buildJourney({ root }) {
       .to(atmos[i - 1], { autoAlpha: 0, duration: 1.3 }, "<");
 
     if (isArchitect && !narrow) {
-      // The payoff: the camera pulls back and the stream stops being a line —
-      // it branches into the system that actually shipped.
-      tl.to(cameraGroup, { scale: 0.86, duration: 2.2 }, "<0.6")
+      // Preserve the original build choreography, but pull back only this
+      // scene rather than repainting the entire multi-slide world each frame.
+      tl.to(architectVisual, { scale: 1, duration: 2.2 }, "<0.6")
         .to(archEdges, { drawSVG: "0% 100%", duration: 1.1, stagger: 0.03 }, "<0.7")
         .to(
           archNodes,
           { autoAlpha: 1, scale: 1, duration: 0.5, stagger: 0.04, ease: "back.out(1.6)" },
           "<0.1"
         );
-    }
-
-    // Come back to normal framing once past the stack, so the closing beat
-    // is not viewed through a zoomed-out camera.
-    if (beat.id === "work" && !narrow) {
-      tl.to(cameraGroup, { scale: 1, duration: 1.8 }, "<0.3");
     }
 
     tl.to(cards[i], { autoAlpha: 1, y: 0, duration: 0.7 }, "-=0.5").addLabel(beat.id);
