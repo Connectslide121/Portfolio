@@ -1,9 +1,9 @@
 {
   "files": {
-    "main.css": "/Portfolio/static/css/main.213c473e.css",
-    "main.js": "/Portfolio/static/js/main.d8ab811f.js",
-    "static/css/880.88b85627.chunk.css": "/Portfolio/static/css/880.88b85627.chunk.css",
-    "static/js/880.44f4fd55.chunk.js": "/Portfolio/static/js/880.44f4fd55.chunk.js",
+    "main.css": "/Portfolio/static/css/main.b1bd55aa.css",
+    "main.js": "/Portfolio/static/js/main.611c427d.js",
+    "static/css/988.4c0329bb.chunk.css": "/Portfolio/static/css/988.4c0329bb.chunk.css",
+    "static/js/988.95eedea5.chunk.js": "/Portfolio/static/js/988.95eedea5.chunk.js",
     "static/js/516.ca072e3f.chunk.js": "/Portfolio/static/js/516.ca072e3f.chunk.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/CodepenAI.mp4": "/Portfolio/static/media/CodepenAI.67099e612ecd577ff4f7.mp4",
@@ -58,14 +58,14 @@
     "static/media/atpl.webp": "/Portfolio/static/media/atpl.4afdb6ed8e16fa6f6a94.webp",
     "static/media/lexicon.svg": "/Portfolio/static/media/lexicon.a3a9394e0035213881511dbb09bbe4ab.svg",
     "index.html": "/Portfolio/index.html",
-    "main.213c473e.css.map": "/Portfolio/static/css/main.213c473e.css.map",
-    "main.d8ab811f.js.map": "/Portfolio/static/js/main.d8ab811f.js.map",
-    "880.88b85627.chunk.css.map": "/Portfolio/static/css/880.88b85627.chunk.css.map",
-    "880.44f4fd55.chunk.js.map": "/Portfolio/static/js/880.44f4fd55.chunk.js.map",
+    "main.b1bd55aa.css.map": "/Portfolio/static/css/main.b1bd55aa.css.map",
+    "main.611c427d.js.map": "/Portfolio/static/js/main.611c427d.js.map",
+    "988.4c0329bb.chunk.css.map": "/Portfolio/static/css/988.4c0329bb.chunk.css.map",
+    "988.95eedea5.chunk.js.map": "/Portfolio/static/js/988.95eedea5.chunk.js.map",
     "516.ca072e3f.chunk.js.map": "/Portfolio/static/js/516.ca072e3f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.213c473e.css",
-    "static/js/main.d8ab811f.js"
+    "static/css/main.b1bd55aa.css",
+    "static/js/main.611c427d.js"
   ]
 }
