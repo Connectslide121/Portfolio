@@ -5,6 +5,11 @@
   --jHeat: 1;
   --j-accent: #ff6a00;
   --j-ground: #150805;
+  --j-snow: #eaf2ff;
+  --j-blossom: #f9a8d4;
+  --j-blossom-core: #fbbf24;
+  --j-leaf: #f59e0b;
+  --j-sun: #ffd166;
 
   position: fixed;
   inset: 0;
@@ -193,6 +198,21 @@
 
 .j-topbar .theme-toggle-wrapper {
   pointer-events: auto;
+}
+
+/* In journey mode the toggle belongs to the active scene rather than the
+   site's fixed blue UI palette. --j-accent is updated continuously by the
+   heat ramp, so the thumb changes naturally during every transition. */
+.j-stage .darkmode-toggle-label::after {
+  background: var(--j-accent);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--j-accent) 48%, transparent);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.j-stage .darkmode-toggle-label:hover {
+  border-color: var(--j-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--j-accent) 12%, transparent);
 }
 
 .j-nav {
@@ -1171,6 +1191,40 @@ body:not(.dark-theme) .j-curtain {
   color-scheme: light;
 }
 
+body:not(.dark-theme) .j-stage {
+  --j-snow: #64748b;
+  --j-blossom: #db2777;
+  --j-blossom-core: #a16207;
+  --j-leaf: #b45309;
+  --j-sun: #f59e0b;
+}
+
+/* Presentation attributes deliberately keep windows quiet at night. In the
+   paper-light palette they need more density to survive against the sky. */
+body:not(.dark-theme) .building-windows {
+  fill: var(--j-stream);
+  opacity: 0.94;
+  filter: url(#jAccentHalo);
+}
+
+/* In a bright scene luminosity comes from a saturated core plus a compact
+   halo, rather than the broad pale blur used against the night sky. Existing
+   deliberately blurred spills keep their own filters. */
+body:not(.dark-theme) .acc [fill="var(--j-stream)"]:not([filter]),
+body:not(.dark-theme) .acc [fill="var(--j-streamCore)"]:not([filter]),
+body:not(.dark-theme) .acc [stroke="var(--j-stream)"]:not([filter]),
+body:not(.dark-theme) .acc [stroke="var(--j-streamCore)"]:not([filter]) {
+  filter: url(#jAccentHalo);
+}
+
+body:not(.dark-theme) [data-arch-edge] {
+  opacity: 0.72;
+}
+
+body:not(.dark-theme) .office-network > g[filter="url(#jGlowSoft)"] {
+  filter: url(#jAccentHalo);
+}
+
 body:not(.dark-theme) .j-card {
   background: color-mix(in srgb, #ffffff 88%, transparent);
   border-color: color-mix(in srgb, var(--j-accent) 42%, #d7dee8);
@@ -1369,6 +1423,19 @@ body:not(.dark-theme) .j-intro-art {
   animation: accent-pulse 2.8s ease-in-out infinite;
 }
 
+.season-sun-core {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: season-sun-breathe 5s ease-in-out infinite;
+}
+
+@keyframes season-sun-breathe {
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
 @keyframes acc-beacon {
   0%,
   100% {
@@ -1389,7 +1456,8 @@ body:not(.dark-theme) .j-intro-art {
   .india-pointer,
   .india-process-flow,
   .network-line,
-  .platform-node {
+  .platform-node,
+  .season-sun-core {
     animation: none;
   }
 }

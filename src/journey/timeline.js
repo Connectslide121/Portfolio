@@ -149,14 +149,28 @@ export function buildJourney({ root }) {
   // The parallax environment belongs to the linear stage; from above it is
   // just noise, so it recedes as the camera lifts.
   const envLayers = root.querySelectorAll("[data-layer]");
+  const particleGroups = root.querySelectorAll("[data-particle-scene]");
   const ovPath = root.querySelector("[data-ov-path]");
   const ovTrail = root.querySelectorAll("[data-ov-trail]");
   const ovDots = root.querySelectorAll("[data-ov-dot]");
+  let activeParticleScene = -1;
 
   const render = () => {
     setters.forEach((s) => s.set(camera.x * s.k));
     projectScenes();
     applyHeat(root, camera.heat);
+
+    // Only the nearest beat's atmosphere needs to consume animation frames.
+    // Previously every hidden scene kept 12-22 GSAP particle tweens alive.
+    const nearestScene = Math.max(0, Math.min(BEATS.length - 1, Math.round(-camera.x / SCENE_W)));
+    if (nearestScene !== activeParticleScene) {
+      activeParticleScene = nearestScene;
+      particleGroups.forEach((group) => {
+        group.__setParticleActive?.(
+          Number(group.getAttribute("data-particle-scene")) === activeParticleScene
+        );
+      });
+    }
 
     const ov = camera.overview;
     const env = (1 - ov * 0.82).toFixed(3);
@@ -248,8 +262,9 @@ export function buildJourney({ root }) {
       .to(atmos[i - 1], { autoAlpha: 0, duration: 1.3 }, "<");
 
     if (isArchitect && !narrow) {
-      // Preserve the original build choreography, but pull back only this
-      // scene rather than repainting the entire multi-slide world each frame.
+      // Keep the full pull-back, connector draw and staggered node build. The
+      // surrounding optimisations reduce contention without flattening this
+      // signature transition.
       tl.to(architectVisual, { scale: 1, duration: 2.2 }, "<0.6")
         .to(archEdges, { drawSVG: "0% 100%", duration: 1.1, stagger: 0.03 }, "<0.7")
         .to(

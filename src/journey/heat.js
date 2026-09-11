@@ -23,6 +23,7 @@ const DARK_POLES = parsePoles(PALETTE);
 const LIGHT_POLES = parsePoles(LIGHT_PALETTE);
 
 const MID = 0.5;
+const STYLE_CACHE = new WeakMap();
 
 /**
  * The same cold -> warm -> hot ramp as a value, for anything that needs a
@@ -47,16 +48,35 @@ export function heatColor(heat, key = "accent") {
  */
 export function applyHeat(root, heat) {
   const t = Math.max(0, Math.min(1, heat));
-  root.style.setProperty("--jHeat", t.toFixed(3));
+  let cache = STYLE_CACHE.get(root);
+  if (!cache) {
+    cache = {};
+    STYLE_CACHE.set(root, cache);
+  }
+
+  const heatValue = t.toFixed(3);
+  if (cache.heat !== heatValue) {
+    root.style.setProperty("--jHeat", heatValue);
+    cache.heat = heatValue;
+  }
 
   const lower = t <= MID;
   const local = lower ? t / MID : (t - MID) / (1 - MID);
 
-  const poles = document.body.classList.contains("dark-theme") ? DARK_POLES : LIGHT_POLES;
+  const dark = document.body.classList.contains("dark-theme");
+  const poles = dark ? DARK_POLES : LIGHT_POLES;
+  if (cache.dark !== dark) {
+    cache.dark = dark;
+    cache.colors = {};
+  }
   for (const key in poles) {
     const [cold, warm, hot] = poles[key];
     const from = lower ? cold : warm;
     const to = lower ? warm : hot;
-    root.style.setProperty(`--j-${key}`, toHex(lerp(from, to, local)));
+    const value = toHex(lerp(from, to, local));
+    if (cache.colors[key] !== value) {
+      root.style.setProperty(`--j-${key}`, value);
+      cache.colors[key] = value;
+    }
   }
 }

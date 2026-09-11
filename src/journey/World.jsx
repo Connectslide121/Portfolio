@@ -120,7 +120,13 @@ export default function World() {
           <path d={ridge(660, 150, 240, 7)} fill="var(--j-far)" />
         </g>
 
-        {/* type — the year, huge and slow, crossfaded so neighbours never leak */}
+        {/* mid — a second, nearer ridge for depth */}
+        <g data-layer="mid">
+          <path d={ridge(778, 70, 180, 31)} fill="var(--j-far)" opacity="0.6" />
+        </g>
+
+        {/* The year sits in front of the secondary ridge, while the active
+            scene remains its foreground plane. */}
         <g data-layer="type">
           {BEATS.map((beat, i) =>
             beat.numeral ? (
@@ -139,11 +145,6 @@ export default function World() {
               </text>
             ) : null
           )}
-        </g>
-
-        {/* mid — a second, nearer ridge for depth */}
-        <g data-layer="mid">
-          <path d={ridge(778, 70, 180, 31)} fill="var(--j-far)" opacity="0.6" />
         </g>
 
         {/* scene — the places. Not parallax-translated: each one is placed
@@ -250,7 +251,12 @@ export default function World() {
             </g>
           ))}
           {BEATS.map((beat, i) => (
-            <Particles key={beat.id} scene={{ id: beat.id, i }} kind={KINDS[beat.id]} />
+            <Particles
+              key={beat.id}
+              scene={{ id: beat.id, i }}
+              kind={KINDS[beat.id]}
+              count={beat.id === "foundry" ? 12 : undefined}
+            />
           ))}
         </g>
       </g>

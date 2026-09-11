@@ -16,6 +16,18 @@ export function JourneyDefs() {
       <filter id="jGlowSoft" x="-50%" y="-300%" width="200%" height="700%">
         <feGaussianBlur stdDeviation="5" />
       </filter>
+      {/* Keeps the source crisp while laying a compact coloured halo behind
+          it. Light mode opts into this where ordinary blur has too little
+          contrast against the paper-like sky. */}
+      <filter id="jAccentHalo" x="-80%" y="-100%" width="260%" height="300%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+        <feFlood floodColor="var(--j-accent)" floodOpacity="0.72" result="colour" />
+        <feComposite in="colour" in2="blur" operator="in" result="halo" />
+        <feMerge>
+          <feMergeNode in="halo" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
     </defs>
   );
 }
@@ -120,45 +132,69 @@ export function Ground({ span = SCENE_W * 6 }) {
  * while the camera sits still.
  */
 const PARTICLE = {
-  spark: { tint: "var(--j-streamCore)", x: 1500, y: 812, spread: 220, rise: 40 },
+  // Screen-space position of the active foundry's tilted ladle mouth after
+  // scene projection. Keeping this cluster tight makes the heat visibly come
+  // from the vessel instead of bubbling up across the skyline.
+  spark: { tint: "var(--j-streamCore)", x: 1408, y: 764, spread: 34, rise: 16 },
   dust: { tint: "#d9b382", x: 700, y: 700, spread: 1100, rise: 260 },
-  snow: { tint: "#eaf2ff", x: 0, y: 90, spread: 1800, rise: 300 },
+  snow: { tint: "var(--j-snow, #eaf2ff)", x: 0, y: 90, spread: 1800, rise: 300 },
+  blossom: { tint: "var(--j-blossom, #f9a8d4)", x: 0, y: 120, spread: 1800, rise: 260 },
+  leaf: { tint: "var(--j-leaf, #d97706)", x: 0, y: 110, spread: 1800, rise: 280 },
+  sun: { tint: "var(--j-sun, #ffd166)", x: 1480, y: 174, spread: 0, rise: 0 },
+};
+
+// Stable pseudo-random placement: seasonal scenery should not jump when a
+// parent rerenders (for example after switching theme).
+const scatter = (i, salt = 0) => {
+  const value = Math.sin((i + 1) * 12.9898 + salt * 78.233) * 43758.5453;
+  return value - Math.floor(value);
 };
 
 export function Particles({ scene, kind, count = 22 }) {
   const ref = useRef(null);
+  const visualCount = kind === "blossom" ? 12 : kind === "leaf" ? 15 : count;
 
   useEffect(() => {
-    const dots = ref.current?.children;
-    if (!dots || !PARTICLE[kind]) return;
+    const group = ref.current;
+    const dots = group?.children;
+    if (!dots || !PARTICLE[kind] || kind === "sun") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const tweens = [];
     Array.from(dots).forEach((dot, i) => {
       const cfg = {
-        spark: { y: -260 - Math.random() * 200, x: (Math.random() - 0.5) * 90, dur: 1.6 },
-        dust: { y: (Math.random() - 0.5) * 60, x: 240 + Math.random() * 200, dur: 4.5 },
-        snow: { y: 340 + Math.random() * 180, x: (Math.random() - 0.5) * 130, dur: 6 },
+        spark: { y: -150 - scatter(i, 4) * 130, x: (scatter(i, 5) - 0.5) * 70, dur: 1.5 },
+        dust: { y: (scatter(i, 6) - 0.5) * 60, x: 240 + scatter(i, 7) * 200, dur: 4.5 },
+        snow: { y: 340 + scatter(i, 8) * 180, x: (scatter(i, 9) - 0.5) * 130, dur: 6 },
+        blossom: { y: 300 + scatter(i, 10) * 170, x: (scatter(i, 11) - 0.5) * 220, rotation: 180, dur: 7 },
+        leaf: { y: 310 + scatter(i, 12) * 190, x: (scatter(i, 13) - 0.5) * 280, rotation: 300, dur: 6.5 },
       }[kind];
-      tweens.push(
-        gsap.fromTo(
-          dot,
-          { y: 0, x: 0, opacity: 0 },
-          {
-            y: cfg.y,
-            x: cfg.x,
-            opacity: 0,
-            keyframes: { opacity: [0, 0.9, 0.9, 0] },
-            duration: cfg.dur + Math.random() * cfg.dur * 0.5,
-            delay: (i / count) * cfg.dur,
-            repeat: -1,
-            ease: kind === "spark" ? "power2.out" : "none",
-          }
-        )
+      const tween = gsap.fromTo(
+        dot,
+        { y: 0, x: 0, rotation: 0, opacity: 0 },
+        {
+          y: cfg.y,
+          x: cfg.x,
+          rotation: cfg.rotation || 0,
+          opacity: 0,
+          keyframes: { opacity: [0, 0.9, 0.9, 0] },
+          duration: cfg.dur + scatter(i, 14) * cfg.dur * 0.5,
+          delay: (i / visualCount) * cfg.dur,
+          repeat: -1,
+          ease: kind === "spark" ? "power2.out" : "none",
+        }
       );
+      if (scene.i !== 0) tween.pause(0);
+      tweens.push(tween);
     });
-    return () => tweens.forEach((t) => t.kill());
-  }, [kind, count]);
+    group.__setParticleActive = (active) => {
+      tweens.forEach((tween) => (active ? tween.resume() : tween.pause()));
+    };
+    return () => {
+      delete group.__setParticleActive;
+      tweens.forEach((t) => t.kill());
+    };
+  }, [kind, visualCount, scene.i]);
 
   // A beat's particles are only visible at that beat, where its layer offset
   // and its anchor cancel out — so these are effectively screen coordinates.
@@ -167,17 +203,65 @@ export function Particles({ scene, kind, count = 22 }) {
   if (!origin) return null;
   const { tint } = origin;
 
+  if (kind === "sun") {
+    return (
+      <g
+        className="season-sun"
+        data-atmos={scene.id}
+        transform={`translate(${anchor(scene.i, 1.35)},0)`}
+      >
+        <circle cx={origin.x} cy={origin.y} r="78" fill={tint} filter="url(#jGlow)" opacity="0.2" />
+        <circle className="season-sun-core" cx={origin.x} cy={origin.y} r="42" fill={tint} opacity="0.88" />
+      </g>
+    );
+  }
+
   return (
-    <g data-atmos={scene.id} ref={ref} transform={`translate(${anchor(scene.i, 1.35)},0)`}>
-      {Array.from({ length: count }).map((_, i) => (
-        <circle
-          key={i}
-          cx={origin.x + Math.random() * origin.spread}
-          cy={origin.y - Math.random() * origin.rise}
-          r={kind === "spark" ? 2 + Math.random() * 3 : 2 + Math.random() * 4}
-          fill={tint}
-        />
-      ))}
+    <g
+      data-atmos={scene.id}
+      data-particle-scene={scene.i}
+      ref={ref}
+      transform={`translate(${anchor(scene.i, 1.35)},0)`}
+    >
+      {Array.from({ length: visualCount }).map((_, i) => {
+        const x = origin.x + scatter(i, 1) * origin.spread;
+        const y = origin.y - scatter(i, 2) * origin.rise;
+        const size = 2 + scatter(i, 3) * (kind === "spark" ? 3 : 4);
+
+        if (kind === "leaf") {
+          return (
+            <path
+              key={i}
+              className="season-particle season-leaf"
+              d={`M ${x - size * 1.5} ${y} Q ${x} ${y - size * 1.8} ${x + size * 1.5} ${y} Q ${x} ${y + size * 1.8} ${x - size * 1.5} ${y} Z`}
+              fill={tint}
+            />
+          );
+        }
+
+        if (kind === "blossom") {
+          return (
+            <g key={i} className="season-particle season-blossom" fill={tint}>
+              <circle cx={x - size} cy={y} r={size} />
+              <circle cx={x + size} cy={y} r={size} />
+              <circle cx={x} cy={y - size} r={size} />
+              <circle cx={x} cy={y + size} r={size} />
+              <circle cx={x} cy={y} r={size * 0.55} fill="var(--j-blossom-core, #fbbf24)" />
+            </g>
+          );
+        }
+
+        return (
+          <circle
+            key={i}
+            className={kind === "snow" ? "season-particle season-snow" : undefined}
+            cx={x}
+            cy={y}
+            r={size}
+            fill={tint}
+          />
+        );
+      })}
     </g>
   );
 }
