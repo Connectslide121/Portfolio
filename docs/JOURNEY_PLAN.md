@@ -118,7 +118,12 @@ nothing to do with the journey's flat silhouettes and molten→cold ramp.
 Two latent bugs fell out of it:
 
 1. `--radius-full` was used by the tech tags and quest pills but **never
-   defined**, so they had been rendering square.
+   defined**. Correction to an earlier claim: this did *not* render them
+   square — an invalid `var()` only kills that one declaration, and the
+   cascade fell through to `projects.css`, which styles the same `.tech-tag`
+   class with `--radius-md`. So they were 8px, and whichever stylesheet
+   loaded last silently won. Both files now agree on pills, and the variable
+   is defined.
 2. Theme persistence never worked. `public/index.html` hardcodes
    `<body class="dark-theme">`, and the init code only ever *added* the class —
    so a stored "light" preference could not take effect on reload. It toggles
