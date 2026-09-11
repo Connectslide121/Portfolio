@@ -19,9 +19,6 @@ body {
   --secondaryColor: #334155;
   --accentColor: #3b82f6;
   --accentHover: #2563eb;
-  /* The journey's hot pole. Shared so both modes ramp between the same two
-     colours — molten steel to the present-day blue. */
-  --moltenColor: #f97316;
   --backgroundColor: #ffffff;
   --surfaceColor: #f8fafc;
   --cardBackground: #ffffff;
@@ -54,7 +51,6 @@ body {
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
-  --radius-full: 999px;
 
   /* Typography */
   --font-size-xs: 0.75rem;
@@ -73,10 +69,9 @@ body {
   --leading-normal: 1.5;
   --leading-relaxed: 1.625;
 
-  /* Gradients run molten -> cold, the same ramp the journey travels, so the
-     two modes read as one product. No violet: it belonged to neither. */
-  --gradientPrimary: linear-gradient(135deg in oklab, #f97316, #3b82f6);
-  --gradientAccent: linear-gradient(100deg in oklab, #f97316 8%, #3b82f6 92%);
+  /* Modern Gradients */
+  --gradientPrimary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradientAccent: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   --backgroundGradient: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 
   color: var(--textPrimary);
@@ -93,7 +88,6 @@ body.dark-theme {
   --secondaryColor: #e2e8f0;
   --accentColor: #60a5fa;
   --accentHover: #3b82f6;
-  --moltenColor: #fb923c;
   --backgroundColor: #030712;
   --surfaceColor: #0b1120;
   --cardBackground: #0f172a;
@@ -112,10 +106,9 @@ body.dark-theme {
     0 8px 10px -6px rgb(0 0 0 / 0.55);
 
   /* Gradients - Dark */
-  --gradientPrimary: linear-gradient(135deg in oklab, #fb923c, #60a5fa);
-  --gradientAccent: linear-gradient(100deg in oklab, #fb923c 8%, #60a5fa 92%);
-  /* Matches the journey's cold sky, so switching modes is not a jolt. */
-  --backgroundGradient: linear-gradient(180deg, #070b12 0%, #0b1220 100%);
+  --gradientPrimary: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  --gradientAccent: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  --backgroundGradient: linear-gradient(180deg, #020617 0%, #070d1a 100%);
 
   color-scheme: dark;
 }
@@ -188,8 +181,8 @@ a:hover {
   background: var(--accentColor);
   color: white;
   border: none;
-  border-radius: var(--radius-full);
-  font-weight: 600;
+  border-radius: var(--radius-lg);
+  font-weight: 500;
   font-size: var(--font-size-sm);
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);

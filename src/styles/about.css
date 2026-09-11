@@ -878,7 +878,7 @@
    ========================================================================== */
 
 .heat-timeline {
-  /* --moltenColor now comes from the global tokens in styles.css. */
+  --moltenColor: #f97316;
   --cardHeat: 0;
 }
 

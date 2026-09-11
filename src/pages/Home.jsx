@@ -1,9 +1,9 @@
 import React from "react";
 import "../styles/home.css";
+import home from "../images/home-image.webp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import HeroTeaser from "../journey/HeroTeaser";
-import HeroPanorama from "../components/HeroPanorama";
 import { profile } from "../data/journey";
 
 export default function Home({ onEnterJourney }) {
@@ -58,7 +58,11 @@ export default function Home({ onEnterJourney }) {
         <HeroTeaser onEnter={onEnterJourney} />
       </div>
       <div className="home-image-wrapper">
-        <HeroPanorama />
+        <img
+          src={home}
+          alt="Jon Mendizabal - Full Stack Developer"
+          className="home-image"
+        />
       </div>
 
       {/* Discover More Button */}

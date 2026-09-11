@@ -9,6 +9,19 @@
   overflow: hidden;
 }
 
+#home::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background: var(--gradientAccent);
+  opacity: 0.03;
+  border-radius: 50% 0 0 50%;
+  z-index: -1;
+}
+
 .home-text-wrapper {
   flex: 1;
   max-width: 600px;
@@ -75,8 +88,9 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  max-width: 560px;
+  max-width: 500px;
   margin-left: var(--space-xl);
+  animation: float 6s ease-in-out infinite;
 }
 
 .home-image-wrapper:hover {

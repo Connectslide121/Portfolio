@@ -15,11 +15,6 @@ export default function ThemeToggle() {
     } else {
       document.body.classList.add("dark-theme");
     }
-    try {
-      window.localStorage.setItem("jm-theme", showLightTheme ? "light" : "dark");
-    } catch {
-      /* the preference just will not persist */
-    }
 
     setIsLightTheme(showLightTheme);
   };

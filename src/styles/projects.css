@@ -201,9 +201,7 @@ video:-ms-fullscreen {
   padding: var(--space-xs) var(--space-sm);
   background: var(--surfaceColor);
   border: 1px solid var(--borderColor);
-  /* Pills, matching about.css and the journey's shape language. Both files
-     style .tech-tag, and they used to disagree — whichever loaded last won. */
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   font-size: var(--font-size-xs);
   color: var(--textMuted);
   font-weight: 500;
