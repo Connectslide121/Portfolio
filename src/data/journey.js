@@ -12,6 +12,10 @@
 export const profile = {
   name: "Jon Mendizabal",
   title: "Lead Developer & Platform Architect",
+  // The journey's landing beat needs a hook, not a job description: it has to
+  // set up the career change before the first scene shows a foundry, or the
+  // foundry reads as a filing error rather than the point of the story.
+  lede: "I cast steel for twelve years before I wrote my first line of production code.",
   blurb:
     "Building products end to end — thoughtful, intuitive UI/UX on the front, scalable and secure backends underneath. I architect systems that are a pleasure to use, robust at scale, and built to grow, bringing AI in where it genuinely adds value.",
 };
@@ -233,7 +237,8 @@ export const beats = [
     kind: "intro",
     orgs: [],
     year: "",
-    railLabel: "Intro",
+    railLabel: "Start",
+    tag: "Introduction",
     place: "Växjö, Sweden",
     org: "Sprinta Consulting AB",
     role: profile.title,
@@ -247,6 +252,7 @@ export const beats = [
     orgs: ["london-met", "lea-artibai"],
     year: "2005 — 2010",
     railLabel: "2005",
+    tag: "Engineering studies",
     numeral: "2005",
     place: "Spain",
     org: "London Met · Lea-Artibai",
@@ -263,6 +269,7 @@ export const beats = [
     orgs: ["aml"],
     year: "2011 — 2023",
     railLabel: "2011",
+    tag: "Steel foundry",
     numeral: "2011",
     place: "Spain",
     org: "AML SA",
@@ -279,6 +286,7 @@ export const beats = [
     orgs: ["aml", "atpl"],
     year: "2017",
     railLabel: "2017",
+    tag: "Plant in India",
     numeral: "2017",
     place: "Coimbatore, India",
     org: "AML SA → Arihant Technocast",
@@ -296,6 +304,7 @@ export const beats = [
     orgs: ["lexicon"],
     year: "2023 — 2024",
     railLabel: "2023",
+    tag: "Career reset",
     numeral: "2023",
     place: "Växjö, Sweden",
     org: "Lexicon",
@@ -312,6 +321,7 @@ export const beats = [
     orgs: ["sprinta"],
     year: "2024 — 2025",
     railLabel: "2024",
+    tag: "AI developer",
     numeral: "2024",
     place: "Sweden",
     org: "Sprinta Consulting AB",
@@ -328,6 +338,7 @@ export const beats = [
     orgs: ["sprinta"],
     year: "2025 — Present",
     railLabel: "2025",
+    tag: "Platform architect",
     numeral: "2025",
     place: "Sweden",
     org: "Sprinta Consulting AB",
@@ -345,7 +356,8 @@ export const beats = [
     id: "recap",
     orgs: ["github"],
     year: "2005 — today",
-    railLabel: "Recap",
+    railLabel: "Work",
+    tag: "Projects & code",
     place: "github.com/Connectslide121",
     org: "Side projects, games & packages",
     role: "My Work",
@@ -355,6 +367,39 @@ export const beats = [
     status: "Ongoing",
     heat: 0,
     entryIds: [],
+  },
+];
+
+/**
+ * The three acts, for the landing beat.
+ *
+ * Deliberately coarser than `beats`: the beats are stops, these are chapters.
+ * A recruiter who reads nothing else has to leave the first slide knowing the
+ * shape of the thing — steel, a reset, software — so that "Engineering
+ * Studies" and a foundry in scene two land as setup rather than as the wrong
+ * CV. `heat` ties each act to the same hot -> cold ramp the scenes use.
+ */
+export const chapters = [
+  {
+    id: "steel",
+    span: "2005 — 2023",
+    title: "Steel",
+    detail: "Engineering degrees, then twelve years running a foundry.",
+    heat: 1,
+  },
+  {
+    id: "reset",
+    span: "2023",
+    title: "The reset",
+    detail: "New country, new language, retrained as a developer from zero.",
+    heat: 0.45,
+  },
+  {
+    id: "software",
+    span: "2023 — today",
+    title: "Software",
+    detail: "AI platforms, now sole architect across the portfolio.",
+    heat: 0,
   },
 ];
 

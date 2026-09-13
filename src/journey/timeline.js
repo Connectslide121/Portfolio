@@ -13,7 +13,7 @@ import {
   OVERVIEW,
   OVERVIEW_BY_ID,
 } from "./config";
-import { applyHeat } from "./heat";
+import { applyHeat, heatPalette, mixChannels } from "./heat";
 
 gsap.registerPlugin(DrawSVGPlugin);
 
@@ -22,6 +22,21 @@ gsap.registerPlugin(DrawSVGPlugin);
 // the composition without repainting every scene, ridge and particle.
 const ARCHITECT_SCALE = 0.86;
 const ARCHITECT_PIVOT = { x: SCENE_W / 2, y: 540 };
+
+// The heat variables the scene art actually paints with (see scenes.jsx and
+// the india sun in World.jsx). Anything else on the ramp belongs to the sky
+// and the ground, which stay shared: from above there is one sky, but each
+// place keeps its own light.
+const TINT_KEYS = ["mid", "ground", "stream", "streamCore", "accent"];
+
+// Each beat's own palette, built once per theme rather than per frame.
+const OWN_PALETTES = { true: null, false: null };
+const ownPalettes = (dark) => {
+  const key = String(dark);
+  if (!OWN_PALETTES[key])
+    OWN_PALETTES[key] = BEATS.map((b) => heatPalette(b.heat, dark));
+  return OWN_PALETTES[key];
+};
 
 /**
  * Builds the whole journey as ONE PAUSED timeline with a label per beat.
@@ -160,6 +175,9 @@ export function buildJourney({ root }) {
   const ovTrail = root.querySelectorAll("[data-ov-trail]");
   const ovDots = root.querySelectorAll("[data-ov-dot]");
   let activeParticleScene = -1;
+  // Whether per-scene heat overrides are currently written, so they are
+  // cleared exactly once on the way back down instead of every frame.
+  let sceneTinted = false;
 
   const render = () => {
     setters.forEach((s) => s.set(camera.x * s.k));
@@ -192,6 +210,32 @@ export function buildJourney({ root }) {
     // goes as the camera rises and the office behind it carries the beat.
     if (archGroup)
       archGroup.setAttribute("opacity", (1 - Math.min(1, ov * 1.6)).toFixed(3));
+
+    // Laid out from above, every place was painted in the CURRENT heat, so
+    // the foundry years arrived looking like the cold Swedish evening of the
+    // beat you just left. As the camera lifts, each place blends back to its
+    // own heat: the arc from molten to cold becomes visible in the art
+    // itself, not only in the trail drawn between the places.
+    if (ov > 0.001 || sceneTinted) {
+      const dark = document.body.classList.contains("dark-theme");
+      const now = heatPalette(camera.heat, dark);
+      const own = ownPalettes(dark);
+      for (let i = 0; i < sceneEls.length; i++) {
+        const el = sceneEls[i];
+        if (!el || !OVERVIEW_BY_ID[BEATS[i].id]) continue;
+        for (const key of TINT_KEYS) {
+          if (ov > 0.001) {
+            el.style.setProperty(
+              `--j-${key}`,
+              mixChannels(now[key], own[i][key], ov),
+            );
+          } else {
+            el.style.removeProperty(`--j-${key}`);
+          }
+        }
+      }
+      sceneTinted = ov > 0.001;
+    }
 
     if (ovPath) {
       ovPath.setAttribute("opacity", Math.min(1, ov * 1.4).toFixed(3));

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/journey.css";
-import { stack, profile } from "../data/journey";
+import { stack, profile, chapters } from "../data/journey";
 import heroArt from "../images/home-image.webp";
 
 import { BEATS } from "./config";
@@ -12,6 +12,8 @@ import ProjectGallery from "./ProjectGallery";
 import { OrgMarks } from "../components/OrgMark";
 import JourneyOverview from "./JourneyOverview";
 import JourneyStatic from "./JourneyStatic";
+import JourneyTrail from "./JourneyTrail";
+import { heatColor } from "./heat";
 import ThemeToggle from "../components/ThemeToggle";
 
 const prefersReducedMotion = () =>
@@ -111,13 +113,31 @@ export default function JourneyStage({ onExit }) {
             {beat.kind === "intro" ? (
               <>
                 <article className="j-card j-intro">
-                  <p className="j-intro-eyebrow">the journey</p>
+                  <p className="j-intro-eyebrow">the journey · 2005 → today</p>
                   <h1>{profile.name}</h1>
                   <h2>{profile.title}</h2>
-                  <p className="j-intro-blurb">{profile.blurb}</p>
+                  <p className="j-intro-blurb">{profile.lede}</p>
+
+                  {/* The three acts, before the first scene. Without this the
+                      journey opens on engineering studies and a foundry, and
+                      a recruiter who came for a software CV has no reason yet
+                      to believe they are in the right place. */}
+                  <ol className="j-chapters">
+                    {chapters.map((act) => (
+                      <li key={act.id} style={{ "--tint": heatColor(act.heat) }}>
+                        <span className="j-ch-span">{act.span}</span>
+                        <span className="j-ch-title">{act.title}</span>
+                        <span className="j-ch-detail">{act.detail}</span>
+                      </li>
+                    ))}
+                  </ol>
+
                   <button type="button" className="j-intro-go" onClick={next}>
                     Walk me through it <span aria-hidden="true">→</span>
                   </button>
+                  <p className="j-intro-aside">
+                    Seven stops — or pick any of them off the map below.
+                  </p>
                 </article>
                 <img className="j-intro-art" src={heroArt} alt="" />
               </>
@@ -182,43 +202,20 @@ export default function JourneyStage({ onExit }) {
         </p>
         <ThemeToggle id="journey-theme-toggle" />
         <button className="j-exit" onClick={onExit}>
-          Static page <span aria-hidden="true">→</span>
+          Classic view <span aria-hidden="true">→</span>
         </button>
       </div>
 
-      <div className="j-rail">
-        <button
-          className="j-nav"
-          onClick={prev}
-          disabled={index === 0}
-          aria-label="Previous beat"
-        >
-          ‹
-        </button>
-        <ol>
-          {BEATS.map((beat, i) => (
-            <li key={beat.id}>
-              <button
-                className={i === index ? "on" : ""}
-                onClick={() => jumpTo(i)}
-                aria-current={i === index}
-                title={`${beat.year} — ${beat.role}`}
-              >
-                <span className="j-tick" />
-                <span className="j-rail-label">{beat.railLabel}</span>
-              </button>
-            </li>
-          ))}
-        </ol>
-        <button
-          className="j-nav"
-          onClick={next}
-          disabled={index === BEATS.length - 1}
-          aria-label="Next beat"
-        >
-          ›
-        </button>
-      </div>
+      {/* On the recap the places are laid out with their own labels, so the
+          map's labels would only repeat them — into the space those labels
+          need. It collapses to dots there. */}
+      <JourneyTrail
+        index={index}
+        compact={atRecap}
+        onPick={jumpTo}
+        onPrev={prev}
+        onNext={next}
+      />
 
       <ProgressStream />
 

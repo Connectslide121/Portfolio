@@ -16,7 +16,7 @@ export default function JourneyStatic({ onExit }) {
         </p>
         <ThemeToggle id="journey-static-theme-toggle" />
         <button className="j-exit" onClick={onExit}>
-          Skip to CV →
+          Classic view →
         </button>
       </header>
 

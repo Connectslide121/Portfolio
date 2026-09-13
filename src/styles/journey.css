@@ -288,6 +288,11 @@
   transform: translateX(3px);
 }
 
+/* --- the map ------------------------------------------------------------
+   Replaces a strip of bare years. Every stop carries what happened in it, so
+   the arc reads at any beat and not only at the recap. Kept deliberately
+   compact — this is on screen the whole time, so it has to stay chrome. */
+
 .j-rail {
   position: absolute;
   bottom: clamp(1rem, 3vh, 2.25rem);
@@ -296,60 +301,152 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.4rem 0.5rem;
-  border-radius: 999px;
-  background: rgb(10 12 18 / 0.6);
+  padding: 0.45rem 0.6rem;
+  border-radius: 1.4rem;
+  background: rgb(10 12 18 / 0.62);
   border: 1px solid rgb(255 255 255 / 0.12);
   backdrop-filter: blur(12px);
+  max-width: calc(100vw - 1.5rem);
 }
 
-.j-rail ol {
+.j-trail {
+  /* One knob: the stop width. The connecting line's ends are derived from it
+     (half a stop in from each edge, i.e. the first and last dot centres), so
+     the line can never come adrift from the dots it threads. */
+  --item: clamp(4.9rem, 7.2vw, 6.6rem);
+  --dot-top: 0.65rem;
+
+  position: relative;
   display: flex;
   list-style: none;
-  gap: 0.15rem;
   margin: 0;
   padding: 0;
 }
 
-.j-rail ol button {
+/* The hot -> cold ramp, sampled at each beat's own heat: cool at the studies,
+   molten through the foundry years, blue from the reset on. */
+.j-trail::before {
+  content: "";
+  position: absolute;
+  top: var(--dot-top);
+  left: calc(var(--item) / 2);
+  right: calc(var(--item) / 2);
+  height: 2px;
+  translate: 0 -50%;
+  border-radius: 2px;
+  background: var(--trail-line);
+  opacity: 0.5;
+}
+
+.j-trail > li {
+  flex: 0 0 auto;
+  width: var(--item);
+  min-width: 0;
+}
+
+.j-trail button {
+  position: relative;
   display: flex;
+  width: 100%;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.7rem;
+  gap: 0.3rem;
+  padding: 0.35rem 0.2rem 0.3rem;
   background: none;
   border: 0;
+  border-radius: 0.6rem;
   cursor: pointer;
   font: inherit;
+  transition: transform 0.2s ease;
 }
 
-.j-tick {
-  width: 2rem;
-  height: 3px;
-  border-radius: 2px;
-  background: rgb(255 255 255 / 0.22);
-  transition: background 0.3s;
+.j-trail button:hover {
+  transform: translateY(-2px);
 }
 
-.j-rail ol button.on .j-tick {
-  background: var(--j-accent);
+.j-trail-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  /* Opaque, so the gradient line passes behind the dot rather than through
+     it — otherwise every stop reads as a bead on a wire of the wrong colour. */
+  background: #0d1018;
+  border: 2px solid color-mix(in srgb, var(--tint) 55%, transparent);
+  transition:
+    background 0.25s,
+    border-color 0.25s,
+    box-shadow 0.25s,
+    scale 0.25s;
 }
 
-.j-rail-label {
-  font-size: 0.64rem;
-  letter-spacing: 0.1em;
-  color: #7c8a9f;
-  transition: color 0.3s;
+.j-trail button:hover .j-trail-dot {
+  border-color: var(--tint);
 }
 
-.j-rail ol button.on .j-rail-label {
+.j-trail button.on .j-trail-dot {
+  background: var(--tint);
+  border-color: var(--tint);
+  scale: 1.2;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tint) 22%, transparent);
+}
+
+.j-trail-year {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #8a97ab;
+  transition: color 0.25s;
+}
+
+.j-trail button.on .j-trail-year {
+  color: var(--tint);
+}
+
+.j-trail-tag {
+  /* Two lines' worth of room whether or not the text needs it: without a
+     floor, moving between a one-line and a two-line stop resized the rail
+     and nudged the whole strip. */
+  min-height: 2.4em;
+  font-size: 0.6rem;
+  line-height: 1.2;
+  text-align: center;
+  text-wrap: balance;
+  color: #6f7d92;
+  transition: color 0.25s;
+}
+
+.j-trail button.on .j-trail-tag,
+.j-trail button:hover .j-trail-tag {
   color: #eef3fa;
+}
+
+/* The compact form: dots only, one row. Used on the recap, where the places
+   are laid out with labels of their own — repeating them here would only
+   crowd the bottom of the frame that those labels need. No "you are here"
+   line either: up there the lit place says it. */
+.j-rail[data-compact="true"] .j-trail-year,
+.j-rail[data-compact="true"] .j-trail-tag {
+  display: none;
+}
+
+/* Named active stop. Phones drop every stop's label for room, so this is the
+   only thing left saying where you are — see the max-width: 768px block. */
+.j-rail-now {
+  display: none;
+}
+
+.j-rail-now span {
+  font-weight: 700;
+  color: var(--j-accent);
+  margin-right: 0.4rem;
 }
 
 .j-nav {
   font-size: 1.1rem;
   line-height: 1;
   padding: 0.3rem 0.6rem;
+  align-self: flex-start;
+  margin-top: 0.2rem;
 }
 
 .j-nav:disabled {
@@ -380,25 +477,43 @@
     gap: 0.4rem 0;
   }
   .j-hint,
-  .j-rail-label,
   .j-brand {
     display: none;
   }
 
-  /* The rail must fit 6 beats plus Play inside a phone. Swipe and the
-     keyboard already cover stepping, so the arrows are the first to go. */
+  /* Swipe and the keyboard already cover stepping, so the arrows are the
+     first to go. */
   .j-nav {
     display: none;
   }
+
+  /* Eight labelled stops will not fit a phone. The dots stay — they are the
+     shape of the journey and the way to jump — and the stop you are on is
+     named once above them instead. */
   .j-rail {
-    max-width: calc(100vw - 1.5rem);
-    padding: 0.35rem 0.4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0.35rem 0.5rem 0.4rem;
+    border-radius: 1rem;
   }
-  .j-rail ol button {
-    padding: 0.45rem 0.4rem;
+  .j-rail-now {
+    display: block;
+    order: -1;
+    width: 100%;
+    text-align: center;
+    font-size: 0.62rem;
+    color: #8a97ab;
   }
-  .j-tick {
-    width: 1.35rem;
+  .j-trail {
+    --item: min(2.6rem, calc((100vw - 3rem) / 8));
+    --dot-top: 0.55rem;
+  }
+  .j-trail button {
+    padding: 0.25rem 0.2rem;
+  }
+  .j-trail-year,
+  .j-trail-tag {
+    display: none;
   }
 }
 
@@ -558,7 +673,9 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 5.25rem;
+  /* Clear of the map below it. The stream's path sits partway up its own
+     60px box, so this is the box's bottom, not the line's. */
+  bottom: 7.5rem;
   height: 60px;
   width: 100%;
   display: block;
@@ -855,7 +972,7 @@
   display: flex;
   flex-direction: column;
   padding: clamp(1rem, 3vw, 2.25rem);
-  padding-bottom: 5.5rem; /* clear of the rail */
+  padding-bottom: 8.25rem; /* clear of the map */
   justify-content: flex-end;
   pointer-events: none;
   /* No panel of its own — the lifted world is the view. */
@@ -1033,8 +1150,8 @@
     /* Stop above the rail: this panel takes pointer events on touch, so a
        full-height one swallowed clicks on the controls. */
     top: auto;
-    bottom: 4.75rem;
-    height: 40%;
+    bottom: 7.75rem;
+    height: 36%;
     padding: 0 clamp(1rem, 3vw, 2rem);
     background: linear-gradient(
       to bottom,
@@ -1071,9 +1188,17 @@
   }
 }
 
+@media (max-width: 768px) {
+  .j-overview {
+    /* The dots-only map is shorter than the labelled one at 769-900px. */
+    bottom: 5.25rem;
+  }
+}
+
 /* ==========================================================================
-   Landing card. The same headline the static hero carries, so arriving in
-   either mode says the same thing.
+   Landing card. It has one job beyond saying who I am: make the next six
+   scenes legible in advance. The journey opens on engineering studies and a
+   steel foundry, and without the three acts below that reads as the wrong CV.
    ========================================================================== */
 
 .j-intro {
@@ -1107,10 +1232,87 @@
 }
 
 .j-intro-blurb {
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.5;
   color: #dbe3ef;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  max-width: 30rem;
+}
+
+/* --- the three acts ------------------------------------------------------
+   Coarser than the map at the bottom on purpose: that one lists the stops,
+   this one names the chapters. Left to right on the same hot -> cold ramp, so
+   "steel" is molten and "software" is the site's blue. */
+
+.j-chapters {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+  list-style: none;
+  margin: 0 0 1.4rem;
+  padding: 0;
+}
+
+.j-chapters li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.65rem 0.7rem 0.7rem;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--tint) 34%, transparent);
+  background: color-mix(in srgb, var(--tint) 9%, transparent);
+}
+
+/* The act's temperature, as a bar across the top of its card. */
+.j-chapters li::before {
+  content: "";
+  position: absolute;
+  inset: -1px -1px auto;
+  height: 2px;
+  border-radius: 0.65rem 0.65rem 0 0;
+  background: var(--tint);
+}
+
+/* Sits in the middle of the gap, so the three cards read as one sequence
+   rather than three unrelated facts. */
+.j-chapters li:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -0.55rem;
+  top: 50%;
+  translate: 50% -50%;
+  font-size: 0.8rem;
+  line-height: 1;
+  color: rgb(255 255 255 / 0.35);
+}
+
+.j-ch-span {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tint);
+}
+
+.j-ch-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.j-ch-detail {
+  font-size: 0.7rem;
+  line-height: 1.35;
+  color: #b6c2d2;
+}
+
+/* Teaches the map at the bottom as navigation, not decoration. */
+.j-intro-aside {
+  margin-top: 0.85rem;
+  font-size: 0.72rem;
+  color: #8494a9;
 }
 
 .j-intro-go {
@@ -1146,8 +1348,32 @@
     padding: 1.4rem;
   }
   .j-intro-blurb {
-    font-size: 0.86rem;
+    font-size: 0.92rem;
+    margin-bottom: 1rem;
+  }
+  .j-chapters {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
     margin-bottom: 1.1rem;
+  }
+  .j-chapters li {
+    flex-direction: row;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.1rem 0.5rem;
+    padding: 0.5rem 0.6rem;
+  }
+  /* Stacked, the cards already read top to bottom; a sideways arrow between
+     them would point the wrong way. */
+  .j-chapters li:not(:last-child)::after {
+    content: none;
+  }
+  .j-ch-detail {
+    flex-basis: 100%;
+    font-size: 0.68rem;
+  }
+  .j-intro-aside {
+    font-size: 0.68rem;
   }
 }
 
@@ -1323,15 +1549,40 @@ body:not(.dark-theme) .j-rail {
   box-shadow: 0 10px 30px -18px rgb(37 48 68 / 0.34);
 }
 
-body:not(.dark-theme) .j-tick {
-  background: rgb(71 85 105 / 0.25);
+/* The dot has to stay opaque so the gradient line passes behind it, which
+   means it needs the light rail's own background rather than the dark one. */
+body:not(.dark-theme) .j-trail-dot {
+  background: #f4f7fb;
 }
 
-body:not(.dark-theme) .j-rail-label {
-  color: #6b778b;
+/* A touch darker than the old year strip's labels: the pill is translucent,
+   so in light mode these sit on whatever the scene puts behind them. */
+body:not(.dark-theme) .j-trail-year {
+  color: #5a6679;
 }
 
-body:not(.dark-theme) .j-rail ol button.on .j-rail-label,
+body:not(.dark-theme) .j-trail-tag,
+body:not(.dark-theme) .j-rail-now {
+  color: #4d5a6d;
+}
+
+body:not(.dark-theme) .j-trail button.on .j-trail-tag,
+body:not(.dark-theme) .j-trail button:hover .j-trail-tag {
+  color: #1f2c3f;
+}
+
+body:not(.dark-theme) .j-ch-detail {
+  color: #3c4a5e;
+}
+
+body:not(.dark-theme) .j-intro-aside {
+  color: #5f6f85;
+}
+
+body:not(.dark-theme) .j-chapters li:not(:last-child)::after {
+  color: rgb(31 44 63 / 0.4);
+}
+
 body:not(.dark-theme) .j-nav,
 body:not(.dark-theme) .j-ov-open,
 body:not(.dark-theme) .j-ov-close {
