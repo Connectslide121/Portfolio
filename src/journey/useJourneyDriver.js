@@ -34,13 +34,13 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
       // actual time distance, ease "none". Anything else replays the beat
       // faster or slower than stepping does, and the mismatch is obvious.
       //
-      // A pick off the map gets a fixed short budget instead, barely growing
-      // with distance, so 2005 -> today covers the whole road in about a
-      // second. It still travels through every beat in between — it just does
-      // not dwell on any of them, which is the thing that made replaying at
-      // the natural rate unusable.
+      // A pick off the map gets its own budget instead, weighted toward the
+      // distance travelled: a neighbour is a hop, 2005 -> today is a journey
+      // you can actually watch go past. Still far quicker than the natural
+      // rate (2.4s per beat, so ~17s end to end), and it never dwells on the
+      // beats in between — that was what made replaying them unusable.
       const seconds = fast
-        ? Math.min(1.05, 0.45 + Math.abs(clamped - from) * 0.1)
+        ? Math.min(2.8, 0.6 + Math.abs(clamped - from) * 0.28)
         : Math.max(0.35, Math.abs(target - tl.time()));
 
       lastSeek.current = seconds;
