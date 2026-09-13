@@ -13,7 +13,7 @@ import {
   FADE_EDGE,
   OVERVIEW,
 } from "./config";
-import { JourneyDefs, Sky, Ground, Particles } from "./parts";
+import { JourneyDefs, Sky, Haze, Ground, Particles, SilGradient } from "./parts";
 import { SCENE_BY_BEAT, StackGraph } from "./scenes";
 import { heatColor } from "./heat";
 
@@ -144,6 +144,10 @@ export default function World({ season = "auto" }) {
           <path d={ridge(778, 70, 180, 31)} fill="var(--j-far)" opacity="0.6" />
         </g>
 
+        {/* The air between the ridges and the places. Everything above this
+            line in the DOM is "far"; everything below it is in the scene. */}
+        <Haze span={SCENE_W * BEATS.length} />
+
         {/* The year sits in front of the secondary ridge, while the active
             scene remains its foreground plane. */}
         <g data-layer="type">
@@ -152,6 +156,7 @@ export default function World({ season = "auto" }) {
               <text
                 key={beat.id}
                 data-atmos={beat.id}
+                data-numeral={beat.id}
                 x={anchor(i, 0.38) + FOCAL + 30}
                 y={584}
                 fill="var(--j-far)"
@@ -174,8 +179,16 @@ export default function World({ season = "auto" }) {
             DOM order matters: earlier beats paint behind later ones. */}
         {BEATS.map((beat, i) => {
           const Scene = SCENE_BY_BEAT[beat.id];
+          // Its own copy of the silhouette gradient, INSIDE the group whose
+          // --j-mid / --j-far the render loop overrides per scene. A shared
+          // def in the root <defs> would read the root's values instead and
+          // ignore both the overview tint and the depth haze.
+          const sil = `jSil-${beat.id}`;
           return (
             <g key={beat.id} data-scene={i}>
+              <defs>
+                <SilGradient id={sil} />
+              </defs>
               {/* the Indian sun, behind its skyline */}
               {beat.id === "india" && (
                 <circle
@@ -188,13 +201,13 @@ export default function World({ season = "auto" }) {
               )}
               {beat.id === "architect" ? (
                 <g data-architect-visual>
-                  {Scene && <Scene ax={FOCAL} />}
+                  {Scene && <Scene ax={FOCAL} sil={`url(#${sil})`} />}
                   <g data-arch>
                     <StackGraph ax={FOCAL} groups={stack} />
                   </g>
                 </g>
               ) : Scene ? (
-                <Scene ax={FOCAL} />
+                <Scene ax={FOCAL} sil={`url(#${sil})`} />
               ) : null}
             </g>
           );

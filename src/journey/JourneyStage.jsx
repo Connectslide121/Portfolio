@@ -54,7 +54,9 @@ export default function JourneyStage({ onExit }) {
     }
 
     return () => {
-      b.tl.kill();
+      // destroy(), not tl.kill(): the pointer lean owns a listener pair and a
+      // rAF that the timeline knows nothing about.
+      b.destroy();
       built.current = null;
       setTl(null);
     };
@@ -95,6 +97,16 @@ export default function JourneyStage({ onExit }) {
       data-recap={atRecap ? "true" : "false"}
     >
       <World />
+
+      {/* Film, not vector. Grain and a vignette over the world — and only the
+          world, never the cards: the single biggest reason flat SVG reads as
+          clip art is that it has no surface, and the single fastest way to
+          make text look cheap is to lay noise over it. */}
+      <div className="j-atmos" aria-hidden="true" />
+
+      {/* A breath of the arriving beat's accent across the frame, driven from
+          the timeline so it scrubs with everything else. */}
+      <div className="j-bloom" data-bloom aria-hidden="true" />
 
       {/* Beat content lives in real DOM over the SVG — selectable, readable,
           indexable (D8). The slot carries data-card so GSAP animates the

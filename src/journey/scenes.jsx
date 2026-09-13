@@ -1,9 +1,24 @@
 import React from "react";
 import { BASE } from "./config";
+import { LightShaft } from "./parts";
 import { logoFor } from "../data/techLogos";
+
+// Fallback for a scene rendered outside a data-scene group; World.jsx passes
+// each beat its own.
+const SIL = "url(#jSil)";
 
 // Every place is authored as coordinates — no drawing tool, no raster assets
 // (D7). Each scene fits local 0..1080, to the right of the beat card.
+//
+// Silhouette masses fill with url(#jSil), never a flat var(--j-mid): the
+// gradient is what stops a tall building reading as cut paper (see the def in
+// parts.jsx). Thin strokes and small props keep the flat variable — a 2px line
+// has nowhere to put a gradient.
+//
+// Each place also carries LIGHT SHAFTS from whatever is lit in it. One polygon
+// each, aimed by a rotate, faded by the shared jShaft gradient. They are the
+// cheapest thing in the file and they do more than anything else to make flat
+// vector read as a lit space rather than an arrangement of shapes.
 
 /** Sawtooth north-light roof — the classic foundry / workshop hall. */
 const sawtooth = (x, y, teeth, w, h) => {
@@ -38,10 +53,10 @@ const windows = (x, y, cols, rows, gap = 34, size = 16) =>
   }));
 
 /** 2005-2010 — an academic campus, intentionally unlike the later factory. */
-export function Origin({ ax }) {
+export function Origin({ ax, sil = SIL }) {
   return (
     <g>
-      <g fill="var(--j-mid)">
+      <g fill={sil}>
         {/* broad teaching block */}
         <rect x={ax + 96} y="556" width="570" height={BASE - 556} rx="3" />
         <rect x={ax + 76} y="534" width="610" height="24" rx="3" />
@@ -96,6 +111,10 @@ export function Origin({ ax }) {
           <path d={`M ${ax + 371} 645 L ${ax + 390} 654`} fill="none" stroke="var(--j-ground)" strokeWidth="7" strokeLinecap="round" />
         </g>
       </g>
+
+      {/* The study window is the only light on the campus, so it is the only
+          thing here that can throw a shaft. */}
+      <LightShaft x={ax + 390} y={686} len={190} spread={230} angle={9} opacity={0.45} />
     </g>
   );
 }
@@ -111,11 +130,16 @@ export function Origin({ ax }) {
  * silhouette stays dark. Without that the props were unlit cut-outs sitting
  * near a glow; with it they belong to the same scene.
  */
-export function Foundry({ ax }) {
+export function Foundry({ ax, sil = SIL }) {
   const POUR = `M ${ax + 895} 714 C ${ax + 884} 742 ${ax + 862} 772 ${ax + 824} 801`;
   return (
     <g>
-      <g fill="var(--j-mid)">
+      {/* Sawtooth glazing faces the sky, so a hall running at night spills
+          UPWARD out of the roof — behind the silhouette, into the dark. */}
+      <LightShaft x={ax + 246} y={520} len={340} spread={210} angle={188} opacity={0.24} />
+      <LightShaft x={ax + 364} y={520} len={320} spread={200} angle={185} opacity={0.2} delay={1.6} />
+      <LightShaft x={ax + 482} y={520} len={350} spread={214} angle={191} opacity={0.22} delay={3.1} />
+      <g fill={sil}>
         {/* chimney + cap */}
         <polygon points={`${ax + 40},${BASE} ${ax + 56},262 ${ax + 112},262 ${ax + 128},${BASE}`} />
         <rect x={ax + 28} y="240" width="112" height="26" />
@@ -219,21 +243,31 @@ export function Foundry({ ax }) {
           opacity="0.9"
         />
       </g>
+
+      {/* Heat rising off the filled mould — in front, because it is between
+          the camera and the pour. */}
+      <LightShaft x={ax + 824} y={802} len={300} spread={250} angle={183} opacity={0.42} delay={0.7} />
     </g>
   );
 }
 
 /** 2017 — the second plant, India. */
-export function IndiaCity({ ax }) {
+export function IndiaCity({ ax, sil = SIL }) {
   return (
     <g>
-      <IndiaSilhouette ax={ax} />
+      <IndiaSilhouette ax={ax} sil={sil} />
+      {/* Rays off the sun World.jsx paints behind this skyline. Authored
+          here so they recede with the place, not with the sky. */}
+      <LightShaft x={ax + 590} y={330} len={600} spread={340} angle={-34} opacity={0.26} />
+      <LightShaft x={ax + 590} y={330} len={660} spread={320} angle={-12} opacity={0.22} delay={1.2} />
+      <LightShaft x={ax + 590} y={330} len={640} spread={340} angle={11} opacity={0.25} delay={2.4} />
+      <LightShaft x={ax + 590} y={330} len={580} spread={300} angle={31} opacity={0.2} delay={3.6} />
       <IndiaAccent ax={ax} />
     </g>
   );
 }
 
-function IndiaSilhouette({ ax }) {
+function IndiaSilhouette({ ax, sil = SIL }) {
   const towers = [
     [20, 566, 108],
     [148, 624, 84],
@@ -242,7 +276,7 @@ function IndiaSilhouette({ ax }) {
     [1000, 544, 88],
   ];
   return (
-    <g fill="var(--j-mid)">
+    <g fill={sil}>
       {towers.map(([x, y, w], i) => (
         <rect key={i} x={ax + x} y={y} width={w} height={BASE - y} />
       ))}
@@ -310,7 +344,7 @@ function IndiaAccent({ ax }) {
 }
 
 /** 2023 — Växjö. Arrival, and the cold. */
-export function SwedenForest({ ax }) {
+export function SwedenForest({ ax, sil = SIL }) {
   // Overlapping wide triangles read as a forest; narrow ones read as obelisks.
   const pines = Array.from({ length: 9 }).map((_, i) => {
     const x = ax + 10 + i * 104;
@@ -319,7 +353,11 @@ export function SwedenForest({ ax }) {
   });
   return (
     <g>
-      <g fill="var(--j-mid)">
+      {/* Behind the pines on purpose: light coming down THROUGH a forest is
+          only ever seen in the gaps between the trunks. */}
+      <LightShaft x={ax + 300} y={248} len={700} spread={330} angle={7} opacity={0.16} />
+      <LightShaft x={ax + 648} y={248} len={660} spread={290} angle={7} opacity={0.13} delay={2.2} />
+      <g fill={sil}>
         {pines.map((p, i) => (
           <g key={i}>
             <polygon points={`${p.x},${BASE} ${p.x + p.w / 2},${BASE - p.h} ${p.x + p.w},${BASE}`} />
@@ -359,17 +397,23 @@ export function SwedenForest({ ax }) {
         <Rim d={`M ${ax + 844} 724 H ${ax + 924} V 794`} width="2" tint="#eaf2ff" opacity={0.65} />
         <Rim d={`M ${ax + 812} 706 L ${ax + 900} 640`} width="2" tint="#eaf2ff" opacity={0.28} />
       </g>
+
+      {/* The cottage window, in front of the cottage it comes out of. */}
+      <LightShaft x={ax + 937} y={790} len={130} spread={110} angle={4} opacity={0.34} delay={1.1} />
     </g>
   );
 }
 
 /** 2024 — the first Sprinta chapter: one developer and a makeshift setup. */
-export function SoloStudio({ ax }) {
+export function SoloStudio({ ax, sil = SIL }) {
   return (
     <g>
+      {/* One room lit in an otherwise dark house. Behind the roof, so it
+          reads as glow escaping rather than a lamp sitting on the tiles. */}
+      <LightShaft x={ax + 706} y={548} len={320} spread={300} angle={181} opacity={0.26} />
       {/* A modest top-floor room, deliberately smaller than the office that
           follows it. The sloped roof and odd furniture keep it homemade. */}
-      <g fill="var(--j-mid)">
+      <g fill={sil}>
         <path d={`M ${ax + 430} ${BASE} V 604 L ${ax + 706} 482 L ${ax + 982} 604 V ${BASE} Z`} />
         <rect x={ax + 404} y="594" width="602" height="18" />
         <rect x={ax + 944} y="520" width="20" height="76" />
@@ -402,7 +446,7 @@ export function SoloStudio({ ax }) {
 }
 
 /** 2025 — the mature portfolio: several products, one shared architecture. */
-export function Office({ ax }) {
+export function Office({ ax, sil = SIL }) {
   const blocks = [
     [40, 470, 150],
     [210, 396, 130],
@@ -413,7 +457,12 @@ export function Office({ ax }) {
   ];
   return (
     <g>
-      <g fill="var(--j-mid)">
+      {/* Light pollution: a working city throws its own glow up off the
+          blocks. Behind them, so the skyline stays a hard silhouette. */}
+      <LightShaft x={ax + 120} y={470} len={320} spread={250} angle={182} opacity={0.16} />
+      <LightShaft x={ax + 782} y={430} len={360} spread={290} angle={179} opacity={0.19} delay={1.8} />
+      <LightShaft x={ax + 958} y={340} len={320} spread={240} angle={177} opacity={0.15} delay={3.2} />
+      <g fill={sil}>
         {blocks.map(([x, y, w], i) => (
           <rect key={i} x={ax + x} y={y} width={w} height={BASE - y} />
         ))}

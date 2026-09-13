@@ -68,6 +68,19 @@ export function heatPalette(heat, dark = true) {
 export const mixChannels = (a, b, t) => toHex(lerp(a, b, t));
 
 /**
+ * The same mix, left as channels so it can be chained.
+ *
+ * A scene can be under two colour effects at once — blended back toward its
+ * own heat by the overview lift, and hazed toward the sky by depth — and
+ * going through hex between them would round twice and cost a parse for a
+ * value nothing reads.
+ */
+export const lerpChannels = lerp;
+
+/** The single conversion at the end of a chain. */
+export const channelsToHex = toHex;
+
+/**
  * Heat is one number (see 4.3 in the plan). Everything visual derives from it
  * via CSS custom properties, so the whole scene recolours in one pass and the
  * existing design system's variables keep working.
