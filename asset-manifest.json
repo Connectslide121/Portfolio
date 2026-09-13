@@ -1,9 +1,9 @@
 {
   "files": {
     "main.css": "/Portfolio/static/css/main.5bb92bf5.css",
-    "main.js": "/Portfolio/static/js/main.5e86abab.js",
-    "static/css/980.92698e18.chunk.css": "/Portfolio/static/css/980.92698e18.chunk.css",
-    "static/js/980.0e3b9ed6.chunk.js": "/Portfolio/static/js/980.0e3b9ed6.chunk.js",
+    "main.js": "/Portfolio/static/js/main.dd9a8541.js",
+    "static/css/940.d77ce9e7.chunk.css": "/Portfolio/static/css/940.d77ce9e7.chunk.css",
+    "static/js/940.8bf3e51e.chunk.js": "/Portfolio/static/js/940.8bf3e51e.chunk.js",
     "static/js/516.ca072e3f.chunk.js": "/Portfolio/static/js/516.ca072e3f.chunk.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/CodepenAI.mp4": "/Portfolio/static/media/CodepenAI.67099e612ecd577ff4f7.mp4",
@@ -59,13 +59,13 @@
     "static/media/lexicon.svg": "/Portfolio/static/media/lexicon.a3a9394e0035213881511dbb09bbe4ab.svg",
     "index.html": "/Portfolio/index.html",
     "main.5bb92bf5.css.map": "/Portfolio/static/css/main.5bb92bf5.css.map",
-    "main.5e86abab.js.map": "/Portfolio/static/js/main.5e86abab.js.map",
-    "980.92698e18.chunk.css.map": "/Portfolio/static/css/980.92698e18.chunk.css.map",
-    "980.0e3b9ed6.chunk.js.map": "/Portfolio/static/js/980.0e3b9ed6.chunk.js.map",
+    "main.dd9a8541.js.map": "/Portfolio/static/js/main.dd9a8541.js.map",
+    "940.d77ce9e7.chunk.css.map": "/Portfolio/static/css/940.d77ce9e7.chunk.css.map",
+    "940.8bf3e51e.chunk.js.map": "/Portfolio/static/js/940.8bf3e51e.chunk.js.map",
     "516.ca072e3f.chunk.js.map": "/Portfolio/static/js/516.ca072e3f.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5bb92bf5.css",
-    "static/js/main.5e86abab.js"
+    "static/js/main.dd9a8541.js"
   ]
 }
