@@ -105,6 +105,42 @@ export const graticule = ({ meridians = 10, parallels = 5, step = 8 } = {}) => {
   return lines;
 };
 
+/**
+ * Flat [lon, lat, ...] rings into runs of precomputed points.
+ *
+ * Done once at module load. The coastline is ~870 points and every one of
+ * them carries its own trig from here on, exactly like the graticule — the
+ * per-frame cost of land is then the same multiply-add per point as anything
+ * else on the sphere.
+ */
+export const runs = (rings) =>
+  rings.map((flat) => {
+    const pts = [];
+    for (let i = 0; i < flat.length; i += 2) {
+      pts.push(point(flat[i + 1], flat[i]));
+    }
+    return pts;
+  });
+
+/**
+ * Many runs as ONE path.
+ *
+ * strand() already starts every visible segment with an M, so concatenating
+ * is all that separate subpaths need: sixty-one coastline rings cost one
+ * attribute write and one path parse a frame rather than sixty-one of each.
+ *
+ * There is deliberately no "skip the rings facing away" test here. It was
+ * written, measured, and removed: strand() already discards a hidden point
+ * for about eight multiplies, so rejecting a whole ring up front saved
+ * microseconds and changed no frame time at all. The globe's cost is stroke
+ * rasterisation, not projection.
+ */
+export const strandAll = (all, v, r) => {
+  let d = "";
+  for (let i = 0; i < all.length; i++) d += strand(all[i], v, r);
+  return d;
+};
+
 const toVec = (lat, lon) => {
   const p = lat * RAD;
   const l = lon * RAD;

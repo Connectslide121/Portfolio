@@ -1,6 +1,17 @@
 import React, { useEffect, useRef } from "react";
 import { BEATS } from "./config";
-import { point, view, project, strand, graticule, arc, shortestLon } from "./globe";
+import {
+  point,
+  view,
+  project,
+  strand,
+  strandAll,
+  runs,
+  graticule,
+  arc,
+  shortestLon,
+} from "./globe";
+import { LAND } from "./landData";
 
 /**
  * The globe behind the map.
@@ -81,6 +92,7 @@ const [ROUTE_PTS, ROUTE_T] = (() => {
 })();
 
 const LINES = graticule();
+const COASTS = runs(LAND);
 const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
 export default function JourneyGlobe() {
@@ -90,6 +102,7 @@ export default function JourneyGlobe() {
     const el = rootRef.current;
     if (!el) return;
     const lineEls = el.querySelectorAll("[data-gl-line]");
+    const landEl = el.querySelector("[data-gl-land]");
     const routeEl = el.querySelector("[data-gl-route]");
     const dotEls = el.querySelectorAll("[data-gl-dot]");
     const haloEls = el.querySelectorAll("[data-gl-halo]");
@@ -129,6 +142,8 @@ export default function JourneyGlobe() {
       const v = view(lat0, lon0);
 
       lineEls.forEach((line, i) => line.setAttribute("d", strand(LINES[i], v, R)));
+      // Every coastline in one attribute write.
+      if (landEl) landEl.setAttribute("d", strandAll(COASTS, v, R));
 
       if (routeEl) {
         // Ordered by position, so the travelled part is a prefix — a scan
@@ -203,6 +218,27 @@ export default function JourneyGlobe() {
         {LINES.map((_, i) => (
           <path key={i} data-gl-line="" />
         ))}
+      </g>
+
+      {/* Coastlines. STROKED, never filled: a ring crossing the horizon has
+          to be closed along the LIMB to fill correctly, which is the fiddly
+          half of a spherical clip, and closing it across the chord instead
+          cuts a visible straight edge through the disc.
+
+          One thin pass, not two. A wide soft underlay was tried underneath
+          this to suggest the mass of the land, and it turned out to be the
+          entire frame cost of the globe — a 5-unit stroke over ~870 points
+          roughly doubled the dropped frames in a transition, while the same
+          path at 1.25 units is within noise of drawing no land at all. The
+          shapes are legible from the coast alone. */}
+      <g
+        fill="none"
+        stroke="var(--j-stream)"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        opacity="0.8"
+      >
+        <path data-gl-land="" />
       </g>
 
       {/* the road, drawn on as it is travelled */}
