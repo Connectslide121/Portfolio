@@ -8,10 +8,31 @@
 // `heat` is the hot -> cold position of an entry, 1 = the foundry, 0 = today.
 // It drives the accent colour in both modes.
 
+/**
+ * Product URLs, in one place.
+ *
+ * They are referenced from three directions now — résumé bullet links, the
+ * summary links, and the journey cards' product row — and a URL that lives in
+ * three literals is a URL that eventually differs in three literals. The
+ * display LABEL still varies by context ("Podium Suite" in one bullet, "Podium
+ * 2.0" on the journey card), which is fine; only the address is shared.
+ */
+export const productUrl = {
+  podium: "https://www.podiumsystem.com",
+  knowia: "https://gentle-desert-0612fb603.7.azurestaticapps.net/",
+  jambizHub: "https://www.jambizhub.se",
+  govensa: "https://www.govensa.se/",
+  certumHub: "https://www.certumhub.com",
+};
+
 /** The headline, shared by the static hero and the journey's landing beat. */
 export const profile = {
   name: "Jon Mendizabal",
   title: "Lead Developer & Platform Architect",
+  // The journey's landing beat needs a hook, not a job description: it has to
+  // set up the career change before the first scene shows a foundry, or the
+  // foundry reads as a filing error rather than the point of the story.
+  lede: "I cast steel for twelve years before I wrote my first line of production code.",
   blurb:
     "Building products end to end — thoughtful, intuitive UI/UX on the front, scalable and secure backends underneath. I architect systems that are a pleasure to use, robust at scale, and built to grow, bringing AI in where it genuinely adds value.",
 };
@@ -29,37 +50,35 @@ export const experience = [
     quest: {
       name: "The Architect",
       constraint:
-        "Sole architect across a whole product portfolio, mid-pivot to product-led growth.",
+        "Architecture for a whole product portfolio and a team to lead, mid-pivot to product-led growth.",
       objective:
         "Define one shared modern stack and ship MVPs fast without fragmenting the platform.",
       status: "In progress",
     },
     summary:
-      "Lead developer and sole architect across a portfolio of AI-powered products for the Jambiz Group, defining a shared modern stack — Angular 21, .NET 8 Azure Functions, and CosmosDB — and rapidly building MVPs as the company pivots to product-led growth.",
+      "Lead developer and architect across a portfolio of AI-powered products for the Jambiz Group, leading the development team, defining a shared modern stack — Angular 21, .NET 8 Azure Functions, and CosmosDB — and rapidly building MVPs as the company pivots to product-led growth.",
     bullets: [
       {
-        text: "Leading the modernization of {Podium Suite} (Podium 2.0), rebuilding a 7-year-old legacy tourism/transport platform on Angular 21 and Azure Functions with feature parity and multi-tenant support",
-        links: { "Podium Suite": "https://www.podiumsystem.com" },
+        text: "Leading the modernization of {Podium Suite}, rebuilding a 7-year-old legacy tourism/transport platform on Angular 21 and Azure Functions with feature parity and multi-tenant support",
+        links: { "Podium Suite": productUrl.podium },
       },
       {
-        text: "Built {Larademy}, an AI eLearning platform with a multi-agent course-generation pipeline and vector-based RAG grounding",
-        links: {
-          Larademy: "https://gentle-desert-0612fb603.7.azurestaticapps.net/",
-        },
+        text: "Built {Knowia Studio}, an AI eLearning platform with a multi-agent course-generation pipeline and vector-based RAG grounding",
+        links: { "Knowia Studio": productUrl.knowia },
       },
       {
         text: "Built {Jambiz Hub}, a CRM/Procurement/Recruit platform featuring AI-driven CV parsing, embeddings, and cosine-similarity scoring",
-        links: { "Jambiz Hub": "https://www.jambizhub.se" },
+        links: { "Jambiz Hub": productUrl.jambizHub },
       },
       {
         text: "Designed *SAGE*, a reusable Nx monorepo of shared platform packages consumed across the product portfolio",
       },
       {
         text: "Took over and now lead development of {Govensa}, an AI contract-accountability platform for the Swedish public sector that extracts contract obligations for human review and tracks them through an immutable, audit-ready trail",
-        links: { Govensa: "https://www.govensa.se/" },
+        links: { Govensa: productUrl.govensa },
       },
       {
-        text: "Built *two React Native / Expo staff mobile apps* — one for the new Podium 2.0 and one for the legacy Podium system, each talking to its own backend",
+        text: "Built *two React Native / Expo staff mobile apps* — one for the new Podium Suite and one for the legacy Podium system, each talking to its own backend",
       },
     ],
     tech: [
@@ -93,8 +112,8 @@ export const experience = [
     summary:
       "Sole developer of {CertumHub}, an AI-powered platform for e-learning and sustainability assessments with multilingual support, and later brought in as a consultant to modernize the legacy {Podium Stromma Suite} with a full UI facelift.",
     summaryLinks: {
-      CertumHub: "https://www.certumhub.com",
-      "Podium Stromma Suite": "https://www.podiumsystem.com",
+      CertumHub: productUrl.certumHub,
+      "Podium Stromma Suite": productUrl.podium,
     },
     bullets: [
       {
@@ -233,7 +252,8 @@ export const beats = [
     kind: "intro",
     orgs: [],
     year: "",
-    railLabel: "Intro",
+    railLabel: "Start",
+    tag: "Introduction",
     place: "Växjö, Sweden",
     org: "Sprinta Consulting AB",
     role: profile.title,
@@ -247,6 +267,7 @@ export const beats = [
     orgs: ["london-met", "lea-artibai"],
     year: "2005 — 2010",
     railLabel: "2005",
+    tag: "Engineering studies",
     numeral: "2005",
     place: "Spain",
     org: "London Met · Lea-Artibai",
@@ -263,6 +284,7 @@ export const beats = [
     orgs: ["aml"],
     year: "2011 — 2023",
     railLabel: "2011",
+    tag: "Steel foundry",
     numeral: "2011",
     place: "Spain",
     org: "AML SA",
@@ -279,6 +301,7 @@ export const beats = [
     orgs: ["aml", "atpl"],
     year: "2017",
     railLabel: "2017",
+    tag: "Plant in India",
     numeral: "2017",
     place: "Coimbatore, India",
     org: "AML SA → Arihant Technocast",
@@ -296,6 +319,7 @@ export const beats = [
     orgs: ["lexicon"],
     year: "2023 — 2024",
     railLabel: "2023",
+    tag: "Career reset",
     numeral: "2023",
     place: "Växjö, Sweden",
     org: "Lexicon",
@@ -312,6 +336,7 @@ export const beats = [
     orgs: ["sprinta"],
     year: "2024 — 2025",
     railLabel: "2024",
+    tag: "AI developer",
     numeral: "2024",
     place: "Sweden",
     org: "Sprinta Consulting AB",
@@ -319,6 +344,10 @@ export const beats = [
     material: "TypeScript + vectors",
     constraint: "Sole developer on CertumHub. AI modules with no prior art in-house.",
     objective: "Ship it, then modernize a 7-year-old platform without breaking it.",
+    products: [
+      { label: "CertumHub", href: productUrl.certumHub },
+      { label: "Podium Suite", href: productUrl.podium },
+    ],
     status: "Complete",
     heat: 0.05,
     entryIds: ["exp-sprinta-ai"],
@@ -328,13 +357,21 @@ export const beats = [
     orgs: ["sprinta"],
     year: "2025 — Present",
     railLabel: "2025",
+    tag: "Platform architect",
     numeral: "2025",
     place: "Sweden",
     org: "Sprinta Consulting AB",
     role: "Lead Developer & Platform Architect",
     material: "systems",
-    constraint: "Sole architect across a whole portfolio, mid-pivot to product-led growth.",
-    objective: "One shared stack behind Podium 2.0, Larademy, Jambiz Hub and Govensa.",
+    constraint:
+      "Architecture for a whole portfolio and a team to lead, mid-pivot to product-led growth.",
+    objective: "One shared stack behind every product in the portfolio.",
+    products: [
+      { label: "Govensa", href: productUrl.govensa },
+      { label: "Knowia Studio", href: productUrl.knowia },
+      { label: "Podium Suite", href: productUrl.podium },
+      { label: "Jambiz Hub", href: productUrl.jambizHub },
+    ],
     status: "In progress",
     heat: 0,
     entryIds: ["exp-sprinta-lead"],
@@ -345,7 +382,8 @@ export const beats = [
     id: "recap",
     orgs: ["github"],
     year: "2005 — today",
-    railLabel: "Recap",
+    railLabel: "Work",
+    tag: "Projects & code",
     place: "github.com/Connectslide121",
     org: "Side projects, games & packages",
     role: "My Work",
@@ -355,6 +393,39 @@ export const beats = [
     status: "Ongoing",
     heat: 0,
     entryIds: [],
+  },
+];
+
+/**
+ * The three acts, for the landing beat.
+ *
+ * Deliberately coarser than `beats`: the beats are stops, these are chapters.
+ * A recruiter who reads nothing else has to leave the first slide knowing the
+ * shape of the thing — steel, a reset, software — so that "Engineering
+ * Studies" and a foundry in scene two land as setup rather than as the wrong
+ * CV. `heat` ties each act to the same hot -> cold ramp the scenes use.
+ */
+export const chapters = [
+  {
+    id: "steel",
+    span: "2005 — 2023",
+    title: "Steel",
+    detail: "Engineering degrees, then twelve years running a foundry.",
+    heat: 1,
+  },
+  {
+    id: "reset",
+    span: "2023",
+    title: "Reset",
+    detail: "New country, new language, retrained as a developer from zero.",
+    heat: 0.45,
+  },
+  {
+    id: "software",
+    span: "2023 — today",
+    title: "Software",
+    detail: "AI platforms, now leading the team and the architecture.",
+    heat: 0,
   },
 ];
 

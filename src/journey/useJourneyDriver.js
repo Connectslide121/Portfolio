@@ -15,13 +15,14 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
   const seekTween = useRef(null);
 
   const goTo = useCallback(
-    (next, { instant = false } = {}) => {
+    (next, { fast = false } = {}) => {
       if (!tl) return false;
       const clamped = Math.max(0, Math.min(BEATS.length - 1, next));
-      if (clamped === idx.current) return false;
-      // An instant jump may always interrupt a transition in flight; a stepped
-      // move waits its turn so gestures cannot queue up.
-      if (busy.current && !instant) return false;
+      const from = idx.current;
+      if (clamped === from) return false;
+      // A pick off the map may always interrupt a transition in flight; a
+      // stepped move waits its turn so gestures cannot queue up.
+      if (busy.current && !fast) return false;
 
       const target = tl.labels[BEATS[clamped].id];
       seekTween.current?.kill();
@@ -29,26 +30,28 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
       idx.current = clamped;
       setIndex(clamped);
 
-      if (instant) {
-        // Picking a year off the rail should land on it, not replay the years
-        // in between. suppressEvents must be false or onUpdate never fires and
-        // the camera/heat never move.
-        busy.current = false;
-        lastSeek.current = 0.35;
-        tl.pause();
-        tl.seek(target, false);
-        return true;
-      }
+      // A stepped move scrubs at the timeline's OWN rate: duration = the
+      // actual time distance, so one step plays at the rate it was authored
+      // at.
+      //
+      // A pick off the map gets its own budget instead, weighted toward the
+      // distance travelled: a neighbour is a hop, 2005 -> today is a journey
+      // you can actually watch go past. Still far quicker than the natural
+      // rate (2.4s per beat, so ~17s end to end), and it never dwells on the
+      // beats in between — that was what made replaying them unusable.
+      const seconds = fast
+        ? Math.min(2.8, 0.6 + Math.abs(clamped - from) * 0.28)
+        : Math.max(0.35, Math.abs(target - tl.time()));
 
-      // Otherwise scrub at the timeline's OWN rate: duration = the actual time
-      // distance, ease "none". Anything else replays the beat faster or slower
-      // than the Play button does, and the mismatch is very noticeable.
-      const seconds = Math.max(0.35, Math.abs(target - tl.time()));
       lastSeek.current = seconds;
       busy.current = true;
       seekTween.current = tl.tweenTo(target, {
         duration: seconds,
-        ease: "none",
+        // The ease lives here rather than on the timeline's per-beat tweens,
+        // which are linear (see timeline.js). One ease across the whole move
+        // means a long travel accelerates once and settles once, instead of
+        // coming to a halt at every beat it passes through.
+        ease: "power2.inOut",
         onComplete: () => {
           busy.current = false;
         },
@@ -60,7 +63,7 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
 
   const next = useCallback(() => goTo(idx.current + 1), [goTo]);
   const prev = useCallback(() => goTo(idx.current - 1), [goTo]);
-  const jumpTo = useCallback((i) => goTo(i, { instant: true }), [goTo]);
+  const jumpTo = useCallback((i) => goTo(i, { fast: true }), [goTo]);
 
   // --- wheel: one gesture = one beat, so you always land on a beat ---------
   useEffect(() => {

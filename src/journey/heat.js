@@ -39,6 +39,35 @@ export function heatColor(heat, key = "accent") {
 }
 
 /**
+ * The whole palette at a given heat, as unconverted RGB triples.
+ *
+ * `applyHeat` ramps ONE heat across the whole stage, which is right while the
+ * camera is travelling — a receding place should sit in the current evening's
+ * light. From above it is wrong: the recap lays six places out at once, and a
+ * single heat painted all of them in whichever atmosphere the last beat had,
+ * so twelve years of molten steel arrived looking like a cold Swedish
+ * afternoon. The lift blends each place back toward its own heat instead.
+ *
+ * Triples rather than hex because the caller interpolates before converting;
+ * going through hex per key per frame would be pure waste.
+ */
+export function heatPalette(heat, dark = true) {
+  const t = Math.max(0, Math.min(1, heat));
+  const lower = t <= MID;
+  const local = lower ? t / MID : (t - MID) / (1 - MID);
+  const poles = dark ? DARK_POLES : LIGHT_POLES;
+  const out = {};
+  for (const key in poles) {
+    const [cold, warm, hot] = poles[key];
+    out[key] = lerp(lower ? cold : warm, lower ? warm : hot, local);
+  }
+  return out;
+}
+
+/** Two palette entries mixed and converted once, for inline style writes. */
+export const mixChannels = (a, b, t) => toHex(lerp(a, b, t));
+
+/**
  * Heat is one number (see 4.3 in the plan). Everything visual derives from it
  * via CSS custom properties, so the whole scene recolours in one pass and the
  * existing design system's variables keep working.
