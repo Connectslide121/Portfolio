@@ -1854,3 +1854,173 @@ body:not(.dark-theme) .j-intro-art {
     animation: none;
   }
 }
+
+/* ==========================================================================
+   Atmosphere — the surface the world is printed on.
+
+   Flat vector art reads as clip art largely because it has no SURFACE: every
+   region is a mathematically even colour, which is a thing that does not
+   occur in any photographed or printed image. A little grain and a vignette
+   cost one composited layer each and do more for how expensive the journey
+   looks than any amount of extra geometry would.
+
+   Over the WORLD only, never the cards — noise laid over text is the fastest
+   way to make type look cheap. DOM order puts this above <World/> and below
+   .j-cards, so neither needs a z-index.
+   ========================================================================== */
+
+.j-atmos {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.j-atmos::before,
+.j-atmos::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+/* Monochrome fractal noise, tiled. feColorMatrix desaturates it — raw
+   feTurbulence is colour noise, which reads as a broken screen rather than
+   as film. `overlay` keeps it neutral in both themes: it darkens what is
+   already dark and lightens what is light, instead of laying grey over
+   everything the way a flat opacity would. */
+.j-atmos::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: overlay;
+  opacity: 0.075;
+}
+
+/* Pulls the corners down so the eye goes to the lit middle of the frame. The
+   centre sits slightly high because the beat card owns the lower left. */
+.j-atmos::after {
+  background: radial-gradient(
+    ellipse 118% 96% at 52% 44%,
+    transparent 40%,
+    rgb(0 0 0 / 0.28) 78%,
+    rgb(0 0 0 / 0.58) 100%
+  );
+}
+
+/* A breath of the arriving beat's accent across the whole frame. Driven from
+   the timeline (see the bloom tweens in timeline.js) so it scrubs with the
+   move instead of firing on its own clock. `screen` because it is light being
+   added to the scene, not a colour laid on top of it. */
+.j-bloom {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    ellipse 82% 64% at 62% 54%,
+    color-mix(in srgb, var(--j-accent) 32%, transparent),
+    transparent 68%
+  );
+}
+
+/* Volumetric shafts (LightShaft in parts.jsx). The breathe MULTIPLIES the
+   authored brightness rather than replacing it — see --shaft-o there. */
+.j-shaft {
+  opacity: var(--shaft-o, 1);
+  animation: j-shaft-breathe 7.5s ease-in-out infinite;
+  animation-delay: var(--shaft-delay, 0s);
+}
+
+@keyframes j-shaft-breathe {
+  0%,
+  100% {
+    opacity: calc(var(--shaft-o, 1) * 0.6);
+  }
+  45% {
+    opacity: var(--shaft-o, 1);
+  }
+}
+
+/* Paper, not night: a dark vignette on a light sky reads as dirt, and screen
+   blending an accent over white does nothing at all. */
+body:not(.dark-theme) .j-atmos::before {
+  opacity: 0.05;
+}
+
+body:not(.dark-theme) .j-atmos::after {
+  background: radial-gradient(
+    ellipse 118% 96% at 52% 44%,
+    transparent 46%,
+    rgb(23 32 51 / 0.1) 80%,
+    rgb(23 32 51 / 0.2) 100%
+  );
+}
+
+body:not(.dark-theme) .j-bloom {
+  mix-blend-mode: multiply;
+  background: radial-gradient(
+    ellipse 82% 64% at 62% 54%,
+    color-mix(in srgb, var(--j-accent) 22%, transparent),
+    transparent 68%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .j-shaft {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   The globe behind the map.
+
+   A secondary layer on purpose — the places carry the story, this says where
+   on earth they were. Half-sunk below the bottom edge so only its upper cap
+   shows, with the progress stream crossing it and the map sitting on it.
+
+   Colour comes entirely from the heat variables, so it travels molten -> cold
+   with everything else without being told about it.
+   ========================================================================== */
+
+.j-globe {
+  position: absolute;
+  bottom: -12rem;
+  left: 50%;
+  width: 33rem;
+  height: 33rem;
+  margin-left: -16.5rem;
+  pointer-events: none;
+  opacity: 0.58;
+  /* Its graticule is rewritten every frame while the camera travels. Without
+     this, invalidating those paths invalidated the whole stage behind them
+     and the transition dropped frames; with it, the repaint is confined to
+     the globe's own box and the cost falls back into the noise of not having
+     a globe at all. Measured, not assumed. */
+  contain: paint;
+  /* Follows the rail's own 1.1s glide when the recap drops it, so the two
+     leave together rather than one chasing the other. */
+  transition:
+    opacity 0.9s ease,
+    bottom 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* The recap lays every place out across the ground at full size, which is the
+   same idea done better. Two maps of one journey on screen at once is one
+   map too many. */
+.j-stage[data-recap="true"] .j-globe {
+  opacity: 0;
+  bottom: -17rem;
+}
+
+body:not(.dark-theme) .j-globe {
+  opacity: 0.42;
+}
+
+@media (max-width: 768px) {
+  .j-globe {
+    bottom: -9rem;
+    width: 20rem;
+    height: 20rem;
+    margin-left: -10rem;
+    opacity: 0.38;
+  }
+}

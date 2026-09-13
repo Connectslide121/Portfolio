@@ -2,6 +2,7 @@ import gsap from "gsap";
 import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 import {
   BEATS,
+  BASE,
   LAYERS,
   SCENE_W,
   VANISH,
@@ -12,8 +13,19 @@ import {
   PAST_MIN_OPACITY,
   OVERVIEW,
   OVERVIEW_BY_ID,
+  HAZE_MAX,
+  HAZE_DEPTH,
+  SETTLE_PUSH,
+  SETTLE_DROP,
+  LEAN_X,
+  LEAN_Y,
 } from "./config";
-import { applyHeat, heatPalette, mixChannels } from "./heat";
+import {
+  applyHeat,
+  heatPalette,
+  lerpChannels,
+  channelsToHex,
+} from "./heat";
 
 gsap.registerPlugin(DrawSVGPlugin);
 
@@ -27,7 +39,26 @@ const ARCHITECT_PIVOT = { x: SCENE_W / 2, y: 540 };
 // the india sun in World.jsx). Anything else on the ramp belongs to the sky
 // and the ground, which stay shared: from above there is one sky, but each
 // place keeps its own light.
-const TINT_KEYS = ["mid", "ground", "stream", "streamCore", "accent"];
+//
+// `far` is on the list because the silhouette gradient's hazy top stop reads
+// it (SilGradient in parts.jsx); it was not needed while the masses were a
+// flat --j-mid.
+const TINT_KEYS = ["mid", "far", "ground", "stream", "streamCore", "accent"];
+
+// Depth haze only touches the two the silhouette itself is painted with.
+// Putting sky in front of a place's LIGHTS as well would be wrong: a distant
+// window is dimmer, not bluer, and hazing --j-stream drained the one thing
+// still identifying a receding beat.
+const HAZE_KEYS = ["mid", "far"];
+
+// The camera's zoom pivots on the ground line, not the frame centre: pivoting
+// mid-air slides every silhouette off the floor as it breathes.
+const ZOOM_PIVOT = { x: SCENE_W / 2, y: BASE };
+
+// The scene plane's parallax rate, for pointer lean. Scenes are not inside a
+// [data-layer] group — they are placed by projectScenes — so they do not pick
+// the rate up from the layer table and have to be told it.
+const SCENE_LEAN_K = LAYERS.find((l) => l.id === "scene").k;
 
 // Each beat's own palette, built once per theme rather than per frame.
 const OWN_PALETTES = { true: null, false: null };
@@ -53,7 +84,16 @@ export function buildJourney({ root }) {
   // layout of the closing recap. It is tweened by the timeline itself rather
   // than by a button, so arriving at the last beat IS the camera rising, and
   // stepping back lowers it again.
-  const camera = { x: 0, heat: BEATS[0].heat, overview: 0 };
+  // leanX/leanY are the pointer tilt. They are NOT tweened by the timeline —
+  // they belong to the viewer, not to the story — but they feed the same
+  // render(), so the two compose without either knowing about the other.
+  const camera = {
+    x: 0,
+    heat: BEATS[0].heat,
+    overview: 0,
+    leanX: 0,
+    leanY: 0,
+  };
 
   // A portrait phone only shows roughly a quarter of the viewBox's width, so
   // the wide architecture graph cannot be read there however far the camera
@@ -88,8 +128,29 @@ export function buildJourney({ root }) {
    * the anchor moves by that same factor, which is what keeps a shrinking
    * scene sitting on the ground rather than sliding along it.
    */
+  // How much sky sits in front of each scene this frame, filled by
+  // projectScenes and consumed by the colour pass below it.
+  const hazes = new Array(sceneEls.length).fill(0);
+
   const projectScenes = () => {
     const p = -camera.x / SCENE_W; // continuous position along the beats
+
+    // The camera breathes with the move: eased back and lifted while
+    // travelling, settled on arrival. Derived from the FRACTIONAL position
+    // rather than tweened per beat, which is what makes it scrub correctly in
+    // both directions, at any speed, and from any starting point — a tween
+    // bolted onto each beat segment would have to be unwound by hand on the
+    // way back.
+    //
+    // It rests at 1 and pulls back, never the other way round: the framing on
+    // a beat is the one CURRENT_SCALE and CURRENT_ANCHOR were tuned against,
+    // so arrival must not crop tighter than it does today.
+    const travel = Math.min(1, Math.abs(p - Math.round(p)) * 2);
+    const still = 1 - camera.overview; // the lift owns the framing up there
+    const zoom = 1 - SETTLE_PUSH * travel * still;
+    const rise = SETTLE_DROP * travel * still;
+    const leanX = camera.leanX * SCENE_LEAN_K * still;
+
     for (let i = 0; i < sceneEls.length; i++) {
       const el = sceneEls[i];
       if (!el) continue;
@@ -146,6 +207,27 @@ export function buildJourney({ root }) {
         ay = ARCHITECT_PIVOT.y + (ay - ARCHITECT_PIVOT.y) * localScale;
       }
 
+      // Camera breath, about the ground line so a scene cannot drift off the
+      // floor while it happens, then the pointer tilt.
+      if (zoom !== 1) {
+        scale *= zoom;
+        ax = ZOOM_PIVOT.x + (ax - ZOOM_PIVOT.x) * zoom;
+        ay = ZOOM_PIVOT.y + (ay - ZOOM_PIVOT.y) * zoom;
+      }
+      ax += leanX;
+      ay += rise;
+
+      // Aerial perspective. Depth used to be carried by opacity alone, which
+      // reads as a thing fading out rather than a thing far away; this is how
+      // much of the sky's own colour the colour pass puts in front of it. It
+      // is scaled out early in the lift because from above there is no depth
+      // left to describe — every place is the same distance from the camera.
+      hazes[i] = past
+        ? Math.min(1, t / HAZE_DEPTH) *
+          HAZE_MAX *
+          Math.max(0, 1 - camera.overview / 0.25)
+        : 0;
+
       tx = ax - SCENE_ANCHOR.x * scale;
       ty = ay - SCENE_ANCHOR.y * scale;
 
@@ -174,13 +256,31 @@ export function buildJourney({ root }) {
   const ovPath = root.querySelector("[data-ov-path]");
   const ovTrail = root.querySelectorAll("[data-ov-trail]");
   const ovDots = root.querySelectorAll("[data-ov-dot]");
+  const cameraGroup = root.querySelector("[data-camera]");
+  const globe = root.querySelector(".j-globe");
   let activeParticleScene = -1;
-  // Whether per-scene heat overrides are currently written, so they are
-  // cleared exactly once on the way back down instead of every frame.
-  let sceneTinted = false;
+  // What was last written to each scene's style, so a frame that changes
+  // nothing costs no setProperty calls. Replaces a single "are any overrides
+  // live" flag, which was enough while only the lift wrote them and is not
+  // now that depth haze writes them on ordinary travel too.
+  const tintCache = sceneEls.map(() => ({}));
+  // Whether any overrides are currently written, so the clearing pass runs
+  // once on the way out instead of every frame.
+  let tintsLive = false;
 
   const render = () => {
-    setters.forEach((s) => s.set(camera.x * s.k));
+    // Pointer lean rides the same depth rates as the camera's own travel, so
+    // a near layer tips further than a far one for free. It is scaled out by
+    // the lift: from above, tilting the plan would just be wobble.
+    const leanStill = 1 - camera.overview;
+    const lean = camera.leanX * leanStill;
+    setters.forEach((s) => s.set((camera.x + lean) * s.k));
+    if (cameraGroup) {
+      cameraGroup.setAttribute(
+        "transform",
+        `translate(0,${(camera.leanY * leanStill).toFixed(2)})`,
+      );
+    }
     projectScenes();
     applyHeat(root, camera.heat);
 
@@ -203,6 +303,11 @@ export function buildJourney({ root }) {
       });
     }
 
+    // The globe spins from the CONTINUOUS camera position, not from the beat
+    // index, so it turns with the travel rather than snapping when the travel
+    // ends — and scrubs backwards without needing to know it is going back.
+    globe?.__setGlobePosition?.(-camera.x / SCENE_W);
+
     const ov = camera.overview;
     const env = (1 - ov * 0.82).toFixed(3);
     envLayers.forEach((el) => el.setAttribute("opacity", env));
@@ -216,25 +321,67 @@ export function buildJourney({ root }) {
     // beat you just left. As the camera lifts, each place blends back to its
     // own heat: the arc from molten to cold becomes visible in the art
     // itself, not only in the trail drawn between the places.
-    if (ov > 0.001 || sceneTinted) {
+    // Two effects want to override a scene's colour, and both land on
+    // --j-mid, so they are resolved together in one pass rather than being
+    // allowed to overwrite each other:
+    //
+    //   * the LIFT blends each place back toward its own heat, because laid
+    //     out from above every place was painted in the CURRENT heat — the
+    //     foundry years arrived looking like the cold Swedish evening of the
+    //     beat you just left;
+    //   * DEPTH HAZE puts the sky's own colour in front of a receding place.
+    //
+    // Haze is already scaled out by the lift in projectScenes, so by the time
+    // the blend matters the two no longer disagree about any key.
+    const hazing = hazes.some((h) => h > 0.004);
+    if (ov > 0.001 || hazing || tintsLive) {
       const dark = document.body.classList.contains("dark-theme");
       const now = heatPalette(camera.heat, dark);
       const own = ownPalettes(dark);
+      const sky = now.sky1;
+      tintsLive = false;
+
       for (let i = 0; i < sceneEls.length; i++) {
         const el = sceneEls[i];
-        if (!el || !OVERVIEW_BY_ID[BEATS[i].id]) continue;
-        for (const key of TINT_KEYS) {
-          if (ov > 0.001) {
-            el.style.setProperty(
-              `--j-${key}`,
-              mixChannels(now[key], own[i][key], ov),
-            );
-          } else {
+        if (!el) continue;
+        const cache = tintCache[i];
+        const haze = hazes[i];
+        // The work gallery is not a place, so it has no laid-out spot and
+        // nothing to blend back toward.
+        const blendOwn = ov > 0.001 && !!OVERVIEW_BY_ID[BEATS[i].id];
+
+        if (!blendOwn && haze <= 0.004) {
+          for (const key in cache) el.style.removeProperty(`--j-${key}`);
+          if (Object.keys(cache).length) tintCache[i] = {};
+          continue;
+        }
+
+        tintsLive = true;
+        // Haze alone only needs the two keys the silhouette is painted with;
+        // the lift needs the full set.
+        const keys = blendOwn ? TINT_KEYS : HAZE_KEYS;
+        for (const key of keys) {
+          let channels = blendOwn
+            ? lerpChannels(now[key], own[i][key], ov)
+            : now[key];
+          if (haze > 0.004 && HAZE_KEYS.includes(key)) {
+            channels = lerpChannels(channels, sky, haze);
+          }
+          const value = channelsToHex(channels);
+          if (cache[key] !== value) {
+            el.style.setProperty(`--j-${key}`, value);
+            cache[key] = value;
+          }
+        }
+        // Keys this frame no longer writes (the lift just ended, haze alone
+        // remains) would otherwise stay frozen at their last lift value.
+        for (const key in cache) {
+          if (!keys.includes(key)) {
             el.style.removeProperty(`--j-${key}`);
+            delete cache[key];
           }
         }
       }
-      sceneTinted = ov > 0.001;
     }
 
     if (ovPath) {
@@ -262,6 +409,10 @@ export function buildJourney({ root }) {
   );
   const cards = BEATS.map((b) => root.querySelector(`[data-card="${b.id}"]`));
   const stream = root.querySelectorAll("[data-stream]");
+  const numerals = BEATS.map((b) =>
+    root.querySelector(`[data-numeral="${b.id}"]`),
+  );
+  const bloom = root.querySelector("[data-bloom]");
   const architectVisual = root.querySelector("[data-architect-visual]");
   const archGroup = root.querySelector("[data-arch]");
   const archNodes = root.querySelectorAll("[data-arch-node]");
@@ -275,6 +426,15 @@ export function buildJourney({ root }) {
 
   // --- initial state -------------------------------------------------------
   gsap.set(cards, { autoAlpha: 0, y: 24 });
+  gsap.set(bloom, { autoAlpha: 0 });
+  // The numerals are the loudest thing in the frame and they used to arrive
+  // by crossfade, which is the one entrance that cannot land. They are set up
+  // oversized and offset so each one can be driven home on arrival instead.
+  gsap.set(numerals.filter(Boolean), {
+    transformOrigin: "50% 50%",
+    scale: 1.18,
+    x: 54,
+  });
   gsap.set(atmos.slice(1).flat(), { autoAlpha: 0 });
   gsap.set(atmos[0], { autoAlpha: 1 });
   gsap.set(stream, { drawSVG: "0% 0%" });
@@ -333,6 +493,27 @@ export function buildJourney({ root }) {
       .to(atmos[i], { autoAlpha: 1, duration: 1.3 }, "<0.5")
       .to(atmos[i - 1], { autoAlpha: 0, duration: 1.3 }, "<");
 
+    // The year lands rather than fades: it comes in oversized and trailing
+    // the camera, then is driven home. power3.out so it arrives fast and
+    // settles, which is what makes it read as a title card and not a
+    // dissolve.
+    if (numerals[i]) {
+      tl.to(
+        numerals[i],
+        { scale: 1, x: 0, duration: 1.25, ease: "power3.out" },
+        "<0.15",
+      );
+    }
+    // And the one you are leaving pulls back out the way it came in, so
+    // stepping backwards is the same move reversed rather than a fade.
+    if (numerals[i - 1]) {
+      tl.to(
+        numerals[i - 1],
+        { scale: 1.18, x: 54, duration: 1.1, ease: "power2.in" },
+        "<",
+      );
+    }
+
     if (isArchitect && !narrow) {
       // Keep the full pull-back, connector draw and staggered node build. The
       // surrounding optimisations reduce contention without flattening this
@@ -359,8 +540,89 @@ export function buildJourney({ root }) {
     tl.to(cards[i], { autoAlpha: 1, y: 0, duration: 0.7 }, "-=0.5").addLabel(
       beat.id,
     );
+
+    // A breath of the beat's own accent across the whole frame as it lands.
+    // Positioned ABSOLUTELY, back from the label rather than appended, so it
+    // cannot push the label later than the card it belongs to — and so the
+    // flash is over before you arrive, which is what makes it read as light
+    // in the scene rather than as a transition effect played at you.
+    if (bloom) {
+      const at = tl.labels[beat.id];
+      tl.to(bloom, { autoAlpha: 0.62, duration: 0.14, ease: "power1.out" }, at - 0.95)
+        .to(bloom, { autoAlpha: 0, duration: 0.8, ease: "power2.in" }, at - 0.81);
+    }
   });
 
+  // --- pointer lean --------------------------------------------------------
+  //
+  // The world tips toward the cursor, each layer by its own depth rate. The
+  // layers were already separated; they simply never had a reason to move
+  // independently while the camera was standing still, which is why a beat
+  // you had arrived at read as a flat picture.
+  //
+  // It runs on its OWN rAF, not the GSAP ticker, and only while there is
+  // distance left to close. A stage nobody is touching therefore still
+  // renders nothing at all — which matters, because this is the default
+  // landing (D17) and a permanent render loop on it would be a battery bill
+  // charged to every visitor.
+  let leanRaf = 0;
+  const leanTo = { x: 0, y: 0 };
+
+  const stepLean = () => {
+    const dx = leanTo.x - camera.leanX;
+    const dy = leanTo.y - camera.leanY;
+    if (Math.abs(dx) < 0.06 && Math.abs(dy) < 0.06) {
+      camera.leanX = leanTo.x;
+      camera.leanY = leanTo.y;
+      leanRaf = 0;
+      render();
+      return;
+    }
+    camera.leanX += dx * 0.08;
+    camera.leanY += dy * 0.08;
+    render();
+    leanRaf = requestAnimationFrame(stepLean);
+  };
+
+  const wakeLean = () => {
+    if (!leanRaf) leanRaf = requestAnimationFrame(stepLean);
+  };
+
+  const onPointerMove = (e) => {
+    const rect = root.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    // -1..1 from the centre of the stage. Negated: the world moves AWAY from
+    // the cursor, which is what reads as looking around a space rather than
+    // dragging a picture about.
+    leanTo.x = (0.5 - (e.clientX - rect.left) / rect.width) * 2 * LEAN_X;
+    leanTo.y = (0.5 - (e.clientY - rect.top) / rect.height) * 2 * LEAN_Y;
+    wakeLean();
+  };
+
+  const onPointerLeave = () => {
+    leanTo.x = 0;
+    leanTo.y = 0;
+    wakeLean();
+  };
+
+  // Touch only ever reports a pointer mid-gesture, so on a phone this would
+  // be a lurch on every swipe rather than a lean.
+  const fine = window.matchMedia("(pointer: fine)").matches;
+  if (fine) {
+    root.addEventListener("pointermove", onPointerMove);
+    root.addEventListener("pointerleave", onPointerLeave);
+  }
+
+  const destroy = () => {
+    if (leanRaf) cancelAnimationFrame(leanRaf);
+    leanRaf = 0;
+    if (fine) {
+      root.removeEventListener("pointermove", onPointerMove);
+      root.removeEventListener("pointerleave", onPointerLeave);
+    }
+    tl.kill();
+  };
+
   render();
-  return { tl, camera, render };
+  return { tl, camera, render, destroy };
 }

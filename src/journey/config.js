@@ -36,6 +36,12 @@ export const SCENE_SPAN = 1080;
 // Ground contact line for scene props.
 export const BASE = 848;
 
+// The highest point any scene prop reaches (the office mast at 238). The
+// silhouette gradient spans SCENE_TOP..BASE, so this only has to be at or
+// above the tallest thing authored — it sets where "full haze" sits, not a
+// clip bound.
+export const SCENE_TOP = 230;
+
 // The final beat pulls the camera back, so full-width shapes overdraw past the
 // nominal frame or the world's own edges come into view.
 export const OVERDRAW = 1400;
@@ -67,6 +73,36 @@ export const CURRENT_SCALE = 0.76;
 export const VANISH = { x: 120, y: 686 };
 export const DEPTH = 0.85; // how fast the past shrinks — bigger recedes faster
 export const PAST_MIN_OPACITY = 0.2;
+
+// --- cinematography ------------------------------------------------------
+//
+// Aerial perspective. A receding place used to only lose opacity, which reads
+// as "fading out", not as "far away". Distance in a real landscape is carried
+// by AIR: the further something is, the more of the sky's own colour sits in
+// front of it, so it loses contrast toward the horizon rather than toward
+// transparency. The render loop blends each past scene's own --j-mid/--j-far
+// toward --j-sky1 by this much at full depth.
+export const HAZE_MAX = 0.72;
+export const HAZE_DEPTH = 1.6; // how many beats back full haze is reached
+
+// The camera breathes with the move instead of holding one focal length: it
+// eases back while travelling and settles in on arrival. That is the ordinary
+// grammar of a establishing-shot cut — wide while you move, close when you
+// get there — and it costs nothing, because it is derived from the camera's
+// fractional position rather than tweened. Deriving it also means it scrubs
+// correctly in both directions and at any speed, which a tween bolted onto
+// each beat segment would not.
+export const SETTLE_PUSH = 0.055; // extra scale on arrival
+export const SETTLE_DROP = 26; // world units the camera rises while travelling
+
+// Pointer lean. The world tips toward the cursor, each layer by its own depth
+// rate, so the parallax stack responds to the viewer instead of only to the
+// camera. This is the cheapest volume cue available — the layers are already
+// separated, they just never had a reason to move independently while the
+// camera was still.
+export const LEAN_X = 46; // world units at the frame edge, at k = 1
+export const LEAN_Y = 22;
+
 
 // A receding scene is softened at its extreme edges so it melts into the
 // distance rather than ending abruptly. This is deliberately WIDER than the

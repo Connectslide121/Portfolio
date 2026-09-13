@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { SCENE_W, VIEW_H, anchor, OVERDRAW, FLOOR } from "./config";
+import { SCENE_W, VIEW_H, anchor, OVERDRAW, FLOOR, BASE, SCENE_TOP } from "./config";
 
 /** Shared defs. Gradient stops read CSS vars, so heat recolours them for free. */
 export function JourneyDefs() {
@@ -10,6 +10,43 @@ export function JourneyDefs() {
         <stop offset="0%" stopColor="var(--j-sky0)" />
         <stop offset="100%" stopColor="var(--j-sky1)" />
       </linearGradient>
+
+      {/* The fallback silhouette fill, for art outside a scene group. Real
+          scenes each get their OWN copy — see SilGradient. */}
+      <SilGradient id="jSil" />
+
+      {/* The band of air that collects at the horizon. Drawn OVER the two
+          ambient ridges and under the scenes, so the distant terrain dissolves
+          into the sky instead of ending on a hard edge. This is the same cue
+          as the per-scene haze in the render loop, applied to the layers that
+          never move enough to need one of their own. */}
+      <linearGradient
+        id="jHaze"
+        gradientUnits="userSpaceOnUse"
+        x1="0"
+        y1="470"
+        x2="0"
+        y2="930"
+      >
+        <stop offset="0%" stopColor="var(--j-sky1)" stopOpacity="0" />
+        <stop offset="58%" stopColor="var(--j-sky1)" stopOpacity="0.3" />
+        <stop offset="100%" stopColor="var(--j-sky1)" stopOpacity="0" />
+      </linearGradient>
+
+      {/* A shaft of light leaving a source.
+          RADIAL, focused near the top of its own box rather than linear down
+          it. A linear gradient fades a shaft along its length but leaves the
+          SIDES hard, and a hard-edged beam does not read as light — the first
+          pass came out as origami: four flat triangles meeting at a point.
+          Focusing a radial gradient at the mouth fades the beam in every
+          direction at once, which is what makes overlapping shafts blend into
+          a glow instead of stacking up as visible facets.
+          objectBoundingBox, so one def serves a shaft of any size. */}
+      <radialGradient id="jShaft" cx="50%" cy="50%" r="52%" fx="50%" fy="7%">
+        <stop offset="0%" stopColor="var(--j-stream)" stopOpacity="0.95" />
+        <stop offset="42%" stopColor="var(--j-stream)" stopOpacity="0.34" />
+        <stop offset="100%" stopColor="var(--j-stream)" stopOpacity="0" />
+      </radialGradient>
       <filter id="jGlow" x="-50%" y="-300%" width="200%" height="700%">
         <feGaussianBlur stdDeviation="16" />
       </filter>
@@ -36,8 +73,128 @@ export function JourneyDefs() {
   );
 }
 
+/**
+ * Silhouette fill. Flat --j-mid is what made the places read as cut paper: a
+ * mass that tall has more air in front of its top than its base, so the upper
+ * part drifts toward the hazier --j-far while the base stays solid.
+ *
+ * The ramp is spent entirely in the top half, which makes it self-scaling: a
+ * tower reaches the hazy end, a low shed never leaves --j-mid. Nothing has to
+ * be authored per building.
+ *
+ * WHY ONE PER SCENE, and not a single shared def.
+ *
+ * A var() inside a gradient stop resolves against the GRADIENT element's own
+ * inherited value — not against whatever element references it. A gradient
+ * parked in the root <defs> therefore always reads the root's --j-mid, so the
+ * per-scene overrides the render loop writes (the overview's own-heat blend,
+ * and the depth haze) would silently do nothing to any mass painted with it.
+ * Giving each scene group its own copy puts the gradient inside the subtree
+ * whose variables it has to follow.
+ *
+ * userSpaceOnUse and vertical-only: every scene is authored in the same local
+ * y space (SCENE_TOP..BASE), so the geometry is identical in all of them and
+ * only the inherited colour differs.
+ */
+export function SilGradient({ id }) {
+  return (
+    <linearGradient
+      id={id}
+      gradientUnits="userSpaceOnUse"
+      x1="0"
+      y1={SCENE_TOP}
+      x2="0"
+      y2={BASE}
+    >
+      <stop
+        offset="0%"
+        stopColor="color-mix(in srgb, var(--j-far) 52%, var(--j-mid))"
+      />
+      <stop offset="54%" stopColor="var(--j-mid)" />
+      <stop offset="100%" stopColor="var(--j-mid)" />
+    </linearGradient>
+  );
+}
+
 export function Sky() {
   return <rect x="0" y="0" width={SCENE_W} height={VIEW_H} fill="url(#jSky)" />;
+}
+
+/**
+ * The horizon's air, as one rect.
+ *
+ * Sits between the ambient ridges and the scenes. The ridges are the only
+ * things far enough away to need it and they never move enough to earn a
+ * per-element treatment, so a single band of sky-coloured gradient laid over
+ * them does the whole job: they lose contrast into the horizon instead of
+ * ending on a hard silhouette edge.
+ *
+ * Deliberately a gradient rather than a blur. Blur on a group this wide
+ * (SCENE_W * BEATS.length + OVERDRAW is ~15,800 units) forces the compositor
+ * to rasterise an enormous texture, and aerial perspective — losing contrast
+ * with distance — is the stronger depth cue anyway. Defocus is a camera
+ * artefact; haze is what the eye actually reads as distance.
+ */
+export function Haze({ span = SCENE_W * 6 }) {
+  return (
+    <rect
+      x={-OVERDRAW}
+      y="470"
+      width={span + OVERDRAW * 2}
+      height="460"
+      fill="url(#jHaze)"
+      pointerEvents="none"
+    />
+  );
+}
+
+/**
+ * A volumetric shaft leaving a light source.
+ *
+ * ONE ELLIPSE, hung from (x, y) and rotated to aim, with the whole falloff in
+ * the shared jShaft radial gradient. An ellipse rather than the obvious cone
+ * polygon because a polygon's sides are hard however soft its gradient is,
+ * and a beam with a visible edge reads as a shape, not as light. This is the
+ * cheapest thing in the file and it does more than anything else to make flat
+ * vector art look lit.
+ *
+ * `spread` is the beam's width at its widest, `len` how far it throws.
+ *
+ * They breathe via CSS (see .j-shaft in journey.css) rather than GSAP: the
+ * animation is a slow, permanent idle, and handing it to the compositor keeps
+ * it off the render loop entirely.
+ *
+ * The breathe is OPACITY ONLY, deliberately. The aim is baked into a
+ * `transform` attribute whose rotate() carries its own explicit centre, so a
+ * CSS transform animation would replace it outright and a transform-origin
+ * would fight the centre already in the attribute. Varying brightness reads as
+ * dust moving through the beam anyway, which is the thing worth showing.
+ */
+export function LightShaft({
+  x,
+  y,
+  len = 280,
+  spread = 150,
+  angle = 0,
+  opacity = 1,
+  delay = 0,
+}) {
+  return (
+    <ellipse
+      className="j-shaft"
+      cx={x}
+      cy={y + len / 2}
+      rx={spread / 2}
+      ry={len / 2}
+      fill="url(#jShaft)"
+      transform={`rotate(${angle} ${x} ${y})`}
+      // The authored brightness travels as a variable, not as an opacity
+      // attribute: the CSS breathe has to MULTIPLY it (see .j-shaft), and an
+      // animation on `opacity` would replace the attribute outright and pull
+      // every shaft in the world to the same level.
+      style={{ "--shaft-o": opacity, "--shaft-delay": `${delay}s` }}
+    />
+  );
 }
 
 /** A gently undulating path across the whole world strip. */

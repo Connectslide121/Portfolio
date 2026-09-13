@@ -12,6 +12,7 @@ import ProjectGallery from "./ProjectGallery";
 import { OrgMarks } from "../components/OrgMark";
 import JourneyOverview from "./JourneyOverview";
 import JourneyStatic from "./JourneyStatic";
+import JourneyGlobe from "./JourneyGlobe";
 import JourneyTrail from "./JourneyTrail";
 import { heatColor } from "./heat";
 import ThemeToggle from "../components/ThemeToggle";
@@ -54,7 +55,9 @@ export default function JourneyStage({ onExit }) {
     }
 
     return () => {
-      b.tl.kill();
+      // destroy(), not tl.kill(): the pointer lean owns a listener pair and a
+      // rAF that the timeline knows nothing about.
+      b.destroy();
       built.current = null;
       setTl(null);
     };
@@ -95,6 +98,21 @@ export default function JourneyStage({ onExit }) {
       data-recap={atRecap ? "true" : "false"}
     >
       <World />
+
+      {/* Where on earth each beat happened, half-sunk behind the map. Before
+          .j-atmos in the DOM so the grain and vignette sit over it too — it
+          belongs to the world, not to the chrome. */}
+      <JourneyGlobe />
+
+      {/* Film, not vector. Grain and a vignette over the world — and only the
+          world, never the cards: the single biggest reason flat SVG reads as
+          clip art is that it has no surface, and the single fastest way to
+          make text look cheap is to lay noise over it. */}
+      <div className="j-atmos" aria-hidden="true" />
+
+      {/* A breath of the arriving beat's accent across the frame, driven from
+          the timeline so it scrubs with everything else. */}
+      <div className="j-bloom" data-bloom aria-hidden="true" />
 
       {/* Beat content lives in real DOM over the SVG — selectable, readable,
           indexable (D8). The slot carries data-card so GSAP animates the
