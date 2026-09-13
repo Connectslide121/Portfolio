@@ -31,8 +31,8 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
       setIndex(clamped);
 
       // A stepped move scrubs at the timeline's OWN rate: duration = the
-      // actual time distance, ease "none". Anything else replays the beat
-      // faster or slower than stepping does, and the mismatch is obvious.
+      // actual time distance, so one step plays at the rate it was authored
+      // at.
       //
       // A pick off the map gets its own budget instead, weighted toward the
       // distance travelled: a neighbour is a hop, 2005 -> today is a journey
@@ -47,8 +47,11 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
       busy.current = true;
       seekTween.current = tl.tweenTo(target, {
         duration: seconds,
-        // Eased so a long haul settles onto its beat rather than stopping dead.
-        ease: fast ? "power2.inOut" : "none",
+        // The ease lives here rather than on the timeline's per-beat tweens,
+        // which are linear (see timeline.js). One ease across the whole move
+        // means a long travel accelerates once and settles once, instead of
+        // coming to a halt at every beat it passes through.
+        ease: "power2.inOut",
         onComplete: () => {
           busy.current = false;
         },

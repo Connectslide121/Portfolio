@@ -309,6 +309,13 @@ export function buildJourney({ root }) {
 
     tl.to(cards[i - 1], { autoAlpha: 0, y: -24, duration: 0.5 })
       // Camera and heat travel together: one tween, everything follows.
+      //
+      // LINEAR, against the timeline's power2.inOut default. The ease for a
+      // move belongs to the playhead, not to each segment: with it here, the
+      // camera decelerated to a standstill at every beat boundary, so a pick
+      // that crossed six of them stopped six times on the way. The driver now
+      // eases the playhead instead, which gives a single step exactly the
+      // same motion and a long travel one continuous glide.
       .to(
         camera,
         {
@@ -316,10 +323,13 @@ export function buildJourney({ root }) {
           heat: beat.heat,
           overview: beat.id === "recap" ? 1 : 0,
           duration: 2.4,
+          ease: "none",
         },
         "<",
       )
-      .to(stream, { drawSVG: drawTo(i), duration: 2.4 }, "<")
+      // Travels with the camera, so it has to share the camera's ease or the
+      // progress bar drifts against the move it is reporting.
+      .to(stream, { drawSVG: drawTo(i), duration: 2.4, ease: "none" }, "<")
       .to(atmos[i], { autoAlpha: 1, duration: 1.3 }, "<0.5")
       .to(atmos[i - 1], { autoAlpha: 0, duration: 1.3 }, "<");
 
