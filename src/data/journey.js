@@ -46,9 +46,9 @@ export const experience = [
         links: { "Podium Suite": "https://www.podiumsystem.com" },
       },
       {
-        text: "Built {Larademy}, an AI eLearning platform with a multi-agent course-generation pipeline and vector-based RAG grounding",
+        text: "Built {Knowia Studio}, an AI eLearning platform with a multi-agent course-generation pipeline and vector-based RAG grounding",
         links: {
-          Larademy: "https://gentle-desert-0612fb603.7.azurestaticapps.net/",
+          "Knowia Studio": "https://gentle-desert-0612fb603.7.azurestaticapps.net/",
         },
       },
       {
@@ -345,7 +345,8 @@ export const beats = [
     role: "Lead Developer & Platform Architect",
     material: "systems",
     constraint: "Sole architect across a whole portfolio, mid-pivot to product-led growth.",
-    objective: "One shared stack behind Podium 2.0, Larademy, Jambiz Hub and Govensa.",
+    objective:
+      "One shared stack behind Podium 2.0, Knowia Studio, Jambiz Hub and Govensa.",
     status: "In progress",
     heat: 0,
     entryIds: ["exp-sprinta-lead"],
@@ -390,7 +391,7 @@ export const chapters = [
   {
     id: "reset",
     span: "2023",
-    title: "The reset",
+    title: "Reset",
     detail: "New country, new language, retrained as a developer from zero.",
     heat: 0.45,
   },

@@ -206,12 +206,8 @@ export default function JourneyStage({ onExit }) {
         </button>
       </div>
 
-      {/* On the recap the places are laid out with their own labels, so the
-          map's labels would only repeat them — into the space those labels
-          need. It collapses to dots there. */}
       <JourneyTrail
         index={index}
-        compact={atRecap}
         onPick={jumpTo}
         onPrev={prev}
         onNext={next}

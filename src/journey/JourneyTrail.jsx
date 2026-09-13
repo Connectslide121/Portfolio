@@ -25,13 +25,7 @@ const TRAIL_LINE = `linear-gradient(to right, ${BEATS.map(
   (beat, i) => `${heatColor(beat.heat)} ${pct(i)}%`,
 ).join(", ")})`;
 
-export default function JourneyTrail({
-  index,
-  compact = false,
-  onPick,
-  onPrev,
-  onNext,
-}) {
+export default function JourneyTrail({ index, onPick, onPrev, onNext }) {
   const active = BEATS[index];
 
   return (
@@ -39,14 +33,9 @@ export default function JourneyTrail({
     // the top of the viewport, 80px tall, space-between), and the site's own
     // navbar has no class to scope that rule to. The landmark role gives
     // assistive tech the same thing without inheriting the site chrome.
-    <div
-      className="j-rail"
-      data-compact={compact ? "true" : "false"}
-      role="navigation"
-      aria-label="Journey map"
-    >
-      {/* Shown whenever the stops lose their labels — on phones, where eight
-          of them will not fit, and on the recap, where they are redundant. */}
+    <div className="j-rail" role="navigation" aria-label="Journey map">
+      {/* Phones drop every stop's label for room, so this is the only thing
+          left there saying where you are (see the max-width: 768px block). */}
       <p className="j-rail-now" aria-hidden="true">
         <span>{active?.railLabel}</span>
         {active?.tag}

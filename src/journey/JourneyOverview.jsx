@@ -18,6 +18,12 @@ import { OrgMarks } from "../components/OrgMark";
 
 const EDGE = 116; // half a label, so the outermost ones stay on screen
 
+// The shortest a label can be. Used only to decide whether one would end up
+// underneath the map; a label that would is pinned just above it instead, by
+// its BOTTOM edge, so no height has to be guessed to place it.
+const MIN_LABEL_H = 92;
+const RAIL_GAP = 8;
+
 // Sits just above the highest laid-out place. Anchored in world coordinates
 // like the labels are: a fixed percentage collided with the work wall on
 // shorter viewports.
@@ -35,6 +41,22 @@ const project = (box, x, y) => {
   };
 };
 
+/**
+ * Where a label actually goes.
+ *
+ * Normally it stands on the ground just in front of its place. On a short
+ * viewport the lowest places project down into the map at the bottom of the
+ * frame, and the label would be buried behind it — so those are pinned just
+ * above the map instead. Anchoring the lifted ones by `bottom` means CSS
+ * still decides how tall they are; nothing here has to know.
+ */
+const place = (box, spot, railTop) => {
+  const at = project(box, spot.x, spot.y);
+  const floor = railTop - RAIL_GAP;
+  if (at.top + MIN_LABEL_H <= floor) return { left: at.left, top: at.top };
+  return { left: at.left, bottom: box.h - floor, lifted: true };
+};
+
 export default function JourneyOverview({ index, onPick }) {
   const ref = useRef(null);
   const [box, setBox] = useState(null);
@@ -42,7 +64,18 @@ export default function JourneyOverview({ index, onPick }) {
   useEffect(() => {
     const measure = () => {
       const el = ref.current;
-      if (el) setBox({ w: el.clientWidth, h: el.clientHeight });
+      if (!el) return;
+      // The map's height changes with the viewport, so read it rather than
+      // hardcoding a clearance that would drift the moment it is restyled.
+      const rail = document.querySelector(".j-rail");
+      const frame = el.getBoundingClientRect();
+      setBox({
+        w: el.clientWidth,
+        h: el.clientHeight,
+        railTop: rail
+          ? rail.getBoundingClientRect().top - frame.top
+          : el.clientHeight,
+      });
     };
     measure();
     window.addEventListener("resize", measure);
@@ -69,14 +102,22 @@ export default function JourneyOverview({ index, onPick }) {
         {OVERVIEW.map((spot) => {
           const i = BEATS.findIndex((b) => b.id === spot.id);
           const beat = BEATS[i];
-          const at = box ? project(box, spot.x, spot.y) : null;
+          const at = box ? place(box, spot, box.railTop) : null;
           return (
             <button
               key={beat.id}
               type="button"
               className={`j-ov-node${i === index ? " on" : ""}`}
+              data-lifted={at?.lifted ? "true" : undefined}
               style={{
-                ...(at ? { left: `${at.left}px`, top: `${at.top}px` } : { opacity: 0 }),
+                ...(at
+                  ? {
+                      left: `${at.left}px`,
+                      ...(at.lifted
+                        ? { bottom: `${at.bottom}px` }
+                        : { top: `${at.top}px` }),
+                    }
+                  : { opacity: 0 }),
                 "--tint": heatColor(beat.heat),
                 "--delay": `${180 + i * 70}ms`,
               }}
