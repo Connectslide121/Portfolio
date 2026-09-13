@@ -12,6 +12,7 @@ import ProjectGallery from "./ProjectGallery";
 import { OrgMarks } from "../components/OrgMark";
 import JourneyOverview from "./JourneyOverview";
 import JourneyStatic from "./JourneyStatic";
+import JourneyGlobe from "./JourneyGlobe";
 import JourneyTrail from "./JourneyTrail";
 import { heatColor } from "./heat";
 import ThemeToggle from "../components/ThemeToggle";
@@ -97,6 +98,11 @@ export default function JourneyStage({ onExit }) {
       data-recap={atRecap ? "true" : "false"}
     >
       <World />
+
+      {/* Where on earth each beat happened, half-sunk behind the map. Before
+          .j-atmos in the DOM so the grain and vignette sit over it too — it
+          belongs to the world, not to the chrome. */}
+      <JourneyGlobe />
 
       {/* Film, not vector. Grain and a vignette over the world — and only the
           world, never the cards: the single biggest reason flat SVG reads as

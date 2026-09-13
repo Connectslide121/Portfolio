@@ -244,11 +244,18 @@ export const education = [
  * two beats (Spain, then India), and the two engineering degrees are one — so
  * each beat points at the entries it came from via `entryIds`.
  */
+// `coords` is where the beat happened, for the globe behind the map
+// (src/journey/JourneyGlobe.jsx). Coimbatore and Vaxjo are the places the
+// beats already name; the two Spanish entries are the REGION rather than the
+// exact town, which is all a 200px globe can resolve. The landing beat
+// borrows today's location so the globe is never pointed at nowhere, and the
+// recap has none — it lights every place at once instead.
 export const beats = [
   // Landing card. Not a place and not a year — the same headline the static
   // hero carries, so arriving in either mode says the same thing.
   {
     id: "intro",
+    coords: { lat: 56.88, lon: 14.81 }, // Vaxjo
     kind: "intro",
     orgs: [],
     year: "",
@@ -264,6 +271,7 @@ export const beats = [
   },
   {
     id: "origin",
+    coords: { lat: 43.27, lon: -2.50 }, // Markina-Xemein, Basque Country
     orgs: ["london-met", "lea-artibai"],
     year: "2005 — 2010",
     railLabel: "2005",
@@ -281,6 +289,7 @@ export const beats = [
   },
   {
     id: "foundry",
+    coords: { lat: 43.00, lon: -2.15 }, // Basque Country
     orgs: ["aml"],
     year: "2011 — 2023",
     railLabel: "2011",
@@ -298,6 +307,7 @@ export const beats = [
   },
   {
     id: "india",
+    coords: { lat: 11.02, lon: 76.96 }, // Coimbatore
     orgs: ["aml", "atpl"],
     year: "2017",
     railLabel: "2017",
@@ -316,6 +326,7 @@ export const beats = [
   },
   {
     id: "sweden",
+    coords: { lat: 56.88, lon: 14.81 }, // Vaxjo
     orgs: ["lexicon"],
     year: "2023 — 2024",
     railLabel: "2023",
@@ -333,6 +344,7 @@ export const beats = [
   },
   {
     id: "sprinta",
+    coords: { lat: 56.88, lon: 14.81 }, // Vaxjo
     orgs: ["sprinta"],
     year: "2024 — 2025",
     railLabel: "2024",
@@ -354,6 +366,7 @@ export const beats = [
   },
   {
     id: "architect",
+    coords: { lat: 56.88, lon: 14.81 }, // Vaxjo
     orgs: ["sprinta"],
     year: "2025 — Present",
     railLabel: "2025",

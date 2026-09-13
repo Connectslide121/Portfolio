@@ -1969,3 +1969,58 @@ body:not(.dark-theme) .j-bloom {
     animation: none;
   }
 }
+
+/* ==========================================================================
+   The globe behind the map.
+
+   A secondary layer on purpose — the places carry the story, this says where
+   on earth they were. Half-sunk below the bottom edge so only its upper cap
+   shows, with the progress stream crossing it and the map sitting on it.
+
+   Colour comes entirely from the heat variables, so it travels molten -> cold
+   with everything else without being told about it.
+   ========================================================================== */
+
+.j-globe {
+  position: absolute;
+  bottom: -12rem;
+  left: 50%;
+  width: 33rem;
+  height: 33rem;
+  margin-left: -16.5rem;
+  pointer-events: none;
+  opacity: 0.58;
+  /* Its graticule is rewritten every frame while the camera travels. Without
+     this, invalidating those paths invalidated the whole stage behind them
+     and the transition dropped frames; with it, the repaint is confined to
+     the globe's own box and the cost falls back into the noise of not having
+     a globe at all. Measured, not assumed. */
+  contain: paint;
+  /* Follows the rail's own 1.1s glide when the recap drops it, so the two
+     leave together rather than one chasing the other. */
+  transition:
+    opacity 0.9s ease,
+    bottom 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* The recap lays every place out across the ground at full size, which is the
+   same idea done better. Two maps of one journey on screen at once is one
+   map too many. */
+.j-stage[data-recap="true"] .j-globe {
+  opacity: 0;
+  bottom: -17rem;
+}
+
+body:not(.dark-theme) .j-globe {
+  opacity: 0.42;
+}
+
+@media (max-width: 768px) {
+  .j-globe {
+    bottom: -9rem;
+    width: 20rem;
+    height: 20rem;
+    margin-left: -10rem;
+    opacity: 0.38;
+  }
+}

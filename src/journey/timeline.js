@@ -257,6 +257,7 @@ export function buildJourney({ root }) {
   const ovTrail = root.querySelectorAll("[data-ov-trail]");
   const ovDots = root.querySelectorAll("[data-ov-dot]");
   const cameraGroup = root.querySelector("[data-camera]");
+  const globe = root.querySelector(".j-globe");
   let activeParticleScene = -1;
   // What was last written to each scene's style, so a frame that changes
   // nothing costs no setProperty calls. Replaces a single "are any overrides
@@ -301,6 +302,11 @@ export function buildJourney({ root }) {
         );
       });
     }
+
+    // The globe spins from the CONTINUOUS camera position, not from the beat
+    // index, so it turns with the travel rather than snapping when the travel
+    // ends — and scrubs backwards without needing to know it is going back.
+    globe?.__setGlobePosition?.(-camera.x / SCENE_W);
 
     const ov = camera.overview;
     const env = (1 - ov * 0.82).toFixed(3);
