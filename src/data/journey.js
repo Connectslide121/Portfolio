@@ -59,7 +59,7 @@ export const experience = [
       "Lead developer and architect across a portfolio of AI-powered products for the Jambiz Group, leading the development team, defining a shared modern stack — Angular 21, .NET 8 Azure Functions, and CosmosDB — and rapidly building MVPs as the company pivots to product-led growth.",
     bullets: [
       {
-        text: "Leading the modernization of {Podium Suite} (Podium 2.0), rebuilding a 7-year-old legacy tourism/transport platform on Angular 21 and Azure Functions with feature parity and multi-tenant support",
+        text: "Leading the modernization of {Podium Suite}, rebuilding a 7-year-old legacy tourism/transport platform on Angular 21 and Azure Functions with feature parity and multi-tenant support",
         links: { "Podium Suite": productUrl.podium },
       },
       {
@@ -78,7 +78,7 @@ export const experience = [
         links: { Govensa: productUrl.govensa },
       },
       {
-        text: "Built *two React Native / Expo staff mobile apps* — one for the new Podium 2.0 and one for the legacy Podium system, each talking to its own backend",
+        text: "Built *two React Native / Expo staff mobile apps* — one for the new Podium Suite and one for the legacy Podium system, each talking to its own backend",
       },
     ],
     tech: [
@@ -367,10 +367,10 @@ export const beats = [
       "Architecture for a whole portfolio and a team to lead, mid-pivot to product-led growth.",
     objective: "One shared stack behind every product in the portfolio.",
     products: [
-      { label: "Podium 2.0", href: productUrl.podium },
-      { label: "Knowia Studio", href: productUrl.knowia },
-      { label: "Jambiz Hub", href: productUrl.jambizHub },
       { label: "Govensa", href: productUrl.govensa },
+      { label: "Knowia Studio", href: productUrl.knowia },
+      { label: "Podium Suite", href: productUrl.podium },
+      { label: "Jambiz Hub", href: productUrl.jambizHub },
     ],
     status: "In progress",
     heat: 0,

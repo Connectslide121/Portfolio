@@ -211,7 +211,7 @@ Sourced from `src/components/Experience.jsx` and `src/components/Education.jsx`.
 | 2 | `india` | 2017 | India | International expansion — built a plant from the ground up | 0.85 |
 | 3 | `sweden` | 2023–2024 | Växjö, Sweden | .NET Full-stack course @ Lexicon | 0.10 |
 | 4 | `sprinta` | 2024–2025 | Sweden | AI Developer & Consultant @ Sprinta — CertumHub, Podium facelift | 0.05 |
-| 5 | `architect` | 2025– | Sweden | Lead Developer & Platform Architect — Podium 2.0, SAGE, Knowia Studio, Jambiz Hub, Govensa | 0.00 |
+| 5 | `architect` | 2025– | Sweden | Lead Developer & Platform Architect — Podium Suite, SAGE, Knowia Studio, Jambiz Hub, Govensa | 0.00 |
 
 Each beat in `journey.js` carries: `id, year, place, role, org, challenge,
 outcome, tech[], links[], material, heat, cameraX`.
@@ -381,7 +381,7 @@ Ranked by value per hour:
 3. **Architecture puzzle** (the killer set piece) — at the final beat, drag
    unwired nodes (Angular client, Azure Functions, CosmosDB, vector store,
    OpenAI) onto a canvas and connect them. Correct → snaps into the real
-   SAGE / Podium 2.0 diagram, annotated. *The only portfolio interaction that
+   SAGE / Podium Suite diagram, annotated. *The only portfolio interaction that
    makes the visitor perform the actual job.*
 4. **Collectibles** — 6 hidden items across the journey (molten droplet,
    cinnamon bun in Växjö, Konami code). All 6 unlocks an arcade cabinet with the
