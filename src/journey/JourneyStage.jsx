@@ -163,6 +163,27 @@ export default function JourneyStage({ onExit }) {
                   </dl>
                 )}
 
+                {/* The things you can actually go and open. The résumé wraps
+                    these in bullet prose; the card has no room for that, so
+                    they stand on their own as links. */}
+                {beat.products && (
+                  <ul className="j-products">
+                    {beat.products.map((product) => (
+                      <li key={product.label}>
+                        <a
+                          href={product.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          title={`${product.label} — opens in a new tab`}
+                        >
+                          {product.label}
+                          <span aria-hidden="true">↗</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
                 {beat.id === "architect" && (
                   <ul className="j-arch-chips">
                     {stack.flatMap((group) =>

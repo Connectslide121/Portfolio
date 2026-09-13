@@ -8,6 +8,23 @@
 // `heat` is the hot -> cold position of an entry, 1 = the foundry, 0 = today.
 // It drives the accent colour in both modes.
 
+/**
+ * Product URLs, in one place.
+ *
+ * They are referenced from three directions now — résumé bullet links, the
+ * summary links, and the journey cards' product row — and a URL that lives in
+ * three literals is a URL that eventually differs in three literals. The
+ * display LABEL still varies by context ("Podium Suite" in one bullet, "Podium
+ * 2.0" on the journey card), which is fine; only the address is shared.
+ */
+export const productUrl = {
+  podium: "https://www.podiumsystem.com",
+  knowia: "https://gentle-desert-0612fb603.7.azurestaticapps.net/",
+  jambizHub: "https://www.jambizhub.se",
+  govensa: "https://www.govensa.se/",
+  certumHub: "https://www.certumhub.com",
+};
+
 /** The headline, shared by the static hero and the journey's landing beat. */
 export const profile = {
   name: "Jon Mendizabal",
@@ -33,34 +50,32 @@ export const experience = [
     quest: {
       name: "The Architect",
       constraint:
-        "Sole architect across a whole product portfolio, mid-pivot to product-led growth.",
+        "Architecture for a whole product portfolio and a team to lead, mid-pivot to product-led growth.",
       objective:
         "Define one shared modern stack and ship MVPs fast without fragmenting the platform.",
       status: "In progress",
     },
     summary:
-      "Lead developer and sole architect across a portfolio of AI-powered products for the Jambiz Group, defining a shared modern stack — Angular 21, .NET 8 Azure Functions, and CosmosDB — and rapidly building MVPs as the company pivots to product-led growth.",
+      "Lead developer and architect across a portfolio of AI-powered products for the Jambiz Group, leading the development team, defining a shared modern stack — Angular 21, .NET 8 Azure Functions, and CosmosDB — and rapidly building MVPs as the company pivots to product-led growth.",
     bullets: [
       {
         text: "Leading the modernization of {Podium Suite} (Podium 2.0), rebuilding a 7-year-old legacy tourism/transport platform on Angular 21 and Azure Functions with feature parity and multi-tenant support",
-        links: { "Podium Suite": "https://www.podiumsystem.com" },
+        links: { "Podium Suite": productUrl.podium },
       },
       {
         text: "Built {Knowia Studio}, an AI eLearning platform with a multi-agent course-generation pipeline and vector-based RAG grounding",
-        links: {
-          "Knowia Studio": "https://gentle-desert-0612fb603.7.azurestaticapps.net/",
-        },
+        links: { "Knowia Studio": productUrl.knowia },
       },
       {
         text: "Built {Jambiz Hub}, a CRM/Procurement/Recruit platform featuring AI-driven CV parsing, embeddings, and cosine-similarity scoring",
-        links: { "Jambiz Hub": "https://www.jambizhub.se" },
+        links: { "Jambiz Hub": productUrl.jambizHub },
       },
       {
         text: "Designed *SAGE*, a reusable Nx monorepo of shared platform packages consumed across the product portfolio",
       },
       {
         text: "Took over and now lead development of {Govensa}, an AI contract-accountability platform for the Swedish public sector that extracts contract obligations for human review and tracks them through an immutable, audit-ready trail",
-        links: { Govensa: "https://www.govensa.se/" },
+        links: { Govensa: productUrl.govensa },
       },
       {
         text: "Built *two React Native / Expo staff mobile apps* — one for the new Podium 2.0 and one for the legacy Podium system, each talking to its own backend",
@@ -97,8 +112,8 @@ export const experience = [
     summary:
       "Sole developer of {CertumHub}, an AI-powered platform for e-learning and sustainability assessments with multilingual support, and later brought in as a consultant to modernize the legacy {Podium Stromma Suite} with a full UI facelift.",
     summaryLinks: {
-      CertumHub: "https://www.certumhub.com",
-      "Podium Stromma Suite": "https://www.podiumsystem.com",
+      CertumHub: productUrl.certumHub,
+      "Podium Stromma Suite": productUrl.podium,
     },
     bullets: [
       {
@@ -329,6 +344,10 @@ export const beats = [
     material: "TypeScript + vectors",
     constraint: "Sole developer on CertumHub. AI modules with no prior art in-house.",
     objective: "Ship it, then modernize a 7-year-old platform without breaking it.",
+    products: [
+      { label: "CertumHub", href: productUrl.certumHub },
+      { label: "Podium Suite", href: productUrl.podium },
+    ],
     status: "Complete",
     heat: 0.05,
     entryIds: ["exp-sprinta-ai"],
@@ -344,9 +363,15 @@ export const beats = [
     org: "Sprinta Consulting AB",
     role: "Lead Developer & Platform Architect",
     material: "systems",
-    constraint: "Sole architect across a whole portfolio, mid-pivot to product-led growth.",
-    objective:
-      "One shared stack behind Podium 2.0, Knowia Studio, Jambiz Hub and Govensa.",
+    constraint:
+      "Architecture for a whole portfolio and a team to lead, mid-pivot to product-led growth.",
+    objective: "One shared stack behind every product in the portfolio.",
+    products: [
+      { label: "Podium 2.0", href: productUrl.podium },
+      { label: "Knowia Studio", href: productUrl.knowia },
+      { label: "Jambiz Hub", href: productUrl.jambizHub },
+      { label: "Govensa", href: productUrl.govensa },
+    ],
     status: "In progress",
     heat: 0,
     entryIds: ["exp-sprinta-lead"],
@@ -399,7 +424,7 @@ export const chapters = [
     id: "software",
     span: "2023 — today",
     title: "Software",
-    detail: "AI platforms, now sole architect across the portfolio.",
+    detail: "AI platforms, now leading the team and the architecture.",
     heat: 0,
   },
 ];

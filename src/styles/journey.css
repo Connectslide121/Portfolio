@@ -632,6 +632,61 @@
   color: #dbe3ef;
 }
 
+/* --- product links -------------------------------------------------------
+   The Sprinta beats name products a recruiter can go and open. They ride
+   --j-accent like everything else on the beat, so they read as part of the
+   scene rather than as web-blue links pasted onto it. */
+
+.j-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.j-products a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 650;
+  text-decoration: none;
+  color: var(--j-accent);
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--j-accent) 40%, transparent);
+  background: color-mix(in srgb, var(--j-accent) 8%, transparent);
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.j-products a:hover,
+.j-products a:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--j-accent);
+  background: color-mix(in srgb, var(--j-accent) 16%, transparent);
+}
+
+.j-products span {
+  font-size: 0.62rem;
+  opacity: 0.75;
+}
+
+@media (max-width: 768px) {
+  .j-products {
+    gap: 0.3rem;
+    margin-bottom: 0.8rem;
+  }
+  .j-products a {
+    font-size: 0.68rem;
+    padding: 0.2rem 0.5rem;
+  }
+}
+
 /* The architecture graph is a landscape object. On phones the final beat
    lists the same stack as text in the card and the SVG graph is hidden. */
 .j-arch-chips {
@@ -1553,6 +1608,12 @@ body:not(.dark-theme) .j-static-list dd,
 body:not(.dark-theme) .j-card-note,
 body:not(.dark-theme) .j-intro-blurb {
   color: #2f3d51;
+}
+
+body:not(.dark-theme) .j-products a {
+  color: color-mix(in srgb, var(--j-accent) 88%, #172033);
+  background: color-mix(in srgb, var(--j-accent) 11%, #ffffff);
+  border-color: color-mix(in srgb, var(--j-accent) 46%, #d7dee8);
 }
 
 body:not(.dark-theme) .j-card dt,
