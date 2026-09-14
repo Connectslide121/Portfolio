@@ -404,13 +404,153 @@ export function SwedenForest({ ax, sil = SIL }) {
   );
 }
 
+/**
+ * A picket run. Pointed tops and two rails, drawn as one path so a garden's
+ * worth of fence is a single node rather than forty.
+ */
+const pickets = (x, end, top, { post = 13, gap = 17 } = {}) => {
+  let d = "";
+  for (let at = x; at < end - post; at += post + gap) {
+    d += ` M ${at} ${BASE} V ${top + 9} L ${at + post / 2} ${top} L ${at + post} ${top + 9} V ${BASE} Z`;
+  }
+  // The two rails, behind the pickets and reading through the gaps.
+  d += ` M ${x} ${top + 26} H ${end} V ${top + 34} H ${x} Z`;
+  d += ` M ${x} ${BASE - 40} H ${end} V ${BASE - 32} H ${x} Z`;
+  return d.trim();
+};
+
+/**
+ * A cherry tree: a broad, low crown on a short trunk, which is what separates
+ * it from the conifers two beats earlier — those are triangles, this is a
+ * cluster of circles wider than it is tall.
+ *
+ * It dresses for the same season the weather does (see SEASON_AMBIENT in
+ * World.jsx). A cherry in full pink blossom under falling autumn leaves would
+ * read as two scenes at once, so spring gets the blossom, autumn a thinning
+ * amber, summer a plain full canopy, and winter bare boughs.
+ */
+function CherryTree({ x, sil = SIL, season = "spring" }) {
+  const bare = season === "winter";
+  const dots =
+    season === "spring"
+      ? { tint: "var(--j-blossom, #f9a8d4)", count: 22, opacity: 0.75 }
+      : season === "autumn"
+        ? { tint: "var(--j-leaf, #d97706)", count: 11, opacity: 0.6 }
+        : null;
+
+  // A crown assembled from overlapping lobes. Hand-placed rather than
+  // generated: five circles in a deliberate silhouette beat a ring of them in
+  // a tidy arc, which always reads as a lollipop.
+  const crown = [
+    { cx: -82, cy: -258, r: 76 },
+    { cx: -8, cy: -306, r: 92 },
+    { cx: 82, cy: -264, r: 74 },
+    { cx: 20, cy: -222, r: 78 },
+    { cx: -50, cy: -318, r: 56 },
+  ];
+
+  return (
+    <g>
+      <g fill={sil}>
+        {/* Trunk and two boughs, leaning very slightly out of true. */}
+        <path
+          d={`M ${x - 14} ${BASE} Q ${x - 9} ${BASE - 96} ${x - 12} ${BASE - 190} L ${x + 12} ${BASE - 190} Q ${x + 10} ${BASE - 94} ${x + 16} ${BASE} Z`}
+        />
+        <path
+          d={`M ${x - 7} ${BASE - 158} L ${x - 70} ${BASE - 244}`}
+          stroke={sil}
+          strokeWidth="14"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <path
+          d={`M ${x + 7} ${BASE - 166} L ${x + 68} ${BASE - 248}`}
+          stroke={sil}
+          strokeWidth="12"
+          strokeLinecap="round"
+          fill="none"
+        />
+        {/* Two more, thinner. Under the crown they are invisible — they are
+            here for the bare winter silhouette, which read as a slingshot
+            with only the first pair. */}
+        <path
+          d={`M ${x - 2} ${BASE - 190} L ${x - 34} ${BASE - 286} M ${x + 2} ${BASE - 184} L ${x + 30} ${BASE - 282} M ${x - 58} ${BASE - 230} L ${x - 92} ${BASE - 272} M ${x + 54} ${BASE - 236} L ${x + 88} ${BASE - 278}`}
+          stroke={sil}
+          strokeWidth="7"
+          strokeLinecap="round"
+          fill="none"
+        />
+        {!bare &&
+          crown.map((c, i) => (
+            <circle key={i} cx={x + c.cx} cy={BASE + c.cy} r={c.r} />
+          ))}
+      </g>
+
+      {/* The window is the only light out here, so the crown carries a thin
+          edge on the side facing it — the same trick every other silhouette
+          in this file uses to stop reading as a cut-out. */}
+      {!bare && (
+        <Rim
+          d={`M ${x - 150} ${BASE - 262} Q ${x - 128} ${BASE - 372} ${x - 26} ${BASE - 396}`}
+          width={2}
+          tint="#eef6ff"
+          opacity={0.22}
+        />
+      )}
+
+      {/* Blossom or leaf, scattered around the crown's edge where light would
+          actually catch it. */}
+      {dots && (
+        <g className="acc" fill={dots.tint} opacity={dots.opacity}>
+          {Array.from({ length: dots.count }).map((_, i) => {
+            const lobe = crown[i % crown.length];
+            const angle = (i * 137.5 * Math.PI) / 180;
+            const reach = lobe.r * (0.72 + ((i * 37) % 26) / 100);
+            return (
+              <circle
+                key={i}
+                cx={x + lobe.cx + Math.cos(angle) * reach}
+                cy={BASE + lobe.cy + Math.sin(angle) * reach * 0.9}
+                r={i % 4 === 0 ? 5 : 3.5}
+              />
+            );
+          })}
+        </g>
+      )}
+    </g>
+  );
+}
+
 /** 2024 — the first Sprinta chapter: one developer and a makeshift setup. */
-export function SoloStudio({ ax, sil = SIL }) {
+export function SoloStudio({ ax, sil = SIL, season }) {
   return (
     <g>
       {/* One room lit in an otherwise dark house. Behind the roof, so it
           reads as glow escaping rather than a lamp sitting on the tiles. */}
       <LightShaft x={ax + 706} y={548} len={320} spread={300} angle={181} opacity={0.26} />
+
+      {/* The garden. The house alone was a single tall block in a frame that
+          every other beat fills corner to corner, so the plot around it is
+          drawn too: a fence along the front, a cherry tree over it, and
+          shrubs where the ground meets the wall (D68).
+    
+          The tree stands to the RIGHT of the house on purpose. The globe is
+          drawn over this part of the world and sits dead centre in the frame,
+          which is exactly where the empty ground to the left of the house
+          lands — a tree there was a shape behind a wireframe. */}
+      <g fill={sil}>
+        <path d={pickets(ax + 16, ax + 330, BASE - 104)} />
+        {/* Gateposts, taller than the pickets, with the gate standing open. */}
+        <rect x={ax + 330} y={BASE - 126} width="17" height="126" />
+        <rect x={ax + 438} y={BASE - 126} width="17" height="126" />
+        {/* The far side of the plot, running out past the tree. */}
+        <path d={pickets(ax + 1006, ax + 1318, BASE - 104)} />
+        {/* Shrubs, to stop the fence and the wall meeting on a hard line. */}
+        <ellipse cx={ax + 478} cy={BASE - 16} rx="46" ry="30" />
+        <ellipse cx={ax + 536} cy={BASE - 11} rx="34" ry="22" />
+        <ellipse cx={ax + 978} cy={BASE - 14} rx="40" ry="26" />
+      </g>
+      <CherryTree x={ax + 1166} sil={sil} season={season} />
       {/* A modest top-floor room, deliberately smaller than the office that
           follows it. The sloped roof and odd furniture keep it homemade. */}
       <g fill={sil}>

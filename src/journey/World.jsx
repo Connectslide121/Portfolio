@@ -201,13 +201,23 @@ export default function World({ season = "auto" }) {
               )}
               {beat.id === "architect" ? (
                 <g data-architect-visual>
-                  {Scene && <Scene ax={FOCAL} sil={`url(#${sil})`} />}
+                  {Scene && (
+                    <Scene
+                      ax={FOCAL}
+                      sil={`url(#${sil})`}
+                      season={selectedSeason}
+                    />
+                  )}
                   <g data-arch>
                     <StackGraph ax={FOCAL} groups={stack} />
                   </g>
                 </g>
               ) : Scene ? (
-                <Scene ax={FOCAL} sil={`url(#${sil})`} />
+                <Scene
+                  ax={FOCAL}
+                  sil={`url(#${sil})`}
+                  season={selectedSeason}
+                />
               ) : null}
             </g>
           );

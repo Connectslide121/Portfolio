@@ -4,14 +4,35 @@ import { BEATS } from "./config";
 /**
  * Every input funnels into exactly one operation: tweenTo(label).
  * Adding a new way to advance never touches the animation (4.1 in the plan).
+ *
+ * Nothing here waits its turn. A move in flight is always interruptible: the
+ * next one retargets from wherever the playhead has got to, rather than being
+ * dropped on the floor until the first has finished (D69).
  */
+
+/**
+ * The knobs for how the wheel feels. All three are about telling a hand that
+ * means it apart from a trackpad's inertial tail.
+ */
+// Between one beat and the next while the wheel keeps turning. Long enough
+// that a flick is one beat, short enough that a real scroll flows.
+const STEP_GAP = 300;
+// Pixels to start moving at all, from rest.
+const FIRST_NUDGE = 12;
+// Pixels to take ANOTHER beat without the gesture having paused. Higher than
+// the first on purpose: a decaying inertial tail should not keep spending.
+const NEXT_NUDGE = 48;
+// A quiet this long starts a fresh gesture.
+const GESTURE_GAP = 180;
+
+/** The longest a single stepped move may take, however far behind it is. */
+const STEP_MAX = 2.4;
+
 export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0) {
   // startIndex matters: a deep link seeks the timeline directly, and if the
   // driver still believed it was at beat 0 it would ignore a click on beat 0.
   const [index, setIndex] = useState(startIndex);
-  const busy = useRef(false);
   const idx = useRef(startIndex);
-  const lastSeek = useRef(1);
   const seekTween = useRef(null);
 
   const goTo = useCallback(
@@ -20,11 +41,13 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
       const clamped = Math.max(0, Math.min(BEATS.length - 1, next));
       const from = idx.current;
       if (clamped === from) return false;
-      // A pick off the map may always interrupt a transition in flight; a
-      // stepped move waits its turn so gestures cannot queue up.
-      if (busy.current && !fast) return false;
 
       const target = tl.labels[BEATS[clamped].id];
+      // Whatever was moving, this is moving now. There used to be a lock here
+      // that dropped any input until the previous move had finished, plus a
+      // settling window after it — about two and a half seconds during which
+      // the journey ignored you. That is what "I have to scroll a couple of
+      // times" was.
       seekTween.current?.kill();
 
       idx.current = clamped;
@@ -32,7 +55,10 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
 
       // A stepped move scrubs at the timeline's OWN rate: duration = the
       // actual time distance, so one step plays at the rate it was authored
-      // at.
+      // at — but capped, because an interrupted move measures from where the
+      // playhead actually is. Without the cap, each chained step had further
+      // to go than the last and took longer doing it, so the story fell
+      // steadily further behind the hand.
       //
       // A pick off the map gets its own budget instead, weighted toward the
       // distance travelled: a neighbour is a hop, 2005 -> today is a journey
@@ -41,10 +67,8 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
       // beats in between — that was what made replaying them unusable.
       const seconds = fast
         ? Math.min(2.8, 0.6 + Math.abs(clamped - from) * 0.28)
-        : Math.max(0.35, Math.abs(target - tl.time()));
+        : Math.max(0.35, Math.min(STEP_MAX, Math.abs(target - tl.time())));
 
-      lastSeek.current = seconds;
-      busy.current = true;
       seekTween.current = tl.tweenTo(target, {
         duration: seconds,
         // The ease lives here rather than on the timeline's per-beat tweens,
@@ -52,9 +76,6 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
         // means a long travel accelerates once and settles once, instead of
         // coming to a halt at every beat it passes through.
         ease: "power2.inOut",
-        onComplete: () => {
-          busy.current = false;
-        },
       });
       return true;
     },
@@ -71,7 +92,8 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
     if (!el || disabled) return;
     let intent = 0;
     let lastEventAt = 0;
-    let readyAt = 0;
+    let lastStepAt = 0;
+    let stepsThisGesture = 0;
 
     const onWheel = (e) => {
       // The recap's narrow-screen work list scrolls on its own. A wheel over
@@ -89,10 +111,6 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
       e.preventDefault();
       const now = performance.now();
 
-      // Never turn an ignored event near the end of an animation into a new
-      // lock. That was the source of the intermittent "scroll a lot" feeling.
-      if (busy.current || now < readyAt) return;
-
       // deltaMode 0 is pixels, 1 is lines and 2 is pages. Normalising lets a
       // mouse-wheel notch and several tiny precision-trackpad events express
       // the same amount of intent.
@@ -102,21 +120,27 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
 
       // A pause starts a fresh gesture; reversing direction should not have
       // to cancel an old gesture before it can act.
-      if (now - lastEventAt > 180 || (intent && Math.sign(delta) !== Math.sign(intent))) {
+      if (
+        now - lastEventAt > GESTURE_GAP ||
+        (intent && Math.sign(delta) !== Math.sign(intent))
+      ) {
         intent = 0;
+        stepsThisGesture = 0;
       }
       lastEventAt = now;
       intent += delta;
 
-      if (Math.abs(intent) < 12) return;
+      // The only thing between beats now is a short rhythm, not the length of
+      // the animation: keep scrolling and the journey keeps stepping, each
+      // move picking up from wherever the last one had reached.
+      if (now - lastStepAt < STEP_GAP) return;
+      if (Math.abs(intent) < (stepsThisGesture ? NEXT_NUDGE : FIRST_NUDGE)) return;
+
       const moved = intent > 0 ? next() : prev();
       intent = 0;
-
       if (moved) {
-        // The inertial tail is ignored until the transition has genuinely
-        // finished, plus a tiny settling window. A fresh gesture then reacts
-        // immediately instead of inheriting a stale lock.
-        readyAt = now + lastSeek.current * 1000 + 100;
+        stepsThisGesture++;
+        lastStepAt = now;
       }
     };
     el.addEventListener("wheel", onWheel, { passive: false });
