@@ -234,11 +234,10 @@ export default function JourneyStage({ onExit }) {
             {/* The recap: the work wall above, the journey laid out below. */}
             {beat.kind === "projects" && (
               <ProjectGallery
-                /* The list's stills stand down while a sheet is open: they
-                   are behind the scrim anyway, and a phone has a small,
-                   shared pool of video decoders — the one clip actually
-                   playing should have it to itself. */
-                mounted={nearEnd && !work}
+                /* The stills stay mounted while a sheet is open. They hold
+                   metadata only and never play, and tearing them down meant
+                   re-fetching all six the moment the sheet closed. */
+                mounted={nearEnd}
                 active={atRecap}
                 onOpen={setWork}
               />
@@ -265,6 +264,30 @@ export default function JourneyStage({ onExit }) {
         onPrev={prev}
         onNext={next}
       />
+
+      {/* Stepping, spelled out. Phones dropped the rail's arrows for room and
+          were left with a swipe nobody can see, so the two moves get real
+          buttons under the map, where the journey's own navigation already
+          lives (D65). Hidden above 900px, where the rail keeps its arrows. */}
+      <div className="j-steps" role="group" aria-label="Step through the journey">
+        <button
+          type="button"
+          className="j-step"
+          onClick={prev}
+          disabled={index === 0}
+        >
+          <span aria-hidden="true">‹</span> Back
+        </button>
+        <button
+          type="button"
+          className="j-step"
+          onClick={next}
+          disabled={index === BEATS.length - 1}
+        >
+          Next <span aria-hidden="true">›</span>
+        </button>
+      </div>
+
 
       <ProgressStream />
 

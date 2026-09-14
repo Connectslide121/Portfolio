@@ -131,13 +131,33 @@ function Tile({ project, place, active }) {
 /**
  * The still for a list row: the clip's own first frame, never playing.
  *
- * Six autoplaying videos on a phone is six decoders for six thumbnails the
- * size of a stamp. The `#t=0.1` fragment is what makes a poster-less video
- * paint that frame rather than a black box — mobile Safari will not render
- * anything until it has seeked somewhere.
+ * `preload="metadata"` and nothing more. These clips are tens of megabytes
+ * (see D66) — six of them warmed for six thumbnails the size of a stamp would
+ * cost more than the rest of the site put together.
+ *
+ * The frame is painted by seeking in JS rather than by asking for `#t=0.1` in
+ * the URL. A poster-less video shows a black box until it has seeked
+ * somewhere, so something has to do it — but a fragment makes this a
+ * different URL from the one the sheet opens, which is a second fetch of the
+ * same clip. One URL, one fetch, and the sheet reuses what this pulled.
  */
 function Thumb({ project, mounted }) {
   const media = mediaFor(project.title);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const paint = () => {
+      try {
+        el.currentTime = 0.1;
+      } catch {
+        /* a clip shorter than that, or metadata that never arrived */
+      }
+    };
+    el.addEventListener("loadedmetadata", paint, { once: true });
+    return () => el.removeEventListener("loadedmetadata", paint);
+  }, [mounted]);
 
   // Empty until the recap is close — six metadata fetches should not happen
   // while the reader is still in 2005. The box keeps its size either way, so
@@ -145,7 +165,7 @@ function Thumb({ project, mounted }) {
   return (
     <span className="j-work-thumb" aria-hidden="true">
       {!mounted ? null : media.type === "video" ? (
-        <video src={`${media.src}#t=0.1`} muted playsInline preload="metadata" />
+        <video ref={ref} src={media.src} muted playsInline preload="metadata" />
       ) : (
         <img src={media.src} alt="" loading="lazy" />
       )}

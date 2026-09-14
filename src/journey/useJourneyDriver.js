@@ -156,20 +156,34 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
     if (!el || disabled) return;
     let x0 = null;
     let y0 = null;
+    let scrolling = false;
+
     const start = (e) => {
       x0 = e.touches[0].clientX;
       y0 = e.touches[0].clientY;
+      // A gesture that begins inside something that scrolls belongs to that
+      // thing, vertically. The recap's work list and an open sheet are the
+      // only two, and on both a drag down means "read on", not "next beat" —
+      // a sideways flick over them still steps the journey.
+      scrolling = !!e.target.closest?.(".j-worklist, .j-sheet-panel");
     };
+
     const end = (e) => {
       if (x0 == null) return;
       const dx = e.changedTouches[0].clientX - x0;
       const dy = e.changedTouches[0].clientY - y0;
-      // Horizontal intent only. The recap's work list scrolls vertically, and
-      // a thumb dragging down it drifts sideways enough to have counted as a
-      // swipe and thrown the reader onto another beat.
-      if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy)) {
-        (dx < 0 ? next : prev)();
+      const horizontal = Math.abs(dx) > Math.abs(dy);
+
+      // Whichever way the thumb actually went. The journey travels sideways,
+      // so left means forward — but a phone reader flicks UP to go on, the
+      // way every other page on their screen works, and before this that
+      // gesture did nothing at all.
+      if (horizontal) {
+        if (Math.abs(dx) > 48) (dx < 0 ? next : prev)();
+      } else if (!scrolling && Math.abs(dy) > 48) {
+        (dy < 0 ? next : prev)();
       }
+
       x0 = null;
       y0 = null;
     };

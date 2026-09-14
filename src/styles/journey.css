@@ -483,7 +483,7 @@
 @media (max-width: 768px) {
   .j-card-slot {
     align-items: flex-end;
-    padding-bottom: 8.25rem;
+    padding-bottom: 11rem;
   }
   .j-card {
     padding: 1.25rem;
@@ -754,7 +754,7 @@
 
 @media (max-width: 768px) {
   .j-progress {
-    bottom: 4.25rem;
+    bottom: 7.25rem;
     height: 44px;
   }
 
@@ -1488,6 +1488,14 @@
   }
 }
 
+/* Phones carry the stepping buttons below the map, so the list stops higher
+   than it does on a tablet. After the rule above, or it would not win. */
+@media (max-width: 768px) {
+  .j-card-slot[data-kind="projects"] {
+    padding-bottom: 7.6rem;
+  }
+}
+
 /* ==========================================================================
    Landing card. It has one job beyond saying who I am: make the next six
    scenes legible in advance. The journey opens on engineering studies and a
@@ -1660,6 +1668,13 @@
      them would point the wrong way. */
   .j-chapters li:not(:last-child)::after {
     content: none;
+  }
+  /* The three spans are three different widths ("2023" against "2005 — 2023"),
+     so a title that simply followed its span started at a different x on every
+     row. Pushed to the right edge, the acts line up as a column again — dates
+     down the left, names down the right. */
+  .j-ch-title {
+    margin-left: auto;
   }
   .j-ch-detail {
     flex-basis: 100%;
@@ -2298,4 +2313,65 @@ body:not(.dark-theme) .j-globe {
     margin-left: -10rem;
     opacity: 0.38;
   }
+}
+
+/* Stepping buttons under the map. Desktop has the rail's own arrows and the
+   wheel; phones have neither — the arrows are dropped for room down there and
+   a swipe teaches nobody it exists. So the two moves get real buttons below
+   the map, and the map moves up to make room for them. */
+.j-steps {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .j-steps {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    pointer-events: none;
+  }
+
+  .j-step {
+    pointer-events: auto;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 650;
+    cursor: pointer;
+    color: #dbe3ef;
+    padding: 0.45rem 1.15rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--j-accent) 40%, transparent);
+    background: rgb(10 12 18 / 0.62);
+    backdrop-filter: blur(10px);
+  }
+
+  .j-step span {
+    color: var(--j-accent);
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+
+  /* Still there at the ends of the journey, just plainly spent: a button that
+     vanishes takes the other one with it as the row recentres. */
+  .j-step:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  /* Everything above the buttons moves up by their height. */
+  .j-rail,
+  .j-stage[data-recap="true"] .j-rail {
+    bottom: 3.3rem;
+  }
+}
+
+body:not(.dark-theme) .j-step {
+  color: #1f2c3f;
+  background: rgb(255 255 255 / 0.76);
+  border-color: color-mix(in srgb, var(--j-accent) 46%, #d7dee8);
 }

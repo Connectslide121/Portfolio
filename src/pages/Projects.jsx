@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles/projects.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,6 +12,63 @@ import { featuredProjects, allProjects } from "../components/projectList";
 
 import { mediaFor } from "../data/projectMedia";
 import { techFor } from "../data/projectTech";
+
+/**
+ * A project clip that does not exist on the network until it is nearly on
+ * screen.
+ *
+ * These files are tens of megabytes each, and `autoPlay` on a card three
+ * screens down starts pulling them the moment the page loads — including
+ * behind Journey mode, which covers this page entirely and is the default
+ * landing. Nothing is requested until the card is within a screen of the
+ * viewport; then it loads and plays, exactly as before, and pauses again when
+ * it leaves so a phone is not decoding video nobody is looking at.
+ */
+function ProjectVideo({ src, title }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    // No observer (older Safari): fall back to the old behaviour rather than
+    // to a card that never plays.
+    if (typeof IntersectionObserver === "undefined") {
+      el.preload = "auto";
+      el.play().catch(() => {});
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.preload = "auto";
+          el.play().catch(() => {});
+        } else {
+          el.pause();
+        }
+      },
+      { rootMargin: "100% 0px" },
+    );
+
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <video
+      ref={ref}
+      className="project-media"
+      src={src}
+      aria-label={title}
+      loop
+      muted
+      playsInline
+      controls
+      preload="none"
+    />
+  );
+}
 
 export default function Projects() {
   const [showOtherProjects, setShowOtherProjects] = useState(false);
@@ -39,16 +96,7 @@ export default function Projects() {
       <div className="project-card">
         <div className="project-media-container">
           {media.type === "video" ? (
-            <video
-              className="project-media"
-              autoPlay
-              loop
-              muted
-              playsInline
-              controls
-            >
-              <source src={media.src} type="video/mp4" />
-            </video>
+            <ProjectVideo src={media.src} title={project.title} />
           ) : (
             <img
               className="project-media"
