@@ -221,7 +221,10 @@ export function WorkSheet({ project, onClose }) {
   const links = linksFor(project);
 
   useEffect(() => {
-    panelRef.current?.focus();
+    // preventScroll: focusing an element lets the browser scroll ancestors to
+    // reveal it, and there is nothing to reveal — the sheet is already the
+    // whole screen.
+    panelRef.current?.focus({ preventScroll: true });
 
     // Capture phase, and stop there: App.jsx listens for Escape on window to
     // leave journey mode altogether, and it registered first — bubbling would

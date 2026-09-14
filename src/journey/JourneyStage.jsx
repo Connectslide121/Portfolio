@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "../styles/journey.css";
 import { stack, profile, chapters } from "../data/journey";
-import heroArt from "../images/home-image.webp";
 
 import { BEATS } from "./config";
 import { buildJourney } from "./timeline";
@@ -14,6 +13,7 @@ import JourneyOverview from "./JourneyOverview";
 import JourneyStatic from "./JourneyStatic";
 import JourneyGlobe from "./JourneyGlobe";
 import JourneyTrail from "./JourneyTrail";
+import IntroArt from "./IntroArt";
 import { heatColor } from "./heat";
 import ThemeToggle from "../components/ThemeToggle";
 
@@ -108,7 +108,7 @@ export default function JourneyStage({ onExit }) {
       {/* Where on earth each beat happened, half-sunk behind the map. Before
           .j-atmos in the DOM so the grain and vignette sit over it too — it
           belongs to the world, not to the chrome. */}
-      <JourneyGlobe />
+      <JourneyGlobe preview={index === 0} />
 
       {/* Film, not vector. Grain and a vignette over the world — and only the
           world, never the cards: the single biggest reason flat SVG reads as
@@ -163,7 +163,7 @@ export default function JourneyStage({ onExit }) {
                     Seven stops — or pick any of them off the map below.
                   </p>
                 </article>
-                <img className="j-intro-art" src={heroArt} alt="" />
+                <IntroArt />
               </>
             ) : beat.kind === "projects" ? null : (
               <article className="j-card">

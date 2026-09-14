@@ -25,8 +25,11 @@ const NEXT_NUDGE = 48;
 // A quiet this long starts a fresh gesture.
 const GESTURE_GAP = 180;
 
-/** The longest a single stepped move may take, however far behind it is. */
-const STEP_MAX = 2.4;
+/**
+ * The floor on a stepped move, so an interruption that has almost arrived
+ * still moves rather than snapping.
+ */
+const STEP_MIN = 0.35;
 
 export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0) {
   // startIndex matters: a deep link seeks the timeline directly, and if the
@@ -55,19 +58,35 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
 
       // A stepped move scrubs at the timeline's OWN rate: duration = the
       // actual time distance, so one step plays at the rate it was authored
-      // at — but capped, because an interrupted move measures from where the
-      // playhead actually is. Without the cap, each chained step had further
-      // to go than the last and took longer doing it, so the story fell
-      // steadily further behind the hand.
+      // at. An interrupted move measures from where the playhead has actually
+      // got to, which is further than one beat, so it needs a ceiling or each
+      // chained step takes longer than the last and the story falls behind
+      // the hand.
+      //
+      // That ceiling is THE SEGMENT ABOUT TO BE TRAVERSED, not a constant.
+      // Beats are not all the same length in timeline seconds — the architect
+      // beat carries the pull-back, the connector draw and the staggered node
+      // build, so it runs about 3.1s where an ordinary beat runs 2.6 — and a
+      // fixed 2.4s cap played that one at a third again its authored speed.
+      // It was the only beat anyone could see it on, and it read as abrupt.
+      //
+      // Measured this way a single step is always exactly its own segment (so
+      // every beat plays as authored), while a chained step still covers more
+      // ground in one segment's time, which is the catching up it is for.
       //
       // A pick off the map gets its own budget instead, weighted toward the
       // distance travelled: a neighbour is a hop, 2005 -> today is a journey
       // you can actually watch go past. Still far quicker than the natural
-      // rate (2.4s per beat, so ~17s end to end), and it never dwells on the
-      // beats in between — that was what made replaying them unusable.
+      // rate, and it never dwells on the beats in between — that was what
+      // made replaying them unusable.
+      const gap = Math.abs(target - tl.time());
+      const behind = BEATS[clamped - (clamped > from ? 1 : -1)];
+      const segment = behind
+        ? Math.abs(target - tl.labels[behind.id])
+        : gap;
       const seconds = fast
         ? Math.min(2.8, 0.6 + Math.abs(clamped - from) * 0.28)
-        : Math.max(0.35, Math.min(STEP_MAX, Math.abs(target - tl.time())));
+        : Math.max(STEP_MIN, Math.min(segment, gap));
 
       seekTween.current = tl.tweenTo(target, {
         duration: seconds,

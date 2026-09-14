@@ -39,6 +39,13 @@ import { LAND } from "./landData";
 
 const R = 196;
 
+/**
+ * Only the fallback pace, for when there is no pour to read a phase from.
+ * The real cycle is whatever --pour-cycle says in journey.css; this never has
+ * to match it, because when the pour exists its own clock is the one used.
+ */
+const PREVIEW_CYCLE = 11000;
+
 // Degrees south of the current place to view from. sin(36 degrees) is about
 // 0.59, so the place lands ~0.59R above the centre of the disc.
 const LIFT = 36;
@@ -95,7 +102,7 @@ const LINES = graticule();
 const COASTS = runs(LAND);
 const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
-export default function JourneyGlobe() {
+export default function JourneyGlobe({ preview = false }) {
   const rootRef = useRef(null);
 
   useEffect(() => {
@@ -184,6 +191,100 @@ export default function JourneyGlobe() {
     };
   }, []);
 
+  /**
+   * The landing beat turning the world, once per pour.
+   *
+   * The opening image pours steel through Spain and India into a mould in
+   * Sweden (D70); this walks the globe through the same three places on the
+   * same clock, so the two are telling one story rather than two.
+   *
+   * It LOOPS with the pour. The first version ran one sweep and parked, to
+   * keep a permanent rAF off the default landing beat (D54) — but the pour
+   * behind it keeps going, so from the second cycle on the globe sat still
+   * while the metal ran, which reads as broken rather than as thrifty. The
+   * loop only lives while the intro is the beat on screen, and rAF does not
+   * fire for a hidden tab, so the cost is bounded by someone actually looking
+   * at it.
+   *
+   * The wrap is seamless because beat 0 and beat 5 are the same coordinates:
+   * the landing beat borrows today's, so ending a cycle over Sweden and
+   * starting the next one there is the same view.
+   */
+  useEffect(() => {
+    if (!preview) return;
+    const el = rootRef.current;
+    if (!el?.__setGlobePosition) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let raf = 0;
+    const t0 = performance.now();
+
+    /**
+     * The pour's own clock, read straight off its CSS animation.
+     *
+     * Keeping a second timer here and trusting the two to stay together was
+     * the bug: they start at different moments (the animation when the SVG
+     * first paints, this when the effect runs) and they restart at different
+     * moments too — leave the landing beat and come back and the timer starts
+     * over while the animation, which never stopped, is wherever it is. There
+     * is no drift to fix if there is only one clock, so this reads the phase
+     * of the pipe-fill animation rather than counting alongside it.
+     *
+     * Returns null when there is nothing to read: the art is display:none
+     * below 900px, where a display:none element's animations do not progress.
+     */
+    const pourPhase = () => {
+      const charge = document.querySelector(".j-pour-charge");
+      const anim = charge?.getAnimations?.()[0];
+      const time = anim?.currentTime;
+      if (time == null) return null;
+      const span = anim.effect?.getComputedTiming?.().duration;
+      if (!span) return null;
+      return (((time % span) + span) % span) / span;
+    };
+
+    // Waypoints as [fraction of the pour's cycle, beat position], matching
+    // the keyframe percentages in .j-pour: the head of the pour reaches Spain
+    // at 26%, India at 38%, and the mould is full at 80%.
+    const LEGS = [
+      [0.1, 0],
+      [0.26, 2],
+      [0.38, 3],
+      [0.8, 5],
+    ];
+
+    const tick = (now) => {
+      // The pour's phase if it is running, and only otherwise a clock of our
+      // own — which is the narrow-screen case, where the art is not rendered
+      // at all and there is nothing to be in sync with.
+      const t = pourPhase() ?? (((now - t0) / PREVIEW_CYCLE) % 1);
+      const [lastAt, lastP] = LEGS[LEGS.length - 1];
+      if (t >= lastAt) {
+        // Arrived, and holding over Sweden until the ladle tips again —
+        // the same beat the pour's stations hold their light for.
+        el.__setGlobePosition(lastP);
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      let p = 0;
+      for (let i = 0; i < LEGS.length - 1; i++) {
+        const [t0f, p0] = LEGS[i];
+        const [t1f, p1] = LEGS[i + 1];
+        if (t >= t0f && t < t1f) {
+          const f = (t - t0f) / (t1f - t0f);
+          // Eased, so each leg arrives rather than stops dead.
+          p = p0 + (p1 - p0) * (f < 0.5 ? 2 * f * f : 1 - (-2 * f + 2) ** 2 / 2);
+          break;
+        }
+      }
+      el.__setGlobePosition(p);
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [preview]);
+
   return (
     <svg
       className="j-globe"
@@ -199,8 +300,9 @@ export default function JourneyGlobe() {
       </defs>
 
       {/* the body, then the limb that gives it an edge to end on */}
-      <circle r={R} fill="url(#jGlobeFace)" />
+      <circle className="j-globe-face" r={R} fill="url(#jGlobeFace)" />
       <circle
+        className="j-globe-limb"
         r={R}
         fill="none"
         stroke="var(--j-accent)"
@@ -209,6 +311,7 @@ export default function JourneyGlobe() {
       />
 
       <g
+        className="j-globe-grid"
         fill="none"
         stroke="var(--j-stream)"
         strokeWidth="1"
@@ -232,6 +335,7 @@ export default function JourneyGlobe() {
           path at 1.25 units is within noise of drawing no land at all. The
           shapes are legible from the coast alone. */}
       <g
+        className="j-globe-land"
         fill="none"
         stroke="var(--j-stream)"
         strokeWidth="1.25"

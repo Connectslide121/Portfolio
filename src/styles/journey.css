@@ -13,6 +13,14 @@
 
   position: fixed;
   inset: 0;
+  /* A fixed inset:0 element is sized to the SMALL viewport — the one with the
+     browser's URL bar showing. The moment that bar retracts (which a drag
+     inside the work sheet is enough to do) the visual viewport grows and the
+     stage does not, which is the white strip that appeared under the journey
+     on a phone and stayed. dvh tracks the bar in both directions; the vh line
+     above it is the fallback for browsers without it. */
+  height: 100vh;
+  height: 100dvh;
   /* Above every other stacking context on the site — the projects modal is
      the current maximum at 1000. */
   z-index: 2000;
@@ -203,6 +211,9 @@
 
 .j-topbar .theme-toggle-wrapper {
   pointer-events: auto;
+  /* Hard right, in both modes. On a phone the brand beside it is hidden, so
+     space-between had nothing to push it away from and it sat on the left. */
+  margin-left: auto;
 }
 
 /* In journey mode the toggle belongs to the active scene rather than the
@@ -1690,6 +1701,8 @@
 .j-curtain {
   position: fixed;
   inset: 0;
+  height: 100vh;
+  height: 100dvh;
   z-index: 2000;
   background: #070b12;
 }
@@ -1703,8 +1716,11 @@
 
 .j-intro-art {
   flex: 0 1 auto;
-  width: min(34rem, 38vw);
-  height: auto;
+  /* Driven by HEIGHT, not width: the pour is a tall composition and the one
+     thing it must never do is run under the map at the bottom of the frame. */
+  height: min(70vh, 44rem);
+  width: auto;
+  max-width: 42vw;
   object-fit: contain;
   pointer-events: none;
   animation: j-intro-art-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -1722,6 +1738,326 @@
 @media (max-width: 900px) {
   .j-intro-art {
     display: none;
+  }
+}
+
+/* ==========================================================================
+   The opening image: a pour that travels Spain -> India -> Sweden and casts
+   a developer at a desk (D70).
+
+   ONE cycle, shared by every moving part, with percentage keyframes instead
+   of a stack of animation-delays. Delays drift — different elements start
+   when their animation is applied, and a page left open overnight ends up
+   with the mould filling while the ladle is still upright. Percentages of a
+   common duration cannot come apart.
+
+   It is also all CSS. This is the default landing beat, and a permanent
+   rAF loop on it is a battery bill charged to every visitor (D54).
+   ========================================================================== */
+
+.j-pour {
+  --pour-cycle: 11s;
+  --pour-ink: #2b3d5c;
+  --pour-case: #18263f;
+  --pour-rim: #8fb0e0;
+  /* The animation repaints a small area over and over; confining the
+     invalidation to the element's own box is what kept the globe smooth
+     (D58), and it applies here for the same reason. */
+  contain: paint;
+}
+
+/* Pointer parallax. The lean is published as --j-lean-x / --j-lean-y on the
+   stage by the world's own render loop (timeline.js), so this rides the same
+   hand movement as the scenes do without a second listener — and inherits
+   D54's rules for free: the loop sleeps when there is nothing left to close,
+   and a coarse pointer never starts it at all.
+  
+   It goes on WRAPPERS, never on the animated elements: the ladle tips with a
+   transform of its own, and two transforms on one element is the animation
+   winning and the parallax silently doing nothing. */
+.j-pour-layer {
+  transform: translate(
+    calc(var(--j-lean-x, 0) * var(--k, 1) * 1px),
+    calc(var(--j-lean-y, 0) * var(--k, 1) * 1px)
+  );
+}
+
+.j-pour-ladle,
+.j-pour-spout,
+.j-pour-charge,
+.j-pour-fill,
+.j-pour-cast-glow,
+.j-pour-spill,
+.j-pour-melt,
+.j-pour-flare,
+.j-pour-lit {
+  animation-duration: var(--pour-cycle);
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+/* The ladle tips, holds while it empties, and comes back up. */
+.j-pour-ladle {
+  transform-origin: 196px 92px;
+  animation-name: j-pour-tip;
+}
+
+@keyframes j-pour-tip {
+  0%,
+  4% {
+    transform: rotate(0deg);
+  }
+  12%,
+  50% {
+    transform: rotate(26deg);
+  }
+  64%,
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* What is left in the vessel goes down as it pours. */
+.j-pour-melt {
+  transform-origin: 130px 118px;
+  animation-name: j-pour-empty;
+}
+
+@keyframes j-pour-empty {
+  0%,
+  10% {
+    transform: scaleY(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scaleY(0.15);
+    opacity: 0.7;
+  }
+  64%,
+  100% {
+    transform: scaleY(1);
+    opacity: 0.95;
+  }
+}
+
+/* The stream grows FROM the lip rather than fading in — liquid arrives, it
+   does not materialise. */
+.j-pour-spout {
+  transform-origin: 196px 104px;
+  animation-name: j-pour-stream;
+}
+
+@keyframes j-pour-stream {
+  0%,
+  8% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  14%,
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  57%,
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+/* The metal FILLING the pipe, not a bead running down it.
+  
+   Two edges, one path. With pathLength="100" the visible run is
+   `stroke-dasharray: <length> <gap>` and its start is `-stroke-dashoffset`,
+   so animating both together moves the head and the tail independently:
+  
+     fill   head 0 -> 100, tail held at 0   (dasharray grows, offset still)
+     drain  head held at 100, tail 0 -> 100 (dasharray shrinks as offset runs)
+  
+   The gap is 200 — larger than the whole path — so the dash pattern never
+   repeats and a second phantom run cannot appear behind the first. */
+.j-pour-charge {
+  animation-name: j-pour-fill-pipe;
+}
+
+@keyframes j-pour-fill-pipe {
+  0%,
+  10% {
+    stroke-dasharray: 0 200;
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+  14% {
+    stroke-dasharray: 0 200;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  /* Running down the pipe, leaving it full behind it. */
+  50% {
+    stroke-dasharray: 100 200;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  /* The ladle is up; what is in the pipe empties into the mould. */
+  76% {
+    stroke-dasharray: 0 200;
+    stroke-dashoffset: -100;
+    opacity: 1;
+  }
+  80%,
+  100% {
+    stroke-dasharray: 0 200;
+    stroke-dashoffset: -100;
+    opacity: 0;
+  }
+}
+
+/* Each place flares as the metal reaches it. Spain sits about a third along
+   the pipe, India about two thirds — read off the path, and the reason the
+   stations are separate keyframe blocks rather than one with a delay. */
+.j-pour-flare,
+.j-pour-lit {
+  opacity: 0;
+}
+
+.j-pour-stop--spain .j-pour-flare,
+.j-pour-stop--spain .j-pour-lit {
+  animation-name: j-pour-flare-spain;
+}
+
+.j-pour-stop--india .j-pour-flare,
+.j-pour-stop--india .j-pour-lit {
+  animation-name: j-pour-flare-india;
+}
+
+/* A place the metal has passed STAYS LIT for the rest of the cycle. It flares
+   as the head arrives, settles to a steady glow, and only goes out when the
+   ladle is about to tip again — so the image reads as a route being lit up
+   one stop at a time, which is the whole point of it. */
+@keyframes j-pour-flare-spain {
+  0%,
+  21% {
+    opacity: 0;
+  }
+  26% {
+    opacity: 0.6;
+  }
+  34%,
+  96% {
+    opacity: 0.34;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes j-pour-flare-india {
+  0%,
+  33% {
+    opacity: 0;
+  }
+  38% {
+    opacity: 0.55;
+  }
+  46%,
+  96% {
+    opacity: 0.32;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* The cast rising in the mould. A plain rectangle behind a clip path, so the
+   shape it fills can be as fiddly as it likes. */
+.j-pour-fill {
+  animation-name: j-pour-rise;
+}
+
+@keyframes j-pour-rise {
+  0%,
+  48% {
+    transform: translateY(150px);
+  }
+  /* Ends with the pipe: the last of the metal arriving is the last of the
+     cavity filling. */
+  80% {
+    transform: translateY(0);
+  }
+  94% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(150px);
+  }
+}
+
+/* Whole, and then it cools back down and the ladle goes again. */
+.j-pour-cast-glow {
+  opacity: 0;
+  animation-name: j-pour-cool;
+}
+
+@keyframes j-pour-cool {
+  0%,
+  78% {
+    opacity: 0;
+  }
+  84% {
+    opacity: 0.5;
+  }
+  93% {
+    opacity: 0.22;
+  }
+  98%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.j-pour-spill {
+  opacity: 0;
+  animation-name: j-pour-spill;
+}
+
+@keyframes j-pour-spill {
+  0%,
+  50% {
+    opacity: 0;
+  }
+  80% {
+    opacity: 0.3;
+  }
+  94%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Reduced motion gets the finished object: poured, cast, standing. Journey
+   mode is not even built under that setting (it serves JourneyStatic), so
+   this is belt and braces for anyone landing here another way. */
+@media (prefers-reduced-motion: reduce) {
+  .j-pour-ladle,
+  .j-pour-spout,
+  .j-pour-charge,
+  .j-pour-fill,
+  .j-pour-cast-glow,
+  .j-pour-spill,
+  .j-pour-melt,
+  .j-pour-flare,
+  .j-pour-lit {
+    animation: none;
+  }
+  .j-pour-spout,
+  .j-pour-charge {
+    opacity: 0;
+  }
+  .j-pour-fill {
+    transform: translateY(0);
+  }
+  .j-pour-cast-glow {
+    opacity: 0.28;
   }
 }
 
@@ -1928,6 +2264,14 @@ body:not(.dark-theme) .j-intro-art {
   filter: drop-shadow(0 24px 42px rgb(37 48 68 / 0.2));
 }
 
+/* In daylight the same masses need to be darker, not lighter: they are read
+   against a bright sky rather than a night one. */
+body:not(.dark-theme) .j-pour {
+  --pour-ink: #2e405d;
+  --pour-case: #1b2942;
+  --pour-rim: #dce8f8;
+}
+
 /* The phone recap's work list, in daylight. Same treatment as the cards: a
    near-white card with the accent carried by the left edge. */
 body:not(.dark-theme) .j-work {
@@ -1972,6 +2316,13 @@ body:not(.dark-theme) .j-sheet-panel {
   background: color-mix(in srgb, #ffffff 96%, transparent);
   border-color: color-mix(in srgb, var(--j-accent) 42%, #d7dee8);
   box-shadow: 0 -20px 60px -28px rgb(37 48 68 / 0.5);
+}
+
+/* The clip's own letterbox. #070b12 behind a 16:10 box is right at night and
+   a black bar across a white sheet in the day. */
+body:not(.dark-theme) .j-sheet-media {
+  background: #e7eef7;
+  border-bottom-color: rgb(71 85 105 / 0.16);
 }
 
 body:not(.dark-theme) .j-sheet-close {
@@ -2301,8 +2652,27 @@ body:not(.dark-theme) .j-bloom {
   bottom: -17rem;
 }
 
+/* Daylight. The globe is half-sunk, so its top half sits on a pale sky and
+   its bottom half on the dark ground — one ink cannot serve both, and at 0.42
+   over the sky it had all but disappeared. The fix is to give it a FACE
+   instead of restyling the lines: a faint dark disc puts the same bright
+   graticule on the same ground in both halves, which is what a planet ought
+   to have anyway. */
 body:not(.dark-theme) .j-globe {
+  opacity: 0.62;
+}
+
+body:not(.dark-theme) .j-globe-face {
+  fill: color-mix(in srgb, #0f1b2e 16%, transparent);
+}
+
+body:not(.dark-theme) .j-globe-grid {
   opacity: 0.42;
+}
+
+body:not(.dark-theme) .j-globe-land,
+body:not(.dark-theme) .j-globe-limb {
+  opacity: 0.95;
 }
 
 @media (max-width: 768px) {

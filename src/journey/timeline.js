@@ -275,6 +275,14 @@ export function buildJourney({ root }) {
     const leanStill = 1 - camera.overview;
     const lean = camera.leanX * leanStill;
     setters.forEach((s) => s.set((camera.x + lean) * s.k));
+
+    // Published for DOM that wants the same tilt. The world is SVG and gets
+    // it through the setters above; the landing beat's pour (D70) is real DOM
+    // beside the card, and reading the lean from here is what stops it
+    // needing a second pointer listener of its own. In world units — whoever
+    // uses it decides what a unit is worth to them.
+    root.style.setProperty("--j-lean-x", (lean * 0.1).toFixed(3));
+    root.style.setProperty("--j-lean-y", (camera.leanY * leanStill * 0.1).toFixed(3));
     if (cameraGroup) {
       cameraGroup.setAttribute(
         "transform",
