@@ -979,9 +979,10 @@
 }
 
 /* ==========================================================================
-   The closing beat on a phone — the work, listed. No media: a tile small
-   enough to fit six of them on a phone is too small to show anything, and the
-   links are the part a reader can actually act on.
+   The closing beat on a phone — the work, listed. Each row carries the clip's
+   own first frame as a still, and the whole row is one tap target: it opens
+   the project as a sheet, where the clip plays and the links are a size worth
+   aiming at.
    ========================================================================== */
 
 .j-worklist {
@@ -997,49 +998,281 @@
 }
 
 .j-work {
-  padding: 0.6rem 0.7rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  padding: 0.5rem 0.6rem;
   border-radius: 0.6rem;
   border: 1px solid color-mix(in srgb, var(--j-accent) 20%, transparent);
   border-left: 3px solid var(--j-accent);
   background: color-mix(in srgb, #04070c 76%, transparent);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
-.j-work h3 {
-  font-size: 0.86rem;
+.j-work:hover,
+.j-work:focus-visible {
+  border-color: color-mix(in srgb, var(--j-accent) 55%, transparent);
+  border-left-color: var(--j-accent);
+  background: color-mix(in srgb, #04070c 88%, transparent);
+}
+
+.j-work-thumb {
+  flex: none;
+  width: 4.4rem;
+  height: 3rem;
+  border-radius: 0.4rem;
+  overflow: hidden;
+  background: #070b12;
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.j-work-thumb video,
+.j-work-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.95) brightness(0.95);
+}
+
+.j-work-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.j-work-title {
+  font-size: 0.84rem;
   font-weight: 700;
   line-height: 1.2;
   color: #eef3fa;
 }
 
 .j-work-blurb {
-  font-size: 0.74rem;
-  line-height: 1.45;
+  font-size: 0.72rem;
+  line-height: 1.35;
   color: #c3cddc;
-  margin-top: 0.15rem;
-}
-
-.j-work-foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.3rem 0.5rem;
-  margin-top: 0.45rem;
+  margin-top: 0.1rem;
+  /* Two lines, so a long description cannot make one row twice the height of
+     its neighbours — the full text is a tap away in the sheet. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .j-work-tech {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   letter-spacing: 0.04em;
   color: color-mix(in srgb, var(--j-accent) 72%, #ffffff);
+  margin-top: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.j-work-foot a {
-  font-size: 0.68rem;
+.j-work-more {
+  flex: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--j-accent);
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   The expanded project. Over the whole stage rather than inside the list:
+   the clip is the point, and it needs the frame.
+   ========================================================================== */
+
+.j-sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.j-sheet-scrim {
+  position: absolute;
+  inset: 0;
+  /* A flat wash, not a backdrop blur: this covers the whole frame, and the
+     world behind it keeps animating its weather, so a blur would be re-run
+     over the entire viewport every frame for something nobody can read. */
+  background: rgb(3 6 11 / 0.82);
+  animation: j-sheet-fade 0.25s ease both;
+}
+
+.j-sheet-panel {
+  position: relative;
+  width: min(34rem, 100%);
+  max-height: 92%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 1rem 1rem 0 0;
+  border: 1px solid color-mix(in srgb, var(--j-accent) 32%, transparent);
+  border-bottom: 0;
+  background: color-mix(in srgb, #05070c 94%, transparent);
+  box-shadow: 0 -20px 60px -24px rgb(0 0 0 / 0.9);
+  animation: j-sheet-rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.j-sheet-panel:focus {
+  outline: none;
+}
+
+@keyframes j-sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes j-sheet-rise {
+  from {
+    transform: translateY(14%);
+    opacity: 0;
+  }
+}
+
+.j-sheet-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 2;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 650;
+  cursor: pointer;
+  color: #eef3fa;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  background: rgb(4 7 12 / 0.86);
+}
+
+.j-sheet-media {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: #070b12;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.j-sheet-media video,
+.j-sheet-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.j-sheet-body {
+  padding: 0.9rem 1rem 1.1rem;
+}
+
+.j-sheet-body h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #eef3fa;
+}
+
+.j-sheet-date {
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8593a9;
+  margin-top: 0.2rem;
+}
+
+.j-sheet-blurb {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #cfd8e6;
+  margin-top: 0.6rem;
+}
+
+.j-sheet-details {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.j-sheet-details li {
+  font-size: 0.74rem;
+  line-height: 1.4;
+  color: #b3c0d4;
+  padding-left: 0.85rem;
+  position: relative;
+}
+
+.j-sheet-details li::before {
+  content: "·";
+  position: absolute;
+  left: 0.25rem;
+  color: var(--j-accent);
+  font-weight: 700;
+}
+
+.j-sheet-tech {
+  list-style: none;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+/* A white disc under every mark, as in Résumé mode: several of these logos
+   are black ink (OpenAI, Unity) and vanish on the sheet's own background. */
+.j-sheet-tech li {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: #dbe3ef;
+  padding: 0.18rem 0.5rem 0.18rem 0.22rem;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: rgb(255 255 255 / 0.06);
+}
+
+.j-sheet-tech img {
+  width: 1.15rem;
+  height: 1.15rem;
+  object-fit: contain;
+  padding: 0.12rem;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.j-sheet-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.9rem;
+}
+
+.j-sheet-links a {
+  font-size: 0.78rem;
   font-weight: 650;
   text-decoration: none;
   color: var(--j-accent);
-  padding: 0.18rem 0.55rem;
+  padding: 0.45rem 0.9rem;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--j-accent) 45%, transparent);
+  background: color-mix(in srgb, var(--j-accent) 8%, transparent);
 }
 
 /* ==========================================================================
@@ -1689,19 +1922,60 @@ body:not(.dark-theme) .j-work {
   box-shadow: 0 12px 30px -22px rgb(37 48 68 / 0.4);
 }
 
-body:not(.dark-theme) .j-work h3 {
+body:not(.dark-theme) .j-work:hover,
+body:not(.dark-theme) .j-work:focus-visible {
+  background: #ffffff;
+}
+
+body:not(.dark-theme) .j-work-title,
+body:not(.dark-theme) .j-sheet-body h3 {
   color: #172033;
 }
 
-body:not(.dark-theme) .j-work-blurb {
+body:not(.dark-theme) .j-work-blurb,
+body:not(.dark-theme) .j-sheet-blurb {
   color: #2f3d51;
 }
 
-body:not(.dark-theme) .j-work-tech {
+body:not(.dark-theme) .j-work-tech,
+body:not(.dark-theme) .j-sheet-date,
+body:not(.dark-theme) .j-sheet-details li {
   color: #5f6f85;
 }
 
-body:not(.dark-theme) .j-work-foot a {
+body:not(.dark-theme) .j-work-thumb {
+  border-color: rgb(71 85 105 / 0.18);
+}
+
+/* The sheet, in daylight. The scrim still darkens — it is holding the world
+   back, and a white wash over a bright scene reads as fog rather than depth. */
+body:not(.dark-theme) .j-sheet-scrim {
+  background: rgb(23 32 51 / 0.45);
+}
+
+body:not(.dark-theme) .j-sheet-panel {
+  background: color-mix(in srgb, #ffffff 96%, transparent);
+  border-color: color-mix(in srgb, var(--j-accent) 42%, #d7dee8);
+  box-shadow: 0 -20px 60px -28px rgb(37 48 68 / 0.5);
+}
+
+body:not(.dark-theme) .j-sheet-close {
+  color: #172033;
+  background: rgb(255 255 255 / 0.82);
+  border-color: rgb(71 85 105 / 0.24);
+}
+
+body:not(.dark-theme) .j-sheet-tech li {
+  color: #2f3d51;
+  background: color-mix(in srgb, var(--j-accent) 7%, #ffffff);
+  border-color: rgb(71 85 105 / 0.18);
+}
+
+body:not(.dark-theme) .j-sheet-tech img {
+  background: #f4f7fb;
+}
+
+body:not(.dark-theme) .j-sheet-links a {
   color: color-mix(in srgb, var(--j-accent) 88%, #172033);
   background: color-mix(in srgb, var(--j-accent) 11%, #ffffff);
   border-color: color-mix(in srgb, var(--j-accent) 46%, #d7dee8);

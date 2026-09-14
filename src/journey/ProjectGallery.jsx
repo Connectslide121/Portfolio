@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { galleryProjects, projectBlurbs, beats } from "../data/journey";
 import { mediaFor } from "../data/projectMedia";
 import { featuredProjects, allProjects } from "../components/projectList";
+import { techFor } from "../data/projectTech";
 
 // A wall of pinned work: real screenshots and clips at deliberately uneven
 // sizes, angles and positions. A tidy grid read as a spreadsheet; this is
@@ -9,7 +10,7 @@ import { featuredProjects, allProjects } from "../components/projectList";
 //
 // On phones there is no wall. Six tiles squeezed into a scrolling half-screen
 // showed neither the work nor the clips — it read as a broken grid. The same
-// six projects are listed there instead (D62).
+// six projects are listed there instead (D62), each row opening as a sheet (D63).
 
 const ALL = [...featuredProjects, ...allProjects];
 const byTitle = (title) => ALL.find((p) => p.title === title);
@@ -128,41 +129,157 @@ function Tile({ project, place, active }) {
 }
 
 /**
- * The phone version: one row per project, nothing to hover and nothing to
- * decode. Title, what it is, what it was built with, and the links — the
- * whole point of the wall, minus the wall.
+ * The still for a list row: the clip's own first frame, never playing.
+ *
+ * Six autoplaying videos on a phone is six decoders for six thumbnails the
+ * size of a stamp. The `#t=0.1` fragment is what makes a poster-less video
+ * paint that frame rather than a black box — mobile Safari will not render
+ * anything until it has seeked somewhere.
  */
-function WorkRow({ project }) {
-  const links = linksFor(project);
+function Thumb({ project, mounted }) {
+  const media = mediaFor(project.title);
 
+  // Empty until the recap is close — six metadata fetches should not happen
+  // while the reader is still in 2005. The box keeps its size either way, so
+  // the rows do not jump when the stills arrive.
   return (
-    <li className="j-work">
-      <h3>{project.title}</h3>
-      <p className="j-work-blurb">
-        {projectBlurbs[project.title] || project.description}
-      </p>
-      <p className="j-work-foot">
-        {project.technologies && (
-          <span className="j-work-tech">
-            {project.technologies.slice(0, 4).join(" · ")}
+    <span className="j-work-thumb" aria-hidden="true">
+      {!mounted ? null : media.type === "video" ? (
+        <video src={`${media.src}#t=0.1`} muted playsInline preload="metadata" />
+      ) : (
+        <img src={media.src} alt="" loading="lazy" />
+      )}
+    </span>
+  );
+}
+
+/**
+ * The phone version: one row per project, nothing to hover. The row is a
+ * button rather than a card with links in it — a thumb aiming at a 0.68rem
+ * link pill hits the row instead, so the row is the target and the detail
+ * sheet is where the links live at a size worth tapping.
+ */
+function WorkRow({ project, mounted, onOpen }) {
+  return (
+    <li>
+      <button type="button" className="j-work" onClick={() => onOpen(project)}>
+        <Thumb project={project} mounted={mounted} />
+        <span className="j-work-text">
+          <span className="j-work-title">{project.title}</span>
+          <span className="j-work-blurb">
+            {projectBlurbs[project.title] || project.description}
           </span>
-        )}
-        {links.map((link) => (
-          <a key={link.label} href={link.href} target="_blank" rel="noreferrer">
-            {link.label}
-            <span aria-hidden="true"> ↗</span>
-          </a>
-        ))}
-      </p>
+          {project.technologies && (
+            <span className="j-work-tech">
+              {project.technologies
+                .slice(0, 4)
+                .map((tech) => techFor(tech)?.name || tech)
+                .join(" · ")}
+            </span>
+          )}
+        </span>
+        <span className="j-work-more" aria-hidden="true">
+          ›
+        </span>
+      </button>
     </li>
   );
 }
 
-export default function ProjectGallery({ mounted, active }) {
+/**
+ * The expanded project, over the whole stage.
+ *
+ * This is where the clip actually plays, at a size that shows something, and
+ * where the full description and the links live. Rendered by JourneyStage
+ * rather than from in here, because opening it also has to take the journey's
+ * drivers out of the way — a wheel or a swipe over an open sheet must not
+ * step the story behind it.
+ */
+export function WorkSheet({ project, onClose }) {
+  const media = mediaFor(project.title);
+  const panelRef = useRef(null);
+  const links = linksFor(project);
+
+  useEffect(() => {
+    panelRef.current?.focus();
+
+    // Capture phase, and stop there: App.jsx listens for Escape on window to
+    // leave journey mode altogether, and it registered first — bubbling would
+    // close the whole journey behind the sheet.
+    const onKey = (e) => {
+      if (e.key !== "Escape") return;
+      e.stopPropagation();
+      e.preventDefault();
+      onClose();
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [onClose]);
+
+  return (
+    <div className="j-sheet" role="dialog" aria-modal="true" aria-label={project.title}>
+      <div className="j-sheet-scrim" onClick={onClose} />
+
+      <div className="j-sheet-panel" ref={panelRef} tabIndex={-1}>
+        <button type="button" className="j-sheet-close" onClick={onClose}>
+          Close <span aria-hidden="true">✕</span>
+        </button>
+
+        <div className="j-sheet-media">
+          {media.type === "video" ? (
+            <video src={media.src} autoPlay muted loop playsInline preload="auto" />
+          ) : (
+            <img src={media.src} alt={project.title} />
+          )}
+        </div>
+
+        <div className="j-sheet-body">
+          <h3>{project.title}</h3>
+          {project.date && <p className="j-sheet-date">{project.date}</p>}
+          <p className="j-sheet-blurb">{project.description}</p>
+
+          {project.details && (
+            <ul className="j-sheet-details">
+              {project.details.map((detail) => (
+                <li key={detail}>{detail}</li>
+              ))}
+            </ul>
+          )}
+
+          {project.technologies && (
+            <ul className="j-sheet-tech">
+              {project.technologies.map((tech) => {
+                const info = techFor(tech);
+                return (
+                  <li key={tech}>
+                    {info && <img src={info.icon} alt="" />}
+                    {info?.name || tech}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+
+          <div className="j-sheet-links">
+            {links.map((link) => (
+              <a key={link.label} href={link.href} target="_blank" rel="noreferrer">
+                {link.label}
+                <span aria-hidden="true"> ↗</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function ProjectGallery({ mounted, active, onOpen }) {
   const projects = galleryProjects.map(byTitle).filter(Boolean);
   const narrow = useNarrow();
 
   const recap = beats.find((b) => b.id === "recap");
+
 
   return (
     <div className={`j-gallery${narrow ? " j-gallery-list" : ""}`}>
@@ -174,7 +291,12 @@ export default function ProjectGallery({ mounted, active }) {
       {narrow ? (
         <ol className="j-worklist">
           {projects.map((project) => (
-            <WorkRow key={project.title} project={project} />
+            <WorkRow
+              key={project.title}
+              project={project}
+              mounted={mounted}
+              onOpen={onOpen}
+            />
           ))}
         </ol>
       ) : (

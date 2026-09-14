@@ -11,23 +11,7 @@ import { faGithub, faNpm } from "@fortawesome/free-brands-svg-icons";
 import { featuredProjects, allProjects } from "../components/projectList";
 
 import { mediaFor } from "../data/projectMedia";
-
-// Import technology icons
-import html from "../images/tools/html.webp";
-import css from "../images/tools/css.webp";
-import js from "../images/tools/js.webp";
-import nodejs from "../images/tools/nodejs.webp";
-import reactjs from "../images/tools/reactjs.webp";
-import csharp from "../images/tools/csharp.webp";
-import sql from "../images/tools/sql.webp";
-import unity from "../images/tools/unity.webp";
-import aws from "../images/tools/aws.webp";
-import angular from "../images/tools/angular.webp";
-import ts from "../images/tools/ts.webp";
-import nosql from "../images/tools/nosql.webp";
-import azure from "../images/tools/azure.webp";
-import openai from "../images/tools/openai.webp";
-import tailwind from "../images/tools/tailwind.webp";
+import { techFor } from "../data/projectTech";
 
 export default function Projects() {
   const [showOtherProjects, setShowOtherProjects] = useState(false);
@@ -47,29 +31,6 @@ export default function Projects() {
       document.body.style.overflow = "unset";
     };
   }, [showOtherProjects]);
-
-  // Technology icon mapping
-  const techIcons = {
-    html: { icon: html, name: "HTML" },
-    css: { icon: css, name: "CSS" },
-    js: { icon: js, name: "JavaScript" },
-    javascript: { icon: js, name: "JavaScript" },
-    ts: { icon: ts, name: "TypeScript" },
-    typescript: { icon: ts, name: "TypeScript" },
-    node: { icon: nodejs, name: "Node.js" },
-    nodejs: { icon: nodejs, name: "Node.js" },
-    react: { icon: reactjs, name: "React.js" },
-    reactjs: { icon: reactjs, name: "React.js" },
-    angular: { icon: angular, name: "Angular" },
-    csharp: { icon: csharp, name: "C#" },
-    sql: { icon: sql, name: "SQL" },
-    nosql: { icon: nosql, name: "NoSQL" },
-    unity: { icon: unity, name: "Unity" },
-    aws: { icon: aws, name: "AWS" },
-    azure: { icon: azure, name: "Azure" },
-    ai: { icon: openai, name: "OpenAI" },
-    tailwind: { icon: tailwind, name: "Tailwind CSS" }
-  };
 
   const ProjectCard = ({ project }) => {
     const media = mediaFor(project.title);
@@ -159,7 +120,7 @@ export default function Projects() {
           {project.technologies && (
             <div className="project-tech-stack">
               {project.technologies.map((tech, index) => {
-                const techInfo = techIcons[tech.toLowerCase()];
+                const techInfo = techFor(tech);
                 return techInfo ? (
                   <div key={index} className="tech-icon" title={techInfo.name}>
                     <img src={techInfo.icon} alt={techInfo.name} />

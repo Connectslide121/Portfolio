@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "../styles/journey.css";
 import { stack, profile, chapters } from "../data/journey";
 import heroArt from "../images/home-image.webp";
@@ -8,7 +8,7 @@ import { buildJourney } from "./timeline";
 import { useJourneyDriver } from "./useJourneyDriver";
 import World from "./World";
 import { ProgressStream } from "./parts";
-import ProjectGallery from "./ProjectGallery";
+import ProjectGallery, { WorkSheet } from "./ProjectGallery";
 import { OrgMarks } from "../components/OrgMark";
 import JourneyOverview from "./JourneyOverview";
 import JourneyStatic from "./JourneyStatic";
@@ -37,6 +37,10 @@ export default function JourneyStage({ onExit }) {
   // readable list instead (guardrail in docs/JOURNEY_PLAN.md §8).
   const [reduced] = useState(prefersReducedMotion);
   const [start] = useState(beatFromHash);
+
+  // The expanded project on the recap's narrow-screen list, if one is open.
+  const [work, setWork] = useState(null);
+  const closeWork = useCallback(() => setWork(null), []);
 
   useEffect(() => {
     if (reduced) return;
@@ -71,10 +75,12 @@ export default function JourneyStage({ onExit }) {
     return () => window.removeEventListener("jm-theme-change", refreshTheme);
   }, []);
 
+  // An open sheet parks every driver: a wheel, a swipe or an arrow key meant
+  // for the project you are reading must not step the story behind it.
   const { index, jumpTo, next, prev } = useJourneyDriver(
     tl,
     stageRef,
-    reduced,
+    reduced || !!work,
     start,
   );
 
@@ -227,7 +233,15 @@ export default function JourneyStage({ onExit }) {
 
             {/* The recap: the work wall above, the journey laid out below. */}
             {beat.kind === "projects" && (
-              <ProjectGallery mounted={nearEnd} active={atRecap} />
+              <ProjectGallery
+                /* The list's stills stand down while a sheet is open: they
+                   are behind the scrim anyway, and a phone has a small,
+                   shared pool of video decoders — the one clip actually
+                   playing should have it to itself. */
+                mounted={nearEnd && !work}
+                active={atRecap}
+                onOpen={setWork}
+              />
             )}
           </div>
         ))}
@@ -258,6 +272,10 @@ export default function JourneyStage({ onExit }) {
       {atRecap && <JourneyOverview index={index} onPick={jumpTo} />}
 
       <p className="j-hint">scroll · arrows · swipe</p>
+
+      {/* A project expanded out of the recap's list: the clip playing at a
+          size that shows something, the full description, and the links. */}
+      {work && <WorkSheet project={work} onClose={closeWork} />}
     </div>
   );
 }
