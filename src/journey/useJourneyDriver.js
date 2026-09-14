@@ -74,6 +74,18 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
     let readyAt = 0;
 
     const onWheel = (e) => {
+      // The recap's narrow-screen work list scrolls on its own. A wheel over
+      // it belongs to the list until the list runs out of travel; only then
+      // does the gesture go back to stepping the journey.
+      const list = e.target.closest?.(".j-worklist");
+      if (list && list.scrollHeight > list.clientHeight + 1) {
+        const spent =
+          e.deltaY > 0
+            ? list.scrollTop + list.clientHeight >= list.scrollHeight - 1
+            : list.scrollTop <= 0;
+        if (!spent) return;
+      }
+
       e.preventDefault();
       const now = performance.now();
 
@@ -143,12 +155,23 @@ export function useJourneyDriver(tl, stageRef, disabled = false, startIndex = 0)
     const el = stageRef.current;
     if (!el || disabled) return;
     let x0 = null;
-    const start = (e) => (x0 = e.touches[0].clientX);
+    let y0 = null;
+    const start = (e) => {
+      x0 = e.touches[0].clientX;
+      y0 = e.touches[0].clientY;
+    };
     const end = (e) => {
       if (x0 == null) return;
       const dx = e.changedTouches[0].clientX - x0;
-      if (Math.abs(dx) > 48) (dx < 0 ? next : prev)();
+      const dy = e.changedTouches[0].clientY - y0;
+      // Horizontal intent only. The recap's work list scrolls vertically, and
+      // a thumb dragging down it drifts sideways enough to have counted as a
+      // swipe and thrown the reader onto another beat.
+      if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy)) {
+        (dx < 0 ? next : prev)();
+      }
       x0 = null;
+      y0 = null;
     };
     el.addEventListener("touchstart", start, { passive: true });
     el.addEventListener("touchend", end, { passive: true });

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { galleryProjects, projectBlurbs, beats } from "../data/journey";
 import { mediaFor } from "../data/projectMedia";
 import { featuredProjects, allProjects } from "../components/projectList";
@@ -6,6 +6,10 @@ import { featuredProjects, allProjects } from "../components/projectList";
 // A wall of pinned work: real screenshots and clips at deliberately uneven
 // sizes, angles and positions. A tidy grid read as a spreadsheet; this is
 // closer to prints tacked up on a wall.
+//
+// On phones there is no wall. Six tiles squeezed into a scrolling half-screen
+// showed neither the work nor the clips — it read as a broken grid. The same
+// six projects are listed there instead (D62).
 
 const ALL = [...featuredProjects, ...allProjects];
 const byTitle = (title) => ALL.find((p) => p.title === title);
@@ -21,6 +25,34 @@ const LAYOUT = [
   { l: "37%", t: "47%", w: "30%", h: "48%", rot: "-1.1deg", z: 4 },
   { l: "70%", t: "51%", w: "20%", h: "42%", rot: "2.6deg", z: 2 },
 ];
+
+// The width the wall needs. Below it the list takes over — same breakpoint the
+// recap's other mobile rules use, so layout and markup switch together.
+const NARROW = "(max-width: 900px)";
+
+function useNarrow() {
+  const [narrow, setNarrow] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(NARROW).matches,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(NARROW);
+    const onChange = (e) => setNarrow(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  return narrow;
+}
+
+const linksFor = (project) =>
+  [
+    project.repository && { label: "Code", href: project.repository },
+    project.livedemo && {
+      label: project.button || "Live demo",
+      href: project.livedemo,
+    },
+  ].filter(Boolean);
 
 function Tile({ project, place, active }) {
   const media = mediaFor(project.title);
@@ -42,10 +74,7 @@ function Tile({ project, place, active }) {
     }
   }, [active]);
 
-  const links = [
-    project.repository && { label: "Code", href: project.repository },
-    project.livedemo && { label: project.button || "Live demo", href: project.livedemo },
-  ].filter(Boolean);
+  const links = linksFor(project);
 
   return (
     <figure
@@ -98,30 +127,69 @@ function Tile({ project, place, active }) {
   );
 }
 
+/**
+ * The phone version: one row per project, nothing to hover and nothing to
+ * decode. Title, what it is, what it was built with, and the links — the
+ * whole point of the wall, minus the wall.
+ */
+function WorkRow({ project }) {
+  const links = linksFor(project);
+
+  return (
+    <li className="j-work">
+      <h3>{project.title}</h3>
+      <p className="j-work-blurb">
+        {projectBlurbs[project.title] || project.description}
+      </p>
+      <p className="j-work-foot">
+        {project.technologies && (
+          <span className="j-work-tech">
+            {project.technologies.slice(0, 4).join(" · ")}
+          </span>
+        )}
+        {links.map((link) => (
+          <a key={link.label} href={link.href} target="_blank" rel="noreferrer">
+            {link.label}
+            <span aria-hidden="true"> ↗</span>
+          </a>
+        ))}
+      </p>
+    </li>
+  );
+}
+
 export default function ProjectGallery({ mounted, active }) {
   const projects = galleryProjects.map(byTitle).filter(Boolean);
+  const narrow = useNarrow();
 
   const recap = beats.find((b) => b.id === "recap");
 
   return (
-    <div className="j-gallery">
+    <div className={`j-gallery${narrow ? " j-gallery-list" : ""}`}>
       <header>
         <h2>My Work</h2>
         <p>{recap?.note}</p>
       </header>
 
-      <div className="j-wall">
-        {mounted &&
-          projects.map((project, i) => (
-            <Tile
-              key={project.title}
-              project={project}
-              place={LAYOUT[i % LAYOUT.length]}
-              active={active}
-            />
+      {narrow ? (
+        <ol className="j-worklist">
+          {projects.map((project) => (
+            <WorkRow key={project.title} project={project} />
           ))}
-      </div>
-
+        </ol>
+      ) : (
+        <div className="j-wall">
+          {mounted &&
+            projects.map((project, i) => (
+              <Tile
+                key={project.title}
+                project={project}
+                place={LAYOUT[i % LAYOUT.length]}
+                active={active}
+              />
+            ))}
+        </div>
+      )}
     </div>
   );
 }

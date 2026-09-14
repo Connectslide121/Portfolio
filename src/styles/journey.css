@@ -954,8 +954,9 @@
   }
 }
 
-/* Narrow screens: the card stacks above a plain two-column wall. Scattering
-   needs room the viewport does not have. */
+/* Narrow screens: no wall at all. ProjectGallery lists the same six projects
+   instead (D62) — a scattered wall squeezed into two scrolling columns showed
+   neither the screenshots nor the clips. */
 @media (max-width: 900px) {
   .j-card-slot[data-kind="projects"] {
     flex-direction: column;
@@ -963,46 +964,82 @@
     justify-content: center;
     gap: 0.75rem;
   }
-  .j-card-slot[data-kind="projects"] .j-card {
-    width: auto;
-  }
-  .j-card-note {
-    font-size: 0.82rem;
-    margin-bottom: 0.75rem;
-  }
   .j-gallery {
     align-self: auto;
-    flex: none;
   }
-  .j-wall {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem;
-    height: auto;
-    max-height: 36vh;
-    overflow-y: auto;
-    padding-right: 0.15rem;
+  /* The list fills the slide and scrolls inside it; without min-height the
+     flex column refuses to shrink and the overflow never engages. */
+  .j-gallery-list {
+    min-height: 0;
+    /* A soft bottom edge, so a row cut off by the end of the slide reads as
+       more to scroll rather than as a crop. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 90%, transparent);
+    mask-image: linear-gradient(to bottom, #000 90%, transparent);
   }
-  .j-tile {
-    position: relative;
-    left: auto;
-    top: auto;
-    width: auto;
-    height: 8.25rem;
-    rotate: 0deg;
-  }
-  /* Long names ("Password input npm package") need room to wrap inside the
-     permanently-open drawer on touch. */
-  .j-tile-detail {
-    padding: 0.55rem 0.6rem 0.6rem;
-  }
-  .j-tile-detail h4 {
-    font-size: 0.76rem;
-  }
-  .j-tile:hover,
-  .j-tile:focus-within {
-    scale: 1;
-  }
+}
+
+/* ==========================================================================
+   The closing beat on a phone — the work, listed. No media: a tile small
+   enough to fit six of them on a phone is too small to show anything, and the
+   links are the part a reader can actually act on.
+   ========================================================================== */
+
+.j-worklist {
+  list-style: none;
+  margin: 0;
+  padding: 0 0.2rem 0 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.j-work {
+  padding: 0.6rem 0.7rem;
+  border-radius: 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--j-accent) 20%, transparent);
+  border-left: 3px solid var(--j-accent);
+  background: color-mix(in srgb, #04070c 76%, transparent);
+}
+
+.j-work h3 {
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #eef3fa;
+}
+
+.j-work-blurb {
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: #c3cddc;
+  margin-top: 0.15rem;
+}
+
+.j-work-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.5rem;
+  margin-top: 0.45rem;
+}
+
+.j-work-tech {
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--j-accent) 72%, #ffffff);
+}
+
+.j-work-foot a {
+  font-size: 0.68rem;
+  font-weight: 650;
+  text-decoration: none;
+  color: var(--j-accent);
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--j-accent) 45%, transparent);
 }
 
 /* ==========================================================================
@@ -1192,82 +1229,29 @@
 }
 
 /* The laid-out view needs width a phone has not got, and labels pinned to
-   world coordinates are unreadable at that size. Below this the same beats
-   are simply listed, tinted the same way. */
+   world coordinates are unreadable at that size. It used to become a second
+   tinted list under the work wall; two cramped scrolling panels on one slide
+   was the worse half of what made the recap unreadable on a phone, and the
+   rail below already names every stop and jumps to it. So below this the
+   recap is one thing: the work, listed (D62, reverses D32). */
 @media (max-width: 900px) {
-  /* The recap stacks: work wall in the top half, the journey listed below it.
-     The overview must NOT cover the stage here — it is half the slide, not an
-     overlay on it. */
   .j-card-slot[data-kind="projects"] {
-    /* Earlier mobile rules bottom-align story cards and vertically centre this
-       one; the recap's wall has to sit at the top or it lands on the journey
-       list below it. */
+    /* Earlier mobile rules bottom-align story cards and vertically centre
+       this one. The list owns the whole slide here: clear of the topbar
+       above, clear of the rail below. */
     align-items: stretch;
     justify-content: flex-start;
-    padding-block: 3.4rem 0;
+    padding-block: 3.4rem 4.75rem;
   }
-  /* The note wraps to four lines at this width and pushed the wall into the
-     list below it. */
+  /* The note wraps to four lines at this width, eating the list below it. */
   .j-gallery header p {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .j-wall {
-    /* Let whole rows show and scroll, rather than slicing one in half. */
-    height: auto;
-    max-height: 30vh;
-  }
-  .j-ov-caption {
+  .j-overview {
     display: none;
-  }
-  .j-overview {
-    /* Stop above the rail: this panel takes pointer events on touch, so a
-       full-height one swallowed clicks on the controls. */
-    top: auto;
-    bottom: 7.75rem;
-    height: 36%;
-    padding: 0 clamp(1rem, 3vw, 2rem);
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      color-mix(in srgb, #04070c 74%, transparent) 10%
-    );
-    backdrop-filter: none;
-    pointer-events: auto;
-  }
-  .j-ov-spots {
-    position: relative;
-    inset: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
-    overflow-y: auto;
-    padding-right: 0.2rem;
-  }
-  .j-ov-node {
-    position: static !important;
-    translate: none;
-    width: 100%;
-    max-width: none;
-    opacity: 1 !important;
-    border-left: 3px solid var(--tint);
-    animation-delay: 0ms;
-  }
-  .j-ov-node:hover,
-  .j-ov-node:focus-visible {
-    transform: none;
-  }
-  .j-ov-role {
-    font-size: 0.82rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .j-overview {
-    /* The dots-only map is shorter than the labelled one at 769-900px. */
-    bottom: 5.25rem;
   }
 }
 
@@ -1696,14 +1680,31 @@ body:not(.dark-theme) .j-intro-art {
   filter: drop-shadow(0 24px 42px rgb(37 48 68 / 0.2));
 }
 
-@media (max-width: 900px) {
-  body:not(.dark-theme) .j-overview {
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      color-mix(in srgb, #ffffff 82%, transparent) 10%
-    );
-  }
+/* The phone recap's work list, in daylight. Same treatment as the cards: a
+   near-white card with the accent carried by the left edge. */
+body:not(.dark-theme) .j-work {
+  background: color-mix(in srgb, #ffffff 88%, transparent);
+  border-color: color-mix(in srgb, var(--j-accent) 42%, #d7dee8);
+  border-left-color: var(--j-accent);
+  box-shadow: 0 12px 30px -22px rgb(37 48 68 / 0.4);
+}
+
+body:not(.dark-theme) .j-work h3 {
+  color: #172033;
+}
+
+body:not(.dark-theme) .j-work-blurb {
+  color: #2f3d51;
+}
+
+body:not(.dark-theme) .j-work-tech {
+  color: #5f6f85;
+}
+
+body:not(.dark-theme) .j-work-foot a {
+  color: color-mix(in srgb, var(--j-accent) 88%, #172033);
+  background: color-mix(in srgb, var(--j-accent) 11%, #ffffff);
+  border-color: color-mix(in srgb, var(--j-accent) 46%, #d7dee8);
 }
 
 /* Shared accent motion. Every beat's accent is a light source, so they all
