@@ -141,11 +141,10 @@ body {
      paper colour. A background image rather than an overlay, so it is
      printed UNDER the type, the way paper texture is. */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 -0.75 0.5'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  --static: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1.1 0.25 0.25 0 -0.62 0.25 1.1 0.25 0 -0.62 0.25 0.25 1.1 0 -0.62 0 0 0 -1.3 0.95'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
 
   color: var(--ink);
   background-color: var(--paper);
-  background-image: var(--grain);
-  background-size: 220px 220px;
   line-height: var(--leading-normal);
   transition:
     background-color 0.3s ease,
@@ -154,10 +153,63 @@ body {
 
 body.dark-theme {
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.92 0 0 0 0 0.86 0 0 0 -0.4 0.22'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  --static: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1.1 0.25 0.25 0 -0.05 0.25 1.1 0.25 0 -0.05 0.25 0.25 1.1 0 -0.05 0 0 0 -1.3 0.85'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
   --shadowMd: 0 18px 30px -22px rgb(0 0 0 / 0.8);
   --shadowLg: 0 24px 40px -24px rgb(0 0 0 / 0.85);
   --shadowXl: 0 30px 50px -26px rgb(0 0 0 / 0.9);
   color-scheme: dark;
+}
+
+/* ==========================================================================
+   Live grain — the sheet is never quite still.
+
+   Colour noise that jumps to a new position about ten times a second, like
+   the snow on an old television between channels, but quiet enough to read
+   as paper that is alive rather than as a broken signal. Each speck has its
+   own faint hue, so the jumps shimmer slightly in colour too.
+
+   The motion is a transform with steps(), so the browser only moves an
+   already-painted layer — nothing is re-rasterised per frame. The layer is
+   oversized (inset -240px, one tile) so a jump never shows an edge.
+   Multiply on paper, screen on ink; still under reduced motion.
+   ========================================================================== */
+@keyframes live-grain {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-83px, 41px); }
+  20% { transform: translate(57px, -112px); }
+  30% { transform: translate(-141px, -29px); }
+  40% { transform: translate(119px, 88px); }
+  50% { transform: translate(-22px, 153px); }
+  60% { transform: translate(171px, -64px); }
+  70% { transform: translate(-108px, -167px); }
+  80% { transform: translate(36px, 119px); }
+  90% { transform: translate(-176px, 74px); }
+}
+
+/* The CV's grain: fixed behind the page content, over the paper colour. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -240px;
+  z-index: -1;
+  background-image: var(--static);
+  background-size: 240px 240px;
+  mix-blend-mode: multiply;
+  opacity: 0.32;
+  animation: live-grain 1s steps(1, end) infinite;
+  pointer-events: none;
+  will-change: transform;
+}
+
+body.dark-theme::before {
+  mix-blend-mode: screen;
+  opacity: 0.16;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
 }
 
 body.other-projects-open {
