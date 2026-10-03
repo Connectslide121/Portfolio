@@ -24,14 +24,7 @@ nav {
 }
 
 .navbar-logo {
-  height: 36px;
-  width: auto;
-  object-fit: contain;
-  transition: filter 0.3s ease;
-}
-
-body.dark-theme .navbar-logo {
-  filter: invert(0.94) sepia(0.1);
+  --mono: 2.7rem;
 }
 
 /* --- links --------------------------------------------------------------- */
@@ -260,6 +253,6 @@ body.dark-theme .navbar-logo {
     padding: 0 var(--space-md);
   }
   .navbar-logo {
-    height: 30px;
+    --mono: 2.3rem;
   }
 }

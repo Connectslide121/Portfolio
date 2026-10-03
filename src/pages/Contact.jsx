@@ -8,7 +8,7 @@ import {
   faPhone,
   faMapMarkerAlt
 } from "@fortawesome/free-solid-svg-icons";
-import logo from "../images/logo.webp";
+import Monogram from "../components/Monogram";
 
 export default function Contact() {
   return (
@@ -27,7 +27,7 @@ export default function Contact() {
       <div className="contact-content">
         <div className="contact-info">
           <div className="contact-info-header">
-            <img src={logo} alt="Jon Mendizabal" />
+            <Monogram size="3rem" />
             <h3>Jon Mendizabal</h3>
           </div>
 

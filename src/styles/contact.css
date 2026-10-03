@@ -63,15 +63,6 @@
   border-bottom: 1px solid var(--ink);
 }
 
-.contact-info-header img {
-  width: 3.2rem;
-  height: auto;
-}
-
-body.dark-theme .contact-info-header img {
-  filter: invert(0.94) sepia(0.1);
-}
-
 .contact-info-header h3 {
   font-family: var(--serif);
   font-weight: 400;

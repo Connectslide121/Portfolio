@@ -1,0 +1,56 @@
+/* The JM mark (src/components/Monogram.jsx). Everything is in em of
+   --mono, so one size knob scales the plate, the letters and the overlap. */
+
+.monogram {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--mono, 2.4rem);
+  width: 1.62em;
+  height: 1.15em;
+  line-height: 1;
+  isolation: isolate;
+}
+
+/* The coral plate: a disc set low and right, printed under the ink. */
+.monogram-plate {
+  position: absolute;
+  width: 0.66em;
+  height: 0.66em;
+  right: -0.04em;
+  bottom: 0.1em;
+  border-radius: 50%;
+  background: var(--coral);
+  mix-blend-mode: var(--print-blend);
+  z-index: -1;
+}
+
+.monogram-letters {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--ink);
+  /* Instrument Serif sits high in its box; this centres the cap height. */
+  transform: translateY(0.04em);
+}
+
+/* The italic J leans into the M and tucks under its first stem. */
+.monogram-j {
+  font-size: 1em;
+  margin-right: -0.03em;
+  position: relative;
+  z-index: 1;
+}
+
+.monogram-m {
+  font-size: 0.92em;
+  letter-spacing: -0.01em;
+}
+
+/* On ink, screen over the dark paper is the coral anyway; printed plainly it
+   stays clean instead of going muddy at its edge. */
+body.dark-theme .monogram-plate {
+  mix-blend-mode: normal;
+}

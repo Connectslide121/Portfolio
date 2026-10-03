@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import "../styles/navbar.css";
-import logo from "../images/logo.webp";
+import Monogram from "./Monogram";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
@@ -90,7 +90,7 @@ export default function Navbar() {
           onClick={() => handleNavClick("home")}
           style={{ background: "none", border: "none", cursor: "pointer" }}
         >
-          <img src={logo} alt="Jon Mendizabal Logo" className="navbar-logo" />
+          <Monogram className="navbar-logo" />
         </button>
 
         <ul className="nav-links">
