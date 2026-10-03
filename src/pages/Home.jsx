@@ -1,10 +1,10 @@
 import React from "react";
 import "../styles/home.css";
-import home from "../images/home-image.webp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import HeroTeaser from "../journey/HeroTeaser";
-import HeroAccents from "../components/HeroAccents";
+import IntroArt from "../journey/IntroArt";
+import Wobble from "../components/Wobble";
 import { profile } from "../data/journey";
 
 export default function Home({ onEnterJourney }) {
@@ -13,65 +13,53 @@ export default function Home({ onEnterJourney }) {
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const elementPosition = element.offsetTop;
-      const offsetPosition = elementPosition - NAVBAR_HEIGHT;
-
       window.scrollTo({
-        top: offsetPosition,
+        top: element.offsetTop - NAVBAR_HEIGHT,
         behavior: "smooth",
       });
     }
   };
 
-  const scrollToProjects = () => {
-    scrollToSection("projects");
-  };
-
-  const scrollToContact = () => {
-    scrollToSection("contact");
-  };
-
-  const scrollToAbout = () => {
-    scrollToSection("about");
-  };
+  const [first, ...rest] = profile.name.split(" ");
 
   return (
     <section id="home">
-      <HeroAccents />
       <div className="home-text-wrapper">
+        <p className="eyebrow">Portfolio · Växjö, Sweden</p>
         <h1>
-          {profile.name.split(" ").map((word, i) => (
-            <React.Fragment key={word}>
-              {i > 0 && <br />}
-              {word.toUpperCase()}
-            </React.Fragment>
-          ))}
+          {first} <Wobble>{rest.join(" ")}</Wobble>
         </h1>
         <h2>{profile.title}</h2>
+        <p className="home-lede">{profile.lede}</p>
         <p className="home-description">{profile.blurb}</p>
         <div className="home-cta">
-          <button className="btn" onClick={scrollToProjects}>
-            View My Work
+          <button className="btn" onClick={() => scrollToSection("projects")}>
+            View my work
           </button>
-          <button className="btn btn-secondary" onClick={scrollToContact}>
-            Get In Touch
+          <button
+            className="btn btn-secondary"
+            onClick={() => scrollToSection("contact")}
+          >
+            Get in touch
           </button>
         </div>
         <HeroTeaser onEnter={onEnterJourney} />
       </div>
-      <div className="home-image-wrapper">
-        <img
-          src={home}
-          alt="Jon Mendizabal - Full Stack Developer"
-          className="home-image"
-        />
+
+      {/* The same opening print as the journey's landing beat, so both
+          modes open on one image: steel poured in Spain, cast as a developer
+          in Sweden. */}
+      <div className="home-art">
+        <IntroArt className="home-art-svg" />
       </div>
 
-      {/* Discover More Button */}
       <div className="discover-more-wrapper">
-        <button className="discover-more-btn" onClick={scrollToAbout}>
+        <button
+          className="discover-more-btn"
+          onClick={() => scrollToSection("about")}
+        >
           <span>Discover more</span>
-          <FontAwesomeIcon icon={faChevronDown} className="discover-arrow" />
+          <FontAwesomeIcon icon={faArrowDown} className="discover-arrow" />
         </button>
       </div>
     </section>

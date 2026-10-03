@@ -234,7 +234,11 @@ export default function JourneyGlobe({ preview = false }) {
      * below 900px, where a display:none element's animations do not progress.
      */
     const pourPhase = () => {
-      const charge = document.querySelector(".j-pour-charge");
+      // Scoped to the stage: the CV hero carries its own pour, started at
+      // a different moment, and it comes first in the document.
+      const charge = (el.closest(".j-stage") || document).querySelector(
+        ".j-pour-charge",
+      );
       const anim = charge?.getAnimations?.()[0];
       const time = anim?.currentTime;
       if (time == null) return null;

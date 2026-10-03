@@ -1,4 +1,5 @@
 import React from "react";
+import Wobble from "./Wobble";
 import html from "../images/tools/html.webp";
 import css from "../images/tools/css.webp";
 import js from "../images/tools/js.webp";
@@ -85,7 +86,10 @@ export default function Tools() {
   return (
     <div className="tools-wrapper">
       <div className="section-header">
-        <h2>Technologies & Tools</h2>
+        <p className="eyebrow">01 · About</p>
+        <h2>
+          Technologies <Wobble>& tools</Wobble>
+        </h2>
         <p>Specialized in AI-powered solutions and full-stack development</p>
       </div>
 

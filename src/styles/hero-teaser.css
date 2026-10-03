@@ -1,144 +1,148 @@
-/* Beat 0 in the hero — the invitation into Journey mode (D2). */
-
+/* Beat 0 in the hero — the invitation into Journey mode (D2), as a ticket:
+   a ruled paper slip with the journey's line printed across it. */
 .hero-teaser {
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 2.2rem;
   align-items: center;
-  gap: var(--space-md);
+  column-gap: var(--space-md);
   width: 100%;
-  max-width: 600px;
+  max-width: 34rem;
   margin-top: var(--space-xl);
-  padding: var(--space-md) var(--space-lg);
-  border: 1px solid var(--borderColor);
-  border-radius: var(--radius-xl);
-  background: var(--cardBackground);
-  color: var(--textSecondary);
+  padding: 1rem 1.2rem 0.6rem;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink);
   cursor: pointer;
-  overflow: hidden;
   text-align: left;
   font: inherit;
-  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* The perforation: a dashed rule down the stub end. */
+.hero-teaser::after {
+  content: "";
+  position: absolute;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  right: 3.2rem;
+  border-left: 1px dashed var(--rule-strong);
 }
 
 .hero-teaser:hover,
 .hero-teaser:focus-visible {
-  border-color: #f97316;
-  transform: translateY(-3px);
-  box-shadow: var(--shadowLg);
-}
-
-/* The stream strip sits behind the label. */
-.hero-teaser svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.5;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.hero-teaser:hover svg,
-.hero-teaser:focus-visible svg {
-  opacity: 0.85;
+  background: color-mix(in srgb, var(--butter) 22%, transparent);
+  box-shadow: 4px 4px 0 var(--ink);
 }
 
 .hero-teaser-label {
-  position: relative;
+  grid-column: 1;
+  grid-row: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  flex: 1;
 }
 
 .hero-teaser-title {
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  color: var(--textPrimary);
-  letter-spacing: 0.01em;
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--ink);
 }
 
 .hero-teaser-sub {
-  font-size: var(--font-size-xs);
-  letter-spacing: 0.06em;
-  color: var(--textMuted);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.hero-teaser svg {
+  grid-column: 1;
+  grid-row: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* The stops on the line. Positioned over the svg's row, which is the second
+   grid row of the first column. */
+.hero-teaser-stops {
+  grid-column: 1;
+  grid-row: 2;
+  position: relative;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero-teaser-stops i {
+  position: absolute;
+  top: 50%;
+  width: 0.62rem;
+  height: 0.62rem;
+  margin: -0.31rem 0 0 -0.31rem;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  transition: background-color 0.25s ease;
+}
+
+.hero-teaser:hover .hero-teaser-stops i {
+  background: var(--tint);
 }
 
 .hero-teaser-cue {
-  position: relative;
-  font-size: var(--font-size-xl);
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 2rem;
+  text-align: center;
+  font-size: 1.3rem;
   line-height: 1;
-  color: #f97316;
+  color: var(--ink);
   transition: transform 0.3s ease;
 }
 
 .hero-teaser:hover .hero-teaser-cue {
-  transform: translateX(5px);
+  transform: translateX(4px);
 }
 
-@media (max-width: 600px) {
-  .hero-teaser {
-    padding: var(--space-md);
+/* The key line draws itself along the ramp, over and over, slowly — the
+   journey being travelled. */
+.teaser-run {
+  stroke-dasharray: 1300;
+  stroke-dashoffset: 1300;
+  animation: teaser-draw 6s cubic-bezier(0.6, 0, 0.3, 1) infinite;
+}
+
+@keyframes teaser-draw {
+  0% {
+    stroke-dashoffset: 1300;
   }
-  .hero-teaser-sub {
-    font-size: 0.66rem;
-  }
-}
-
-/* --- CSS-only motion (no GSAP on the critical path) ---------------------- */
-
-/* A short bright dash travelling the length of the stream. */
-.teaser-pulse {
-  stroke-dasharray: 54 1400;
-  stroke-dashoffset: 1454;
-  opacity: 0.85;
-  animation: teaser-travel 5.5s linear infinite;
-}
-
-@keyframes teaser-travel {
-  to {
+  55%,
+  85% {
     stroke-dashoffset: 0;
   }
-}
-
-.teaser-sparks circle {
-  animation: teaser-spark 1.9s ease-out infinite;
-  opacity: 0;
-}
-
-.teaser-sparks circle:nth-child(2) { animation-delay: 0.28s; }
-.teaser-sparks circle:nth-child(3) { animation-delay: 0.56s; }
-.teaser-sparks circle:nth-child(4) { animation-delay: 0.84s; }
-.teaser-sparks circle:nth-child(5) { animation-delay: 1.12s; }
-.teaser-sparks circle:nth-child(6) { animation-delay: 1.4s; }
-.teaser-sparks circle:nth-child(7) { animation-delay: 1.68s; }
-
-@keyframes teaser-spark {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  25% {
-    opacity: 1;
-  }
-  75% {
-    opacity: 0.8;
-  }
   100% {
-    transform: translate(26px, -40px);
-    opacity: 0;
+    stroke-dashoffset: -1300;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .teaser-pulse,
-  .teaser-sparks circle {
+  .teaser-run {
     animation: none;
+    stroke-dashoffset: 0;
   }
-  .teaser-pulse {
-    opacity: 0;
+}
+
+@media (max-width: 600px) {
+  .hero-teaser-title {
+    font-size: 1.35rem;
   }
-  .teaser-sparks circle {
-    opacity: 0.7;
+  .hero-teaser-sub {
+    font-size: 0.6rem;
   }
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import Wobble from "../components/Wobble";
 import "../styles/contact.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,7 +14,10 @@ export default function Contact() {
   return (
     <section id="contact">
       <div className="contact-header">
-        <h2>Get In Touch</h2>
+        <p className="eyebrow">03 · Contact</p>
+        <h2>
+          Get in <Wobble>touch</Wobble>
+        </h2>
         <p>
           I'm always open to discussing new opportunities and interesting
           projects. Let's connect and create something amazing together!

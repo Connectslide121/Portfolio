@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import Wobble from "../components/Wobble";
 import "../styles/projects.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -189,7 +190,10 @@ export default function Projects() {
   return (
     <section id="projects">
       <div className="projects-header">
-        <h2>My Projects</h2>
+        <p className="eyebrow">02 · Work</p>
+        <h2>
+          Selected <Wobble>projects</Wobble>
+        </h2>
         <p>
           A collection of AI-powered applications and full-stack solutions that
           showcase my expertise in artificial intelligence, machine learning,

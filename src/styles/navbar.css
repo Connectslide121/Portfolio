@@ -1,4 +1,4 @@
-/* Modern Navigation */
+/* The masthead: paper, one rule under it, ink type. */
 nav {
   position: fixed;
   top: 0;
@@ -8,17 +8,12 @@ nav {
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--space-xl);
-  background: rgba(255, 255, 255, 0.95);
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--borderColor);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 1px solid var(--rule);
+  transition: background-color 0.3s ease;
   z-index: 100;
-}
-
-body.dark-theme nav {
-  background: rgba(3, 7, 18, 0.95);
-  border-bottom-color: var(--borderColor);
 }
 
 .navbar-brand {
@@ -26,148 +21,111 @@ body.dark-theme nav {
   align-items: center;
   gap: var(--space-sm);
   text-decoration: none;
-  transition: transform 0.2s ease;
-}
-
-.navbar-brand:hover {
-  transform: scale(1.05);
 }
 
 .navbar-logo {
-  height: 40px;
+  height: 36px;
   width: auto;
   object-fit: contain;
   transition: filter 0.3s ease;
 }
 
 body.dark-theme .navbar-logo {
-  filter: invert(1) brightness(0.9);
+  filter: invert(0.94) sepia(0.1);
 }
 
-/* Navigation Links */
+/* --- links --------------------------------------------------------------- */
+
 .nav-links {
   display: flex;
   list-style: none;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   align-items: center;
 }
 
-.nav-links li a {
-  position: relative;
-  text-decoration: none;
-  padding: var(--space-sm) var(--space-md);
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  color: var(--textSecondary);
-  border-radius: var(--radius-md);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.nav-links li a:hover {
-  color: var(--accentColor);
-  background: var(--surfaceColor);
-  transform: translateY(-1px);
-}
-
-.nav-links li a.active-nav-link {
-  color: var(--accentColor);
-  background: var(--surfaceColor);
-}
-
-.nav-links li a::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: var(--accentColor);
-  border-radius: 1px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: translateX(-50%);
-}
-
-.nav-links li a.active-nav-link::after,
-.nav-links li a:hover::after {
-  width: 80%;
-}
-
-/* Button Navigation Links */
 .nav-link-btn {
   position: relative;
   background: none;
   border: none;
   cursor: pointer;
-  text-decoration: none;
-  padding: var(--space-sm) var(--space-md);
-  font-size: var(--font-size-base);
+  padding: var(--space-sm) var(--space-sm);
+  font: inherit;
+  font-size: 0.82rem;
   font-weight: 500;
-  color: var(--textSecondary);
-  border-radius: var(--radius-md);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: inherit;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  transition: color 0.2s ease;
 }
 
-.nav-link-btn:hover {
-  color: var(--accentColor);
-  background: var(--surfaceColor);
-  transform: translateY(-1px);
-}
-
+.nav-link-btn:hover,
 .nav-link-btn.active-nav-link {
-  color: var(--accentColor);
-  background: var(--surfaceColor);
+  color: var(--ink);
 }
 
+/* The current section is underlined in ink; hovering draws the rule in. */
 .nav-link-btn::after {
   content: "";
   position: absolute;
-  bottom: -2px;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: var(--accentColor);
-  border-radius: 1px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: translateX(-50%);
+  left: var(--space-sm);
+  right: var(--space-sm);
+  bottom: 2px;
+  height: 1px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-link-btn.active-nav-link::after,
 .nav-link-btn:hover::after {
-  width: 80%;
+  transform: scaleX(1);
 }
 
-/* Navigation Controls */
+/* The current section also gets its plate: a small pastel dot. */
+.nav-link-btn.active-nav-link::before {
+  content: "";
+  position: absolute;
+  left: -0.25rem;
+  top: 50%;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-top: -0.2rem;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
 .nav-controls {
   display: flex;
   align-items: center;
   gap: var(--space-md);
 }
 
-/* Modern Theme Toggle */
+/* --- theme toggle --------------------------------------------------------
+   An ink-ruled pill with an ink knob. Shared with the journey's topbar. */
+
 .theme-toggle-wrapper {
   position: relative;
 }
 
 .darkmode-toggle-label {
-  width: 60px;
-  height: 32px;
+  width: 58px;
+  height: 30px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--surfaceColor);
+  background: transparent;
   border-radius: 50px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid var(--borderColor);
-  padding: 4px;
+  border: 1px solid var(--ink);
+  padding: 0 7px;
   overflow: hidden;
+  transition: box-shadow 0.2s ease;
 }
 
 .darkmode-toggle-label:hover {
-  border-color: var(--accentColor);
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px var(--rule);
 }
 
 .darkmode-toggle-label::after {
@@ -177,28 +135,19 @@ body.dark-theme .navbar-logo {
   position: absolute;
   top: 3px;
   left: 3px;
-  background: var(--accentColor);
+  background: var(--ink);
   border-radius: 50%;
-  box-shadow: var(--shadowMd);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2;
 }
 
 .darkmode-toggle-label .sun,
 .darkmode-toggle-label .moon {
-  font-size: 14px;
+  font-size: 12px;
   position: relative;
   z-index: 1;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  color: var(--textMuted);
-}
-
-.darkmode-toggle-label .sun {
-  color: #ffa600;
-}
-
-.darkmode-toggle-label .moon {
-  color: #6366f1;
+  color: var(--ink);
+  transition: opacity 0.3s ease;
 }
 
 .theme-toggle-input {
@@ -209,64 +158,41 @@ body.dark-theme .navbar-logo {
   pointer-events: none;
 }
 
-.theme-toggle-input:checked + .darkmode-toggle-label {
-  background: var(--surfaceColor);
-}
-
+/* Checked is the light theme: the knob sits right, over the moon. */
 .theme-toggle-input:checked + .darkmode-toggle-label::after {
   left: calc(100% - 25px);
 }
 
-.theme-toggle-input:checked + .darkmode-toggle-label .sun {
-  transform: scale(0.8);
+.theme-toggle-input:focus-visible + .darkmode-toggle-label {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
-.theme-toggle-input:checked + .darkmode-toggle-label .moon {
-  opacity: 1;
-  transform: scale(1.1);
-}
+/* --- mobile -------------------------------------------------------------- */
 
-/* Light mode - moon should be less visible */
-.theme-toggle-input:not(:checked) + .darkmode-toggle-label .sun {
-  opacity: 1;
-  transform: scale(1.1);
-}
-
-.theme-toggle-input:not(:checked) + .darkmode-toggle-label .moon {
-  transform: scale(0.8);
-}
-
-/* Mobile Menu Toggle */
 .mobile-menu-toggle {
   display: none;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   cursor: pointer;
   padding: var(--space-sm);
-  border-radius: var(--radius-md);
-  transition: background 0.2s ease;
-}
-
-.mobile-menu-toggle:hover {
-  background: var(--surfaceColor);
 }
 
 .mobile-menu-toggle span {
-  width: 24px;
-  height: 3px;
-  background: var(--textPrimary);
-  border-radius: 2px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 22px;
+  height: 1.5px;
+  background: var(--ink);
+  transition: transform 0.3s ease;
 }
 
-/* Mobile Navigation */
 .mobile-nav {
   position: fixed;
   top: 80px;
   left: 0;
   width: 100%;
   height: calc(100vh - 80px);
-  background: var(--backgroundColor);
+  background-color: var(--paper);
+  background-image: var(--grain);
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 99;
@@ -281,46 +207,49 @@ body.dark-theme .navbar-logo {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  border-top: 1px solid var(--ink);
 }
 
-.mobile-nav-links li a {
+.mobile-nav-links li {
+  border-bottom: 1px solid var(--rule);
+}
+
+.mobile-nav-links .nav-link-btn {
   display: block;
-  padding: var(--space-lg);
-  font-size: var(--font-size-lg);
-  font-weight: 500;
-  color: var(--textPrimary);
-  text-decoration: none;
-  border-radius: var(--radius-lg);
-  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-lg) 0;
+  font-family: var(--serif);
+  font-size: 2rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
 }
 
-.mobile-nav-links li a:hover,
-.mobile-nav-links li a.active {
-  background: var(--accentColor);
-  color: white;
+.mobile-nav-links .nav-link-btn::after,
+.mobile-nav-links .nav-link-btn::before {
+  content: none;
 }
 
-/* Responsive Design */
+.mobile-nav-links .nav-link-btn.active-nav-link {
+  font-style: italic;
+}
+
 @media screen and (max-width: 768px) {
   nav {
     padding: 0 var(--space-lg);
     height: 70px;
   }
-
   .nav-links {
     display: none;
   }
-
   .mobile-menu-toggle {
     display: flex;
   }
-
   .mobile-nav {
     top: 70px;
     height: calc(100vh - 70px);
   }
-
   .nav-controls {
     gap: var(--space-sm);
   }
@@ -330,62 +259,7 @@ body.dark-theme .navbar-logo {
   nav {
     padding: 0 var(--space-md);
   }
-
   .navbar-logo {
-    height: 32px;
-  }
-
-  .darkmode-toggle-label {
-    width: 50px;
-    height: 28px;
-  }
-
-  .darkmode-toggle-label::after {
-    width: 18px;
-    height: 18px;
-    top: 3px;
-    left: 3px;
-  }
-
-  .theme-toggle-input:checked + .darkmode-toggle-label::after {
-    left: calc(100% - 21px);
-  }
-
-  .darkmode-toggle-label .sun,
-  .darkmode-toggle-label .moon {
-    font-size: 10px;
-  }
-}
-
-.navbar-buttons {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
-
-.navbar-buttons a {
-  text-decoration: none;
-  color: #fff;
-  padding: 6px 24px;
-  border-radius: var(--radius);
-  box-shadow: 2px 2px 4px var(--boxShadow);
-  background: var(--accentColor);
-}
-
-@media screen and (max-width: 850px) {
-  nav {
-    padding: 8px 20px;
-  }
-
-  nav ul li a {
-    display: none;
-  }
-
-  .navbar-buttons a span {
-    display: none;
-  }
-
-  .navbar-logo {
-    margin-bottom: 10px;
+    height: 30px;
   }
 }

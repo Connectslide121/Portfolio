@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useId } from "react";
 import { blob } from "./print";
+import "../styles/pour.css";
 
 /**
  * The opening print: steel poured at one end and a developer cast at the
@@ -44,12 +45,22 @@ const CAST = [
   "M 214 676 H 228 V 744 H 216 V 700 H 202 V 688 H 214 Z",
 ];
 
-const INK = "var(--j-mid)";
+// The journey's key plate where there is one, the page's ink where there
+// is not (the CV hero has no heat variables).
+const INK = "var(--j-mid, var(--ink))";
 
-export default function IntroArt() {
+export default function IntroArt({ className = "j-intro-art" }) {
+  // Two of these can be in the document at once (the CV hero behind the
+  // journey's landing beat). A url(#id) resolves to the FIRST match, and a
+  // gradient inside a hidden SVG does not paint in every browser — so each
+  // instance gets its own ids. useId's colons are not safe in url(#...).
+  const uid = useId().replace(/:/g, "");
+  const ramp = `jPourRamp${uid}`;
+  const hatch = `jPourHatch${uid}`;
+  const cast = `jPourCast${uid}`;
   return (
     <svg
-      className="j-intro-art j-pour"
+      className={`${className} j-pour`}
       /* Margin on every side: the plates are wider than the things they sit
          behind, and the parallax (D71) slides the nearest layer another ~19
          either way. Both the viewBox edge AND `contain: paint` clip at this
@@ -63,7 +74,7 @@ export default function IntroArt() {
             the ladle, apricot through Spain, rose through India, sky by the
             time it reaches Sweden. */}
         <linearGradient
-          id="jPourRamp"
+          id={ramp}
           gradientUnits="userSpaceOnUse"
           x1="214"
           y1="196"
@@ -76,11 +87,11 @@ export default function IntroArt() {
           <stop offset="1" stopColor="var(--sky)" />
         </linearGradient>
 
-        <pattern id="jPourHatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
+        <pattern id={hatch} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
           <line x1="0" y1="0" x2="0" y2="7" stroke={INK} strokeWidth="1" />
         </pattern>
 
-        <clipPath id="jPourCast">
+        <clipPath id={cast}>
           {CAST.map((d) => (
             <path key={d} d={d} />
           ))}
@@ -137,7 +148,7 @@ export default function IntroArt() {
           d={PIPE}
           pathLength="100"
           fill="none"
-          stroke="url(#jPourRamp)"
+          stroke={`url(#${ramp})`}
           strokeWidth="13"
           strokeLinecap="round"
         />
@@ -194,9 +205,9 @@ export default function IntroArt() {
         {/* The cavity, filling. One rectangle, clipped to the shape; the
             empty cavity is hatched so it reads as a shape before any metal
             has reached it. */}
-        <g clipPath="url(#jPourCast)">
+        <g clipPath={`url(#${cast})`}>
           <rect x="180" y="616" width="228" height="150" fill="var(--paper)" />
-          <rect x="180" y="616" width="228" height="150" fill="url(#jPourHatch)" opacity="0.55" />
+          <rect x="180" y="616" width="228" height="150" fill={`url(#${hatch})`} opacity="0.55" />
           <g className="j-pour-fill">
             <rect x="180" y="616" width="228" height="150" fill="var(--sky)" />
             <rect x="180" y="616" width="228" height="5" fill="var(--lilac)" />

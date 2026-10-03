@@ -17,7 +17,7 @@ textarea {
 }
 
 .App {
-  scrollbar-color: var(--accentColor) transparent;
+  scrollbar-color: var(--ink-faint) transparent;
   scrollbar-width: thin;
 }
 
@@ -84,33 +84,29 @@ body.dark-theme {
   --print-blend: screen;
 }
 
-/* Modern CSS Custom Properties */
+/* The CV's own vocabulary, mapped onto the print system. Older rules across
+   the site still speak in these names; pointing them at the paper tokens is
+   what lets one theme switch (body.dark-theme) restyle everything at once. */
 body {
-  /* Core Colors */
-  --primaryColor: #0f172a;
-  --secondaryColor: #334155;
-  --accentColor: #3b82f6;
-  --accentHover: #2563eb;
-  /* The journey's hot pole, for accents that reference it. */
-  --moltenColor: #f97316;
-  --backgroundColor: #ffffff;
-  --surfaceColor: #f8fafc;
-  --cardBackground: #ffffff;
+  --primaryColor: var(--ink);
+  --secondaryColor: var(--ink-soft);
+  --accentColor: var(--ink);
+  --accentHover: var(--ink);
+  --moltenColor: var(--coral);
+  --backgroundColor: var(--paper);
+  --surfaceColor: var(--paper-2);
+  --cardBackground: var(--paper);
 
-  /* Text Colors */
-  --textPrimary: #0f172a;
-  --textSecondary: #475569;
-  --textMuted: #64748b;
+  --textPrimary: var(--ink);
+  --textSecondary: var(--ink-soft);
+  --textMuted: var(--ink-faint);
 
-  /* Border & Shadow */
-  --borderColor: #e2e8f0;
-  --shadowSm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadowMd: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadowLg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadowXl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
-    0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --borderColor: var(--rule);
+  --shadowSm: none;
+  --shadowMd: 0 18px 30px -24px rgb(29 27 25 / 0.5);
+  --shadowLg: 0 24px 40px -26px rgb(29 27 25 / 0.55);
+  --shadowXl: 0 30px 50px -28px rgb(29 27 25 / 0.6);
 
-  /* Spacing System */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
@@ -119,15 +115,13 @@ body {
   --space-2xl: 3rem;
   --space-3xl: 4rem;
 
-  /* Border Radius */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+  --radius-2xl: 8px;
   --radius-full: 999px;
 
-  /* Typography */
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -139,53 +133,30 @@ body {
   --font-size-5xl: 3rem;
   --font-size-6xl: 3.75rem;
 
-  /* Line Heights */
-  --leading-tight: 1.25;
+  --leading-tight: 1.15;
   --leading-normal: 1.5;
-  --leading-relaxed: 1.625;
+  --leading-relaxed: 1.6;
 
-  /* Modern Gradients */
-  --gradientPrimary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradientAccent: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  --backgroundGradient: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  /* The tooth of the sheet: a fine noise, tinted to the ink, laid over the
+     paper colour. A background image rather than an overlay, so it is
+     printed UNDER the type, the way paper texture is. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 -0.75 0.5'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
 
-  color: var(--textPrimary);
-  background: var(--backgroundGradient);
-  background-attachment: fixed;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: var(--grain);
+  background-size: 220px 220px;
   line-height: var(--leading-normal);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
-/* Dark Theme */
 body.dark-theme {
-  /* Core Colors - Dark */
-  --primaryColor: #f8fafc;
-  --secondaryColor: #e2e8f0;
-  --accentColor: #60a5fa;
-  --accentHover: #3b82f6;
-  --moltenColor: #fb923c;
-  --backgroundColor: #030712;
-  --surfaceColor: #0b1120;
-  --cardBackground: #0f172a;
-
-  /* Text Colors - Dark */
-  --textPrimary: #f8fafc;
-  --textSecondary: #cbd5e1;
-  --textMuted: #94a3b8;
-
-  /* Border & Shadow - Dark */
-  --borderColor: #1e293b;
-  --shadowSm: 0 1px 2px 0 rgb(0 0 0 / 0.45);
-  --shadowMd: 0 4px 6px -1px rgb(0 0 0 / 0.55), 0 2px 4px -2px rgb(0 0 0 / 0.55);
-  --shadowLg: 0 10px 15px -3px rgb(0 0 0 / 0.55), 0 4px 6px -4px rgb(0 0 0 / 0.55);
-  --shadowXl: 0 20px 25px -5px rgb(0 0 0 / 0.55),
-    0 8px 10px -6px rgb(0 0 0 / 0.55);
-
-  /* Gradients - Dark */
-  --gradientPrimary: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  --gradientAccent: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-  --backgroundGradient: linear-gradient(180deg, #020617 0%, #070d1a 100%);
-
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.92 0 0 0 0 0.86 0 0 0 -0.4 0.22'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  --shadowMd: 0 18px 30px -22px rgb(0 0 0 / 0.8);
+  --shadowLg: 0 24px 40px -24px rgb(0 0 0 / 0.85);
+  --shadowXl: 0 30px 50px -26px rgb(0 0 0 / 0.9);
   color-scheme: dark;
 }
 
@@ -193,7 +164,11 @@ body.other-projects-open {
   overflow: hidden;
 }
 
-/* Modern Container with Better Spacing */
+::selection {
+  background: var(--butter);
+  color: #1d1b19;
+}
+
 .main-container {
   display: flex;
   flex-direction: column;
@@ -204,7 +179,11 @@ body.other-projects-open {
   gap: var(--space-3xl);
 }
 
-/* Enhanced Typography */
+/* --- type ----------------------------------------------------------------
+   Two voices: Instrument Serif for anything that is a title, Inter Tight for
+   everything that is read. Tracked uppercase labels do the work that bold
+   used to. */
+
 h1,
 h2,
 h3,
@@ -212,98 +191,112 @@ h4,
 h5,
 h6 {
   line-height: var(--leading-tight);
-  font-weight: 600;
-  color: var(--textPrimary);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+h1,
+h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
 h1 {
-  font-size: var(--font-size-5xl);
-  font-weight: 700;
+  font-size: clamp(3rem, 7vw, 6rem);
+  line-height: 0.92;
 }
 
 h2 {
-  font-size: var(--font-size-3xl);
+  font-size: clamp(2.4rem, 4.6vw, 3.8rem);
+  line-height: 1;
 }
 
 h3 {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
 }
 
 p {
   line-height: var(--leading-relaxed);
-  color: var(--textSecondary);
+  color: var(--ink-soft);
 }
 
-/* Modern Link Styles */
+/* A label: the tracked, uppercase line above a title. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.eyebrow::after {
+  content: "";
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+}
+
 a {
-  color: var(--accentColor);
-  text-decoration: none;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--rule-strong);
+  transition: text-decoration-color 0.2s ease;
 }
 
 a:hover {
-  color: var(--accentHover);
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 2px;
+  color: var(--ink);
+  text-decoration-color: var(--ink);
 }
 
-/* Modern Button Component */
+/* --- buttons -------------------------------------------------------------
+   Stamped labels: an ink pill that empties on hover, or an outline that
+   fills. No shadows, no lift — print does not float. */
+
 .btn {
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-lg);
-  background: var(--accentColor);
-  color: white;
-  border: none;
-  border-radius: var(--radius-lg);
+  padding: 0.7rem 1.4rem;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-full);
   font-weight: 500;
   font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadowSm);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .btn:hover {
-  background: var(--accentHover);
-  box-shadow: var(--shadowMd);
-  transform: translateY(-1px);
-}
-
-.btn:active {
-  transform: translateY(0);
-  box-shadow: var(--shadowSm);
+  background: transparent;
+  color: var(--ink);
 }
 
 .btn-secondary {
-  background: var(--surfaceColor);
-  color: var(--textPrimary);
-  border: 1px solid var(--borderColor);
+  background: transparent;
+  color: var(--ink);
 }
 
 .btn-secondary:hover {
-  background: var(--cardBackground);
-  color: var(--textPrimary);
+  background: var(--ink);
+  color: var(--paper);
 }
 
-/* Modern Card Component */
 .card {
-  background: var(--cardBackground);
-  border-radius: var(--radius-xl);
+  background: var(--paper);
+  border-radius: var(--radius-md);
   padding: var(--space-xl);
-  box-shadow: var(--shadowSm);
-  border: 1px solid var(--borderColor);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--rule);
 }
 
-.card:hover {
-  box-shadow: var(--shadowLg);
-  transform: translateY(-2px);
-  border-color: var(--accentColor);
-}
-
-/* Section Spacing */
 section {
   padding: var(--space-3xl) 0;
   scroll-margin-top: 80px; /* Account for fixed navbar height */
@@ -314,29 +307,60 @@ section:first-child {
   scroll-margin-top: 0; /* Home section doesn't need scroll margin */
 }
 
-/* Modern Footer */
+/* --- section headers -----------------------------------------------------
+   Every section opens the same way: a label, a serif title, one line of
+   standfirst. Left-aligned, like a chapter opening in a book. */
+
+.section-header,
+.projects-header,
+.contact-header {
+  max-width: 46rem;
+  margin: 0 0 var(--space-2xl);
+  text-align: left;
+}
+
+.section-header h2,
+.projects-header h2,
+.contact-header h2 {
+  margin: 0.6rem 0 0.9rem;
+  color: var(--ink);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+.section-header p,
+.projects-header p,
+.contact-header p {
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  max-width: 40rem;
+  margin: 0;
+}
+
+/* --- footer -------------------------------------------------------------- */
+
 .footer {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-lg);
-  padding: var(--space-3xl) var(--space-lg);
-  background: var(--surfaceColor);
-  border-top: 1px solid var(--borderColor);
-  margin-top: var(--space-3xl);
+  padding: var(--space-2xl) var(--space-lg);
+  border-top: 1px solid var(--ink);
+  margin: var(--space-3xl) auto 0;
+  width: min(90%, 1200px);
 }
 
 .footer h4 {
-  color: var(--textSecondary);
+  color: var(--ink-soft);
   font-size: var(--font-size-sm);
-  font-weight: 500;
+  font-weight: 400;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
 .footer h4 svg {
-  color: var(--accentColor);
+  color: var(--coral);
 }
 
 .footer-links {
@@ -346,15 +370,9 @@ section:first-child {
 }
 
 .experience-link {
-  color: var(--textSecondary);
-  transition: color 0.2s ease;
+  color: var(--ink-soft);
 }
 
-.experience-link:hover {
-  color: var(--accentColor);
-}
-
-/* Responsive Design */
 @media screen and (max-width: 1024px) {
   .main-container {
     width: 95%;
@@ -378,17 +396,15 @@ section:first-child {
     padding: var(--space-lg);
   }
 
-  h1 {
-    font-size: var(--font-size-4xl);
-  }
-
-  h2 {
-    font-size: var(--font-size-2xl);
-  }
-
   section {
     padding: var(--space-2xl) 0;
   }
+}
+
+/* Pastel plates overprint each other: multiply on paper, screen on ink. Used
+   by every printed illustration on the site. */
+.j-print {
+  mix-blend-mode: var(--print-blend);
 }
 
 /* ==========================================================================

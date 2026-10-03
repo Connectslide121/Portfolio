@@ -2,14 +2,22 @@ import React from "react";
 import "../styles/hero-teaser.css";
 
 /**
- * Beat 0, living in the hero (D2). The whole concept compressed into one
- * strip: steel pours from a ladle on the left, flows right, and cools to the
- * site's blue by the time it reaches today. Clicking opens the full journey.
+ * Beat 0, living in the hero (D2): the invitation into Journey mode, as a
+ * printed ticket. The whole concept on one strip — the pastel ramp runs warm
+ * to cool, foundry to today, with the four places marked on it like stops
+ * on a line.
  *
  * Animated with CSS only — importing GSAP here would drag it into the main
  * bundle and defeat the point of lazy-loading Journey mode.
  */
-const STREAM = "M 16 74 C 260 74 360 96 620 88 S 940 66 1184 78";
+const LINE = "M 20 44 C 300 44 420 40 620 44 S 960 48 1180 44";
+const STOPS = [
+  { x: 20, tint: "var(--sage)" },
+  { x: 330, tint: "var(--coral)" },
+  { x: 640, tint: "var(--rose)" },
+  { x: 900, tint: "var(--sky)" },
+  { x: 1180, tint: "var(--lilac)" },
+];
 
 export default function HeroTeaser({ onEnter }) {
   return (
@@ -18,60 +26,44 @@ export default function HeroTeaser({ onEnter }) {
       onClick={onEnter}
       aria-label="Take the journey — an animated walk through my career from 2005 to today"
     >
-      <svg viewBox="0 0 1200 150" preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="teaserStream" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#ff6a00" />
-            <stop offset="38%" stopColor="#ff9d3d" />
-            <stop offset="68%" stopColor="#8ab4f8" />
-            <stop offset="100%" stopColor="#3b82f6" />
-          </linearGradient>
-          <filter id="teaserGlow" x="-20%" y="-200%" width="140%" height="500%">
-            <feGaussianBlur stdDeviation="6" />
-          </filter>
-        </defs>
-
-        {/* sparks, drifting off the molten end */}
-        <g fill="#ffd08a" className="teaser-sparks">
-          {Array.from({ length: 7 }).map((_, i) => (
-            <circle key={i} cx={26 + i * 7} cy="70" r={1.6 + (i % 3) * 0.6} />
-          ))}
-        </g>
-
-        {/* the stream: molten at the foundry, cold by today */}
-        <path
-          d={STREAM}
-          fill="none"
-          stroke="url(#teaserStream)"
-          strokeWidth="14"
-          strokeLinecap="round"
-          filter="url(#teaserGlow)"
-          opacity="0.55"
-        />
-        <path
-          d={STREAM}
-          fill="none"
-          stroke="url(#teaserStream)"
-          strokeWidth="4"
-          strokeLinecap="round"
-        />
-        {/* a short bright dash travelling the length of it */}
-        <path
-          className="teaser-pulse"
-          d={STREAM}
-          fill="none"
-          stroke="#ffffff"
-          strokeWidth="5"
-          strokeLinecap="round"
-        />
-      </svg>
-
       <span className="hero-teaser-label">
-        <span className="hero-teaser-title">Take the journey</span>
+        <span className="hero-teaser-title">
+          Take the <em>journey</em>
+        </span>
         <span className="hero-teaser-sub">
           steel → software · Spain → Sweden · 2005 → today
         </span>
       </span>
+
+      <svg viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="teaserRamp" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="var(--sage)" />
+            <stop offset="25%" stopColor="var(--coral)" />
+            <stop offset="50%" stopColor="var(--rose)" />
+            <stop offset="75%" stopColor="var(--sky)" />
+            <stop offset="100%" stopColor="var(--lilac)" />
+          </linearGradient>
+        </defs>
+        {/* two plates, slightly out of register */}
+        <path d={LINE} fill="none" stroke="url(#teaserRamp)" strokeWidth="12" strokeLinecap="round" />
+        <path
+          className="teaser-run"
+          d={LINE}
+          transform="translate(4 -4)"
+          fill="none"
+          stroke="var(--ink)"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+      </svg>
+
+      <span className="hero-teaser-stops" aria-hidden="true">
+        {STOPS.map((s) => (
+          <i key={s.x} style={{ left: `${(s.x / 1200) * 100}%`, "--tint": s.tint }} />
+        ))}
+      </span>
+
       <span className="hero-teaser-cue" aria-hidden="true">
         →
       </span>
