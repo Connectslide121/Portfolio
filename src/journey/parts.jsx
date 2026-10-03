@@ -1,8 +1,17 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { SCENE_W, VIEW_H, anchor, OVERDRAW, FLOOR, BASE, SCENE_TOP } from "./config";
+import { SCENE_W, VIEW_H, anchor, OVERDRAW, FLOOR, BASE } from "./config";
+import { blob, scatter } from "./print";
 
-/** Shared defs. Gradient stops read CSS vars, so heat recolours them for free. */
+/**
+ * Shared defs: the print textures.
+ *
+ * Every pattern draws in var(--j-mid), the key plate, which is the same at
+ * the root and in every scene — so unlike a gradient these are safe to share
+ * from the root <defs> (compare D51: a var() inside a def resolves against
+ * the DEF's inherited value, which only matters when a scene overrides it).
+ * Receding scenes still fade, because the whole group's opacity drops.
+ */
 export function JourneyDefs() {
   return (
     <defs>
@@ -11,108 +20,29 @@ export function JourneyDefs() {
         <stop offset="100%" stopColor="var(--j-sky1)" />
       </linearGradient>
 
-      {/* The fallback silhouette fill, for art outside a scene group. Real
-          scenes each get their OWN copy — see SilGradient. */}
-      <SilGradient id="jSil" />
-
-      {/* The band of air that collects at the horizon. Drawn OVER the two
-          ambient ridges and under the scenes, so the distant terrain dissolves
-          into the sky instead of ending on a hard edge. This is the same cue
-          as the per-scene haze in the render loop, applied to the layers that
-          never move enough to need one of their own. */}
-      <linearGradient
-        id="jHaze"
-        gradientUnits="userSpaceOnUse"
-        x1="0"
-        y1="470"
-        x2="0"
-        y2="930"
+      {/* Halftone: the classic print shading. Fine for a tint across a big
+          disc, coarse for sand. */}
+      <pattern id="jDots" width="9" height="9" patternUnits="userSpaceOnUse">
+        <circle cx="4.5" cy="4.5" r="1.7" fill="var(--j-mid)" />
+      </pattern>
+      <pattern id="jDotsFine" width="6" height="6" patternUnits="userSpaceOnUse">
+        <circle cx="3" cy="3" r="0.95" fill="var(--j-mid)" />
+      </pattern>
+      {/* Hatching, for anything cut, packed or cast. */}
+      <pattern
+        id="jHatch"
+        width="8"
+        height="8"
+        patternUnits="userSpaceOnUse"
+        patternTransform="rotate(-35)"
       >
-        <stop offset="0%" stopColor="var(--j-sky1)" stopOpacity="0" />
-        <stop offset="58%" stopColor="var(--j-sky1)" stopOpacity="0.3" />
-        <stop offset="100%" stopColor="var(--j-sky1)" stopOpacity="0" />
-      </linearGradient>
-
-      {/* A shaft of light leaving a source.
-          RADIAL, focused near the top of its own box rather than linear down
-          it. A linear gradient fades a shaft along its length but leaves the
-          SIDES hard, and a hard-edged beam does not read as light — the first
-          pass came out as origami: four flat triangles meeting at a point.
-          Focusing a radial gradient at the mouth fades the beam in every
-          direction at once, which is what makes overlapping shafts blend into
-          a glow instead of stacking up as visible facets.
-          objectBoundingBox, so one def serves a shaft of any size. */}
-      <radialGradient id="jShaft" cx="50%" cy="50%" r="52%" fx="50%" fy="7%">
-        <stop offset="0%" stopColor="var(--j-stream)" stopOpacity="0.95" />
-        <stop offset="42%" stopColor="var(--j-stream)" stopOpacity="0.34" />
-        <stop offset="100%" stopColor="var(--j-stream)" stopOpacity="0" />
-      </radialGradient>
-      <filter id="jGlow" x="-50%" y="-300%" width="200%" height="700%">
-        <feGaussianBlur stdDeviation="16" />
-      </filter>
-      <filter id="jGlowSoft" x="-50%" y="-300%" width="200%" height="700%">
-        <feGaussianBlur stdDeviation="5" />
-      </filter>
-      {/* Keeps the source crisp while laying a compact coloured halo behind
-          it. Light mode opts into this where ordinary blur has too little
-          contrast against the paper-like sky. */}
-      <filter id="jAccentHalo" x="-80%" y="-100%" width="260%" height="300%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
-        <feFlood
-          floodColor="var(--j-accent)"
-          floodOpacity="0.72"
-          result="colour"
-        />
-        <feComposite in="colour" in2="blur" operator="in" result="halo" />
-        <feMerge>
-          <feMergeNode in="halo" />
-          <feMergeNode in="SourceGraphic" />
-        </feMerge>
-      </filter>
+        <line x1="0" y1="0" x2="0" y2="8" stroke="var(--j-mid)" strokeWidth="1.2" />
+      </pattern>
+      {/* Ruled lines: water, glass, a reflection. */}
+      <pattern id="jRule" width="12" height="9" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="4.5" x2="12" y2="4.5" stroke="var(--j-mid)" strokeWidth="1" />
+      </pattern>
     </defs>
-  );
-}
-
-/**
- * Silhouette fill. Flat --j-mid is what made the places read as cut paper: a
- * mass that tall has more air in front of its top than its base, so the upper
- * part drifts toward the hazier --j-far while the base stays solid.
- *
- * The ramp is spent entirely in the top half, which makes it self-scaling: a
- * tower reaches the hazy end, a low shed never leaves --j-mid. Nothing has to
- * be authored per building.
- *
- * WHY ONE PER SCENE, and not a single shared def.
- *
- * A var() inside a gradient stop resolves against the GRADIENT element's own
- * inherited value — not against whatever element references it. A gradient
- * parked in the root <defs> therefore always reads the root's --j-mid, so the
- * per-scene overrides the render loop writes (the overview's own-heat blend,
- * and the depth haze) would silently do nothing to any mass painted with it.
- * Giving each scene group its own copy puts the gradient inside the subtree
- * whose variables it has to follow.
- *
- * userSpaceOnUse and vertical-only: every scene is authored in the same local
- * y space (SCENE_TOP..BASE), so the geometry is identical in all of them and
- * only the inherited colour differs.
- */
-export function SilGradient({ id }) {
-  return (
-    <linearGradient
-      id={id}
-      gradientUnits="userSpaceOnUse"
-      x1="0"
-      y1={SCENE_TOP}
-      x2="0"
-      y2={BASE}
-    >
-      <stop
-        offset="0%"
-        stopColor="color-mix(in srgb, var(--j-far) 52%, var(--j-mid))"
-      />
-      <stop offset="54%" stopColor="var(--j-mid)" />
-      <stop offset="100%" stopColor="var(--j-mid)" />
-    </linearGradient>
   );
 }
 
@@ -121,106 +51,53 @@ export function Sky() {
 }
 
 /**
- * The horizon's air, as one rect.
+ * The distant country, as contour lines rather than filled ridges.
  *
- * Sits between the ambient ridges and the scenes. The ridges are the only
- * things far enough away to need it and they never move enough to earn a
- * per-element treatment, so a single band of sky-coloured gradient laid over
- * them does the whole job: they lose contrast into the horizon instead of
- * ending on a hard silhouette edge.
- *
- * Deliberately a gradient rather than a blur. Blur on a group this wide
- * (SCENE_W * BEATS.length + OVERDRAW is ~15,800 units) forces the compositor
- * to rasterise an enormous texture, and aerial perspective — losing contrast
- * with distance — is the stronger depth cue anyway. Defocus is a camera
- * artefact; haze is what the eye actually reads as distance.
+ * On paper a filled far ridge is a grey band that flattens everything in
+ * front of it; a single hairline says "hills" just as clearly and leaves the
+ * page open. Seeded, so it never jumps between renders.
  */
-export function Haze({ span = SCENE_W * 6 }) {
-  return (
-    <rect
-      x={-OVERDRAW}
-      y="470"
-      width={span + OVERDRAW * 2}
-      height="460"
-      fill="url(#jHaze)"
-      pointerEvents="none"
-    />
-  );
-}
-
-/**
- * A volumetric shaft leaving a light source.
- *
- * ONE ELLIPSE, hung from (x, y) and rotated to aim, with the whole falloff in
- * the shared jShaft radial gradient. An ellipse rather than the obvious cone
- * polygon because a polygon's sides are hard however soft its gradient is,
- * and a beam with a visible edge reads as a shape, not as light. This is the
- * cheapest thing in the file and it does more than anything else to make flat
- * vector art look lit.
- *
- * `spread` is the beam's width at its widest, `len` how far it throws.
- *
- * They breathe via CSS (see .j-shaft in journey.css) rather than GSAP: the
- * animation is a slow, permanent idle, and handing it to the compositor keeps
- * it off the render loop entirely.
- *
- * The breathe is OPACITY ONLY, deliberately. The aim is baked into a
- * `transform` attribute whose rotate() carries its own explicit centre, so a
- * CSS transform animation would replace it outright and a transform-origin
- * would fight the centre already in the attribute. Varying brightness reads as
- * dust moving through the beam anyway, which is the thing worth showing.
- */
-export function LightShaft({
-  x,
-  y,
-  len = 280,
-  spread = 150,
-  angle = 0,
-  opacity = 1,
-  delay = 0,
-}) {
-  return (
-    <ellipse
-      className="j-shaft"
-      cx={x}
-      cy={y + len / 2}
-      rx={spread / 2}
-      ry={len / 2}
-      fill="url(#jShaft)"
-      transform={`rotate(${angle} ${x} ${y})`}
-      // The authored brightness travels as a variable, not as an opacity
-      // attribute: the CSS breathe has to MULTIPLY it (see .j-shaft), and an
-      // animation on `opacity` would replace the attribute outright and pull
-      // every shaft in the world to the same level.
-      style={{ "--shaft-o": opacity, "--shaft-delay": `${delay}s` }}
-    />
-  );
-}
-
-/** A gently undulating path across the whole world strip. */
-const wave = (span, y, amp, step, seed) => {
+export function Contour({ y, amp, step, seed, span, dash, opacity = 0.2 }) {
   let n = seed;
   const rnd = () => (n = (n * 9301 + 49297) % 233280) / 233280;
-  const pts = [`M ${-OVERDRAW} ${y}`];
-  for (let x = -OVERDRAW + step; x <= span + OVERDRAW; x += step) {
-    const cy = y + (rnd() - 0.5) * amp * 2;
-    pts.push(`Q ${x - step / 2} ${cy} ${x} ${y + (rnd() - 0.5) * amp}`);
+  const end = span + OVERDRAW;
+  const pts = [];
+  for (let x = -OVERDRAW; x <= end; x += step) {
+    pts.push([x, y - rnd() * amp]);
   }
-  return pts.join(" ");
-};
+  // Quadratic through the midpoints: each sampled crest is a control point,
+  // so the line rolls through the country without a single corner.
+  const f = (v) => v.toFixed(0);
+  let d = `M ${f(pts[0][0])} ${f(pts[0][1])}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[i];
+    const [x1, y1] = pts[i + 1];
+    d += ` Q ${f(x0)} ${f(y0)} ${f((x0 + x1) / 2)} ${f((y0 + y1) / 2)}`;
+  }
+  const last = pts[pts.length - 1];
+  d += ` L ${f(last[0])} ${f(last[1])}`;
+  return (
+    <path
+      d={d}
+      fill="none"
+      stroke="var(--j-far)"
+      strokeWidth="1.3"
+      strokeDasharray={dash}
+      strokeLinecap="round"
+      opacity={opacity}
+    />
+  );
+}
 
 /**
- * The protagonist (D6), and the journey's progress indicator.
+ * The progress line (D19), screen-anchored and filling left -> right.
  *
- * It used to live inside the parallax world, but a world-anchored line always
- * spans the full frame no matter how much of it is drawn, so it could never
- * read as progress. It is screen-anchored instead: fixed width, starting at
- * the left, filling rightwards a beat at a time. Still one path, three
- * strokes — outer glow, body, hot core — and heat still drains the glow as
- * the journey cools, so molten steel visibly freezes into a solid rail.
+ * Two plates, printed a hair out of register: a fat stroke of the current
+ * pastel and a hairline of key ink riding just above it. The misregistration
+ * is deliberate — it is the single cheapest thing that makes a line look
+ * printed instead of drawn by a browser.
  */
-const PROGRESS_D =
-  "M 8 34 C 180 34 260 20 430 26 S 720 44 900 30 S 1130 18 1292 28";
+const PROGRESS_D = "M 8 34 C 260 33 520 35 760 34 S 1130 33 1292 34";
 
 export function ProgressStream() {
   return (
@@ -230,103 +107,72 @@ export function ProgressStream() {
       preserveAspectRatio="none"
       aria-hidden="true"
     >
-      <defs>
-        <filter id="jProgGlow" x="-10%" y="-400%" width="120%" height="900%">
-          <feGaussianBlur stdDeviation="7" />
-        </filter>
-      </defs>
       <path
         data-stream
         d={PROGRESS_D}
         fill="none"
         stroke="var(--j-stream)"
-        strokeWidth="14"
-        strokeLinecap="round"
-        filter="url(#jProgGlow)"
-        style={{ opacity: "calc(0.25 + var(--jHeat) * 0.75)" }}
-      />
-      <path
-        data-stream
-        d={PROGRESS_D}
-        fill="none"
-        stroke="var(--j-stream)"
-        strokeWidth="5"
+        strokeWidth="7"
         strokeLinecap="round"
       />
       <path
         data-stream
         d={PROGRESS_D}
+        transform="translate(3 -3)"
         fill="none"
-        stroke="var(--j-streamCore)"
-        strokeWidth="2"
+        stroke="var(--j-mid)"
+        strokeWidth="1.3"
         strokeLinecap="round"
-        style={{ opacity: "calc(0.45 + var(--jHeat) * 0.55)" }}
       />
     </svg>
   );
 }
 
-/** Continuous ground so scenes read as one connected world, not slides. */
+/**
+ * The ground: a band of slightly heavier stock with one key-plate rule along
+ * its edge. Every place stands on that rule (BASE), so the world reads as one
+ * printed sheet rather than slides.
+ */
 export function Ground({ span = SCENE_W * 6 }) {
-  const edge = wave(span, 896, 14, 620, 41);
+  const x0 = -OVERDRAW;
+  const x1 = span + OVERDRAW;
   return (
     <g>
-      <path
-        d={`${edge} L ${span + OVERDRAW} ${FLOOR} L ${-OVERDRAW} ${FLOOR} Z`}
-        fill="var(--j-ground)"
-      />
-      {/* rim light along the horizon, so the floor catches the stream's heat */}
-      <path
-        d={edge}
-        fill="none"
-        stroke="var(--j-accent)"
-        strokeWidth="2.5"
-        style={{ opacity: "calc(0.18 + var(--jHeat) * 0.3)" }}
+      <rect x={x0} y={BASE} width={x1 - x0} height={FLOOR - BASE} fill="var(--j-ground)" />
+      <line x1={x0} y1={BASE} x2={x1} y2={BASE} stroke="var(--j-mid)" strokeWidth="1.6" />
+      {/* a second, fainter rule — the edge of the plate */}
+      <line
+        x1={x0}
+        y1={BASE + 9}
+        x2={x1}
+        y2={BASE + 9}
+        stroke="var(--j-mid)"
+        strokeWidth="0.8"
+        strokeDasharray="2 7"
+        opacity="0.45"
       />
     </g>
   );
 }
 
 /**
- * Ambient particle field. Deliberately ~20 elements and driven by its own
- * looping tweens, not the main timeline — atmosphere should keep breathing
- * while the camera sits still.
+ * Ambient weather. Deliberately ~20 elements and driven by its own looping
+ * tweens, not the main timeline — atmosphere should keep breathing while the
+ * camera sits still.
+ *
+ * Printed like everything else: specks of key ink for snow and dust, pastel
+ * shapes for petals and leaves, and the summer sun as a butter disc.
  */
 const PARTICLE = {
-  // Screen-space position of the active foundry's tilted ladle mouth after
-  // scene projection. Keeping this cluster tight makes the heat visibly come
-  // from the vessel instead of bubbling up across the skyline.
-  spark: { tint: "var(--j-streamCore)", x: 1408, y: 764, spread: 34, rise: 16 },
-  dust: { tint: "#d9b382", x: 700, y: 700, spread: 1100, rise: 260 },
-  snow: {
-    tint: "var(--j-snow, #eaf2ff)",
-    x: 0,
-    y: 90,
-    spread: 1800,
-    rise: 300,
-  },
-  blossom: {
-    tint: "var(--j-blossom, #f9a8d4)",
-    x: 0,
-    y: 120,
-    spread: 1800,
-    rise: 260,
-  },
-  leaf: {
-    tint: "var(--j-leaf, #d97706)",
-    x: 0,
-    y: 110,
-    spread: 1800,
-    rise: 280,
-  },
-  sun: { tint: "var(--j-sun, #ffd166)", x: 1480, y: 174, spread: 0, rise: 0 },
-};
-
-// Stable pseudo-random placement: seasonal scenery should not jump when a
-// parent rerenders (for example after switching theme).
-const scatter = (i, salt = 0) => {
-  const value = Math.sin((i + 1) * 12.9898 + salt * 78.233) * 43758.5453;
-  return value - Math.floor(value);
+  // Screen-space position of the foundry's mould mouth after scene projection
+  // (scene x 1446, y 790 -> world ~1306, 804). Sparks come off the metal
+  // landing, not off the skyline.
+  spark: { tint: "var(--coral)", x: 1290, y: 796, spread: 34, rise: 16 },
+  dust: { tint: "var(--j-mid)", x: 700, y: 700, spread: 1100, rise: 260 },
+  snow: { tint: "var(--j-mid)", x: 0, y: 90, spread: 1800, rise: 300 },
+  blossom: { tint: "var(--rose)", x: 0, y: 120, spread: 1800, rise: 260 },
+  leaf: { tint: "var(--apricot)", x: 0, y: 110, spread: 1800, rise: 280 },
+  sun: { tint: "var(--butter)", x: 1560, y: 170, spread: 0, rise: 0 },
 };
 
 export function Particles({ scene, kind, count = 22 }) {
@@ -418,21 +264,20 @@ export function Particles({ scene, kind, count = 22 }) {
         data-atmos={scene.id}
         transform={`translate(${anchor(scene.i, 1.35)},0)`}
       >
-        <circle
-          cx={origin.x}
-          cy={origin.y}
-          r="78"
+        <path
+          className="season-sun-core j-print"
+          d={blob(origin.x, origin.y, 64, 9, 0.03)}
           fill={tint}
-          filter="url(#jGlow)"
-          opacity="0.2"
         />
         <circle
-          className="season-sun-core"
           cx={origin.x}
           cy={origin.y}
-          r="42"
-          fill={tint}
-          opacity="0.88"
+          r="86"
+          fill="none"
+          stroke="var(--j-mid)"
+          strokeWidth="1"
+          strokeDasharray="2 7"
+          opacity="0.6"
         />
       </g>
     );
@@ -448,7 +293,10 @@ export function Particles({ scene, kind, count = 22 }) {
       {Array.from({ length: visualCount }).map((_, i) => {
         const x = origin.x + scatter(i, 1) * origin.spread;
         const y = origin.y - scatter(i, 2) * origin.rise;
-        const size = 2 + scatter(i, 3) * (kind === "spark" ? 3 : 4);
+        const size =
+          kind === "snow" || kind === "dust"
+            ? 1.4 + scatter(i, 3) * 1.4
+            : 2 + scatter(i, 3) * (kind === "spark" ? 3 : 4);
 
         if (kind === "leaf") {
           return (
@@ -468,12 +316,7 @@ export function Particles({ scene, kind, count = 22 }) {
               <circle cx={x + size} cy={y} r={size} />
               <circle cx={x} cy={y - size} r={size} />
               <circle cx={x} cy={y + size} r={size} />
-              <circle
-                cx={x}
-                cy={y}
-                r={size * 0.55}
-                fill="var(--j-blossom-core, #fbbf24)"
-              />
+              <circle cx={x} cy={y} r={size * 0.5} fill="var(--j-mid)" />
             </g>
           );
         }

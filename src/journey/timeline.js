@@ -40,15 +40,15 @@ const ARCHITECT_PIVOT = { x: SCENE_W / 2, y: 540 };
 // and the ground, which stay shared: from above there is one sky, but each
 // place keeps its own light.
 //
-// `far` is on the list because the silhouette gradient's hazy top stop reads
-// it (SilGradient in parts.jsx); it was not needed while the masses were a
-// flat --j-mid.
+// Since the print redesign the places are painted with --j-mid (the key
+// plate) and fixed pastels; `far` stays on the list so anything hairlined in
+// it inside a scene follows the same blend.
 const TINT_KEYS = ["mid", "far", "ground", "stream", "streamCore", "accent"];
 
-// Depth haze only touches the two the silhouette itself is painted with.
-// Putting sky in front of a place's LIGHTS as well would be wrong: a distant
-// window is dimmer, not bluer, and hazing --j-stream drained the one thing
-// still identifying a receding beat.
+// Depth haze only touches the key plate: a receding place's ink fades back
+// toward the paper, which is how distance reads on a print. Its pastels need
+// nothing — they overprint, so the group's falling opacity already returns
+// them to the paper colour.
 const HAZE_KEYS = ["mid", "far"];
 
 // The camera's zoom pivots on the ground line, not the frame centre: pivoting
@@ -178,7 +178,10 @@ export function buildJourney({ root }) {
         const u = scale / CURRENT_SCALE;
         ax = VANISH.x + (CURRENT_ANCHOR.x - VANISH.x) * u;
         ay = VANISH.y + (CURRENT_ANCHOR.y - VANISH.y) * u;
-        opacity = Math.max(PAST_MIN_OPACITY, 1 - t * 0.27);
+        // Faster than the night scenes did (0.27): on paper a receding print
+        // keeps its pastels at full colour until opacity takes them, so the
+        // past has to give way sooner or it crowds the card.
+        opacity = Math.max(PAST_MIN_OPACITY, 1 - t * 0.4);
       }
 
       // Blend toward the bird's-eye placement. Silhouettes stay upright —
@@ -323,6 +326,14 @@ export function buildJourney({ root }) {
     // goes as the camera rises and the office behind it carries the beat.
     if (archGroup)
       archGroup.setAttribute("opacity", (1 - Math.min(1, ov * 1.6)).toFixed(3));
+    // ...and the office behind it does the opposite: ghosted while the graph
+    // is the subject, solid again from above, where it is the place. Phones
+    // never show the graph (D16), so they always get the solid office.
+    if (archBackdrop)
+      archBackdrop.setAttribute(
+        "opacity",
+        narrow ? "1" : (0.16 + 0.84 * Math.min(1, ov * 1.6)).toFixed(3),
+      );
 
     // Laid out from above, every place was painted in the CURRENT heat, so
     // the foundry years arrived looking like the cold Swedish evening of the
@@ -423,6 +434,7 @@ export function buildJourney({ root }) {
   const bloom = root.querySelector("[data-bloom]");
   const architectVisual = root.querySelector("[data-architect-visual]");
   const archGroup = root.querySelector("[data-arch]");
+  const archBackdrop = root.querySelector("[data-arch-backdrop]");
   const archNodes = root.querySelectorAll("[data-arch-node]");
   const archEdges = root.querySelectorAll("[data-arch-edge] path");
 

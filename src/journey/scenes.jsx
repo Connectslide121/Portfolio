@@ -1,120 +1,145 @@
 import React from "react";
 import { BASE } from "./config";
-import { LightShaft } from "./parts";
 import { logoFor } from "../data/techLogos";
-
-// Fallback for a scene rendered outside a data-scene group; World.jsx passes
-// each beat its own.
-const SIL = "url(#jSil)";
+import { blob, hill, scatter } from "./print";
 
 // Every place is authored as coordinates — no drawing tool, no raster assets
 // (D7). Each scene fits local 0..1080, to the right of the beat card.
 //
-// Silhouette masses fill with url(#jSil), never a flat var(--j-mid): the
-// gradient is what stops a tall building reading as cut paper (see the def in
-// parts.jsx). Thin strokes and small props keep the flat variable — a 2px line
-// has nowhere to put a gradient.
+// THE PRINT GRAMMAR. Each place is a poster, not an illustration, and is built
+// from three plates and nothing else:
 //
-// Each place also carries LIGHT SHAFTS from whatever is lit in it. One polygon
-// each, aimed by a rotate, faded by the shared jShaft gradient. They are the
-// cheapest thing in the file and they do more than anything else to make flat
-// vector read as a lit space rather than an arrangement of shapes.
+//   1. PASTEL — two or three big, slightly irregular discs and fields that
+//      overprint each other (.j-print: multiply on paper, screen on ink), so
+//      where they overlap a third colour appears for free.
+//   2. KEY — ONE solid silhouette in var(--j-mid) that says what the place
+//      is. Flat, no gradient, no rim light: on a print the key plate is the
+//      darkest, crispest thing on the sheet and the contrast is the point.
+//   3. HAIRLINE — drafting marks in the same key ink at 1-1.5 units: a
+//      dotted orbit, a dimension line, specks. They are what make it read as
+//      designed rather than drawn.
+//
+// The pastels are fixed per place (from the print system in styles.css) and
+// do NOT ride the heat: each place keeps its own colours, so the recap's
+// laid-out view shows the arc warm -> cool by itself. The key plate does
+// ride it (var(--j-mid)), which is what the depth haze and the overview
+// blend in timeline.js write to.
 
-/** Sawtooth north-light roof — the classic foundry / workshop hall. */
-const sawtooth = (x, y, teeth, w, h) => {
-  let d = `M ${x} ${y}`;
-  for (let i = 0; i < teeth; i++) {
-    d += ` L ${x + i * w} ${y - h} L ${x + (i + 1) * w} ${y}`;
-  }
-  return `${d} L ${x + teeth * w} ${BASE} L ${x} ${BASE} Z`;
-};
+const KEY = "var(--j-mid)";
+
+/** Pastel plate. A disc as a print lands it. */
+const Disc = ({ cx, cy, r, tint, seed = 1, amount = 0.028, opacity }) => (
+  <path className="j-print" d={blob(cx, cy, r, seed, amount)} fill={tint} opacity={opacity} />
+);
+
+/** A dotted orbit — the hairline that turns a coloured circle into a mark. */
+const Orbit = ({ cx, cy, r, opacity = 0.7 }) => (
+  <circle
+    cx={cx}
+    cy={cy}
+    r={r}
+    fill="none"
+    stroke={KEY}
+    strokeWidth="1.1"
+    strokeDasharray="2 7"
+    strokeLinecap="round"
+    opacity={opacity}
+  />
+);
+
+/** Specks of key ink scattered over a box — sparks, snow, dust, stars. */
+const Specks = ({ x, y, w, h, n, seed = 0, r = 1.8 }) => (
+  <g fill={KEY}>
+    {Array.from({ length: n }).map((_, i) => (
+      <circle
+        key={i}
+        cx={(x + scatter(i, seed) * w).toFixed(1)}
+        cy={(y + scatter(i, seed + 1) * h).toFixed(1)}
+        r={(r * (0.6 + scatter(i, seed + 2) * 0.8)).toFixed(2)}
+      />
+    ))}
+  </g>
+);
 
 /**
- * Light spilled onto the floor in front of a source. Every accent uses one:
- * a glow with nothing under it looks pasted on, whereas light landing on the
- * ground places it in the scene.
+ * A dimension line, as on an engineering drawing: two extension ticks, the
+ * line between them with arrowheads, and the figure written over it.
  */
-const Spill = ({ x, y, rx = 110, ry = 18, tint = "var(--j-stream)", opacity = 0.32 }) => (
-  <ellipse cx={x} cy={y} rx={rx} ry={ry} fill={tint} filter="url(#jGlow)" opacity={opacity} />
+const Dimension = ({ x1, x2, y, label }) => (
+  <g stroke={KEY} strokeWidth="1.1" fill="none" opacity="0.75">
+    <path d={`M ${x1} ${y - 12} V ${y + 12} M ${x2} ${y - 12} V ${y + 12} M ${x1} ${y} H ${x2}`} />
+    <path d={`M ${x1 + 10} ${y - 4} L ${x1} ${y} L ${x1 + 10} ${y + 4} M ${x2 - 10} ${y - 4} L ${x2} ${y} L ${x2 - 10} ${y + 4}`} />
+    <text
+      x={(x1 + x2) / 2}
+      y={y - 10}
+      textAnchor="middle"
+      stroke="none"
+      fill={KEY}
+      fontSize="15"
+      letterSpacing="1.5"
+      style={{ fontFamily: "var(--sans)" }}
+    >
+      {label}
+    </text>
+  </g>
 );
 
-/** The bright edge a nearby light throws along a silhouette facing it. */
-const Rim = ({ d, width = 2.5, opacity = 0.7, tint = "var(--j-streamCore)" }) => (
-  <path d={d} fill="none" stroke={tint} strokeWidth={width} strokeLinecap="round" opacity={opacity} />
+/** A small person, as the key plate prints one: a head and a rounded body. */
+const Figure = ({ x, base = BASE, s = 1 }) => (
+  <g fill={KEY}>
+    <circle cx={x} cy={base - 50 * s} r={10 * s} />
+    <path
+      d={`M ${x - 15 * s} ${base} V ${base - 22 * s} Q ${x - 15 * s} ${base - 37 * s} ${x} ${base - 37 * s} Q ${x + 15 * s} ${base - 37 * s} ${x + 15 * s} ${base - 22 * s} V ${base} Z`}
+    />
+  </g>
 );
 
-/** A grid of lit windows — reused by the school and the office. */
-const windows = (x, y, cols, rows, gap = 34, size = 16) =>
-  Array.from({ length: cols * rows }).map((_, i) => ({
-    x: x + (i % cols) * gap,
-    y: y + Math.floor(i / cols) * (gap + 4),
-    size,
-    lit: (i * 7) % 5 !== 0,
-  }));
+/* ------------------------------------------------------------------------ */
 
-/** 2005-2010 — an academic campus, intentionally unlike the later factory. */
-export function Origin({ ax, sil = SIL }) {
+/**
+ * 2005-2010 — engineering studies. A classical faculty front under a drafting
+ * compass: the place where "how things are made" was learned. The polymer
+ * chain in the sky is the first degree, the dimension line the second.
+ */
+export function Origin({ ax }) {
+  const X = (x) => ax + x;
+  const cols = [0, 1, 2, 3, 4, 5].map((i) => X(352 + i * 74));
   return (
     <g>
-      <g fill={sil}>
-        {/* broad teaching block */}
-        <rect x={ax + 96} y="556" width="570" height={BASE - 556} rx="3" />
-        <rect x={ax + 76} y="534" width="610" height="24" rx="3" />
-        {/* a regular human-scale double entrance */}
-        <rect x={ax + 144} y="766" width="76" height={BASE - 766} rx="2" fill="var(--j-ground)" opacity="0.76" />
-        {/* library / clock tower: a pitched cap keeps it civic, not industrial */}
-        <rect x={ax + 684} y="484" width="132" height={BASE - 484} />
-        <polygon points={`${ax + 672},484 ${ax + 750},420 ${ax + 828},484`} />
-        {/* curved lecture theatre */}
-        <path d={`M ${ax + 836} ${BASE} V 704 Q ${ax + 952} 622 ${ax + 1068} 704 V ${BASE} Z`} />
-      </g>
-      {/* regular classroom windows and the clock face */}
-      <g className="building-windows" fill="var(--j-streamCore)" opacity="0.34">
-        {[
-          ...windows(ax + 268, 596, 2, 5),
-          ...windows(ax + 466, 596, 6, 5),
-        ].map(
-          (w, i) => w.lit && <rect key={i} x={w.x} y={w.y} width={w.size} height="22" />
-        )}
-        {windows(ax + 708, 532, 3, 7, 34, 15).map(
-          (w, i) => w.lit && <rect key={`t${i}`} x={w.x} y={w.y} width={w.size} height="19" />
-        )}
-      </g>
-      <g className="campus-details" fill="none" stroke="var(--j-streamCore)" opacity="0.42">
-        <circle cx={ax + 750} cy="466" r="22" strokeWidth="3" />
-        <path d={`M ${ax + 750} 452 V 467 L ${ax + 762} 474`} strokeWidth="3" strokeLinecap="round" />
-        {/* two glazed door leaves, a centre seam and one shallow step */}
-        <rect x={ax + 148} y="770" width="68" height={BASE - 770} rx="1" strokeWidth="2.5" />
-        <path d={`M ${ax + 182} 770 V ${BASE} M ${ax + 154} 794 H ${ax + 210} M ${ax + 136} ${BASE} H ${ax + 228}`} strokeWidth="2" />
-      </g>
-      <g fill="var(--j-streamCore)" opacity="0.55">
-        <circle cx={ax + 176} cy="812" r="2.5" />
-        <circle cx={ax + 188} cy="812" r="2.5" />
-      </g>
+      <Disc cx={X(620)} cy={560} r={210} tint="var(--butter)" seed={2} />
+      <Disc cx={X(810)} cy={455} r={128} tint="var(--lilac)" seed={5} />
+      <Disc cx={X(330)} cy={650} r={96} tint="var(--sage)" seed={8} />
+      <Orbit cx={X(620)} cy={560} r={258} />
 
-      {/* A dark inset window contains the study scene without becoming a
-          bright screen-like panel. */}
-      <g className="acc study-lamp">
-        <rect x={ax + 326} y="550" width="128" height="138" rx="3" fill="var(--j-ground)" opacity="0.54" />
-        <rect x={ax + 326} y="550" width="128" height="138" rx="3" fill="none" stroke="var(--j-streamCore)" strokeWidth="2" opacity="0.3" />
-        <path d={`M ${ax + 320} 688 H ${ax + 460}`} stroke="var(--j-streamCore)" strokeWidth="4" opacity="0.32" />
-        {/* hanging lamp and its soft cone */}
-        <path d={`M ${ax + 390} 568 V 598`} stroke="var(--j-streamCore)" strokeWidth="2" opacity="0.5" />
-        <path d={`M ${ax + 378} 610 Q ${ax + 390} 594 ${ax + 402} 610 Z`} fill="var(--j-streamCore)" />
-        <circle cx={ax + 390} cy="610" r="4" fill="#fff7e8" filter="url(#jGlowSoft)" />
-        <path d={`M ${ax + 380} 612 L ${ax + 350} 674 H ${ax + 430} L ${ax + 400} 612 Z`} fill="var(--j-stream)" filter="url(#jGlowSoft)" opacity="0.2" />
-        <g fill="var(--j-ground)" opacity="0.94">
-          <rect x={ax + 382} y="654" width="52" height="6" rx="2" />
-          <rect x={ax + 426} y="660" width="5" height="23" />
-          <circle cx={ax + 362} cy="628" r="9" />
-          <path d={`M ${ax + 351} 642 Q ${ax + 362} 636 ${ax + 373} 642 L ${ax + 380} 658 H ${ax + 348} Z`} />
-          <path d={`M ${ax + 371} 645 L ${ax + 390} 654`} fill="none" stroke="var(--j-ground)" strokeWidth="7" strokeLinecap="round" />
-        </g>
+      {/* the faculty: pediment, entablature, six columns, steps */}
+      <g fill={KEY}>
+        <path d={`M ${X(318)} 548 L ${X(560)} 446 L ${X(802)} 548 Z`} />
+        <rect x={X(318)} y="556" width="484" height="26" />
+        {cols.map((x) => (
+          <rect key={x} x={x} y="590" width="34" height="196" />
+        ))}
+        <rect x={X(300)} y="786" width="520" height="18" />
+        <rect x={X(282)} y="808" width="556" height="18" />
+        <rect x={X(264)} y="830" width="592" height="18" />
       </g>
+      {/* the tympanum's round window, cut back to the paper */}
+      <circle cx={X(560)} cy={514} r={15} fill="var(--j-sky1)" />
 
-      {/* The study window is the only light on the campus, so it is the only
-          thing here that can throw a shaft. */}
-      <LightShaft x={ax + 390} y={686} len={190} spread={230} angle={9} opacity={0.45} />
+      <Dimension x1={X(318)} x2={X(802)} y={400} label="484" />
+
+      {/* polymer chain — three linked rings, hairline */}
+      <g fill="none" stroke={KEY} strokeWidth="1.4" opacity="0.8">
+        {[0, 1, 2].map((i) => {
+          const cx = X(880) + i * 46;
+          const cy = 300 + (i % 2) * 26;
+          const pts = Array.from({ length: 6 }).map((_, k) => {
+            const a = (Math.PI / 3) * k + Math.PI / 6;
+            return `${(cx + Math.cos(a) * 26).toFixed(1)},${(cy + Math.sin(a) * 26).toFixed(1)}`;
+          });
+          return <polygon key={i} points={pts.join(" ")} />;
+        })}
+      </g>
+      <Specks x={X(60)} y={300} w={240} h={220} n={7} seed={3} r={1.6} />
     </g>
   );
 }
@@ -122,471 +147,289 @@ export function Origin({ ax, sil = SIL }) {
 /**
  * 2011-2023 — the steel foundry.
  *
- * The accent is the pour: a tilted ladle running molten steel into a sand
- * mould, with the stream the brightest thing in the frame.
- *
- * The technique that makes it read is RIM LIGHT. The stream is a light
- * source, so the edges facing it catch a bright line while the rest of the
- * silhouette stays dark. Without that the props were unlit cut-outs sitting
- * near a glow; with it they belong to the same scene.
+ * The furnace is two overprinted discs; the hall is the key plate with a
+ * north-light roof; the pour runs from a tipped ladle into a hatched sand
+ * mould, and is the only thing in the frame that moves.
  */
-export function Foundry({ ax, sil = SIL }) {
-  const POUR = `M ${ax + 895} 714 C ${ax + 884} 742 ${ax + 862} 772 ${ax + 824} 801`;
+export function Foundry({ ax }) {
+  const X = (x) => ax + x;
+  const POUR = `M ${X(796)} 597 C ${X(770)} 640 ${X(752)} 700 ${X(746)} 800`;
   return (
     <g>
-      {/* Sawtooth glazing faces the sky, so a hall running at night spills
-          UPWARD out of the roof — behind the silhouette, into the dark. */}
-      <LightShaft x={ax + 246} y={520} len={340} spread={210} angle={188} opacity={0.24} />
-      <LightShaft x={ax + 364} y={520} len={320} spread={200} angle={185} opacity={0.2} delay={1.6} />
-      <LightShaft x={ax + 482} y={520} len={350} spread={214} angle={191} opacity={0.22} delay={3.1} />
-      <g fill={sil}>
-        {/* chimney + cap */}
-        <polygon points={`${ax + 40},${BASE} ${ax + 56},262 ${ax + 112},262 ${ax + 128},${BASE}`} />
-        <rect x={ax + 28} y="240" width="112" height="26" />
-        {/* main hall with north-light roof */}
-        <path d={sawtooth(ax + 176, 576, 4, 118, 76)} />
-        {/* annex */}
-        <rect x={ax + 640} y="648" width="150" height={BASE - 648} />
-        <rect x={ax + 624} y="620" width="184" height="18" />
-        {/* overhead crane, hook and a bowl-shaped ladle */}
-        <rect x={ax + 748} y="566" width="298" height="12" />
-        <rect x={ax + 958} y="578" width="8" height="42" />
-        <path d={`M ${ax + 962} 618 C ${ax + 962} 648 ${ax + 948} 652 ${ax + 936} 664`} fill="none" stroke="var(--j-mid)" strokeWidth="9" />
-        <g transform={`rotate(-19 ${ax + 946} 700)`}>
-          <path d={`M ${ax + 876} 662 L ${ax + 1018} 662 L ${ax + 994} 738 Q ${ax + 946} 770 ${ax + 898} 738 Z`} />
-          <rect x={ax + 864} y="650" width="166" height="18" rx="8" />
-          <circle cx={ax + 884} cy="696" r="13" />
-          <circle cx={ax + 1008} cy="696" r="13" />
-        </g>
-        {/* cope and drag: the two halves of a sand mould */}
-        <path d={`M ${ax + 758} ${BASE} L ${ax + 766} 812 H ${ax + 878} L ${ax + 888} ${BASE} Z`} />
-        <rect x={ax + 750} y="806" width="138" height="12" rx="3" />
+      <Disc cx={X(640)} cy={520} r={250} tint="var(--apricot)" seed={1} />
+      <Disc cx={X(820)} cy={640} r={150} tint="var(--butter)" seed={4} />
+      <Disc cx={X(250)} cy={400} r={95} tint="var(--rose)" seed={7} />
+      <Orbit cx={X(640)} cy={520} r={300} />
+      {/* halftone over the top half of the furnace, like a tint screen */}
+      <path d={blob(X(640), 520, 250, 1, 0.028)} fill="url(#jDotsFine)" opacity="0.16" style={{ clipPath: "inset(0 0 50% 0)" }} />
+
+      {/* sand floor */}
+      <rect className="j-print" x={X(-20)} y="806" width="1120" height="42" fill="var(--butter)" />
+
+      {/* smoke */}
+      <g>
+        <Disc cx={X(150)} cy={292} r={34} tint="var(--lilac)" seed={11} amount={0.06} />
+        <Disc cx={X(192)} cy={240} r={46} tint="var(--lilac)" seed={12} amount={0.06} />
+        <Disc cx={X(252)} cy={204} r={30} tint="var(--lilac)" seed={13} amount={0.06} />
       </g>
 
-      {/* --- the accent ------------------------------------------------- */}
-      <g className="fy-pour">
-        {/* light thrown onto the floor around the mould */}
-        <ellipse
-          cx={ax + 820}
-          cy={BASE - 4}
-          rx="170"
-          ry="26"
-          fill="var(--j-stream)"
-          filter="url(#jGlow)"
-          opacity="0.3"
-        />
-
-        {/* rim light: the edges facing the stream catch it */}
-        <g
-          fill="none"
-          stroke="var(--j-streamCore)"
-          strokeLinecap="round"
-          opacity="0.75"
-        >
-          <path d={`M ${ax + 895} 714 Q ${ax + 936} 766 ${ax + 994} 738`} strokeWidth="3" />
-          <path d={`M ${ax + 766} 812 H ${ax + 878}`} strokeWidth="3" />
-          <path d={`M ${ax + 758} ${BASE} L ${ax + 766} 812`} strokeWidth="2" opacity="0.6" />
-        </g>
-
+      {/* the hall: north-light sawtooth, chimney */}
+      <g fill={KEY}>
         <path
-          d={POUR}
-          fill="none"
-          stroke="var(--j-stream)"
-          strokeWidth="24"
-          strokeLinecap="round"
-          filter="url(#jGlow)"
-          opacity="0.8"
+          d={`M ${X(60)} ${BASE} V 640 L ${X(130)} 580 V 640 L ${X(200)} 580 V 640 L ${X(270)} 580 V 640 L ${X(340)} 580 V 640 L ${X(410)} 580 V 640 L ${X(480)} 580 V ${BASE} Z`}
         />
-        <path
-          d={POUR}
-          fill="none"
-          stroke="var(--j-stream)"
-          strokeWidth="8"
-          strokeLinecap="round"
-          filter="url(#jGlowSoft)"
-        />
-        <path
-          d={POUR}
-          fill="none"
-          stroke="var(--j-streamCore)"
-          strokeWidth="3.5"
-          strokeLinecap="round"
-        />
-        {/* a brighter slug running down, so the stream reads as flowing */}
-        <path
-          className="fy-pour-run"
-          d={POUR}
-          fill="none"
-          stroke="#ffffff"
-          strokeWidth="5"
-          strokeLinecap="round"
-        />
-
-        {/* molten pool in the mould, and the glow off the ladle's lip */}
-        <ellipse
-          className="fy-pool"
-          cx={ax + 824}
-          cy="811"
-          rx="54"
-          ry="11"
-          fill="var(--j-stream)"
-          filter="url(#jGlowSoft)"
-        />
-        <ellipse cx={ax + 824} cy="811" rx="40" ry="6.5" fill="var(--j-streamCore)" />
-        <ellipse
-          cx={ax + 898}
-          cy="711"
-          rx="20"
-          ry="10"
-          fill="var(--j-streamCore)"
-          filter="url(#jGlowSoft)"
-          opacity="0.9"
-        />
+        <rect x={X(128)} y="330" width="26" height="260" />
+        <rect x={X(120)} y="320" width="42" height="12" />
       </g>
-
-      {/* Heat rising off the filled mould — in front, because it is between
-          the camera and the pour. */}
-      <LightShaft x={ax + 824} y={802} len={300} spread={250} angle={183} opacity={0.42} delay={0.7} />
-    </g>
-  );
-}
-
-/** 2017 — the second plant, India. */
-export function IndiaCity({ ax, sil = SIL }) {
-  return (
-    <g>
-      <IndiaSilhouette ax={ax} sil={sil} />
-      {/* Rays off the sun World.jsx paints behind this skyline. Authored
-          here so they recede with the place, not with the sky. */}
-      <LightShaft x={ax + 590} y={330} len={600} spread={340} angle={-34} opacity={0.26} />
-      <LightShaft x={ax + 590} y={330} len={660} spread={320} angle={-12} opacity={0.22} delay={1.2} />
-      <LightShaft x={ax + 590} y={330} len={640} spread={340} angle={11} opacity={0.25} delay={2.4} />
-      <LightShaft x={ax + 590} y={330} len={580} spread={300} angle={31} opacity={0.2} delay={3.6} />
-      <IndiaAccent ax={ax} />
-    </g>
-  );
-}
-
-function IndiaSilhouette({ ax, sil = SIL }) {
-  const towers = [
-    [20, 566, 108],
-    [148, 624, 84],
-    [258, 512, 98],
-    [860, 592, 122],
-    [1000, 544, 88],
-  ];
-  return (
-    <g fill={sil}>
-      {towers.map(([x, y, w], i) => (
-        <rect key={i} x={ax + x} y={y} width={w} height={BASE - y} />
-      ))}
-      {/* domed hall — arc + drum + finial */}
-      <path d={`M ${ax + 420} 664 A 170 170 0 0 1 ${ax + 760} 664 Z`} />
-      <rect x={ax + 420} y="664" width="340" height={BASE - 664} />
-      <rect x={ax + 582} y="470" width="16" height="52" />
-      {/* flanking minarets */}
-      <rect x={ax + 386} y="596" width="26" height={BASE - 596} />
-      <rect x={ax + 768} y="596" width="26" height={BASE - 596} />
-      <path d={`M ${ax + 386} 596 A 13 13 0 0 1 ${ax + 412} 596 Z`} />
-      <path d={`M ${ax + 768} 596 A 13 13 0 0 1 ${ax + 794} 596 Z`} />
-    </g>
-  );
-}
-
-/** India's accent: one production standard installed in a new plant, then
- * taught to the local team. The visual reads left-to-right as
- * specification -> CAD -> mould -> approved part. */
-function IndiaAccent({ ax }) {
-  return (
-    <g className="acc india-rollout">
-      <Spill x={ax + 616} y={BASE - 1} rx="188" ry="22" opacity="0.2" />
-
-      {/* A single illuminated process board inside the plant. */}
-      <rect x={ax + 458} y="612" width="284" height="126" rx="8" fill="var(--j-ground)" opacity="0.56" />
-      <rect x={ax + 458} y="612" width="284" height="126" rx="8" fill="none" stroke="var(--j-streamCore)" strokeWidth="2" opacity="0.38" />
-
-      {/* the controlled specification entering the workflow */}
-      <g fill="none" stroke="var(--j-streamCore)" strokeLinecap="round" strokeLinejoin="round">
-        <rect x={ax + 476} y="636" width="38" height="58" rx="3" strokeWidth="3" />
-        <path d={`M ${ax + 487} 636 V 630 H ${ax + 503} V 636`} strokeWidth="4" />
-        <path d={`M ${ax + 485} 652 L ${ax + 490} 657 L ${ax + 499} 647 M ${ax + 485} 672 L ${ax + 490} 677 L ${ax + 499} 667`} strokeWidth="2.5" />
-      </g>
-
-      {/* specification -> CAD -> mould -> approved casting */}
-      <path d={`M ${ax + 516} 665 H ${ax + 708}`} fill="none" stroke="var(--j-stream)" strokeWidth="8" filter="url(#jGlowSoft)" opacity="0.54" />
-      <path className="india-process-flow" d={`M ${ax + 516} 665 H ${ax + 708}`} fill="none" stroke="var(--j-streamCore)" strokeWidth="3" strokeLinecap="round" />
-      {[552, 616, 680].map((x, i) => (
-        <circle key={x} className={`india-process-node india-process-node--${i + 1}`} cx={ax + x} cy="665" r="22" fill="var(--j-ground)" stroke="var(--j-streamCore)" strokeWidth="3" />
-      ))}
-      {/* CAD drawing */}
-      <path d={`M ${ax + 540} 674 V 653 H ${ax + 562} M ${ax + 542} 670 L ${ax + 558} 655 M ${ax + 542} 655 H ${ax + 558} V 671`} fill="none" stroke="var(--j-streamCore)" strokeWidth="2" />
-      {/* two mould halves */}
-      <path d={`M ${ax + 603} 653 H ${ax + 613} L ${ax + 617} 661 L ${ax + 621} 653 H ${ax + 631} V 677 H ${ax + 621} L ${ax + 617} 669 L ${ax + 613} 677 H ${ax + 603} Z`} fill="none" stroke="var(--j-streamCore)" strokeWidth="2" />
-      {/* approved finished part */}
-      <circle cx={ax + 680} cy="665" r="11" fill="none" stroke="var(--j-streamCore)" strokeWidth="4" />
-      <path d={`M ${ax + 691} 651 L ${ax + 697} 657 L ${ax + 708} 644`} fill="none" stroke="var(--j-streamCore)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-
-      {/* one trainer and a local team: rollout rather than negotiation */}
-      <g fill="var(--j-ground)" opacity="0.96">
-        <circle cx={ax + 488} cy="774" r="15" />
-        <path d={`M ${ax + 470} 795 Q ${ax + 488} 784 ${ax + 506} 795 L ${ax + 514} ${BASE} H ${ax + 462} Z`} />
-        <circle cx={ax + 570} cy="810" r="13" />
-        <path d={`M ${ax + 552} 828 Q ${ax + 570} 818 ${ax + 588} 828 L ${ax + 594} ${BASE} H ${ax + 546} Z`} />
-        <circle cx={ax + 638} cy="810" r="13" />
-        <path d={`M ${ax + 620} 828 Q ${ax + 638} 818 ${ax + 656} 828 L ${ax + 662} ${BASE} H ${ax + 614} Z`} />
-        <circle cx={ax + 706} cy="810" r="13" />
-        <path d={`M ${ax + 688} 828 Q ${ax + 706} 818 ${ax + 724} 828 L ${ax + 730} ${BASE} H ${ax + 682} Z`} />
-      </g>
-      <path className="india-pointer" d={`M ${ax + 501} 794 L ${ax + 544} 681`} fill="none" stroke="var(--j-streamCore)" strokeWidth="5" strokeLinecap="round" />
-      <Rim d={`M ${ax + 467} 796 Q ${ax + 488} 784 ${ax + 506} 795`} width="2" opacity={0.62} />
-    </g>
-  );
-}
-
-/** 2023 — Växjö. Arrival, and the cold. */
-export function SwedenForest({ ax, sil = SIL }) {
-  // Overlapping wide triangles read as a forest; narrow ones read as obelisks.
-  const pines = Array.from({ length: 9 }).map((_, i) => {
-    const x = ax + 10 + i * 104;
-    const h = 200 + ((i * 53) % 150);
-    return { x, h, w: 118 + ((i * 29) % 46) };
-  });
-  return (
-    <g>
-      {/* Behind the pines on purpose: light coming down THROUGH a forest is
-          only ever seen in the gaps between the trunks. */}
-      <LightShaft x={ax + 300} y={248} len={700} spread={330} angle={7} opacity={0.16} />
-      <LightShaft x={ax + 648} y={248} len={660} spread={290} angle={7} opacity={0.13} delay={2.2} />
-      <g fill={sil}>
-        {pines.map((p, i) => (
-          <g key={i}>
-            <polygon points={`${p.x},${BASE} ${p.x + p.w / 2},${BASE - p.h} ${p.x + p.w},${BASE}`} />
-            {/* upper tier, tucked in — a conifer, not a spire */}
-            <polygon
-              points={`${p.x + p.w * 0.17},${BASE - p.h * 0.58} ${p.x + p.w / 2},${
-                BASE - p.h * 1.02
-              } ${p.x + p.w * 0.83},${BASE - p.h * 0.58}`}
-            />
-          </g>
+      <g fill="var(--butter)">
+        {[96, 126, 236, 266, 296].map((x) => (
+          <rect key={x} x={X(x)} y="690" width="17" height="48" />
         ))}
       </g>
-      {/* falu-red cottage — the one warm note left in the cold, kept muted so
-          it reads as a lit window at dusk rather than a toy */}
-      <g opacity="0.86">
-        <polygon points={`${ax + 812},706 ${ax + 900},640 ${ax + 988},706`} fill="#5c2018" />
-        <rect x={ax + 828} y="706" width="144" height={BASE - 706} fill="#6b271e" />
-        <rect x={ax + 922} y="760" width="30" height={BASE - 760} fill="#c9d5e6" opacity="0.6" />
+      <rect x={X(390)} y="760" width="52" height="88" fill="var(--coral)" />
+
+      {/* crane, hook, ladle */}
+      <path d={`M ${X(520)} 470 H ${X(1060)}`} stroke={KEY} strokeWidth="4" />
+      <path d={`M ${X(860)} 470 V 548`} stroke={KEY} strokeWidth="1.6" />
+      <g transform={`rotate(-28 ${X(860)} 600)`}>
+        <path d={`M ${X(790)} 560 H ${X(930)} L ${X(910)} 650 Q ${X(860)} 668 ${X(810)} 650 Z`} fill={KEY} />
+        <path d={`M ${X(790)} 560 H ${X(930)}`} stroke="var(--coral)" strokeWidth="7" />
       </g>
 
-      {/* The reset happens at a real desk: a lone figure studies beside a
-          laptop, framed by a cold Swedish night. */}
-      <g className="acc study-window study-window--code">
-        <Spill x={ax + 876} y={BASE - 2} rx="126" ry="18" tint="var(--j-streamCore)" opacity="0.2" />
-        <rect x={ax + 846} y="726" width="76" height="66" fill="var(--j-streamCore)" filter="url(#jGlowSoft)" opacity="0.72" />
-        <rect x={ax + 852} y="732" width="64" height="54" fill="#eaf2ff" opacity="0.9" />
-        <g fill="var(--j-ground)" opacity="0.96">
-          <rect x={ax + 856} y="770" width="54" height="5" />
-          <rect x={ax + 861} y="775" width="4" height="11" />
-          <rect x={ax + 902} y="775" width="4" height="11" />
-          <path d={`M ${ax + 890} 755 H ${ax + 905} L ${ax + 908} 768 H ${ax + 887} Z`} />
-          <circle cx={ax + 869} cy="750" r="7" />
-          <path d={`M ${ax + 865} 757 Q ${ax + 874} 755 ${ax + 881} 763 L ${ax + 886} 775 H ${ax + 866} Z`} />
-        </g>
-        <rect className="screen-glow" x={ax + 891} y="757" width="13" height="8" fill="#ffffff" filter="url(#jGlowSoft)" />
-        <path d={`M ${ax + 884} 732 V 786`} stroke="var(--j-mid)" strokeWidth="4" opacity="0.8" />
-        <Rim d={`M ${ax + 844} 724 H ${ax + 924} V 794`} width="2" tint="#eaf2ff" opacity={0.65} />
-        <Rim d={`M ${ax + 812} 706 L ${ax + 900} 640`} width="2" tint="#eaf2ff" opacity={0.28} />
-      </g>
+      {/* the pour: a pastel body with a cream core running down it */}
+      <path d={POUR} fill="none" stroke="var(--coral)" strokeWidth="17" strokeLinecap="round" />
+      <path d={POUR} fill="none" stroke="var(--butter)" strokeWidth="6" strokeLinecap="round" />
+      <path className="fy-pour-run" d={POUR} fill="none" stroke="#fff8e6" strokeWidth="3" strokeLinecap="round" />
 
-      {/* The cottage window, in front of the cottage it comes out of. */}
-      <LightShaft x={ax + 937} y={790} len={130} spread={110} angle={4} opacity={0.34} delay={1.1} />
+      {/* the mould */}
+      <rect x={X(676)} y="800" width="140" height="48" fill="url(#jHatch)" />
+      <rect x={X(676)} y="800" width="140" height="48" fill="none" stroke={KEY} strokeWidth="1.6" />
+      <ellipse className="fy-pool" cx={X(746)} cy="802" rx="28" ry="5" fill="var(--coral)" />
+
+      <Specks x={X(700)} y={720} w={110} h={60} n={6} seed={21} r={2.2} />
     </g>
   );
 }
 
 /**
- * A picket run. Pointed tops and two rails, drawn as one path so a garden's
- * worth of fence is a single node rather than forty.
+ * 2017 — the plant in India. An arcade of arches cut out of the key plate,
+ * a dome over it, and the team standing in the light of the openings: the
+ * standard was installed, and then it was taught.
  */
-const pickets = (x, end, top, { post = 13, gap = 17 } = {}) => {
-  let d = "";
-  for (let at = x; at < end - post; at += post + gap) {
-    d += ` M ${at} ${BASE} V ${top + 9} L ${at + post / 2} ${top} L ${at + post} ${top + 9} V ${BASE} Z`;
-  }
-  // The two rails, behind the pickets and reading through the gaps.
-  d += ` M ${x} ${top + 26} H ${end} V ${top + 34} H ${x} Z`;
-  d += ` M ${x} ${BASE - 40} H ${end} V ${BASE - 32} H ${x} Z`;
-  return d.trim();
-};
+export function IndiaCity({ ax }) {
+  const X = (x) => ax + x;
+  const arches = [0, 1, 2, 3, 4, 5, 6].map((i) => 60 + i * 145);
+  const wall =
+    `M ${X(20)} ${BASE} V 600 H ${X(1060)} V ${BASE} Z ` +
+    arches
+      .map(
+        (x) =>
+          `M ${X(x)} ${BASE} V 690 A 45 45 0 0 1 ${X(x + 90)} 690 V ${BASE} Z`,
+      )
+      .join(" ");
+  return (
+    <g>
+      <Disc cx={X(660)} cy={430} r={215} tint="var(--rose)" seed={3} />
+      <Disc cx={X(450)} cy={540} r={165} tint="var(--apricot)" seed={6} />
+      <Orbit cx={X(660)} cy={430} r={262} />
+      <rect className="j-print" x={X(0)} y="610" width="1080" height="238" fill="var(--butter)" />
+
+      {/* minarets either side of the dome */}
+      <g fill={KEY}>
+        <rect x={X(296)} y="500" width="20" height="100" />
+        <path d={`M ${X(292)} 502 Q ${X(306)} 470 ${X(320)} 502 Z`} />
+        <rect x={X(764)} y="500" width="20" height="100" />
+        <path d={`M ${X(760)} 502 Q ${X(774)} 470 ${X(788)} 502 Z`} />
+        {/* the dome and its finial */}
+        <path d={`M ${X(420)} 600 Q ${X(420)} 470 ${X(540)} 438 Q ${X(660)} 470 ${X(660)} 600 Z`} />
+        <rect x={X(538)} y="394" width="4" height="46" />
+        <path fillRule="evenodd" d={wall} />
+      </g>
+      <circle cx={X(540)} cy="390" r="7" fill="var(--coral)" />
+      <rect x={X(40)} y="612" width="1000" height="7" fill="var(--rose)" />
+
+      {/* the trainer and the team, in the openings */}
+      <Figure x={X(250)} s={1.15} />
+      <Figure x={X(395)} />
+      <Figure x={X(540)} />
+      <Figure x={X(685)} />
+      {/* the standard being explained — a sheet held up, and a pointer */}
+      <rect x={X(222)} y="742" width="24" height="32" fill="var(--j-sky1)" stroke={KEY} strokeWidth="1.6" />
+      <path className="india-pointer" d={`M ${X(266)} 800 L ${X(318)} 752`} stroke={KEY} strokeWidth="2.4" strokeLinecap="round" />
+
+      <Specks x={X(820)} y={250} w={220} h={160} n={6} seed={31} r={1.7} />
+    </g>
+  );
+}
 
 /**
- * A cherry tree: a broad, low crown on a short trunk, which is what separates
- * it from the conifers two beats earlier — those are triangles, this is a
- * cluster of circles wider than it is tall.
- *
- * It dresses for the same season the weather does (see SEASON_AMBIENT in
- * World.jsx). A cherry in full pink blossom under falling autumn leaves would
- * read as two scenes at once, so spring gets the blossom, autumn a thinning
- * amber, summer a plain full canopy, and winter bare boughs.
+ * 2023 — Växjö. A low winter sun, two hills overprinted in sky and lilac,
+ * pines in key ink, and one falu-red cottage with its window lit: the cold,
+ * and someone studying through it.
  */
-function CherryTree({ x, sil = SIL, season = "spring" }) {
+export function SwedenForest({ ax }) {
+  const X = (x) => ax + x;
+  const pine = (x, h, w = 60) =>
+    `M ${X(x - w / 2)} ${BASE} L ${X(x)} ${BASE - h} L ${X(x + w / 2)} ${BASE} Z`;
+  return (
+    <g>
+      <Disc cx={X(560)} cy={630} r={232} tint="var(--sky)" seed={5} />
+      <Orbit cx={X(560)} cy={630} r={282} />
+      <path
+        className="j-print"
+        d={hill(
+          [[X(-20), 790], [X(150), 690], [X(330), 700], [X(470), 744], [X(640), 650], [X(820), 620], [X(1000), 676], [X(1100), 700]],
+          BASE,
+        )}
+        fill="var(--lilac)"
+        opacity="0.8"
+      />
+      <path
+        className="j-print"
+        d={hill(
+          [[X(-20), 820], [X(200), 770], [X(400), 790], [X(600), 760], [X(800), 784], [X(1100), 752]],
+          BASE,
+        )}
+        fill="var(--sky)"
+        opacity="0.45"
+      />
+
+      {/* pines: tall and narrow, in stands */}
+      <g fill={KEY}>
+        <path d={pine(120, 230)} />
+        <path d={pine(168, 160, 48)} />
+        <path d={pine(72, 120, 40)} />
+        <path d={pine(850, 280, 70)} />
+        <path d={pine(906, 190, 54)} />
+        <path d={pine(954, 130, 44)} />
+      </g>
+
+      {/* the cottage, and the lit window where the reset happened */}
+      <g>
+        <path d={`M ${X(560)} 744 L ${X(630)} 690 L ${X(700)} 744 Z`} fill={KEY} />
+        <rect x={X(572)} y="744" width="116" height="104" fill="var(--coral-ink)" />
+        <rect x={X(596)} y="768" width="38" height="34" fill="var(--butter)" />
+        <path d={`M ${X(615)} 768 V 802`} stroke={KEY} strokeWidth="2" />
+        <rect x={X(650)} y="790" width="22" height="58" fill={KEY} />
+      </g>
+
+      <Specks x={X(80)} y={260} w={900} h={300} n={22} seed={41} r={1.6} />
+    </g>
+  );
+}
+
+/**
+ * A cherry tree that dresses for the same season as the weather (D68):
+ * blossom in spring, a full canopy in summer, thinning amber in autumn, bare
+ * boughs in winter. The crown is overprinted lobes; the trunk is key ink.
+ */
+function CherryTree({ x, season = "spring" }) {
   const bare = season === "winter";
-  const dots =
+  const tint =
     season === "spring"
-      ? { tint: "var(--j-blossom, #f9a8d4)", count: 22, opacity: 0.75 }
+      ? "var(--rose)"
       : season === "autumn"
-        ? { tint: "var(--j-leaf, #d97706)", count: 11, opacity: 0.6 }
-        : null;
-
-  // A crown assembled from overlapping lobes. Hand-placed rather than
-  // generated: five circles in a deliberate silhouette beat a ring of them in
-  // a tidy arc, which always reads as a lollipop.
+        ? "var(--apricot)"
+        : "var(--sage)";
   const crown = [
-    { cx: -82, cy: -258, r: 76 },
-    { cx: -8, cy: -306, r: 92 },
-    { cx: 82, cy: -264, r: 74 },
-    { cx: 20, cy: -222, r: 78 },
-    { cx: -50, cy: -318, r: 56 },
+    { cx: -80, cy: -250, r: 72 },
+    { cx: -6, cy: -300, r: 88 },
+    { cx: 80, cy: -258, r: 70 },
+    { cx: 18, cy: -218, r: 74 },
   ];
-
   return (
     <g>
-      <g fill={sil}>
-        {/* Trunk and two boughs, leaning very slightly out of true. */}
+      {!bare &&
+        crown.map((c, i) => (
+          <Disc key={i} cx={x + c.cx} cy={BASE + c.cy} r={c.r} tint={tint} seed={50 + i} amount={0.05} />
+        ))}
+      <g fill={KEY}>
         <path
-          d={`M ${x - 14} ${BASE} Q ${x - 9} ${BASE - 96} ${x - 12} ${BASE - 190} L ${x + 12} ${BASE - 190} Q ${x + 10} ${BASE - 94} ${x + 16} ${BASE} Z`}
+          d={`M ${x - 12} ${BASE} Q ${x - 8} ${BASE - 96} ${x - 10} ${BASE - 180} L ${x + 10} ${BASE - 180} Q ${x + 9} ${BASE - 94} ${x + 14} ${BASE} Z`}
         />
-        <path
-          d={`M ${x - 7} ${BASE - 158} L ${x - 70} ${BASE - 244}`}
-          stroke={sil}
-          strokeWidth="14"
-          strokeLinecap="round"
-          fill="none"
-        />
-        <path
-          d={`M ${x + 7} ${BASE - 166} L ${x + 68} ${BASE - 248}`}
-          stroke={sil}
-          strokeWidth="12"
-          strokeLinecap="round"
-          fill="none"
-        />
-        {/* Two more, thinner. Under the crown they are invisible — they are
-            here for the bare winter silhouette, which read as a slingshot
-            with only the first pair. */}
-        <path
-          d={`M ${x - 2} ${BASE - 190} L ${x - 34} ${BASE - 286} M ${x + 2} ${BASE - 184} L ${x + 30} ${BASE - 282} M ${x - 58} ${BASE - 230} L ${x - 92} ${BASE - 272} M ${x + 54} ${BASE - 236} L ${x + 88} ${BASE - 278}`}
-          stroke={sil}
-          strokeWidth="7"
-          strokeLinecap="round"
-          fill="none"
-        />
-        {!bare &&
-          crown.map((c, i) => (
-            <circle key={i} cx={x + c.cx} cy={BASE + c.cy} r={c.r} />
-          ))}
       </g>
-
-      {/* The window is the only light out here, so the crown carries a thin
-          edge on the side facing it — the same trick every other silhouette
-          in this file uses to stop reading as a cut-out. */}
-      {!bare && (
-        <Rim
-          d={`M ${x - 150} ${BASE - 262} Q ${x - 128} ${BASE - 372} ${x - 26} ${BASE - 396}`}
-          width={2}
-          tint="#eef6ff"
-          opacity={0.22}
+      <path
+        d={`M ${x - 4} ${BASE - 160} L ${x - 66} ${BASE - 240} M ${x + 6} ${BASE - 168} L ${x + 64} ${BASE - 244} M ${x} ${BASE - 178} L ${x - 26} ${BASE - 290} M ${x + 2} ${BASE - 176} L ${x + 30} ${BASE - 284}`}
+        stroke={KEY}
+        strokeWidth={bare ? 6 : 4}
+        strokeLinecap="round"
+        fill="none"
+      />
+      {bare && (
+        <path
+          d={`M ${x - 66} ${BASE - 240} L ${x - 96} ${BASE - 276} M ${x + 64} ${BASE - 244} L ${x + 92} ${BASE - 282} M ${x - 26} ${BASE - 290} L ${x - 40} ${BASE - 326} M ${x + 30} ${BASE - 284} L ${x + 48} ${BASE - 318}`}
+          stroke={KEY}
+          strokeWidth="3"
+          strokeLinecap="round"
+          fill="none"
         />
       )}
-
-      {/* Blossom or leaf, scattered around the crown's edge where light would
-          actually catch it. */}
-      {dots && (
-        <g className="acc" fill={dots.tint} opacity={dots.opacity}>
-          {Array.from({ length: dots.count }).map((_, i) => {
-            const lobe = crown[i % crown.length];
-            const angle = (i * 137.5 * Math.PI) / 180;
-            const reach = lobe.r * (0.72 + ((i * 37) % 26) / 100);
-            return (
-              <circle
-                key={i}
-                cx={x + lobe.cx + Math.cos(angle) * reach}
-                cy={BASE + lobe.cy + Math.sin(angle) * reach * 0.9}
-                r={i % 4 === 0 ? 5 : 3.5}
-              />
-            );
-          })}
-        </g>
+      {season === "spring" && (
+        <Specks x={x - 150} y={BASE - 390} w={300} h={250} n={14} seed={61} r={2} />
       )}
     </g>
   );
 }
 
-/** 2024 — the first Sprinta chapter: one developer and a makeshift setup. */
-export function SoloStudio({ ax, sil = SIL, season }) {
+/**
+ * 2024 — the first Sprinta chapter: one developer in a house, the room lit,
+ * a garden around it. The window is a butter field cut into the key plate,
+ * with the desk printed into it.
+ */
+export function SoloStudio({ ax, season }) {
+  const X = (x) => ax + x;
+  const pickets = (x0, x1) => {
+    let d = "";
+    for (let x = x0; x < x1; x += 26) d += ` M ${X(x)} ${BASE} V 780 L ${X(x + 5)} 772 L ${X(x + 10)} 780 V ${BASE}`;
+    return `${d} M ${X(x0)} 796 H ${X(x1)} M ${X(x0)} 826 H ${X(x1)}`;
+  };
   return (
     <g>
-      {/* One room lit in an otherwise dark house. Behind the roof, so it
-          reads as glow escaping rather than a lamp sitting on the tiles. */}
-      <LightShaft x={ax + 706} y={548} len={320} spread={300} angle={181} opacity={0.26} />
+      <Disc cx={X(560)} cy={520} r={215} tint="var(--sky)" seed={9} />
+      <Disc cx={X(780)} cy={400} r={88} tint="var(--butter)" seed={14} />
+      <Orbit cx={X(560)} cy={520} r={262} />
 
-      {/* The garden. The house alone was a single tall block in a frame that
-          every other beat fills corner to corner, so the plot around it is
-          drawn too: a fence along the front, a cherry tree over it, and
-          shrubs where the ground meets the wall (D68).
-    
-          The tree stands to the RIGHT of the house on purpose. The globe is
-          drawn over this part of the world and sits dead centre in the frame,
-          which is exactly where the empty ground to the left of the house
-          lands — a tree there was a shape behind a wireframe. */}
-      <g fill={sil}>
-        <path d={pickets(ax + 16, ax + 330, BASE - 104)} />
-        {/* Gateposts, taller than the pickets, with the gate standing open. */}
-        <rect x={ax + 330} y={BASE - 126} width="17" height="126" />
-        <rect x={ax + 438} y={BASE - 126} width="17" height="126" />
-        {/* The far side of the plot, running out past the tree. */}
-        <path d={pickets(ax + 1006, ax + 1318, BASE - 104)} />
-        {/* Shrubs, to stop the fence and the wall meeting on a hard line. */}
-        <ellipse cx={ax + 478} cy={BASE - 16} rx="46" ry="30" />
-        <ellipse cx={ax + 536} cy={BASE - 11} rx="34" ry="22" />
-        <ellipse cx={ax + 978} cy={BASE - 14} rx="40" ry="26" />
+      <path d={pickets(10, 300)} fill="none" stroke={KEY} strokeWidth="2" />
+      <path d={pickets(700, 1060)} fill="none" stroke={KEY} strokeWidth="2" />
+
+      <CherryTree x={X(930)} season={season} />
+
+      {/* the house */}
+      <g fill={KEY}>
+        <path d={`M ${X(340)} ${BASE} V 610 L ${X(520)} 478 L ${X(700)} 610 V ${BASE} Z`} />
+        <rect x={X(610)} y="500" width="26" height="70" />
       </g>
-      <CherryTree x={ax + 1166} sil={sil} season={season} />
-      {/* A modest top-floor room, deliberately smaller than the office that
-          follows it. The sloped roof and odd furniture keep it homemade. */}
-      <g fill={sil}>
-        <path d={`M ${ax + 430} ${BASE} V 604 L ${ax + 706} 482 L ${ax + 982} 604 V ${BASE} Z`} />
-        <rect x={ax + 404} y="594" width="602" height="18" />
-        <rect x={ax + 944} y="520" width="20" height="76" />
-        <rect x={ax + 930} y="508" width="48" height="14" />
+      {/* the lit room */}
+      <rect x={X(392)} y="642" width="256" height="158" fill="var(--butter)" />
+      <g fill={KEY}>
+        {/* desk */}
+        <rect x={X(470)} y="744" width="150" height="9" />
+        <rect x={X(478)} y="753" width="7" height="47" />
+        <rect x={X(604)} y="753" width="7" height="47" />
+        {/* laptop */}
+        <path d={`M ${X(540)} 702 H ${X(590)} L ${X(600)} 744 H ${X(530)} Z`} />
+        {/* the developer, and the chair */}
+        <circle cx={X(452)} cy="694" r="15" />
+        <path d={`M ${X(432)} 800 V 730 Q ${X(432)} 712 ${X(452)} 712 Q ${X(474)} 712 ${X(480)} 738 L ${X(520)} 744 L ${X(518)} 754 L ${X(474)} 752 V 800 Z`} />
+        <rect x={X(418)} y="752" width="10" height="48" />
       </g>
-      <g className="acc solo-studio">
-        <Spill x={ax + 720} y={BASE - 2} rx="220" ry="24" tint="var(--j-streamCore)" opacity="0.18" />
-        {/* lit attic room / cutaway */}
-        <path d={`M ${ax + 536} 626 L ${ax + 706} 550 L ${ax + 876} 626 V 826 H ${ax + 536} Z`} fill="var(--j-stream)" filter="url(#jGlowSoft)" opacity="0.22" />
-        <path d={`M ${ax + 548} 632 L ${ax + 706} 562 L ${ax + 864} 632 V 814 H ${ax + 548} Z`} fill="var(--j-streamCore)" opacity="0.2" />
-        {/* folding table, laptop, cable and a single developer */}
-        <g fill="var(--j-ground)" opacity="0.97">
-          <rect x={ax + 650} y="730" width="154" height="12" rx="3" />
-          <path d={`M ${ax + 670} 742 L ${ax + 650} 814 H ${ax + 662} L ${ax + 682} 742 Z M ${ax + 782} 742 L ${ax + 802} 814 H ${ax + 814} L ${ax + 794} 742 Z`} />
-          <path d={`M ${ax + 724} 690 H ${ax + 774} L ${ax + 786} 730 H ${ax + 716} Z`} />
-          <rect x={ax + 576} y="744" width="54" height="8" />
-          <path d={`M ${ax + 582} 752 V 814 H ${ax + 592} V 752 Z M ${ax + 616} 752 V 814 H ${ax + 626} V 752 Z`} />
-          <circle cx={ax + 624} cy="685" r="18" />
-          <path d={`M ${ax + 606} 706 Q ${ax + 626} 696 ${ax + 646} 711 L ${ax + 670} 778 H ${ax + 596} Z`} />
-          <path d={`M ${ax + 643} 716 L ${ax + 716} 733`} fill="none" stroke="var(--j-ground)" strokeWidth="14" strokeLinecap="round" />
-        </g>
-        <rect className="screen-glow" x={ax + 731} y="696" width="38" height="25" rx="2" fill="#eef6ff" filter="url(#jGlowSoft)" />
-        {/* loose charger cable and the mug are the amateur details */}
-        <path className="solo-cable" d={`M ${ax + 770} 724 C ${ax + 836} 740 ${ax + 820} 784 ${ax + 850} 800`} fill="none" stroke="var(--j-streamCore)" strokeWidth="3" strokeLinecap="round" />
-        <path d={`M ${ax + 676} 716 H ${ax + 694} V 730 H ${ax + 676} Z M ${ax + 694} 719 Q ${ax + 705} 719 ${ax + 700} 728`} fill="none" stroke="var(--j-ground)" strokeWidth="4" />
-        <Rim d={`M ${ax + 646} 712 L ${ax + 716} 730`} width="2" tint="#eef6ff" opacity={0.75} />
-      </g>
+      <rect className="screen-glow" x={X(548)} y="710" width="36" height="24" fill="var(--sky)" />
+      {/* the cable, in key ink, because the setup was makeshift */}
+      <path d={`M ${X(598)} 742 C ${X(640)} 760 ${X(610)} 790 ${X(640)} 800`} fill="none" stroke={KEY} strokeWidth="1.6" strokeDasharray="3 4" />
+
+      {/* shrubs */}
+      <Disc cx={X(330)} cy={830} r={38} tint="var(--sage)" seed={71} amount={0.07} />
+      <Disc cx={X(712)} cy={834} r={30} tint="var(--sage)" seed={72} amount={0.07} />
     </g>
   );
 }
 
-/** 2025 — the mature portfolio: several products, one shared architecture. */
-export function Office({ ax, sil = SIL }) {
+/**
+ * 2025 — the mature portfolio: a skyline in key ink over three overprinted
+ * discs, one per layer of the stack that the graph above it names.
+ */
+export function Office({ ax }) {
+  const X = (x) => ax + x;
   const blocks = [
     [40, 470, 150],
     [210, 396, 130],
@@ -597,67 +440,56 @@ export function Office({ ax, sil = SIL }) {
   ];
   return (
     <g>
-      {/* Light pollution: a working city throws its own glow up off the
-          blocks. Behind them, so the skyline stays a hard silhouette. */}
-      <LightShaft x={ax + 120} y={470} len={320} spread={250} angle={182} opacity={0.16} />
-      <LightShaft x={ax + 782} y={430} len={360} spread={290} angle={179} opacity={0.19} delay={1.8} />
-      <LightShaft x={ax + 958} y={340} len={320} spread={240} angle={177} opacity={0.15} delay={3.2} />
-      <g fill={sil}>
+      <Disc cx={X(470)} cy={560} r={220} tint="var(--sage)" seed={15} />
+      <Disc cx={X(700)} cy={450} r={160} tint="var(--sky)" seed={16} />
+      <Disc cx={X(860)} cy={650} r={120} tint="var(--lilac)" seed={17} />
+      <Orbit cx={X(600)} cy={540} r={330} opacity={0.5} />
+      <g fill={KEY}>
         {blocks.map(([x, y, w], i) => (
-          <rect key={i} x={ax + x} y={y} width={w} height={BASE - y} />
+          <rect key={i} x={X(x)} y={y} width={w} height={BASE - y} />
         ))}
-        {/* rooftop plant + mast */}
-        <rect x={ax + 916} y="300" width="42" height="44" />
-        <rect x={ax + 934} y="238" width="6" height="66" />
+        <rect x={X(916)} y="300" width="42" height="44" />
+        <rect x={X(934)} y="238" width="5" height="66" />
       </g>
-      {/* lit windows — the only warmth in the frame */}
-      <g className="building-windows" fill="var(--j-streamCore)" opacity="0.3">
-        {[
-          ...windows(ax + 62, 500, 4, 8),
-          ...windows(ax + 232, 428, 3, 10),
-          ...windows(ax + 722, 462, 4, 9),
-          ...windows(ax + 912, 372, 3, 11),
-        ].map((w, i) => w.lit && <rect key={i} x={w.x} y={w.y} width="14" height="18" />)}
-      </g>
-
-      {/* Four product windows converge on one bright platform node. */}
-      <g className="acc office-network">
-        <g fill="none" stroke="var(--j-stream)" strokeWidth="10" opacity="0.22">
-          <path d={`M ${ax + 148} 690 C ${ax + 360} 690 ${ax + 470} 748 ${ax + 610} 748`} />
-          <path d={`M ${ax + 292} 610 C ${ax + 430} 610 ${ax + 478} 720 ${ax + 610} 748`} />
-          <path d={`M ${ax + 610} 748 C ${ax + 732} 716 ${ax + 792} 620 ${ax + 808} 566`} />
-          <path d={`M ${ax + 610} 748 C ${ax + 780} 748 ${ax + 902} 684 ${ax + 946} 610`} />
-        </g>
-        <g fill="none" stroke="var(--j-streamCore)" strokeWidth="2.5" opacity="0.85">
-          <path className="network-line" d={`M ${ax + 148} 690 C ${ax + 360} 690 ${ax + 470} 748 ${ax + 610} 748`} />
-          <path className="network-line network-line--2" d={`M ${ax + 292} 610 C ${ax + 430} 610 ${ax + 478} 720 ${ax + 610} 748`} />
-          <path className="network-line network-line--3" d={`M ${ax + 610} 748 C ${ax + 732} 716 ${ax + 792} 620 ${ax + 808} 566`} />
-          <path className="network-line network-line--4" d={`M ${ax + 610} 748 C ${ax + 780} 748 ${ax + 902} 684 ${ax + 946} 610`} />
-        </g>
-        <g fill="var(--j-streamCore)" filter="url(#jGlowSoft)">
-          <circle cx={ax + 148} cy="690" r="7" />
-          <circle cx={ax + 292} cy="610" r="7" />
-          <circle cx={ax + 808} cy="566" r="7" />
-          <circle cx={ax + 946} cy="610" r="7" />
-          <circle className="platform-node" cx={ax + 610} cy="748" r="13" />
-        </g>
-        <circle cx={ax + 610} cy="748" r="5" fill="#ffffff" />
+      {/* windows, cut back to the paper — a few lit in the pastels */}
+      <g>
+        {blocks.slice(0, 5).map(([bx, by, bw], b) => {
+          const cols = Math.floor((bw - 24) / 26);
+          const rows = Math.floor((BASE - by - 60) / 34);
+          return Array.from({ length: cols * rows }).map((_, k) => {
+            const c = k % cols;
+            const r = Math.floor(k / cols);
+            const lit = scatter(k, b + 3);
+            if (lit < 0.42) return null;
+            return (
+              <rect
+                key={`${b}-${k}`}
+                x={X(bx + 16 + c * 26)}
+                y={by + 22 + r * 34}
+                width="12"
+                height="16"
+                fill={lit > 0.93 ? "var(--butter)" : "var(--j-sky1)"}
+              />
+            );
+          });
+        })}
       </g>
     </g>
   );
 }
 
+// The stack's four layers, each with its own plate.
 export const TINTS = {
-  client: "#7dd3fc",
-  compute: "#93c5fd",
-  data: "#86efac",
-  ai: "#fca5a5",
+  client: "var(--sky)",
+  compute: "var(--lilac)",
+  data: "var(--sage)",
+  ai: "var(--apricot)",
 };
 
 const PILL_H = 48;
 const PILL_R = PILL_H / 2; // fully rounded — no square corners anywhere
 const LOGO = 24; // logo box inside the pill
-const LOGO_R = 17; // the light disc behind it
+const LOGO_R = 17; // the disc behind it
 
 // Local layout. Frontend converges into the backend, which then branches two
 // ways: data one side, AI the other. AI is a sibling of the data layer, not
@@ -698,6 +530,9 @@ const link = ([x1, y1], [x2, y2]) => {
  * that came out of it: recognisable names rather than internal architecture
  * (see the note on `stack` in src/data/journey.js), wired as a flow rather
  * than laid out as a table.
+ *
+ * Printed as labels on the sheet: paper pills ruled in key ink, a pastel
+ * plate behind each logo saying which layer it belongs to.
  */
 export function StackGraph({ ax, oy = 70, groups }) {
   const byId = Object.fromEntries(groups.map((g) => [g.id, laidOut(g)]));
@@ -720,9 +555,9 @@ export function StackGraph({ ax, oy = 70, groups }) {
       <g
         data-arch-edge
         fill="none"
-        stroke="var(--j-stream)"
-        strokeWidth="1.6"
-        opacity="0.45"
+        stroke={KEY}
+        strokeWidth="1.3"
+        opacity="0.55"
       >
         {edges.map((d, i) => (
           <path key={i} d={d} />
@@ -730,9 +565,9 @@ export function StackGraph({ ax, oy = 70, groups }) {
       </g>
 
       {/* junction dots, where the flow gathers and splits */}
-      <g fill="var(--j-stream)" opacity="0.5">
+      <g fill={KEY}>
         {[J1, J2, J3, J4].map(([x, y], i) => (
-          <circle key={i} cx={x} cy={y} r="4" />
+          <circle key={i} cx={x} cy={y} r="5" />
         ))}
       </g>
 
@@ -746,26 +581,20 @@ export function StackGraph({ ax, oy = 70, groups }) {
               width={pill.w}
               height={PILL_H}
               rx={PILL_R}
-              fill="var(--j-ground)"
-              stroke={TINTS[pill.tint]}
-              strokeWidth="1.5"
-              opacity="0.95"
+              fill="var(--j-sky0)"
+              stroke={KEY}
+              strokeWidth="1.3"
             />
-            {/* Logo sits in a disc whose colour is chosen from the artwork's
-                tone, so both near-white and near-black marks stay legible
-                (see src/data/techLogos.js). Label reads left-aligned beside
-                it. */}
+            {/* The layer's plate behind the logo. Logos keep their own
+                artwork, so dark marks sit on the pastel and light ones on a
+                key-ink disc (see the tone notes in src/data/techLogos.js). */}
             {logo && (
               <>
                 <circle
                   cx={pill.x + PILL_H / 2}
                   cy={pill.cy}
                   r={LOGO_R}
-                  fill={logo.tone === "light" ? "#111827" : "#ffffff"}
-                  stroke={TINTS[pill.tint]}
-                  strokeOpacity="0.35"
-                  strokeWidth="1"
-                  opacity="0.96"
+                  fill={logo.tone === "light" ? "#1d1b19" : TINTS[pill.tint]}
                 />
                 <image
                   href={logo.src}
@@ -777,13 +606,17 @@ export function StackGraph({ ax, oy = 70, groups }) {
                 />
               </>
             )}
+            {!logo && (
+              <circle cx={pill.x + 22} cy={pill.cy} r="7" fill={TINTS[pill.tint]} />
+            )}
             <text
-              x={logo ? pill.x + PILL_H + 4 : pill.x + pill.w / 2}
+              x={logo ? pill.x + PILL_H + 4 : pill.x + 38}
               y={pill.cy + 7}
-              textAnchor={logo ? "start" : "middle"}
-              fill={TINTS[pill.tint]}
+              textAnchor="start"
+              fill={KEY}
               fontSize="20"
-              fontWeight="600"
+              fontWeight="500"
+              style={{ fontFamily: "var(--sans)" }}
             >
               {pill.label}
             </text>

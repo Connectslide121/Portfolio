@@ -50,7 +50,13 @@ export default function JourneyTrail({ index, onPick, onPrev, onNext }) {
         ‹
       </button>
 
-      <ol className="j-trail" style={{ "--trail-line": TRAIL_LINE }}>
+      <ol
+        className="j-trail"
+        style={{
+          "--trail-line": TRAIL_LINE,
+          "--progress": index / (BEATS.length - 1),
+        }}
+      >
         {BEATS.map((beat, i) => (
           <li key={beat.id}>
             <button

@@ -16,10 +16,20 @@ import JourneyTrail from "./JourneyTrail";
 import IntroArt from "./IntroArt";
 import { heatColor } from "./heat";
 import ThemeToggle from "../components/ThemeToggle";
+import Wobble from "../components/Wobble";
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/**
+ * Whether a headline already says the job title, so the card does not print
+ * it twice. "Plant manager, product designer" and "Plant Manager / Product
+ * Designer" are the same words; "The metal cools" is not ".NET Full-stack
+ * Developer", and a recruiter still needs the title.
+ */
+const words = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+const sameWords = (a, b) => words(a) === words(b);
 
 /** #journey/india deep-links straight to that beat. */
 const beatFromHash = () => {
@@ -137,8 +147,13 @@ export default function JourneyStage({ onExit }) {
             {beat.kind === "intro" ? (
               <>
                 <article className="j-card j-intro">
-                  <p className="j-intro-eyebrow">the journey · 2005 → today</p>
-                  <h1>{profile.name}</h1>
+                  <p className="j-intro-eyebrow">
+                    The journey <i aria-hidden="true" /> 2005 → today
+                  </p>
+                  <h1>
+                    {profile.name.split(" ")[0]}{" "}
+                    <Wobble>{profile.name.split(" ").slice(1).join(" ")}</Wobble>
+                  </h1>
                   <h2>{profile.title}</h2>
                   <p className="j-intro-blurb">{profile.lede}</p>
 
@@ -167,14 +182,31 @@ export default function JourneyStage({ onExit }) {
               </>
             ) : beat.kind === "projects" ? null : (
               <article className="j-card">
-                <div className="j-card-head">
+                <p className="j-card-head">
                   <span className="j-year">{beat.year}</span>
+                  <i aria-hidden="true" />
+                  <span className="j-place">{beat.place}</span>
+                </p>
+                <h2>
+                  {beat.headline ? (
+                    <>
+                      {beat.headline[0]}
+                      <br />
+                      <Wobble>{beat.headline[1]}</Wobble>
+                    </>
+                  ) : (
+                    beat.role
+                  )}
+                </h2>
+                <div className="j-card-org">
                   <OrgMarks ids={beat.orgs} size="lg" />
+                  <h3>
+                    {beat.headline && !sameWords(beat.role, beat.headline.join(" ")) && (
+                      <span className="j-role">{beat.role}</span>
+                    )}
+                    {beat.org}
+                  </h3>
                 </div>
-                <h2>{beat.role}</h2>
-                <h3>
-                  {beat.org} <span className="j-dot">·</span> {beat.place}
-                </h3>
 
                 {beat.note ? (
                   <p className="j-card-note">{beat.note}</p>

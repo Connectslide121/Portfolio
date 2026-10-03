@@ -6,19 +6,18 @@ import {
   VIEW_H,
   FOCAL,
   anchor,
-  OVERDRAW,
-  FLOOR,
   FADE_X0,
   FADE_W,
   FADE_EDGE,
   OVERVIEW,
 } from "./config";
-import { JourneyDefs, Sky, Haze, Ground, Particles, SilGradient } from "./parts";
+import { JourneyDefs, Sky, Contour, Ground, Particles } from "./parts";
 import { SCENE_BY_BEAT, StackGraph } from "./scenes";
 import { heatColor } from "./heat";
 
-// Silhouette places plus the giant year numerals from the abstract study —
-// the blend chosen in session 2 (resolves O1).
+// Printed places plus the giant year numerals (D11), re-cut in the print
+// system: hairline contours for the distant country, outlined serif years,
+// and one poster composition per place (see the grammar in scenes.jsx).
 
 // Meteorological seasons for the northern hemisphere. The journey is rooted
 // in Europe, so the ambient weather follows the current local calendar rather
@@ -57,18 +56,6 @@ const trail = (pts) => {
       ` ${p2.x} ${p2.y}`;
   }
   return d;
-};
-
-/** Ambient ridgeline for a whole layer — seeded so it stays stable per render. */
-const ridge = (y, amp, step, seed) => {
-  const pts = [];
-  let n = seed;
-  const rnd = () => (n = (n * 9301 + 49297) % 233280) / 233280;
-  const end = SCENE_W * BEATS.length + OVERDRAW;
-  for (let x = -OVERDRAW; x <= end; x += step) {
-    pts.push(`${x},${(y - rnd() * amp).toFixed(0)}`);
-  }
-  return `M ${pts.join(" L ")} L ${end} ${FLOOR} L ${-OVERDRAW} ${FLOOR} Z`;
 };
 
 export default function World({ season = "auto" }) {
@@ -134,22 +121,19 @@ export default function World({ season = "auto" }) {
 
       {/* Everything inside the camera group so the final beat can pull back. */}
       <g data-camera>
-        {/* far — ambient ridgeline only, never scene-specific */}
+        {/* far — the distant country as contour lines, never scene-specific */}
         <g data-layer="far">
-          <path d={ridge(660, 150, 240, 7)} fill="var(--j-far)" />
+          <Contour y={640} amp={150} step={260} seed={7} span={SCENE_W * BEATS.length} opacity={0.22} />
+          <Contour y={700} amp={110} step={200} seed={19} span={SCENE_W * BEATS.length} opacity={0.12} />
         </g>
 
-        {/* mid — a second, nearer ridge for depth */}
+        {/* mid — a nearer, dotted contour */}
         <g data-layer="mid">
-          <path d={ridge(778, 70, 180, 31)} fill="var(--j-far)" opacity="0.6" />
+          <Contour y={790} amp={70} step={180} seed={31} span={SCENE_W * BEATS.length} dash="1.5 8" opacity={0.5} />
         </g>
 
-        {/* The air between the ridges and the places. Everything above this
-            line in the DOM is "far"; everything below it is in the scene. */}
-        <Haze span={SCENE_W * BEATS.length} />
-
-        {/* The year sits in front of the secondary ridge, while the active
-            scene remains its foreground plane. */}
+        {/* The year, outlined in the serif: a hairline drawing of a number,
+            big enough to be architecture, quiet enough to sit behind it. */}
         <g data-layer="type">
           {BEATS.map((beat, i) =>
             beat.numeral ? (
@@ -157,13 +141,15 @@ export default function World({ season = "auto" }) {
                 key={beat.id}
                 data-atmos={beat.id}
                 data-numeral={beat.id}
-                x={anchor(i, 0.38) + FOCAL + 30}
-                y={584}
-                fill="var(--j-far)"
-                fontSize="392"
-                fontWeight="800"
-                letterSpacing="10"
-                opacity="0.62"
+                x={anchor(i, 0.38) + FOCAL + 40}
+                y={560}
+                fill="none"
+                stroke="var(--j-mid)"
+                strokeWidth="1.2"
+                fontSize="440"
+                letterSpacing="-6"
+                opacity="0.3"
+                style={{ fontFamily: "var(--serif)" }}
               >
                 {beat.numeral}
               </text>
@@ -179,45 +165,22 @@ export default function World({ season = "auto" }) {
             DOM order matters: earlier beats paint behind later ones. */}
         {BEATS.map((beat, i) => {
           const Scene = SCENE_BY_BEAT[beat.id];
-          // Its own copy of the silhouette gradient, INSIDE the group whose
-          // --j-mid / --j-far the render loop overrides per scene. A shared
-          // def in the root <defs> would read the root's values instead and
-          // ignore both the overview tint and the depth haze.
-          const sil = `jSil-${beat.id}`;
           return (
             <g key={beat.id} data-scene={i}>
-              <defs>
-                <SilGradient id={sil} />
-              </defs>
-              {/* the Indian sun, behind its skyline */}
-              {beat.id === "india" && (
-                <circle
-                  cx={FOCAL + 590}
-                  cy="316"
-                  r="236"
-                  fill="var(--j-accent)"
-                  opacity="0.2"
-                />
-              )}
               {beat.id === "architect" ? (
                 <g data-architect-visual>
-                  {Scene && (
-                    <Scene
-                      ax={FOCAL}
-                      sil={`url(#${sil})`}
-                      season={selectedSeason}
-                    />
-                  )}
+                  {/* The office is the backdrop to the stack graph, and
+                      ghosted while the graph is up — see archBackdrop in
+                      timeline.js. Full strength again from above. */}
+                  <g data-arch-backdrop>
+                    {Scene && <Scene ax={FOCAL} season={selectedSeason} />}
+                  </g>
                   <g data-arch>
                     <StackGraph ax={FOCAL} groups={stack} />
                   </g>
                 </g>
               ) : Scene ? (
-                <Scene
-                  ax={FOCAL}
-                  sil={`url(#${sil})`}
-                  season={selectedSeason}
-                />
+                <Scene ax={FOCAL} season={selectedSeason} />
               ) : null}
             </g>
           );
@@ -249,24 +212,24 @@ export default function World({ season = "auto" }) {
           </defs>
           {/* pathLength=1 so the render loop can draw it straight from the
               lift progress, no plugin and no second timeline */}
+          {/* two plates, out of register: the pastel road and a key hairline */}
           <path
             data-ov-trail
             d={trail(OVERVIEW)}
             pathLength="1"
             fill="none"
             stroke="url(#jOvTrail)"
-            strokeWidth="16"
+            strokeWidth="9"
             strokeLinecap="round"
-            opacity="0.28"
-            filter="url(#jGlow)"
           />
           <path
             data-ov-trail
             d={trail(OVERVIEW)}
             pathLength="1"
+            transform="translate(3 -3)"
             fill="none"
-            stroke="url(#jOvTrail)"
-            strokeWidth="3.5"
+            stroke="var(--j-mid)"
+            strokeWidth="1.3"
             strokeLinecap="round"
           />
           {OVERVIEW.map((p, i) => (
@@ -277,6 +240,8 @@ export default function World({ season = "auto" }) {
               cy={p.y}
               r="6"
               fill={heatColor(BEATS.find((b) => b.id === p.id).heat)}
+              stroke="var(--j-mid)"
+              strokeWidth="1.5"
             />
           ))}
         </g>
@@ -286,21 +251,8 @@ export default function World({ season = "auto" }) {
           <Ground span={SCENE_W * BEATS.length} />
         </g>
 
-        {/* fore — scrub and particles */}
+        {/* fore — weather */}
         <g data-layer="fore">
-          {BEATS.map((beat, i) => (
-            <g key={beat.id} data-atmos={beat.id} fill="var(--j-ground)">
-              {Array.from({ length: 12 }).map((_, r) => (
-                <ellipse
-                  key={r}
-                  cx={anchor(i, 1.35) + 90 + r * 156}
-                  cy={944 + (r % 4) * 16}
-                  rx={38 + (r % 3) * 18}
-                  ry={12}
-                />
-              ))}
-            </g>
-          ))}
           {BEATS.map((beat, i) => (
             <Particles
               key={beat.id}

@@ -1,38 +1,37 @@
-/* Journey mode — stage chrome. All colour comes from --j-* custom
-   properties written by heat.js each frame (4.3 in docs/JOURNEY_PLAN.md). */
+/* Journey mode — stage chrome, printed.
+
+   Two sources of colour, and only two:
+     * the print system on <body> (styles.css): --paper, --ink, --rule and
+       the pastels, swapped wholesale by the dark ("ink") theme;
+     * the heat variables (--j-*) written by heat.js each frame, which carry
+       where in the story you are — the lead pastel (--j-stream) and a text
+       accent dark enough to read on paper (--j-accent).
+   Nothing here is themed by hand per mode; anything that differs between
+   paper and ink reads a token that already does. */
 
 .j-stage {
   --jHeat: 1;
-  --j-accent: #ff6a00;
-  --j-ground: #150805;
-  --j-snow: #eaf2ff;
-  --j-blossom: #f9a8d4;
-  --j-blossom-core: #fbbf24;
-  --j-leaf: #f59e0b;
-  --j-sun: #ffd166;
+  --j-accent: #c9401f;
+  --j-ground: #ebe1d2;
+  --j-mid: #1f1a17;
 
   position: fixed;
   inset: 0;
   /* A fixed inset:0 element is sized to the SMALL viewport — the one with the
      browser's URL bar showing. The moment that bar retracts (which a drag
      inside the work sheet is enough to do) the visual viewport grows and the
-     stage does not, which is the white strip that appeared under the journey
-     on a phone and stayed. dvh tracks the bar in both directions; the vh line
-     above it is the fallback for browsers without it. */
+     stage does not, which is the strip that appeared under the journey on a
+     phone and stayed. dvh tracks the bar in both directions; the vh line
+     above it is the fallback for browsers without it (D73). */
   height: 100vh;
   height: 100dvh;
   /* Above every other stacking context on the site — the projects modal is
      the current maximum at 1000. */
   z-index: 2000;
   overflow: hidden;
-  background: #0a0705;
-  color: #f5f7fa;
-  font-family:
-    "Inter",
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
   overscroll-behavior: none;
   touch-action: pan-y;
 }
@@ -50,6 +49,11 @@
   will-change: transform;
 }
 
+/* The pastel plates overprint: multiply on paper, screen on ink. */
+.j-print {
+  mix-blend-mode: var(--print-blend);
+}
+
 /* --- beat cards ---------------------------------------------------------- */
 
 .j-cards {
@@ -59,7 +63,8 @@
 }
 
 /* Content is centred in a bounded column. Past ~100rem the card and the work
-   wall were pinned to opposite edges of the screen with a void between them. */
+   wall were pinned to opposite edges of the screen with a void between them
+   (D38). */
 .j-card-slot {
   position: absolute;
   inset: 0;
@@ -75,8 +80,7 @@
 /* On ultrawide displays the SVG uses the viewport width as its scale driver,
    while the HTML cards stop at the shared 100rem content column. That pulls
    the architect card inward until it meets the graph's left column. Give only
-   this beat a wider alignment rail; ordinary laptop/desktop framing stays
-   exactly where it is. */
+   this beat a wider alignment rail. */
 @media (min-width: 1800px) and (min-aspect-ratio: 2 / 1) {
   .j-card-slot[data-card="architect"] {
     max-width: 120rem;
@@ -85,110 +89,188 @@
 
 .j-card-slot[data-kind="projects"] {
   /* The recap holds the work wall in the top half and leaves the lower half
-     to the laid-out journey. No scrim: once the column became bounded the
-     wash read as a floating panel with hard edges, and the sky up there is
-     empty enough that the tiles carry on their own. */
+     to the laid-out journey. */
   align-items: flex-start;
   justify-content: stretch;
   padding-block: clamp(3rem, 7vh, 8rem) 0;
 }
 
+/* No box. The card is type set on the sheet, with a feathered wash of paper
+   behind it so receding places (which drift back behind the card) never sit
+   under the words at full strength. The wash is a pseudo-element so its
+   feathering mask cannot touch the text. */
 .j-card {
-  width: min(30rem, calc(100vw - 2rem));
-  padding: 1.75rem 1.75rem 1.5rem;
-  border-radius: 1rem;
-  border: 1px solid color-mix(in srgb, var(--j-accent) 35%, transparent);
-  background: color-mix(in srgb, #05070c 78%, transparent);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.8);
+  position: relative;
+  isolation: isolate;
+  width: min(31rem, calc(100vw - 2rem));
+  padding: 0.5rem 0;
   pointer-events: auto;
+}
+
+.j-card::before {
+  content: "";
+  position: absolute;
+  inset: -2.5rem -3rem;
+  z-index: -1;
+  background: var(--paper);
+  opacity: 0.92;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 3rem, #000 calc(100% - 3rem), transparent),
+    linear-gradient(to bottom, transparent, #000 2.5rem, #000 calc(100% - 2.5rem), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 3rem, #000 calc(100% - 3rem), transparent),
+    linear-gradient(to bottom, transparent, #000 2.5rem, #000 calc(100% - 2.5rem), transparent);
+  mask-composite: intersect;
 }
 
 .j-card-head {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.6rem 0.75rem;
-  margin-bottom: 0.9rem;
+  gap: 0.4rem 0.8rem;
+  margin-bottom: 1.1rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.j-card-head i,
+.j-intro-eyebrow i {
+  display: inline-block;
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
 }
 
 .j-year {
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: #9aa7bd;
+  font-variant-numeric: tabular-nums;
 }
 
 .j-card h2 {
-  font-size: clamp(1.35rem, 2.4vw, 1.85rem);
-  font-weight: 700;
-  line-height: 1.15;
-  margin-bottom: 0.3rem;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.3rem, 4vw, 3.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.012em;
+  margin-bottom: 1.2rem;
+  color: var(--ink);
+}
+
+.j-card-org {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.15rem;
 }
 
 .j-card h3 {
-  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.86rem;
   font-weight: 500;
-  color: #b3c0d4;
-  margin-bottom: 1.1rem;
+  line-height: 1.3;
+  color: var(--ink-soft);
+}
+
+.j-role {
+  font-weight: 600;
+  color: var(--ink);
 }
 
 .j-dot {
   color: var(--j-accent);
 }
 
+/* Constraint / Objective as ruled rows: label left, statement right. */
 .j-card dl {
   display: grid;
-  gap: 0.55rem 0;
-  margin-bottom: 1.1rem;
+  grid-template-columns: 6.5rem 1fr;
+  margin-bottom: 1rem;
+}
+
+.j-card dt,
+.j-card dd {
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--rule);
 }
 
 .j-card dt {
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  padding-top: 0.95rem;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--j-accent) 80%, #ffffff);
+  color: var(--ink);
 }
 
 .j-card dd {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   line-height: 1.5;
-  color: #dbe3ef;
+  color: var(--ink);
+}
+
+.j-card-note {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink);
+  margin-bottom: 1.1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rule);
 }
 
 .j-material {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-  color: #8593a9;
-  padding-top: 0.85rem;
-  border-top: 1px solid rgb(255 255 255 / 0.08);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--rule);
 }
 
 .j-material strong {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.05rem;
+  letter-spacing: 0;
   color: var(--j-accent);
 }
 
 .j-status {
   margin-left: auto;
   font-size: 0.62rem;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #7c8a9f;
+  color: var(--ink-faint);
 }
 
 .j-status.active {
-  color: var(--j-accent);
-  font-weight: 700;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.j-status.active::before {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  background: var(--j-stream);
+  box-shadow: 0 0 0 1px var(--ink);
+  vertical-align: 0.02rem;
 }
 
 .j-brand {
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
-  color: #9aa7bd;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
 }
 
 /* --- chrome -------------------------------------------------------------- */
@@ -204,7 +286,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  padding: clamp(0.75rem, 2vw, 1.5rem);
+  padding: clamp(0.75rem, 2vw, 1.5rem) clamp(1rem, 6vw, 6rem);
   z-index: 40;
   pointer-events: none;
 }
@@ -216,37 +298,33 @@
   margin-left: auto;
 }
 
-/* In journey mode the toggle belongs to the active scene rather than the
-   site's fixed blue UI palette. --j-accent is updated continuously by the
-   heat ramp, so the track and icons travel molten → cold with the story. */
 .j-stage .darkmode-toggle-label {
-  background: color-mix(in srgb, var(--j-accent) 12%, transparent);
-  border-color: color-mix(in srgb, var(--j-accent) 45%, transparent);
+  background: transparent;
+  border-color: var(--ink);
 }
 
 .j-stage .darkmode-toggle-label::after {
-  background: var(--j-accent);
-  box-shadow: 0 3px 10px color-mix(in srgb, var(--j-accent) 48%, transparent);
+  background: var(--ink);
+  box-shadow: none;
   transition:
     left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .j-stage .darkmode-toggle-label:hover {
-  border-color: var(--j-accent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--j-accent) 12%, transparent);
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px var(--rule);
 }
 
-/* The glyphs ride the same ramp instead of the static page's amber/indigo. */
 .j-stage .darkmode-toggle-label .sun,
 .j-stage .darkmode-toggle-label .moon {
-  color: var(--j-accent);
+  color: var(--ink);
 }
 
 .j-nav {
   font: inherit;
   font-size: 0.78rem;
-  color: #cdd7e6;
+  color: var(--ink);
   background: none;
   border: 0;
   cursor: pointer;
@@ -257,6 +335,9 @@
     color 0.2s;
 }
 
+/* The way out to the CV (D18/D42/D46). Journey mode is the default landing
+   (D17), so it has to be unmissable: centred, ruled in ink, and it fills on
+   hover like a stamped label. */
 .j-exit {
   position: absolute;
   top: clamp(0.75rem, 2vw, 1.5rem);
@@ -264,35 +345,27 @@
   translate: -50% 0;
   font: inherit;
   cursor: pointer;
-  /* The topbar is pointer-events: none so the world stays draggable under it;
-     anything interactive in there has to opt back in. Without this the click
-     falls straight through to the SVG and the only way out of journey mode is
-     the Escape key. */
+  /* The topbar is pointer-events: none so the world stays live under it;
+     anything interactive in there has to opt back in (D46). */
   pointer-events: auto;
-  font-size: 0.9rem;
-  font-weight: 650;
+  font-size: 0.86rem;
+  font-weight: 500;
   letter-spacing: 0.02em;
-  color: var(--j-accent);
+  color: var(--ink);
   text-decoration: none;
-  padding: 0.6rem 1.4rem;
+  padding: 0.55rem 1.3rem;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--j-accent) 62%, transparent);
-  background: transparent;
-  box-shadow: none;
+  border: 1px solid var(--ink);
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
   transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
     background-color 0.2s ease,
-    box-shadow 0.2s ease;
+    color 0.2s ease;
 }
 
 .j-exit:hover,
 .j-exit:focus-visible {
-  transform: translateY(-2px);
-  border-color: var(--j-accent);
-  background: color-mix(in srgb, var(--j-accent) 7%, transparent);
-  box-shadow: 0 8px 24px -18px
-    color-mix(in srgb, var(--j-accent) 80%, transparent);
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .j-exit span {
@@ -305,9 +378,8 @@
 }
 
 /* --- the map ------------------------------------------------------------
-   Replaces a strip of bare years. Every stop carries what happened in it, so
-   the arc reads at any beat and not only at the recap. Kept deliberately
-   compact — this is on screen the whole time, so it has to stay chrome. */
+   A ruled line with stops on it, like the scale bar of a printed map. Every
+   stop carries what happened in it, so the arc reads at any beat (D40). */
 
 .j-rail {
   position: absolute;
@@ -318,15 +390,8 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.45rem 0.6rem;
-  border-radius: 1.4rem;
-  background: rgb(10 12 18 / 0.62);
-  border: 1px solid rgb(255 255 255 / 0.12);
-  backdrop-filter: blur(12px);
   max-width: calc(100vw - 1.5rem);
-  /* It drops flush on the recap to make room for the laid-out labels. The
-     camera lift it accompanies runs 2.4s when stepping, so a short
-     front-loaded ease finished long before the move it belongs to; this
-     glides with it instead. */
+  /* It drops flush on the recap to make room for the laid-out labels (D47). */
   transition: bottom 1.1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -334,7 +399,7 @@
   /* One knob: the stop width. The connecting line's ends are derived from it
      (half a stop in from each edge, i.e. the first and last dot centres), so
      the line can never come adrift from the dots it threads. */
-  --item: clamp(4.9rem, 7.2vw, 6.6rem);
+  --item: clamp(4.9rem, 7.4vw, 6.9rem);
   --dot-top: 0.65rem;
 
   position: relative;
@@ -344,19 +409,37 @@
   padding: 0;
 }
 
-/* The hot -> cold ramp, sampled at each beat's own heat: cool at the studies,
-   molten through the foundry years, blue from the reset on. */
-.j-trail::before {
+/* The rule itself, in key ink, with the journey's pastel ramp printed just
+   under it slightly out of register. */
+.j-trail::before,
+.j-trail::after {
   content: "";
   position: absolute;
-  top: var(--dot-top);
   left: calc(var(--item) / 2);
   right: calc(var(--item) / 2);
-  height: 2px;
   translate: 0 -50%;
-  border-radius: 2px;
+}
+
+/* The pastel plate is also the progress bar (D19, folded into the map): it
+   is printed only as far as the stop you are on, and grows as you travel.
+   Its gradient is sized to the whole line, so each stretch keeps its own
+   beat's colour however much of it is showing. */
+.j-trail::before {
+  top: calc(var(--dot-top) + 3px);
+  height: 5px;
+  border-radius: 3px;
   background: var(--trail-line);
-  opacity: 0.5;
+  mix-blend-mode: var(--print-blend);
+  /* Clipped rather than resized, so the gradient stays laid out across the
+     whole line and each stretch keeps its own beat's colour. */
+  clip-path: inset(0 calc((1 - var(--progress, 0)) * 100%) 0 0);
+  transition: clip-path 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.j-trail::after {
+  top: var(--dot-top);
+  height: 1px;
+  background: var(--ink);
 }
 
 .j-trail > li {
@@ -371,13 +454,14 @@
   width: 100%;
   flex-direction: column;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
   padding: 0.35rem 0.2rem 0.3rem;
   background: none;
   border: 0;
   border-radius: 0.6rem;
   cursor: pointer;
   font: inherit;
+  color: var(--ink);
   transition: transform 0.2s ease;
 }
 
@@ -386,59 +470,57 @@
 }
 
 .j-trail-dot {
-  width: 0.6rem;
-  height: 0.6rem;
+  position: relative;
+  z-index: 1;
+  width: 0.62rem;
+  height: 0.62rem;
   border-radius: 50%;
-  /* Opaque, so the gradient line passes behind the dot rather than through
-     it — otherwise every stop reads as a bead on a wire of the wrong colour. */
-  background: #0d1018;
-  border: 2px solid color-mix(in srgb, var(--tint) 55%, transparent);
+  /* Opaque, so the line passes behind the dot rather than through it. */
+  background: var(--paper);
+  border: 1px solid var(--ink);
   transition:
     background 0.25s,
-    border-color 0.25s,
-    box-shadow 0.25s,
     scale 0.25s;
 }
 
 .j-trail button:hover .j-trail-dot {
-  border-color: var(--tint);
+  background: var(--tint);
 }
 
 .j-trail button.on .j-trail-dot {
   background: var(--tint);
-  border-color: var(--tint);
-  scale: 1.2;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tint) 22%, transparent);
+  scale: 1.45;
+  box-shadow: 0 0 0 3px var(--paper);
 }
 
 .j-trail-year {
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #8a97ab;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--ink-soft);
   transition: color 0.25s;
 }
 
 .j-trail button.on .j-trail-year {
-  color: var(--tint);
+  color: var(--ink);
+  font-style: italic;
 }
 
 .j-trail-tag {
   /* Two lines' worth of room whether or not the text needs it: without a
-     floor, moving between a one-line and a two-line stop resized the rail
-     and nudged the whole strip. */
+     floor, moving between a one-line and a two-line stop resized the rail. */
   min-height: 2.4em;
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   line-height: 1.2;
   text-align: center;
   text-wrap: balance;
-  color: #6f7d92;
+  color: var(--ink-faint);
   transition: color 0.25s;
 }
 
 .j-trail button.on .j-trail-tag,
 .j-trail button:hover .j-trail-tag {
-  color: #eef3fa;
+  color: var(--ink);
 }
 
 /* Named active stop. Phones drop every stop's label for room, so this is the
@@ -449,9 +531,8 @@
 
 /* The recap lays the places out with labels of their own, and the lowest of
    them reaches the bottom of the frame. The map keeps its own labels — it is
-   the navigation, and hiding half of it on the last slide read as broken —
-   so the room comes from dropping it flush instead, and from the hint, which
-   has nothing left to teach once you are at the end. */
+   the navigation — so the room comes from dropping it flush instead, and from
+   the hint, which has nothing left to teach once you are at the end. */
 .j-stage[data-recap="true"] .j-rail {
   bottom: 0.4rem;
 }
@@ -461,8 +542,10 @@
 }
 
 .j-rail-now span {
-  font-weight: 700;
-  color: var(--j-accent);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ink);
   margin-right: 0.4rem;
 }
 
@@ -471,7 +554,7 @@
   line-height: 1;
   padding: 0.3rem 0.6rem;
   align-self: flex-start;
-  margin-top: 0.2rem;
+  margin-top: 0.15rem;
 }
 
 .j-nav:disabled {
@@ -484,10 +567,10 @@
   bottom: 0.35rem;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.62rem;
-  letter-spacing: 0.18em;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgb(255 255 255 / 0.28);
+  color: var(--ink-faint);
   transition: opacity 0.6s ease;
 }
 
@@ -496,11 +579,19 @@
     align-items: flex-end;
     padding-bottom: 11rem;
   }
-  .j-card {
-    padding: 1.25rem;
+  .j-card h2 {
+    font-size: 2.2rem;
+    margin-bottom: 0.9rem;
   }
   .j-card dl {
-    gap: 0.4rem 0;
+    grid-template-columns: 5.6rem 1fr;
+  }
+  .j-card dt,
+  .j-card dd {
+    padding-block: 0.5rem;
+  }
+  .j-card dd {
+    font-size: 0.86rem;
   }
   .j-hint,
   .j-brand {
@@ -520,15 +611,15 @@
     flex-wrap: wrap;
     justify-content: center;
     padding: 0.35rem 0.5rem 0.4rem;
-    border-radius: 1rem;
   }
   .j-rail-now {
     display: block;
     order: -1;
     width: 100%;
     text-align: center;
-    font-size: 0.62rem;
-    color: #8a97ab;
+    font-size: 0.68rem;
+    color: var(--ink-soft);
+    margin-bottom: 0.2rem;
   }
   .j-trail {
     --item: min(2.6rem, calc((100vw - 3rem) / 8));
@@ -550,8 +641,8 @@
 }
 
 /* ==========================================================================
-   Reduced-motion fallback. No timeline is built at all; the same six beats
-   read as a list, with heat carried by CSS alone.
+   Reduced-motion fallback. No timeline is built at all; the same beats read
+   as a printed list.
    ========================================================================== */
 
 .j-static {
@@ -560,14 +651,9 @@
   z-index: 2000;
   overflow-y: auto;
   padding: clamp(1rem, 4vw, 3rem);
-  background: #0a0e15;
-  color: #eef3fa;
-  font-family:
-    "Inter",
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
 }
 
 .j-static header {
@@ -581,9 +667,10 @@
 .j-static-lede {
   max-width: 42rem;
   margin: 0 auto 2.5rem;
-  font-size: 1.05rem;
-  line-height: 1.6;
-  color: #b3c0d4;
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  line-height: 1.25;
+  color: var(--ink);
 }
 
 .j-static-list {
@@ -592,15 +679,12 @@
   margin: 0 auto;
   padding: 0;
   display: grid;
-  gap: 1.25rem;
+  gap: 0;
 }
 
 .j-static-list li {
-  --j-accent: color-mix(in srgb, #ff6a00 calc(var(--jHeat) * 100%), #3b82f6);
-  padding: 1.5rem;
-  border-radius: 1rem;
-  border: 1px solid color-mix(in srgb, var(--j-accent) 32%, transparent);
-  background: color-mix(in srgb, var(--j-accent) 6%, #0d131d);
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--rule);
 }
 
 .j-static-head {
@@ -608,45 +692,53 @@
   align-items: baseline;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
 }
 
 .j-static-list h2 {
-  font-size: 1.35rem;
-  line-height: 1.2;
-  margin-bottom: 0.25rem;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 1.05;
+  margin-bottom: 0.35rem;
+  color: var(--ink);
 }
 
 .j-static-list h3 {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #b3c0d4;
+  color: var(--ink-soft);
   margin-bottom: 1rem;
 }
 
 .j-static-list dl {
   display: grid;
+  grid-template-columns: 6.5rem 1fr;
   gap: 0.5rem 0;
   margin-bottom: 1rem;
 }
 
 .j-static-list dt {
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--j-accent) 80%, #ffffff);
+  padding-top: 0.2rem;
+  color: var(--ink);
 }
 
 .j-static-list dd {
-  font-size: 0.94rem;
+  font-size: 0.95rem;
   line-height: 1.5;
-  color: #dbe3ef;
+  color: var(--ink);
 }
 
 /* --- product links -------------------------------------------------------
-   The Sprinta beats name products a recruiter can go and open. They ride
-   --j-accent like everything else on the beat, so they read as part of the
-   scene rather than as web-blue links pasted onto it. */
+   The Sprinta beats name products a recruiter can go and open (D49). Ruled
+   labels in key ink that fill on hover. */
 
 .j-products {
   display: flex;
@@ -661,25 +753,23 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.72rem;
-  font-weight: 650;
+  font-size: 0.74rem;
+  font-weight: 500;
   text-decoration: none;
-  color: var(--j-accent);
-  padding: 0.25rem 0.6rem;
+  color: var(--ink);
+  padding: 0.28rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--j-accent) 40%, transparent);
-  background: color-mix(in srgb, var(--j-accent) 8%, transparent);
+  border: 1px solid var(--ink);
   transition:
-    transform 0.18s ease,
-    border-color 0.18s ease,
-    background-color 0.18s ease;
+    background-color 0.18s ease,
+    color 0.18s ease;
 }
 
 .j-products a:hover,
 .j-products a:focus-visible {
-  transform: translateY(-1px);
-  border-color: var(--j-accent);
-  background: color-mix(in srgb, var(--j-accent) 16%, transparent);
+  background: var(--ink);
+  color: var(--paper);
+  text-decoration: none;
 }
 
 .j-products span {
@@ -693,13 +783,14 @@
     margin-bottom: 0.8rem;
   }
   .j-products a {
-    font-size: 0.68rem;
-    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+    padding: 0.22rem 0.55rem;
   }
 }
 
 /* The architecture graph is a landscape object. On phones the final beat
-   lists the same stack as text in the card and the SVG graph is hidden. */
+   lists the same stack as text in the card and the SVG graph is hidden
+   (D16). */
 .j-arch-chips {
   display: none;
 }
@@ -719,35 +810,42 @@
   }
 
   .j-arch-chips li {
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    padding: 0.2rem 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.2rem 0.55rem 0.2rem 0.35rem;
     border-radius: 999px;
-    border: 1px solid currentColor;
-    opacity: 0.9;
+    border: 1px solid var(--rule-strong);
+    color: var(--ink);
+  }
+
+  .j-arch-chips li::before {
+    content: "";
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--chip, var(--sky));
   }
 
   .j-arch-chips li[data-kind="client"] {
-    color: #7dd3fc;
-  }
-  .j-arch-chips li[data-kind="shared"] {
-    color: #a5b4fc;
+    --chip: var(--sky);
   }
   .j-arch-chips li[data-kind="compute"] {
-    color: #93c5fd;
+    --chip: var(--lilac);
   }
   .j-arch-chips li[data-kind="data"] {
-    color: #86efac;
+    --chip: var(--sage);
   }
   .j-arch-chips li[data-kind="ai"] {
-    color: #fca5a5;
+    --chip: var(--apricot);
   }
 }
 
 /* ==========================================================================
    Progress stream. Screen-anchored, not part of the parallax world, so the
-   drawn length actually reads as how far through the journey you are.
+   drawn length actually reads as how far through the journey you are (D19).
    ========================================================================== */
 
 .j-progress {
@@ -759,7 +857,9 @@
   bottom: 7.5rem;
   height: 60px;
   width: 100%;
-  display: block;
+  /* Still mounted for the timeline to draw, but no longer shown: the map
+     carries progress on its own line now (see .j-trail::before). */
+  display: none;
   pointer-events: none;
 }
 
@@ -770,15 +870,16 @@
   }
 
   .j-exit {
-    font-size: 0.82rem;
-    padding: 0.5rem 1.1rem;
+    font-size: 0.8rem;
+    padding: 0.45rem 1rem;
   }
 }
 
 /* ==========================================================================
-   Closing beat — the wall of work. Absolutely placed, slightly tilted tiles
-   from the LAYOUT table in ProjectGallery.jsx, so it reads as pinned prints
-   rather than a grid. Hovering straightens a tile and lifts it.
+   Closing beat — the wall of work. Absolutely placed, slightly tilted prints
+   from the LAYOUT table in ProjectGallery.jsx (D23): each tile is a print
+   with a paper border, pinned at an angle. Hovering straightens it and lifts
+   it off the wall.
    ========================================================================== */
 
 .j-gallery {
@@ -796,17 +897,19 @@
 }
 
 .j-gallery h2 {
-  font-size: clamp(1.3rem, 2.3vw, 1.8rem);
-  font-weight: 700;
-  line-height: 1.1;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2rem, 3.6vw, 3rem);
+  line-height: 1;
+  color: var(--ink);
 }
 
 .j-gallery header p {
-  font-size: 0.8rem;
-  line-height: 1.45;
-  color: #b3c0d4;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
   max-width: 44rem;
-  margin-top: 0.3rem;
+  margin-top: 0.4rem;
 }
 
 .j-wall {
@@ -824,14 +927,14 @@
   rotate: var(--rot);
   margin: 0;
   overflow: hidden;
-  border-radius: 0.7rem;
-  border: 1px solid color-mix(in srgb, var(--j-accent) 24%, transparent);
-  background: #070b12;
-  box-shadow: 0 14px 30px -16px rgb(0 0 0 / 0.85);
+  border-radius: 2px;
+  border: 0.4rem solid var(--paper);
+  outline: 1px solid var(--rule);
+  background: var(--paper-2);
+  box-shadow: 0 18px 30px -22px rgb(29 27 25 / 0.55);
   transition:
     rotate 0.3s ease,
     scale 0.3s ease,
-    border-color 0.25s ease,
     box-shadow 0.3s ease;
 }
 
@@ -841,8 +944,8 @@
   rotate: 0deg;
   scale: 1.05;
   z-index: 20 !important;
-  border-color: var(--j-accent);
-  box-shadow: 0 26px 50px -20px rgb(0 0 0 / 0.95);
+  outline-color: var(--ink);
+  box-shadow: 0 30px 50px -26px rgb(29 27 25 / 0.6);
 }
 
 .j-tile-media {
@@ -850,27 +953,29 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: saturate(0.9) brightness(0.88);
+  filter: saturate(0.85);
   transition: filter 0.25s ease;
 }
 
 .j-tile:hover .j-tile-media,
 .j-tile:focus-within .j-tile-media {
-  filter: saturate(1.05) brightness(1);
+  filter: none;
 }
 
+/* The caption strip, as on a print: paper under the picture, ink on it. */
 .j-tile-label {
   position: absolute;
   inset: auto 0 0 0;
-  padding: 1.4rem 0.7rem 0.5rem;
-  font-size: 0.74rem;
-  font-weight: 650;
-  color: #eef3fa;
-  background: linear-gradient(to top, rgb(4 7 12 / 0.92), transparent);
+  padding: 0.35rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--paper);
   transition: opacity 0.2s ease;
 }
 
-/* A drawer over the lower part only, so the clip stays playing in view. */
+/* A drawer over the lower part only, so the clip stays playing in view
+   (D26). */
 .j-tile-detail {
   position: absolute;
   inset: auto 0 0 0;
@@ -878,11 +983,9 @@
   flex-direction: column;
   gap: 0.3rem;
   padding: 0.7rem 0.75rem 0.75rem;
-  background: linear-gradient(
-    to top,
-    rgb(4 7 12 / 0.97) 55%,
-    rgb(4 7 12 / 0.82)
-  );
+  color: var(--ink);
+  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  border-top: 1px solid var(--rule);
   translate: 0 100%;
   opacity: 0;
   transition:
@@ -902,21 +1005,24 @@
 }
 
 .j-tile-detail h4 {
-  font-size: 0.85rem;
-  font-weight: 700;
-  line-height: 1.2;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.1rem;
+  line-height: 1.05;
+  color: var(--ink);
 }
 
 .j-tile-detail p {
   font-size: 0.72rem;
   line-height: 1.4;
-  color: #cfd8e6;
+  color: var(--ink-soft);
 }
 
 .j-tile-tech {
   font-size: 0.62rem !important;
-  letter-spacing: 0.04em;
-  color: color-mix(in srgb, var(--j-accent) 75%, #ffffff) !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink) !important;
 }
 
 .j-tile-links {
@@ -928,24 +1034,18 @@
 
 .j-tile-links a {
   font-size: 0.66rem;
-  font-weight: 650;
+  font-weight: 500;
   text-decoration: none;
-  color: var(--j-accent);
-  padding: 0.16rem 0.5rem;
+  color: var(--ink);
+  padding: 0.16rem 0.55rem;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--j-accent) 45%, transparent);
+  border: 1px solid var(--ink);
 }
 
 .j-tile-links a:hover {
-  background: var(--j-accent);
-  color: #0a0705;
-}
-
-.j-card-note {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: #dbe3ef;
-  margin-bottom: 1.1rem;
+  background: var(--ink);
+  color: var(--paper);
+  text-decoration: none;
 }
 
 /* Touch devices have no hover, so the drawer is permanently open. It must be
@@ -966,8 +1066,7 @@
 }
 
 /* Narrow screens: no wall at all. ProjectGallery lists the same six projects
-   instead (D62) — a scattered wall squeezed into two scrolling columns showed
-   neither the screenshots nor the clips. */
+   instead (D62). */
 @media (max-width: 900px) {
   .j-card-slot[data-kind="projects"] {
     flex-direction: column;
@@ -990,10 +1089,8 @@
 }
 
 /* ==========================================================================
-   The closing beat on a phone — the work, listed. Each row carries the clip's
-   own first frame as a still, and the whole row is one tap target: it opens
-   the project as a sheet, where the clip plays and the links are a size worth
-   aiming at.
+   The closing beat on a phone — the work, listed (D62/D63). Each row is one
+   tap target that opens the project as a sheet.
    ========================================================================== */
 
 .j-worklist {
@@ -1003,44 +1100,41 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  border-top: 1px solid var(--rule);
 }
 
 .j-work {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.75rem;
   text-align: left;
   font: inherit;
+  color: var(--ink);
   cursor: pointer;
-  padding: 0.5rem 0.6rem;
-  border-radius: 0.6rem;
-  border: 1px solid color-mix(in srgb, var(--j-accent) 20%, transparent);
-  border-left: 3px solid var(--j-accent);
-  background: color-mix(in srgb, #04070c 76%, transparent);
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease;
+  padding: 0.6rem 0.2rem;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  transition: background 0.2s ease;
 }
 
 .j-work:hover,
 .j-work:focus-visible {
-  border-color: color-mix(in srgb, var(--j-accent) 55%, transparent);
-  border-left-color: var(--j-accent);
-  background: color-mix(in srgb, #04070c 88%, transparent);
+  background: color-mix(in srgb, var(--paper-2) 80%, transparent);
 }
 
 .j-work-thumb {
   flex: none;
-  width: 4.4rem;
-  height: 3rem;
-  border-radius: 0.4rem;
+  width: 4.6rem;
+  height: 3.1rem;
   overflow: hidden;
-  background: #070b12;
-  border: 1px solid rgb(255 255 255 / 0.08);
+  background: var(--paper-2);
+  border: 0.2rem solid var(--paper);
+  outline: 1px solid var(--rule);
 }
 
 .j-work-thumb video,
@@ -1049,7 +1143,6 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: saturate(0.95) brightness(0.95);
 }
 
 .j-work-text {
@@ -1060,17 +1153,17 @@
 }
 
 .j-work-title {
-  font-size: 0.84rem;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #eef3fa;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  line-height: 1.05;
+  color: var(--ink);
 }
 
 .j-work-blurb {
   font-size: 0.72rem;
   line-height: 1.35;
-  color: #c3cddc;
-  margin-top: 0.1rem;
+  color: var(--ink-soft);
+  margin-top: 0.15rem;
   /* Two lines, so a long description cannot make one row twice the height of
      its neighbours — the full text is a tap away in the sheet. */
   display: -webkit-box;
@@ -1080,10 +1173,11 @@
 }
 
 .j-work-tech {
-  font-size: 0.6rem;
-  letter-spacing: 0.04em;
-  color: color-mix(in srgb, var(--j-accent) 72%, #ffffff);
-  margin-top: 0.25rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-top: 0.3rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1093,8 +1187,8 @@
   flex: none;
   font-size: 1.1rem;
   line-height: 1;
-  color: var(--j-accent);
-  opacity: 0.7;
+  color: var(--ink);
+  opacity: 0.6;
 }
 
 /* ==========================================================================
@@ -1118,7 +1212,7 @@
   /* A flat wash, not a backdrop blur: this covers the whole frame, and the
      world behind it keeps animating its weather, so a blur would be re-run
      over the entire viewport every frame for something nobody can read. */
-  background: rgb(3 6 11 / 0.82);
+  background: rgb(29 27 25 / 0.42);
   animation: j-sheet-fade 0.25s ease both;
 }
 
@@ -1128,11 +1222,12 @@
   max-height: 92%;
   overflow-y: auto;
   overscroll-behavior: contain;
-  border-radius: 1rem 1rem 0 0;
-  border: 1px solid color-mix(in srgb, var(--j-accent) 32%, transparent);
+  border-radius: 0.5rem 0.5rem 0 0;
+  border: 1px solid var(--rule-strong);
   border-bottom: 0;
-  background: color-mix(in srgb, #05070c 94%, transparent);
-  box-shadow: 0 -20px 60px -24px rgb(0 0 0 / 0.9);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 -20px 60px -28px rgb(29 27 25 / 0.55);
   animation: j-sheet-rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -1160,20 +1255,20 @@
   z-index: 2;
   font: inherit;
   font-size: 0.7rem;
-  font-weight: 650;
+  font-weight: 500;
   cursor: pointer;
-  color: #eef3fa;
-  padding: 0.3rem 0.7rem;
+  color: var(--ink);
+  padding: 0.3rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 0.22);
-  background: rgb(4 7 12 / 0.86);
+  border: 1px solid var(--ink);
+  background: var(--paper);
 }
 
 .j-sheet-media {
   width: 100%;
   aspect-ratio: 16 / 10;
-  background: #070b12;
-  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--rule);
 }
 
 .j-sheet-media video,
@@ -1185,29 +1280,30 @@
 }
 
 .j-sheet-body {
-  padding: 0.9rem 1rem 1.1rem;
+  padding: 1rem 1.1rem 1.2rem;
 }
 
 .j-sheet-body h3 {
-  font-size: 1.05rem;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #eef3fa;
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--ink);
 }
 
 .j-sheet-date {
   font-size: 0.64rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #8593a9;
-  margin-top: 0.2rem;
+  color: var(--ink-soft);
+  margin-top: 0.3rem;
 }
 
 .j-sheet-blurb {
-  font-size: 0.8rem;
+  font-size: 0.86rem;
   line-height: 1.5;
-  color: #cfd8e6;
-  margin-top: 0.6rem;
+  color: var(--ink);
+  margin-top: 0.7rem;
 }
 
 .j-sheet-details {
@@ -1220,43 +1316,45 @@
 }
 
 .j-sheet-details li {
-  font-size: 0.74rem;
-  line-height: 1.4;
-  color: #b3c0d4;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
   padding-left: 0.85rem;
   position: relative;
 }
 
 .j-sheet-details li::before {
-  content: "·";
+  content: "";
   position: absolute;
-  left: 0.25rem;
-  color: var(--j-accent);
-  font-weight: 700;
+  left: 0.15rem;
+  top: 0.55em;
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 50%;
+  background: var(--ink);
 }
 
 .j-sheet-tech {
   list-style: none;
-  margin: 0.8rem 0 0;
+  margin: 0.9rem 0 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
 }
 
-/* A white disc under every mark, as in Résumé mode: several of these logos
-   are black ink (OpenAI, Unity) and vanish on the sheet's own background. */
+/* A paper disc under every mark: several of these logos are black ink
+   (OpenAI, Unity) and vanish on the ink theme's own background. */
 .j-sheet-tech li {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.66rem;
-  font-weight: 600;
-  color: #dbe3ef;
-  padding: 0.18rem 0.5rem 0.18rem 0.22rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--ink);
+  padding: 0.18rem 0.55rem 0.18rem 0.22rem;
   border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 0.12);
-  background: rgb(255 255 255 / 0.06);
+  border: 1px solid var(--rule-strong);
 }
 
 .j-sheet-tech img {
@@ -1265,30 +1363,35 @@
   object-fit: contain;
   padding: 0.12rem;
   border-radius: 999px;
-  background: #ffffff;
+  background: #fbf8f2;
 }
 
 .j-sheet-links {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
-  margin-top: 0.9rem;
+  margin-top: 1rem;
 }
 
 .j-sheet-links a {
-  font-size: 0.78rem;
-  font-weight: 650;
+  font-size: 0.8rem;
+  font-weight: 500;
   text-decoration: none;
-  color: var(--j-accent);
-  padding: 0.45rem 0.9rem;
+  color: var(--paper);
+  padding: 0.5rem 1rem;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--j-accent) 45%, transparent);
-  background: color-mix(in srgb, var(--j-accent) 8%, transparent);
+  border: 1px solid var(--ink);
+  background: var(--ink);
+}
+
+.j-sheet-links a + a {
+  color: var(--ink);
+  background: transparent;
 }
 
 /* ==========================================================================
-   Overview — the whole arc at once, isometric. Opens over the stage, which
-   stays visible but scrimmed back.
+   Overview — the recap's laid-out places (D31/D33). Each label is a small
+   printed tag standing in front of its place.
    ========================================================================== */
 
 .j-ov-open {
@@ -1296,26 +1399,17 @@
   right: clamp(0.75rem, 2vw, 1.5rem);
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  color: #cdd7e6;
+  color: var(--ink);
   padding: 0.45rem 0.95rem;
   border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 0.16);
-  background: rgb(255 255 255 / 0.05);
-  backdrop-filter: blur(10px);
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.j-ov-open:hover {
-  border-color: var(--j-accent);
-  color: #fff;
+  border: 1px solid var(--ink);
+  background: var(--paper);
 }
 
 /* NOT bounded: its labels are projected from the world SVG's geometry, so it
-   has to keep the SVG's box or they drift off the silhouettes. */
+   has to keep the SVG's box or they drift off the silhouettes (D38). */
 .j-overview {
   position: absolute;
   inset: 0;
@@ -1326,17 +1420,16 @@
   padding-bottom: 8.25rem; /* clear of the map */
   justify-content: flex-end;
   pointer-events: none;
-  /* No panel of its own — the lifted world is the view. */
   animation: j-ov-in 0.6s ease both;
 }
 
 .j-ov-caption {
   position: absolute;
   translate: -50% -100%;
-  font-size: 0.66rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgb(255 255 255 / 0.34);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--ink-soft);
   white-space: nowrap;
 }
 
@@ -1356,15 +1449,15 @@
 }
 
 .j-overview h2 {
-  font-size: clamp(1.3rem, 2.4vw, 1.9rem);
-  font-weight: 700;
-  line-height: 1.1;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 2.8vw, 2.3rem);
+  line-height: 1.05;
 }
 
 .j-overview header p {
   font-size: 0.8rem;
-  letter-spacing: 0.04em;
-  color: #9aa7bd;
+  color: var(--ink-soft);
   margin-top: 0.3rem;
 }
 
@@ -1372,19 +1465,13 @@
   flex: none;
   font: inherit;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  color: #cdd7e6;
+  color: var(--ink);
   padding: 0.45rem 0.95rem;
   border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 0.18);
-  background: rgb(255 255 255 / 0.06);
-  backdrop-filter: blur(8px);
-}
-
-.j-ov-close:hover {
-  border-color: var(--j-accent);
-  color: #fff;
+  border: 1px solid var(--ink);
+  background: var(--paper);
 }
 
 .j-ov-spots {
@@ -1400,25 +1487,23 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.18rem;
+  gap: 0.15rem;
   width: max-content;
   max-width: 12rem;
-  padding: 0.45rem 0.65rem;
-  border-radius: 0.7rem;
-  border: 1px solid color-mix(in srgb, var(--tint) 45%, transparent);
-  background: color-mix(in srgb, #05070c 80%, transparent);
-  backdrop-filter: blur(6px);
+  padding: 0.45rem 0.65rem 0.5rem;
+  border-radius: 2px;
+  border: 1px solid var(--ink);
+  border-top: 5px solid var(--tint);
+  background: var(--paper);
   cursor: pointer;
   pointer-events: auto;
   text-align: left;
   font: inherit;
-  color: #eef3fa;
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--rule);
   animation: j-ov-node-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--delay);
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 @keyframes j-ov-node-in {
@@ -1429,7 +1514,7 @@
 }
 
 /* Lifted clear of the map: anchored by its own bottom edge, so the 0.6rem
-   that stands it in front of its place would push it back down. */
+   that stands it in front of its place would push it back down (D47). */
 .j-ov-node[data-lifted="true"] {
   translate: -50% 0;
 }
@@ -1437,32 +1522,29 @@
 .j-ov-node:hover,
 .j-ov-node:focus-visible {
   transform: translateY(-3px);
-  border-color: var(--tint);
-  box-shadow: 0 14px 34px -14px rgb(0 0 0 / 0.9);
 }
 
 .j-ov-node.on {
-  box-shadow:
-    0 0 0 1px var(--tint),
-    0 16px 36px -16px rgb(0 0 0 / 0.9);
+  box-shadow: 3px 3px 0 var(--ink);
 }
 
 .j-ov-year {
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--tint);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--ink);
 }
 
 .j-ov-role {
-  font-size: 0.8rem;
-  font-weight: 650;
+  font-size: 0.78rem;
+  font-weight: 600;
   line-height: 1.2;
 }
 
 .j-ov-org {
   font-size: 0.66rem;
-  color: #93a3b8;
+  color: var(--ink-soft);
   margin-bottom: 0.2rem;
 }
 
@@ -1472,12 +1554,8 @@
   transition: opacity 0.5s ease;
 }
 
-/* The laid-out view needs width a phone has not got, and labels pinned to
-   world coordinates are unreadable at that size. It used to become a second
-   tinted list under the work wall; two cramped scrolling panels on one slide
-   was the worse half of what made the recap unreadable on a phone, and the
-   rail below already names every stop and jumps to it. So below this the
-   recap is one thing: the work, listed (D62, reverses D32). */
+/* Below 900px the recap is one thing: the work, listed (D62, reverses
+   D32). */
 @media (max-width: 900px) {
   .j-card-slot[data-kind="projects"] {
     /* Earlier mobile rules bottom-align story cards and vertically centre
@@ -1485,7 +1563,7 @@
        above, clear of the rail below. */
     align-items: stretch;
     justify-content: flex-start;
-    padding-block: 3.4rem 4.75rem;
+    padding-block: 3.6rem 4.75rem;
   }
   /* The note wraps to four lines at this width, eating the list below it. */
   .j-gallery header p {
@@ -1509,141 +1587,141 @@
 
 /* ==========================================================================
    Landing card. It has one job beyond saying who I am: make the next six
-   scenes legible in advance. The journey opens on engineering studies and a
-   steel foundry, and without the three acts below that reads as the wrong CV.
+   scenes legible in advance (D41).
    ========================================================================== */
 
 .j-intro {
-  width: min(38rem, calc(100vw - 2rem));
-  padding: 2.25rem 2.25rem 2rem;
+  width: min(36rem, calc(100vw - 2rem));
 }
 
 .j-intro-eyebrow {
-  font-size: 0.66rem;
-  letter-spacing: 0.24em;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--j-accent);
-  margin-bottom: 0.9rem;
+  color: var(--ink-soft);
+  margin-bottom: 1.1rem;
 }
 
 .j-intro h1 {
-  font-size: clamp(2.1rem, 5vw, 3.4rem);
-  font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.01em;
-  margin-bottom: 0.7rem;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(3.4rem, 7.4vw, 6.4rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.9rem;
+  color: var(--ink);
 }
 
 .j-intro h2 {
-  font-size: clamp(0.86rem, 1.4vw, 1rem);
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  /* .j-intro is also a .j-card, whose h2 is the serif headline. */
+  font-family: var(--sans);
+  font-size: clamp(0.8rem, 1.2vw, 0.92rem);
+  font-weight: 500;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--j-accent);
-  margin-bottom: 1.15rem;
+  color: var(--ink);
+  margin-bottom: 1.3rem;
 }
 
 .j-intro-blurb {
-  font-size: 1.05rem;
-  font-weight: 500;
+  font-size: 1.12rem;
+  font-weight: 400;
   line-height: 1.5;
-  color: #dbe3ef;
-  margin-bottom: 1.25rem;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
   max-width: 30rem;
 }
 
 /* --- the three acts ------------------------------------------------------
    Coarser than the map at the bottom on purpose: that one lists the stops,
-   this one names the chapters. Left to right on the same hot -> cold ramp, so
-   "steel" is molten and "software" is the site's blue. */
+   this one names the chapters. Three ruled columns, each with its own pastel
+   plate, left to right warm to cool. */
 
 .j-chapters {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.1rem;
+  gap: 0;
   list-style: none;
-  margin: 0 0 1.4rem;
+  margin: 0 0 1.6rem;
   padding: 0;
+  border-top: 1px solid var(--ink);
 }
 
 .j-chapters li {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.65rem 0.7rem 0.7rem;
-  border-radius: 0.65rem;
-  border: 1px solid color-mix(in srgb, var(--tint) 34%, transparent);
-  background: color-mix(in srgb, var(--tint) 9%, transparent);
+  gap: 0.2rem;
+  padding: 0.85rem 1rem 0.2rem 0;
 }
 
-/* The act's temperature, as a bar across the top of its card. */
-.j-chapters li::before {
-  content: "";
-  position: absolute;
-  inset: -1px -1px auto;
-  height: 2px;
-  border-radius: 0.65rem 0.65rem 0 0;
-  background: var(--tint);
-}
-
-/* Sits in the middle of the gap, so the three cards read as one sequence
-   rather than three unrelated facts. */
-.j-chapters li:not(:last-child)::after {
-  content: "→";
-  position: absolute;
-  right: -0.55rem;
-  top: 50%;
-  translate: 50% -50%;
-  font-size: 0.8rem;
-  line-height: 1;
-  color: rgb(255 255 255 / 0.35);
+.j-chapters li + li {
+  padding-left: 1rem;
+  border-left: 1px solid var(--rule);
 }
 
 .j-ch-span {
   font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--tint);
+  color: var(--ink-soft);
 }
 
 .j-ch-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1.1;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--serif);
+  font-size: 1.55rem;
+  line-height: 1;
+  color: var(--ink);
+}
+
+/* the act's plate */
+.j-ch-title::before {
+  content: "";
+  flex: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  background: var(--tint);
 }
 
 .j-ch-detail {
-  font-size: 0.7rem;
-  line-height: 1.35;
-  color: #b6c2d2;
+  font-size: 0.74rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
 }
 
 /* Teaches the map at the bottom as navigation, not decoration. */
 .j-intro-aside {
   margin-top: 0.85rem;
-  font-size: 0.72rem;
-  color: #8494a9;
+  font-size: 0.74rem;
+  color: var(--ink-faint);
 }
 
 .j-intro-go {
   font: inherit;
-  font-size: 0.86rem;
-  font-weight: 650;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  color: #fff;
-  background: var(--j-accent);
-  border: 0;
-  padding: 0.6rem 1.3rem;
+  color: var(--paper);
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 0.7rem 1.4rem;
   border-radius: 999px;
-  box-shadow: 0 10px 28px -12px
-    color-mix(in srgb, var(--j-accent) 75%, transparent);
-  transition: transform 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .j-intro-go:hover {
-  transform: translateY(-2px);
+  background: transparent;
+  color: var(--ink);
 }
 
 .j-intro-go span {
@@ -1656,59 +1734,55 @@
 }
 
 @media (max-width: 768px) {
-  .j-intro {
-    padding: 1.4rem;
+  .j-intro h1 {
+    font-size: 3.2rem;
   }
   .j-intro-blurb {
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     margin-bottom: 1rem;
   }
   .j-chapters {
     grid-template-columns: 1fr;
-    gap: 0.4rem;
     margin-bottom: 1.1rem;
   }
-  .j-chapters li {
+  .j-chapters li,
+  .j-chapters li + li {
     flex-direction: row;
     align-items: baseline;
     flex-wrap: wrap;
     gap: 0.1rem 0.5rem;
-    padding: 0.5rem 0.6rem;
+    padding: 0.5rem 0;
+    border-left: 0;
+    border-bottom: 1px solid var(--rule);
   }
-  /* Stacked, the cards already read top to bottom; a sideways arrow between
-     them would point the wrong way. */
-  .j-chapters li:not(:last-child)::after {
-    content: none;
-  }
-  /* The three spans are three different widths ("2023" against "2005 — 2023"),
-     so a title that simply followed its span started at a different x on every
-     row. Pushed to the right edge, the acts line up as a column again — dates
-     down the left, names down the right. */
+  /* The three spans are three different widths, so a title that simply
+     followed its span started at a different x on every row. Pushed to the
+     right edge, the acts line up as a column again. */
   .j-ch-title {
     margin-left: auto;
+    font-size: 1.25rem;
   }
   .j-ch-detail {
     flex-basis: 100%;
-    font-size: 0.68rem;
+    font-size: 0.7rem;
   }
   .j-intro-aside {
-    font-size: 0.68rem;
+    font-size: 0.7rem;
   }
 }
 
 /* Painted while the lazy journey chunk loads, so the static page never shows
-   through underneath it. */
+   through underneath it (D38). */
 .j-curtain {
   position: fixed;
   inset: 0;
   height: 100vh;
   height: 100dvh;
   z-index: 2000;
-  background: #070b12;
+  background: var(--paper);
 }
 
-/* Landing beat: card left, the hero artwork right, mirroring the static
-   hero's composition. */
+/* Landing beat: card left, the opening print right. */
 .j-card-slot[data-kind="intro"] {
   justify-content: space-between;
   gap: clamp(1rem, 4vw, 4rem);
@@ -1725,7 +1799,6 @@
   pointer-events: none;
   animation: j-intro-art-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: 0.25s;
-  filter: drop-shadow(0 30px 60px rgb(0 0 0 / 0.55));
 }
 
 @keyframes j-intro-art-in {
@@ -1742,36 +1815,26 @@
 }
 
 /* ==========================================================================
-   The opening image: a pour that travels Spain -> India -> Sweden and casts
+   The opening print: a pour that travels Spain -> India -> Sweden and casts
    a developer at a desk (D70).
 
    ONE cycle, shared by every moving part, with percentage keyframes instead
-   of a stack of animation-delays. Delays drift — different elements start
-   when their animation is applied, and a page left open overnight ends up
-   with the mould filling while the ladle is still upright. Percentages of a
-   common duration cannot come apart.
-
-   It is also all CSS. This is the default landing beat, and a permanent
-   rAF loop on it is a battery bill charged to every visitor (D54).
+   of a stack of animation-delays. Delays drift; percentages of a common
+   duration cannot come apart. All CSS — this is the default landing beat,
+   and a permanent rAF loop on it is a battery bill charged to every visitor
+   (D54). The globe reads this cycle's clock off .j-pour-charge, so the
+   keyframe percentages below are also ITS waypoints: change them together.
    ========================================================================== */
 
 .j-pour {
   --pour-cycle: 11s;
-  --pour-ink: #2b3d5c;
-  --pour-case: #18263f;
-  --pour-rim: #8fb0e0;
   /* The animation repaints a small area over and over; confining the
      invalidation to the element's own box is what kept the globe smooth
      (D58), and it applies here for the same reason. */
   contain: paint;
 }
 
-/* Pointer parallax. The lean is published as --j-lean-x / --j-lean-y on the
-   stage by the world's own render loop (timeline.js), so this rides the same
-   hand movement as the scenes do without a second listener — and inherits
-   D54's rules for free: the loop sleeps when there is nothing left to close,
-   and a coarse pointer never starts it at all.
-  
+/* Pointer parallax, read from --j-lean-x / --j-lean-y on the stage (D71).
    It goes on WRAPPERS, never on the animated elements: the ladle tips with a
    transform of its own, and two transforms on one element is the animation
    winning and the parallax silently doing nothing. */
@@ -1786,10 +1849,7 @@
 .j-pour-spout,
 .j-pour-charge,
 .j-pour-fill,
-.j-pour-cast-glow,
-.j-pour-spill,
 .j-pour-melt,
-.j-pour-flare,
 .j-pour-lit {
   animation-duration: var(--pour-cycle);
   animation-iteration-count: infinite;
@@ -1827,16 +1887,13 @@
   0%,
   10% {
     transform: scaleY(1);
-    opacity: 0.95;
   }
   50% {
     transform: scaleY(0.15);
-    opacity: 0.7;
   }
   64%,
   100% {
     transform: scaleY(1);
-    opacity: 0.95;
   }
 }
 
@@ -1865,17 +1922,11 @@
   }
 }
 
-/* The metal FILLING the pipe, not a bead running down it.
-  
-   Two edges, one path. With pathLength="100" the visible run is
-   `stroke-dasharray: <length> <gap>` and its start is `-stroke-dashoffset`,
-   so animating both together moves the head and the tail independently:
-  
-     fill   head 0 -> 100, tail held at 0   (dasharray grows, offset still)
-     drain  head held at 100, tail 0 -> 100 (dasharray shrinks as offset runs)
-  
-   The gap is 200 — larger than the whole path — so the dash pattern never
-   repeats and a second phantom run cannot appear behind the first. */
+/* The metal FILLING the pipe, not a bead running down it. With
+   pathLength="100", animating dasharray and dashoffset together moves the
+   head and the tail independently: fill (head 0 -> 100), then drain (tail
+   0 -> 100). The gap is 200 — larger than the whole path — so the pattern
+   never repeats and no phantom second run appears. */
 .j-pour-charge {
   animation-name: j-pour-fill-pipe;
 }
@@ -1892,13 +1943,11 @@
     stroke-dashoffset: 0;
     opacity: 1;
   }
-  /* Running down the pipe, leaving it full behind it. */
   50% {
     stroke-dasharray: 100 200;
     stroke-dashoffset: 0;
     opacity: 1;
   }
-  /* The ladle is up; what is in the pipe empties into the mould. */
   76% {
     stroke-dasharray: 0 200;
     stroke-dashoffset: -100;
@@ -1912,39 +1961,29 @@
   }
 }
 
-/* Each place flares as the metal reaches it. Spain sits about a third along
-   the pipe, India about two thirds — read off the path, and the reason the
-   stations are separate keyframe blocks rather than one with a delay. */
-.j-pour-flare,
+/* Each place's plate prints as the metal reaches it, and STAYS printed until
+   the ladle tips again — a route being coloured in one stop at a time. Spain
+   sits about a third along the pipe, India about two thirds. */
 .j-pour-lit {
   opacity: 0;
 }
 
-.j-pour-stop--spain .j-pour-flare,
 .j-pour-stop--spain .j-pour-lit {
   animation-name: j-pour-flare-spain;
 }
 
-.j-pour-stop--india .j-pour-flare,
 .j-pour-stop--india .j-pour-lit {
   animation-name: j-pour-flare-india;
 }
 
-/* A place the metal has passed STAYS LIT for the rest of the cycle. It flares
-   as the head arrives, settles to a steady glow, and only goes out when the
-   ladle is about to tip again — so the image reads as a route being lit up
-   one stop at a time, which is the whole point of it. */
 @keyframes j-pour-flare-spain {
   0%,
   21% {
     opacity: 0;
   }
-  26% {
-    opacity: 0.6;
-  }
-  34%,
+  27%,
   96% {
-    opacity: 0.34;
+    opacity: 1;
   }
   100% {
     opacity: 0;
@@ -1956,12 +1995,9 @@
   33% {
     opacity: 0;
   }
-  38% {
-    opacity: 0.55;
-  }
-  46%,
+  39%,
   96% {
-    opacity: 0.32;
+    opacity: 1;
   }
   100% {
     opacity: 0;
@@ -1981,9 +2017,7 @@
   }
   /* Ends with the pipe: the last of the metal arriving is the last of the
      cavity filling. */
-  80% {
-    transform: translateY(0);
-  }
+  80%,
   94% {
     transform: translateY(0);
   }
@@ -1992,60 +2026,13 @@
   }
 }
 
-/* Whole, and then it cools back down and the ladle goes again. */
-.j-pour-cast-glow {
-  opacity: 0;
-  animation-name: j-pour-cool;
-}
-
-@keyframes j-pour-cool {
-  0%,
-  78% {
-    opacity: 0;
-  }
-  84% {
-    opacity: 0.5;
-  }
-  93% {
-    opacity: 0.22;
-  }
-  98%,
-  100% {
-    opacity: 0;
-  }
-}
-
-.j-pour-spill {
-  opacity: 0;
-  animation-name: j-pour-spill;
-}
-
-@keyframes j-pour-spill {
-  0%,
-  50% {
-    opacity: 0;
-  }
-  80% {
-    opacity: 0.3;
-  }
-  94%,
-  100% {
-    opacity: 0;
-  }
-}
-
-/* Reduced motion gets the finished object: poured, cast, standing. Journey
-   mode is not even built under that setting (it serves JourneyStatic), so
-   this is belt and braces for anyone landing here another way. */
+/* Reduced motion gets the finished object: poured, cast, standing. */
 @media (prefers-reduced-motion: reduce) {
   .j-pour-ladle,
   .j-pour-spout,
   .j-pour-charge,
   .j-pour-fill,
-  .j-pour-cast-glow,
-  .j-pour-spill,
   .j-pour-melt,
-  .j-pour-flare,
   .j-pour-lit {
     animation: none;
   }
@@ -2056,22 +2043,21 @@
   .j-pour-fill {
     transform: translateY(0);
   }
-  .j-pour-cast-glow {
-    opacity: 0.28;
+  .j-pour-lit {
+    opacity: 1;
   }
 }
 
 /* ==========================================================================
-   Per-beat accents. Each scene gets one thing that is actually happening in
-   it, and it is the brightest element in the frame.
+   Per-beat motion. Each place has at most one thing moving in it, and it is
+   the thing the place is about.
    ========================================================================== */
 
-/* Foundry: a brighter slug running down the pour, so the stream reads as
+/* Foundry: a cream slug running down the pour, so the stream reads as
    flowing rather than as a static line. */
 .fy-pour-run {
-  stroke-dasharray: 18 150;
-  stroke-dashoffset: 168;
-  opacity: 0.9;
+  stroke-dasharray: 16 150;
+  stroke-dashoffset: 166;
   animation: accent-run 1.5s linear infinite;
 }
 
@@ -2090,298 +2076,28 @@
 
 @keyframes accent-pulse {
   50% {
-    transform: scale(1.12);
-    opacity: 0.85;
+    transform: scale(1.18);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .fy-pour-run,
-  .fy-pool {
-    animation: none;
-  }
+/* India: the trainer's pointer, explaining. */
+.india-pointer {
+  transform-box: fill-box;
+  transform-origin: left bottom;
+  animation: explain-process 3.2s ease-in-out infinite;
 }
 
-/* ==========================================================================
-   Light journey. The heat engine supplies the scene colours; these are the
-   interface surfaces that sit above it.
-   ========================================================================== */
-
-body:not(.dark-theme) .j-stage,
-body:not(.dark-theme) .j-static,
-body:not(.dark-theme) .j-curtain {
-  background: #f8fafc;
-  color: #172033;
-  color-scheme: light;
-}
-
-body:not(.dark-theme) .j-stage {
-  --j-snow: #64748b;
-  --j-blossom: #db2777;
-  --j-blossom-core: #a16207;
-  --j-leaf: #b45309;
-  --j-sun: #f59e0b;
-}
-
-/* Presentation attributes deliberately keep windows quiet at night. In the
-   paper-light palette they need more density to survive against the sky. */
-body:not(.dark-theme) .building-windows {
-  fill: var(--j-stream);
-  opacity: 0.94;
-  filter: url(#jAccentHalo);
-}
-
-/* In a bright scene luminosity comes from a saturated core plus a compact
-   halo, rather than the broad pale blur used against the night sky. Existing
-   deliberately blurred spills keep their own filters. */
-body:not(.dark-theme) .acc [fill="var(--j-stream)"]:not([filter]),
-body:not(.dark-theme) .acc [fill="var(--j-streamCore)"]:not([filter]),
-body:not(.dark-theme) .acc [stroke="var(--j-stream)"]:not([filter]),
-body:not(.dark-theme) .acc [stroke="var(--j-streamCore)"]:not([filter]) {
-  filter: url(#jAccentHalo);
-}
-
-body:not(.dark-theme) [data-arch-edge] {
-  opacity: 0.72;
-}
-
-body:not(.dark-theme) .office-network > g[filter="url(#jGlowSoft)"] {
-  filter: url(#jAccentHalo);
-}
-
-body:not(.dark-theme) .j-card {
-  background: color-mix(in srgb, #ffffff 88%, transparent);
-  border-color: color-mix(in srgb, var(--j-accent) 42%, #d7dee8);
-  box-shadow: 0 24px 60px -28px rgb(37 48 68 / 0.34);
-}
-
-body:not(.dark-theme) .j-year,
-body:not(.dark-theme) .j-material,
-body:not(.dark-theme) .j-status,
-body:not(.dark-theme) .j-brand,
-body:not(.dark-theme) .j-gallery header p,
-body:not(.dark-theme) .j-overview header p,
-body:not(.dark-theme) .j-ov-org {
-  color: #5f6f85;
-}
-
-body:not(.dark-theme) .j-card h3,
-body:not(.dark-theme) .j-static-list h3,
-body:not(.dark-theme) .j-static-lede {
-  color: #526176;
-}
-
-body:not(.dark-theme) .j-card dd,
-body:not(.dark-theme) .j-static-list dd,
-body:not(.dark-theme) .j-card-note,
-body:not(.dark-theme) .j-intro-blurb {
-  color: #2f3d51;
-}
-
-body:not(.dark-theme) .j-products a {
-  color: color-mix(in srgb, var(--j-accent) 88%, #172033);
-  background: color-mix(in srgb, var(--j-accent) 11%, #ffffff);
-  border-color: color-mix(in srgb, var(--j-accent) 46%, #d7dee8);
-}
-
-body:not(.dark-theme) .j-card dt,
-body:not(.dark-theme) .j-static-list dt {
-  color: color-mix(in srgb, var(--j-accent) 88%, #172033);
-}
-
-body:not(.dark-theme) .j-material {
-  border-top-color: rgb(23 32 51 / 0.11);
-}
-
-body:not(.dark-theme) .j-rail {
-  background: rgb(255 255 255 / 0.76);
-  border-color: rgb(71 85 105 / 0.2);
-  box-shadow: 0 10px 30px -18px rgb(37 48 68 / 0.34);
-}
-
-/* The dot has to stay opaque so the gradient line passes behind it, which
-   means it needs the light rail's own background rather than the dark one. */
-body:not(.dark-theme) .j-trail-dot {
-  background: #f4f7fb;
-}
-
-/* A touch darker than the old year strip's labels: the pill is translucent,
-   so in light mode these sit on whatever the scene puts behind them. */
-body:not(.dark-theme) .j-trail-year {
-  color: #5a6679;
-}
-
-body:not(.dark-theme) .j-trail-tag,
-body:not(.dark-theme) .j-rail-now {
-  color: #4d5a6d;
-}
-
-body:not(.dark-theme) .j-trail button.on .j-trail-tag,
-body:not(.dark-theme) .j-trail button:hover .j-trail-tag {
-  color: #1f2c3f;
-}
-
-body:not(.dark-theme) .j-ch-detail {
-  color: #3c4a5e;
-}
-
-body:not(.dark-theme) .j-intro-aside {
-  color: #5f6f85;
-}
-
-body:not(.dark-theme) .j-chapters li:not(:last-child)::after {
-  color: rgb(31 44 63 / 0.4);
-}
-
-body:not(.dark-theme) .j-nav,
-body:not(.dark-theme) .j-ov-open,
-body:not(.dark-theme) .j-ov-close {
-  color: #1f2c3f;
-}
-
-body:not(.dark-theme) .j-hint,
-body:not(.dark-theme) .j-ov-caption {
-  color: rgb(31 44 63 / 0.48);
-}
-
-body:not(.dark-theme) .j-ov-open,
-body:not(.dark-theme) .j-ov-close {
-  background: rgb(255 255 255 / 0.62);
-  border-color: rgb(71 85 105 / 0.22);
-}
-
-body:not(.dark-theme) .j-ov-node {
-  color: #172033;
-  background: color-mix(in srgb, #ffffff 88%, transparent);
-  box-shadow: 0 12px 30px -22px rgb(37 48 68 / 0.4);
-}
-
-body:not(.dark-theme) .j-static-list li {
-  background: color-mix(in srgb, var(--j-accent) 5%, #ffffff);
-}
-
-body:not(.dark-theme) .j-intro-art {
-  filter: drop-shadow(0 24px 42px rgb(37 48 68 / 0.2));
-}
-
-/* In daylight the same masses need to be darker, not lighter: they are read
-   against a bright sky rather than a night one. */
-body:not(.dark-theme) .j-pour {
-  --pour-ink: #2e405d;
-  --pour-case: #1b2942;
-  --pour-rim: #dce8f8;
-}
-
-/* The phone recap's work list, in daylight. Same treatment as the cards: a
-   near-white card with the accent carried by the left edge. */
-body:not(.dark-theme) .j-work {
-  background: color-mix(in srgb, #ffffff 88%, transparent);
-  border-color: color-mix(in srgb, var(--j-accent) 42%, #d7dee8);
-  border-left-color: var(--j-accent);
-  box-shadow: 0 12px 30px -22px rgb(37 48 68 / 0.4);
-}
-
-body:not(.dark-theme) .j-work:hover,
-body:not(.dark-theme) .j-work:focus-visible {
-  background: #ffffff;
-}
-
-body:not(.dark-theme) .j-work-title,
-body:not(.dark-theme) .j-sheet-body h3 {
-  color: #172033;
-}
-
-body:not(.dark-theme) .j-work-blurb,
-body:not(.dark-theme) .j-sheet-blurb {
-  color: #2f3d51;
-}
-
-body:not(.dark-theme) .j-work-tech,
-body:not(.dark-theme) .j-sheet-date,
-body:not(.dark-theme) .j-sheet-details li {
-  color: #5f6f85;
-}
-
-body:not(.dark-theme) .j-work-thumb {
-  border-color: rgb(71 85 105 / 0.18);
-}
-
-/* The sheet, in daylight. The scrim still darkens — it is holding the world
-   back, and a white wash over a bright scene reads as fog rather than depth. */
-body:not(.dark-theme) .j-sheet-scrim {
-  background: rgb(23 32 51 / 0.45);
-}
-
-body:not(.dark-theme) .j-sheet-panel {
-  background: color-mix(in srgb, #ffffff 96%, transparent);
-  border-color: color-mix(in srgb, var(--j-accent) 42%, #d7dee8);
-  box-shadow: 0 -20px 60px -28px rgb(37 48 68 / 0.5);
-}
-
-/* The clip's own letterbox. #070b12 behind a 16:10 box is right at night and
-   a black bar across a white sheet in the day. */
-body:not(.dark-theme) .j-sheet-media {
-  background: #e7eef7;
-  border-bottom-color: rgb(71 85 105 / 0.16);
-}
-
-body:not(.dark-theme) .j-sheet-close {
-  color: #172033;
-  background: rgb(255 255 255 / 0.82);
-  border-color: rgb(71 85 105 / 0.24);
-}
-
-body:not(.dark-theme) .j-sheet-tech li {
-  color: #2f3d51;
-  background: color-mix(in srgb, var(--j-accent) 7%, #ffffff);
-  border-color: rgb(71 85 105 / 0.18);
-}
-
-body:not(.dark-theme) .j-sheet-tech img {
-  background: #f4f7fb;
-}
-
-body:not(.dark-theme) .j-sheet-links a {
-  color: color-mix(in srgb, var(--j-accent) 88%, #172033);
-  background: color-mix(in srgb, var(--j-accent) 11%, #ffffff);
-  border-color: color-mix(in srgb, var(--j-accent) 46%, #d7dee8);
-}
-
-/* Shared accent motion. Every beat's accent is a light source, so they all
-   breathe rather than sit still. */
-.acc-flicker {
-  animation: acc-flicker 4.5s ease-in-out infinite;
-}
-
-@keyframes acc-flicker {
+@keyframes explain-process {
   0%,
   100% {
-    opacity: 0.8;
+    transform: rotate(-3deg);
   }
-  40% {
-    opacity: 1;
-  }
-  62% {
-    opacity: 0.72;
+  50% {
+    transform: rotate(6deg);
   }
 }
 
-.acc-run {
-  stroke-dasharray: 14 120;
-  stroke-dashoffset: 134;
-  opacity: 0.9;
-  animation: accent-run 1.7s linear infinite;
-}
-
-.acc-beacon {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: acc-beacon 2.6s ease-in-out infinite;
-}
-
-/* The human-scale accents move sparingly: a screen breathes, a process moves
-   through the India rollout board, and pulses travel from four products into
-   one shared platform. The motion explains the scene instead of decorating it. */
+/* A screen that is being worked at. */
 .screen-glow {
   animation: screen-work 3.8s steps(2, end) infinite;
 }
@@ -2389,125 +2105,49 @@ body:not(.dark-theme) .j-sheet-links a {
 @keyframes screen-work {
   0%,
   100% {
-    opacity: 0.72;
+    opacity: 0.75;
   }
   38% {
     opacity: 1;
   }
   68% {
-    opacity: 0.84;
+    opacity: 0.86;
   }
 }
 
-.india-pointer {
-  transform-box: fill-box;
-  transform-origin: left center;
-  animation: explain-process 3.2s ease-in-out infinite;
-}
-
-.india-process-flow {
-  stroke-dasharray: 9 13;
-  animation: india-process-transfer 2.2s linear infinite;
-}
-
-@keyframes india-process-transfer {
-  to {
-    stroke-dashoffset: -44;
-  }
-}
-
-@keyframes explain-process {
-  0%,
-  100% {
-    transform: rotate(-2deg);
-  }
-  50% {
-    transform: rotate(5deg);
-  }
-}
-
-.solo-cable {
-  stroke-dasharray: 4 7;
-}
-
-.network-line {
-  stroke-dasharray: 10 28;
-  animation: network-flow 3.4s linear infinite;
-}
-
-.network-line--2 {
-  animation-delay: -0.8s;
-}
-.network-line--3 {
-  animation-delay: -1.6s;
-}
-.network-line--4 {
-  animation-delay: -2.4s;
-}
-
-@keyframes network-flow {
-  to {
-    stroke-dashoffset: -76;
-  }
-}
-
-.platform-node {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: accent-pulse 2.8s ease-in-out infinite;
-}
-
+/* The summer sun turns, slowly. */
 .season-sun-core {
   transform-box: fill-box;
   transform-origin: center;
-  animation: season-sun-breathe 5s ease-in-out infinite;
+  animation: season-sun-turn 40s linear infinite;
 }
 
-@keyframes season-sun-breathe {
-  50% {
-    transform: scale(1.08);
-    opacity: 1;
-  }
-}
-
-@keyframes acc-beacon {
-  0%,
-  100% {
-    opacity: 0.25;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.25);
+@keyframes season-sun-turn {
+  to {
+    transform: rotate(360deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .acc-flicker,
-  .acc-run,
-  .acc-beacon,
-  .screen-glow,
+  .fy-pour-run,
+  .fy-pool,
   .india-pointer,
-  .india-process-flow,
-  .network-line,
-  .platform-node,
+  .screen-glow,
   .season-sun-core {
     animation: none;
   }
 }
 
 /* ==========================================================================
-   Atmosphere — the surface the world is printed on.
+   The paper itself (D55, recut).
 
-   Flat vector art reads as clip art largely because it has no SURFACE: every
-   region is a mathematically even colour, which is a thing that does not
-   occur in any photographed or printed image. A little grain and a vignette
-   cost one composited layer each and do more for how expensive the journey
-   looks than any amount of extra geometry would.
-
-   Over the WORLD only, never the cards — noise laid over text is the fastest
-   way to make type look cheap. DOM order puts this above <World/> and below
-   .j-cards, so neither needs a z-index.
+   Flat vector reads as clip art largely because it has no SURFACE. Here the
+   surface is literally paper: a fine grain multiplied into the world on the
+   light theme (ink pooling in the tooth of the sheet), lifted with screen on
+   the dark one, plus the faintest warm darkening at the edges, as a sheet
+   under a lamp. Over the WORLD only, never the cards — noise over text is
+   the fastest way to make type look cheap. DOM order puts this above
+   <World/> and below .j-cards, so neither needs a z-index.
    ========================================================================== */
 
 .j-atmos {
@@ -2523,125 +2163,98 @@ body:not(.dark-theme) .j-sheet-links a {
   inset: 0;
 }
 
-/* Monochrome fractal noise, tiled. feColorMatrix desaturates it — raw
-   feTurbulence is colour noise, which reads as a broken screen rather than
-   as film. `overlay` keeps it neutral in both themes: it darkens what is
-   already dark and lightens what is light, instead of laying grey over
-   everything the way a flat opacity would. */
 .j-atmos::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 180px 180px;
-  mix-blend-mode: overlay;
-  opacity: 0.075;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 -1.4 1.05'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+  mix-blend-mode: multiply;
+  opacity: 0.42;
 }
 
-/* Pulls the corners down so the eye goes to the lit middle of the frame. The
-   centre sits slightly high because the beat card owns the lower left. */
 .j-atmos::after {
   background: radial-gradient(
-    ellipse 118% 96% at 52% 44%,
-    transparent 40%,
-    rgb(0 0 0 / 0.28) 78%,
-    rgb(0 0 0 / 0.58) 100%
+    ellipse 120% 100% at 50% 45%,
+    transparent 55%,
+    rgb(120 90 60 / 0.07) 85%,
+    rgb(120 90 60 / 0.13) 100%
   );
 }
 
-/* A breath of the arriving beat's accent across the whole frame. Driven from
-   the timeline (see the bloom tweens in timeline.js) so it scrubs with the
-   move instead of firing on its own clock. `screen` because it is light being
-   added to the scene, not a colour laid on top of it. */
+body.dark-theme .j-atmos::before {
+  mix-blend-mode: screen;
+  opacity: 0.14;
+  filter: invert(1);
+}
+
+body.dark-theme .j-atmos::after {
+  background: radial-gradient(
+    ellipse 120% 100% at 50% 45%,
+    transparent 55%,
+    rgb(0 0 0 / 0.25) 100%
+  );
+}
+
+/* A wash of the arriving beat's pastel across the frame as it lands, driven
+   from the timeline so it scrubs with the move. Overprinted, like
+   everything else. */
 .j-bloom {
   position: absolute;
   inset: 0;
   pointer-events: none;
   opacity: 0;
-  mix-blend-mode: screen;
+  mix-blend-mode: var(--print-blend);
   background: radial-gradient(
     ellipse 82% 64% at 62% 54%,
-    color-mix(in srgb, var(--j-accent) 32%, transparent),
+    color-mix(in srgb, var(--j-stream) 30%, transparent),
     transparent 68%
   );
-}
-
-/* Volumetric shafts (LightShaft in parts.jsx). The breathe MULTIPLIES the
-   authored brightness rather than replacing it — see --shaft-o there. */
-.j-shaft {
-  opacity: var(--shaft-o, 1);
-  animation: j-shaft-breathe 7.5s ease-in-out infinite;
-  animation-delay: var(--shaft-delay, 0s);
-}
-
-@keyframes j-shaft-breathe {
-  0%,
-  100% {
-    opacity: calc(var(--shaft-o, 1) * 0.6);
-  }
-  45% {
-    opacity: var(--shaft-o, 1);
-  }
-}
-
-/* Paper, not night: a dark vignette on a light sky reads as dirt, and screen
-   blending an accent over white does nothing at all. */
-body:not(.dark-theme) .j-atmos::before {
-  opacity: 0.05;
-}
-
-body:not(.dark-theme) .j-atmos::after {
-  background: radial-gradient(
-    ellipse 118% 96% at 52% 44%,
-    transparent 46%,
-    rgb(23 32 51 / 0.1) 80%,
-    rgb(23 32 51 / 0.2) 100%
-  );
-}
-
-body:not(.dark-theme) .j-bloom {
-  mix-blend-mode: multiply;
-  background: radial-gradient(
-    ellipse 82% 64% at 62% 54%,
-    color-mix(in srgb, var(--j-accent) 22%, transparent),
-    transparent 68%
-  );
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .j-shaft {
-    animation: none;
-  }
 }
 
 /* ==========================================================================
-   The globe behind the map.
-
-   A secondary layer on purpose — the places carry the story, this says where
-   on earth they were. Half-sunk below the bottom edge so only its upper cap
-   shows, with the progress stream crossing it and the map sitting on it.
-
-   Colour comes entirely from the heat variables, so it travels molten -> cold
-   with everything else without being told about it.
+   The globe behind the map (D56) — a printed one: a disc of the ground's
+   stock, the graticule and the coasts in key ink, the road in the accent.
+   Half-sunk below the bottom edge so only its upper cap shows.
    ========================================================================== */
 
 .j-globe {
   position: absolute;
-  bottom: -12rem;
+  bottom: -13.5rem;
   left: 50%;
   width: 33rem;
   height: 33rem;
   margin-left: -16.5rem;
   pointer-events: none;
-  opacity: 0.58;
-  /* Its graticule is rewritten every frame while the camera travels. Without
-     this, invalidating those paths invalidated the whole stage behind them
-     and the transition dropped frames; with it, the repaint is confined to
-     the globe's own box and the cost falls back into the noise of not having
-     a globe at all. Measured, not assumed. */
+  opacity: 0.6;
+  /* Its graticule is rewritten every frame while the camera travels;
+     confining the repaint to the globe's own box is what keeps the
+     transition smooth (D58). Measured, not assumed. */
   contain: paint;
-  /* Follows the rail's own 1.1s glide when the recap drops it, so the two
-     leave together rather than one chasing the other. */
+  /* Follows the rail's own 1.1s glide when the recap drops it. */
   transition:
     opacity 0.9s ease,
     bottom 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Presentation attributes in JourneyGlobe.jsx are the heat defaults; the
+   print overrides them here, where both themes can reach them. */
+/* No face: drawn over the places, a solid disc hid them. As a wireframe the
+   scene shows through it, like a globe printed on the same sheet. */
+.j-globe-face {
+  fill: none;
+}
+
+.j-globe-limb {
+  stroke: var(--j-mid);
+  opacity: 0.9;
+}
+
+.j-globe-grid {
+  stroke: var(--j-mid);
+  opacity: 0.18;
+}
+
+.j-globe-land {
+  stroke: var(--j-mid);
+  opacity: 0.7;
 }
 
 /* The recap lays every place out across the ground at full size, which is the
@@ -2652,43 +2265,19 @@ body:not(.dark-theme) .j-bloom {
   bottom: -17rem;
 }
 
-/* Daylight. The globe is half-sunk, so its top half sits on a pale sky and
-   its bottom half on the dark ground — one ink cannot serve both, and at 0.42
-   over the sky it had all but disappeared. The fix is to give it a FACE
-   instead of restyling the lines: a faint dark disc puts the same bright
-   graticule on the same ground in both halves, which is what a planet ought
-   to have anyway. */
-body:not(.dark-theme) .j-globe {
-  opacity: 0.62;
-}
-
-body:not(.dark-theme) .j-globe-face {
-  fill: color-mix(in srgb, #0f1b2e 16%, transparent);
-}
-
-body:not(.dark-theme) .j-globe-grid {
-  opacity: 0.42;
-}
-
-body:not(.dark-theme) .j-globe-land,
-body:not(.dark-theme) .j-globe-limb {
-  opacity: 0.95;
-}
-
 @media (max-width: 768px) {
   .j-globe {
     bottom: -9rem;
     width: 20rem;
     height: 20rem;
     margin-left: -10rem;
-    opacity: 0.38;
+    opacity: 0.6;
   }
 }
 
-/* Stepping buttons under the map. Desktop has the rail's own arrows and the
-   wheel; phones have neither — the arrows are dropped for room down there and
-   a swipe teaches nobody it exists. So the two moves get real buttons below
-   the map, and the map moves up to make room for them. */
+/* Stepping buttons under the map (D65). Desktop has the rail's own arrows
+   and the wheel; phones have neither, so the two moves get real buttons
+   below the map, and the map moves up to make room for them. */
 .j-steps {
   display: none;
 }
@@ -2710,18 +2299,16 @@ body:not(.dark-theme) .j-globe-limb {
     pointer-events: auto;
     font: inherit;
     font-size: 0.8rem;
-    font-weight: 650;
+    font-weight: 500;
     cursor: pointer;
-    color: #dbe3ef;
-    padding: 0.45rem 1.15rem;
+    color: var(--ink);
+    padding: 0.45rem 1.2rem;
     border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--j-accent) 40%, transparent);
-    background: rgb(10 12 18 / 0.62);
-    backdrop-filter: blur(10px);
+    border: 1px solid var(--ink);
+    background: var(--paper);
   }
 
   .j-step span {
-    color: var(--j-accent);
     font-size: 0.95rem;
     line-height: 1;
   }
@@ -2738,10 +2325,4 @@ body:not(.dark-theme) .j-globe-limb {
   .j-stage[data-recap="true"] .j-rail {
     bottom: 3.3rem;
   }
-}
-
-body:not(.dark-theme) .j-step {
-  color: #1f2c3f;
-  background: rgb(255 255 255 / 0.76);
-  border-color: color-mix(in srgb, var(--j-accent) 46%, #d7dee8);
 }

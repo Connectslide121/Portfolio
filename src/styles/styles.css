@@ -3,13 +3,85 @@
   padding: 0;
   box-sizing: border-box;
   scroll-behavior: smooth;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    sans-serif;
+}
+
+/* On body, not on *: a universal font-family beats inheritance, so an <em>
+   inside a serif heading came out in the sans. Form controls do not inherit
+   fonts by default, so they are named explicitly. */
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--sans);
 }
 
 .App {
   scrollbar-color: var(--accentColor) transparent;
   scrollbar-width: thin;
+}
+
+/* ==========================================================================
+   The print system. Everything — the journey and the CV — is printed on the
+   same paper with the same inks: a near-black key plate, and a set of
+   high-contrast pastels that overprint each other like risograph layers.
+   Light ("paper") is the default; dark ("ink") swaps paper and key and keeps
+   the pastels, which read even louder on black.
+   ========================================================================== */
+:root {
+  --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --sans: "Inter Tight", "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  --paper: #f4efe6;
+  --paper-2: #ece5d9;
+  --paper-3: #e1d8c9;
+  --ink: #1d1b19;
+  --ink-soft: #57514a;
+  --ink-faint: #8b8379;
+  --rule: rgb(29 27 25 / 0.16);
+  --rule-strong: rgb(29 27 25 / 0.55);
+
+  /* The pastels. Named for what they look like, used for what they mean:
+     apricot / coral / butter are the foundry years, sky / lilac / sage the
+     software ones, rose the bridge between them. */
+  --apricot: #ffad85;
+  --coral: #ff7657;
+  --butter: #f6d56b;
+  --rose: #f4a3bf;
+  --lilac: #c4b3f2;
+  --sky: #9fc0f0;
+  --sage: #a6d0ac;
+
+  /* Pastels are fills, never text: on paper they fail contrast. These are
+     the same hues pushed dark enough to carry a word. */
+  --coral-ink: #c9401f;
+  --sky-ink: #2f5bc4;
+  --sage-ink: #2f7a47;
+  --lilac-ink: #6247c4;
+
+  /* How overlapping pastel shapes combine: multiply on paper, like ink. */
+  --print-blend: multiply;
+}
+
+body.dark-theme {
+  --paper: #191816;
+  --paper-2: #211f1c;
+  --paper-3: #2b2925;
+  --ink: #f1ebe0;
+  --ink-soft: #bdb4a6;
+  --ink-faint: #857d72;
+  --rule: rgb(241 235 224 / 0.16);
+  --rule-strong: rgb(241 235 224 / 0.55);
+
+  --coral-ink: #ff9a7e;
+  --sky-ink: #a8c6ff;
+  --sage-ink: #a6dcb2;
+  --lilac-ink: #cdbdff;
+
+  /* Multiply on black is black. On ink paper the layers add light instead. */
+  --print-blend: screen;
 }
 
 /* Modern CSS Custom Properties */
@@ -316,5 +388,65 @@ section:first-child {
 
   section {
     padding: var(--space-2xl) 0;
+  }
+}
+
+/* ==========================================================================
+   Wobble — italic type that shifts now and then (src/components/Wobble.jsx).
+   The component writes each letter's target (--wr rotation, --wy lift,
+   --wd delay) and toggles .is-wobbling; this is the spring it plays.
+   ========================================================================== */
+.wobble {
+  font-style: italic;
+}
+
+.wb-w {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.wb-l {
+  display: inline-block;
+  transform-origin: 50% 85%;
+}
+
+.wobble.is-wobbling .wb-l {
+  animation: wb-spring 1.25s cubic-bezier(0.37, 0, 0.3, 1) both;
+  animation-delay: var(--wd, 0ms);
+}
+
+/* Out, back past rest, and settle — a damped spring, not a there-and-back. */
+@keyframes wb-spring {
+  0% {
+    transform: none;
+  }
+  26% {
+    transform: translateY(var(--wy, 0)) rotate(var(--wr, 0deg));
+  }
+  52% {
+    transform: translateY(calc(var(--wy, 0) * -0.4)) rotate(calc(var(--wr, 0deg) * -0.38));
+  }
+  74% {
+    transform: translateY(calc(var(--wy, 0) * 0.14)) rotate(calc(var(--wr, 0deg) * 0.12));
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* Visually hidden, still read: the letters themselves are aria-hidden. */
+.wb-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wobble.is-wobbling .wb-l {
+    animation: none;
   }
 }

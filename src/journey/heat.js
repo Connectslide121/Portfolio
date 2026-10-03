@@ -20,6 +20,7 @@ const parsePoles = (palette) =>
   }, {});
 
 const DARK_POLES = parsePoles(PALETTE);
+// (DARK_POLES feeds heatPalette/applyHeat; heatColor is theme-independent.)
 const LIGHT_POLES = parsePoles(LIGHT_PALETTE);
 
 const MID = 0.5;
@@ -27,14 +28,18 @@ const STYLE_CACHE = new WeakMap();
 
 /**
  * The same cold -> warm -> hot ramp as a value, for anything that needs a
- * single colour rather than CSS variables on a root — the overview tints each
- * beat by its own heat, all seven visible at once.
+ * single colour rather than CSS variables on a root — the rail, the three
+ * acts and the overview trail each tint a beat by its own heat.
+ *
+ * Defaults to the lead PASTEL, which is the same in both themes: these tints
+ * fill dots, swatches and lines, never text (a pastel fails contrast on
+ * paper). Ask for "accent" when it has to carry a word.
  */
-export function heatColor(heat, key = "accent") {
+export function heatColor(heat, key = "stream") {
   const t = Math.max(0, Math.min(1, heat));
   const lower = t <= MID;
   const local = lower ? t / MID : (t - MID) / (1 - MID);
-  const [cold, warm, hot] = DARK_POLES[key];
+  const [cold, warm, hot] = LIGHT_POLES[key];
   return toHex(lerp(lower ? cold : warm, lower ? warm : hot, local));
 }
 

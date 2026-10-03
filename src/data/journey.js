@@ -250,6 +250,10 @@ export const education = [
 // exact town, which is all a 200px globe can resolve. The landing beat
 // borrows today's location so the globe is never pointed at nowhere, and the
 // recap has none — it lights every place at once instead.
+// `headline` is the card's display line: an upright part and an italic part,
+// set in the serif (the italic one is the part that moves — see Wobble). It
+// is the editorial voice of the card; `role` stays the plain job title for
+// the rail, the overview labels and the résumé.
 export const beats = [
   // Landing card. Not a place and not a year — the same headline the static
   // hero carries, so arriving in either mode says the same thing.
@@ -271,6 +275,7 @@ export const beats = [
   },
   {
     id: "origin",
+    headline: ["Engineering", "studies"],
     coords: { lat: 43.27, lon: -2.50 }, // Markina-Xemein, Basque Country
     orgs: ["london-met", "lea-artibai"],
     year: "2005 — 2010",
@@ -289,6 +294,7 @@ export const beats = [
   },
   {
     id: "foundry",
+    headline: ["Plant manager,", "product designer"],
     coords: { lat: 43.00, lon: -2.15 }, // Basque Country
     orgs: ["aml"],
     year: "2011 — 2023",
@@ -307,6 +313,7 @@ export const beats = [
   },
   {
     id: "india",
+    headline: ["A plant,", "from the ground up"],
     coords: { lat: 11.02, lon: 76.96 }, // Coimbatore
     orgs: ["aml", "atpl"],
     year: "2017",
@@ -326,6 +333,7 @@ export const beats = [
   },
   {
     id: "sweden",
+    headline: ["The metal", "cools"],
     coords: { lat: 56.88, lon: 14.81 }, // Vaxjo
     orgs: ["lexicon"],
     year: "2023 — 2024",
@@ -344,6 +352,7 @@ export const beats = [
   },
   {
     id: "sprinta",
+    headline: ["AI developer", "& consultant"],
     coords: { lat: 56.88, lon: 14.81 }, // Vaxjo
     orgs: ["sprinta"],
     year: "2024 — 2025",
@@ -366,6 +375,7 @@ export const beats = [
   },
   {
     id: "architect",
+    headline: ["Lead developer,", "platform architect"],
     coords: { lat: 56.88, lon: 14.81 }, // Vaxjo
     orgs: ["sprinta"],
     year: "2025 — Present",
@@ -393,6 +403,7 @@ export const beats = [
   // the things you can actually go and open sitting above it.
   {
     id: "recap",
+    headline: ["My", "work"],
     orgs: ["github"],
     year: "2005 — today",
     railLabel: "Work",

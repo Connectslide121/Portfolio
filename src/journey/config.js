@@ -145,72 +145,81 @@ export const PATH_START = -OVERDRAW;
 export const PATH_SPAN = WORLD_W + OVERDRAW * 2;
 
 // Heat ramps through THREE poles, not two. A straight cold->hot RGB lerp
-// passes through grey mud at the midpoint, which made the middle beats look
-// washed out; the warm pole turns that midpoint into an amber dusk instead.
-export const PALETTE = {
-  warm: {
-    accent: "#e0872e",
-    sky0: "#1d1320",
-    sky1: "#5b3033",
-    far: "#33212a",
-    mid: "#1d1520",
-    ground: "#110b11",
-    stream: "#ffc78a",
-    streamCore: "#fff0d2",
-  },
+// passes through grey mud at the midpoint; the warm pole keeps the middle of
+// the journey on apricot and rose instead.
+//
+// The world is printed, not lit (see the print system in styles.css):
+//   sky0/sky1  the paper, warmed or cooled a few points by the heat
+//   far        the hairline ink of the distant contours
+//   mid        the key plate — every silhouette is printed in it
+//   ground     the slightly darker stock of the ground band
+//   stream     the lead pastel of the moment (coral -> apricot -> sky)
+//   streamCore its partner plate (butter -> rose -> lilac)
+//   accent     the same hue pushed dark enough to carry text on paper
+//
+// Dark mode swaps paper and key and keeps the pastels.
+export const LIGHT_PALETTE = {
   hot: {
-    accent: "#ff6a00",
-    sky0: "#2b0f06",
-    sky1: "#7a2f0d",
-    far: "#3d1a0d",
-    mid: "#25100a",
-    ground: "#150805",
-    stream: "#ffd08a",
-    streamCore: "#fff3d6",
+    accent: "#c9401f",
+    sky0: "#f6eee3",
+    sky1: "#f2e6d8",
+    far: "#1d1b19",
+    mid: "#1f1a17",
+    ground: "#ebe1d2",
+    stream: "#ff7657",
+    streamCore: "#f6d56b",
+  },
+  warm: {
+    accent: "#b4532a",
+    sky0: "#f5efe6",
+    sky1: "#f1e8de",
+    far: "#1d1b19",
+    mid: "#1e1b19",
+    ground: "#ebe4d8",
+    stream: "#ffad85",
+    streamCore: "#f4a3bf",
   },
   cold: {
-    accent: "#3b82f6",
-    sky0: "#0b1220",
-    sky1: "#1e3a5f",
-    far: "#16283d",
-    mid: "#0f1c2c",
-    ground: "#080e17",
-    stream: "#9ec5ff",
-    streamCore: "#eaf2ff",
+    accent: "#2f5bc4",
+    sky0: "#f4f1eb",
+    sky1: "#eeece6",
+    far: "#1d1b19",
+    mid: "#1b1c1f",
+    ground: "#e7e4dc",
+    stream: "#9fc0f0",
+    streamCore: "#c4b3f2",
   },
 };
 
-// Light keeps the same temperature story, but swaps luminous night skies for
-// paper-like atmospheres and uses darker silhouettes/streams for contrast.
-export const LIGHT_PALETTE = {
-  warm: {
-    accent: "#b45309",
-    sky0: "#fffaf7",
-    sky1: "#eadbd8",
-    far: "#dbc8c7",
-    mid: "#59404a",
-    ground: "#2c2028",
-    stream: "#d97706",
-    streamCore: "#92400e",
-  },
+export const PALETTE = {
   hot: {
-    accent: "#c2410c",
-    sky0: "#fff7ed",
-    sky1: "#fed7aa",
-    far: "#edb98d",
-    mid: "#672b18",
-    ground: "#35170f",
-    stream: "#ea580c",
-    streamCore: "#9a3412",
+    accent: "#ff9a7e",
+    sky0: "#1c1a17",
+    sky1: "#211d19",
+    far: "#f1ebe0",
+    mid: "#ece4d6",
+    ground: "#24201c",
+    stream: "#ff7657",
+    streamCore: "#f6d56b",
+  },
+  warm: {
+    accent: "#ffb08f",
+    sky0: "#1b1a18",
+    sky1: "#1f1d1a",
+    far: "#f1ebe0",
+    mid: "#ebe4d8",
+    ground: "#23211e",
+    stream: "#ffad85",
+    streamCore: "#f4a3bf",
   },
   cold: {
-    accent: "#2563eb",
-    sky0: "#f8fbff",
-    sky1: "#dbeafe",
-    far: "#c7d7eb",
-    mid: "#334b68",
-    ground: "#172235",
-    stream: "#3b82f6",
-    streamCore: "#1d4ed8",
+    accent: "#a8c6ff",
+    sky0: "#191917",
+    sky1: "#1d1d1b",
+    far: "#f1ebe0",
+    mid: "#e8e6e0",
+    ground: "#21211f",
+    stream: "#9fc0f0",
+    streamCore: "#c4b3f2",
   },
 };
