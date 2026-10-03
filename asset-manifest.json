@@ -1,9 +1,9 @@
 {
   "files": {
-    "main.css": "/Portfolio/static/css/main.5bb92bf5.css",
-    "main.js": "/Portfolio/static/js/main.899046c9.js",
-    "static/css/688.f487cf43.chunk.css": "/Portfolio/static/css/688.f487cf43.chunk.css",
-    "static/js/688.7537e365.chunk.js": "/Portfolio/static/js/688.7537e365.chunk.js",
+    "main.css": "/Portfolio/static/css/main.efba3730.css",
+    "main.js": "/Portfolio/static/js/main.5d41753d.js",
+    "static/css/940.b10d752c.chunk.css": "/Portfolio/static/css/940.b10d752c.chunk.css",
+    "static/js/940.8ce803c1.chunk.js": "/Portfolio/static/js/940.8ce803c1.chunk.js",
     "static/js/516.ca072e3f.chunk.js": "/Portfolio/static/js/516.ca072e3f.chunk.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/CodepenAI.mp4": "/Portfolio/static/media/CodepenAI.67099e612ecd577ff4f7.mp4",
@@ -22,7 +22,6 @@
     "static/media/vending-machine.webp": "/Portfolio/static/media/vending-machine.b762ec5b9f486b0176e1.webp",
     "static/media/mongodb.webp": "/Portfolio/static/media/mongodb.73945bf357d77ed7cfed.webp",
     "static/media/lawn-mower-rental.webp": "/Portfolio/static/media/lawn-mower-rental.3b8cbda7ec56ee0cc32e.webp",
-    "static/media/home-image.webp": "/Portfolio/static/media/home-image.e15e791de15777d3362b.webp",
     "static/media/mcp.PNG": "/Portfolio/static/media/mcp.0f9b876dc9d7151a0e34.PNG",
     "static/media/rag.webp": "/Portfolio/static/media/rag.35d20de8ab7414b15a26.webp",
     "static/media/calculator.webp": "/Portfolio/static/media/calculator.947191452e1000ceea4d.webp",
@@ -40,7 +39,6 @@
     "static/media/nodejs.webp": "/Portfolio/static/media/nodejs.36072545b4e3d1e14cf4.webp",
     "static/media/git.webp": "/Portfolio/static/media/git.8b668b1574beac30d281.webp",
     "static/media/unity.webp": "/Portfolio/static/media/unity.dc85bb1d4a9a5fc48f54.webp",
-    "static/media/logo.webp": "/Portfolio/static/media/logo.28e93fd8effcf5ba8c1a.webp",
     "static/media/azure.webp": "/Portfolio/static/media/azure.3aedff54b8be5bb800e8.webp",
     "static/media/csharp.webp": "/Portfolio/static/media/csharp.cfbc524291f3ce489875.webp",
     "static/media/vector_db.webp": "/Portfolio/static/media/vector_db.10a2ba565696775ed58d.webp",
@@ -58,14 +56,14 @@
     "static/media/atpl.webp": "/Portfolio/static/media/atpl.4afdb6ed8e16fa6f6a94.webp",
     "static/media/lexicon.svg": "/Portfolio/static/media/lexicon.a3a9394e0035213881511dbb09bbe4ab.svg",
     "index.html": "/Portfolio/index.html",
-    "main.5bb92bf5.css.map": "/Portfolio/static/css/main.5bb92bf5.css.map",
-    "main.899046c9.js.map": "/Portfolio/static/js/main.899046c9.js.map",
-    "688.f487cf43.chunk.css.map": "/Portfolio/static/css/688.f487cf43.chunk.css.map",
-    "688.7537e365.chunk.js.map": "/Portfolio/static/js/688.7537e365.chunk.js.map",
+    "main.efba3730.css.map": "/Portfolio/static/css/main.efba3730.css.map",
+    "main.5d41753d.js.map": "/Portfolio/static/js/main.5d41753d.js.map",
+    "940.b10d752c.chunk.css.map": "/Portfolio/static/css/940.b10d752c.chunk.css.map",
+    "940.8ce803c1.chunk.js.map": "/Portfolio/static/js/940.8ce803c1.chunk.js.map",
     "516.ca072e3f.chunk.js.map": "/Portfolio/static/js/516.ca072e3f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5bb92bf5.css",
-    "static/js/main.899046c9.js"
+    "static/css/main.efba3730.css",
+    "static/js/main.5d41753d.js"
   ]
 }
