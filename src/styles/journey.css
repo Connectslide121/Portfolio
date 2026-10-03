@@ -386,8 +386,33 @@
   gap: 0.35rem;
   padding: 0.45rem 0.6rem;
   max-width: calc(100vw - 1.5rem);
+  isolation: isolate;
   /* It drops flush on the recap to make room for the laid-out labels (D47). */
   transition: bottom 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* A wash of paper under the map. The globe's graticule runs straight through
+   the labels otherwise. Half-opaque and blurred rather than solid, and
+   feathered at every edge, so it reads as the print being lighter there
+   rather than as a panel. On a pseudo-element so the feathering mask cannot
+   touch the type. */
+.j-rail::before {
+  content: "";
+  position: absolute;
+  inset: -0.6rem -1.6rem;
+  z-index: -1;
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 2rem, #000 calc(100% - 2rem), transparent),
+    linear-gradient(to bottom, transparent, #000 0.9rem, #000 calc(100% - 0.9rem), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 2rem, #000 calc(100% - 2rem), transparent),
+    linear-gradient(to bottom, transparent, #000 0.9rem, #000 calc(100% - 0.9rem), transparent);
+  mask-composite: intersect;
+  pointer-events: none;
 }
 
 .j-trail {
