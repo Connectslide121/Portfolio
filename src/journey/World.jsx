@@ -6,9 +6,6 @@ import {
   VIEW_H,
   FOCAL,
   anchor,
-  FADE_X0,
-  FADE_W,
-  FADE_EDGE,
   OVERVIEW,
 } from "./config";
 import { JourneyDefs, Sky, Contour, Ground, Particles } from "./parts";
@@ -81,41 +78,6 @@ export default function World({ season = "auto" }) {
       aria-hidden="true"
     >
       <JourneyDefs />
-
-      {/* Applied only while a beat is receding: opaque across the whole
-          silhouette, feathering only at the extreme edges so it hazes out
-          instead of being cut off. */}
-      <defs>
-        <linearGradient
-          id="jFadeGrad"
-          gradientUnits="userSpaceOnUse"
-          x1={FADE_X0}
-          y1="0"
-          x2={FADE_X0 + FADE_W}
-          y2="0"
-        >
-          <stop offset="0%" stopColor="#000" />
-          <stop offset={`${FADE_EDGE * 100}%`} stopColor="#fff" />
-          <stop offset={`${(1 - FADE_EDGE) * 100}%`} stopColor="#fff" />
-          <stop offset="100%" stopColor="#000" />
-        </linearGradient>
-        <mask
-          id="jFade"
-          maskUnits="userSpaceOnUse"
-          x={FADE_X0}
-          y="0"
-          width={FADE_W}
-          height={VIEW_H}
-        >
-          <rect
-            x={FADE_X0}
-            y="0"
-            width={FADE_W}
-            height={VIEW_H}
-            fill="url(#jFadeGrad)"
-          />
-        </mask>
-      </defs>
 
       <Sky />
 

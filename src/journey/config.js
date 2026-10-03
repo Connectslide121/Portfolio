@@ -104,15 +104,6 @@ export const LEAN_X = 46; // world units at the frame edge, at k = 1
 export const LEAN_Y = 22;
 
 
-// A receding scene is softened at its extreme edges so it melts into the
-// distance rather than ending abruptly. This is deliberately WIDER than the
-// scene itself (which spans FOCAL..FOCAL+SCENE_SPAN): the fade only touches
-// the outermost sliver, so nothing is actually cut away. An earlier version
-// narrowed scenes to a single landmark, which read as slicing them in half.
-export const FADE_X0 = FOCAL - 90;
-export const FADE_W = SCENE_SPAN + 180;
-export const FADE_EDGE = 0.11; // fraction of the span spent fading, each side
-
 // Bird's-eye overview. The camera lifts and the real silhouettes are laid out
 // across the ground, still standing upright, so you see the actual journey
 // from above rather than an abstract map of it.

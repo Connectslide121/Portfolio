@@ -238,17 +238,20 @@ export function buildJourney({ root }) {
         "transform",
         `translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${scale.toFixed(4)})`,
       );
-      el.setAttribute("opacity", opacity.toFixed(3));
-
-      // Soften the edges once a beat starts receding, and only then — the
-      // current scene must always be whole and hard-edged.
-      const wantMask = past && t > 0.2 && ov < 0.2;
-      const applied = el.getAttribute("mask");
-      const next = wantMask ? "url(#jFade)" : "";
-      if (applied !== next) {
-        if (next) el.setAttribute("mask", next);
-        else el.removeAttribute("mask");
+      // Faded through fill- and stroke-opacity (both inherited), NEVER the
+      // group's own opacity. A group with opacity < 1 — or a mask — is
+      // composited on its own, which switches its pastels' multiply off
+      // against the paper behind them: the moment a place began to recede
+      // its discs went visibly more solid and swallowed what was behind
+      // them. Per-shape opacity keeps every plate printing onto the page.
+      // Fully hidden is still a plain attribute, which skips painting.
+      const o = opacity.toFixed(3);
+      if (el.style.fillOpacity !== o) {
+        el.style.fillOpacity = o;
+        el.style.strokeOpacity = o;
       }
+      const vis = opacity < 0.002 ? "0" : "1";
+      if (el.getAttribute("opacity") !== vis) el.setAttribute("opacity", vis);
     }
   };
 
