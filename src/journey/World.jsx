@@ -132,31 +132,6 @@ export default function World({ season = "auto" }) {
           <Contour y={790} amp={70} step={180} seed={31} span={SCENE_W * BEATS.length} dash="1.5 8" opacity={0.5} />
         </g>
 
-        {/* The year, outlined in the serif: a hairline drawing of a number,
-            big enough to be architecture, quiet enough to sit behind it. */}
-        <g data-layer="type">
-          {BEATS.map((beat, i) =>
-            beat.numeral ? (
-              <text
-                key={beat.id}
-                data-atmos={beat.id}
-                data-numeral={beat.id}
-                x={anchor(i, 0.38) + FOCAL + 40}
-                y={560}
-                fill="none"
-                stroke="var(--j-mid)"
-                strokeWidth="1.2"
-                fontSize="440"
-                letterSpacing="-6"
-                opacity="0.3"
-                style={{ fontFamily: "var(--serif)" }}
-              >
-                {beat.numeral}
-              </text>
-            ) : null,
-          )}
-        </g>
-
         {/* scene — the places. Not parallax-translated: each one is placed
             every frame by projectScenes() in timeline.js, which slides the
             next one in from the right and lets the previous ones recede
@@ -185,6 +160,35 @@ export default function World({ season = "auto" }) {
             </g>
           );
         })}
+
+        {/* The year, outlined in the serif: a hairline drawing of a number,
+            big enough to be architecture, quiet enough to print over it.
+            ABOVE the places on purpose: behind them it showed through the
+            pastels only while they multiplied with the page, and the moment
+            a place started to recede its group opacity isolated the blend,
+            so the discs went solid and swallowed the year mid-move. */}
+        <g data-layer="type">
+          {BEATS.map((beat, i) =>
+            beat.numeral ? (
+              <text
+                key={beat.id}
+                data-atmos={beat.id}
+                data-numeral={beat.id}
+                x={anchor(i, 0.38) + FOCAL + 40}
+                y={560}
+                fill="none"
+                stroke="var(--j-mid)"
+                strokeWidth="1.2"
+                fontSize="440"
+                letterSpacing="-6"
+                opacity="0.3"
+                style={{ fontFamily: "var(--serif)" }}
+              >
+                {beat.numeral}
+              </text>
+            ) : null,
+          )}
+        </g>
 
         {/* The trail joining the laid-out places, visible only from above.
             Same molten-to-cold ramp as everything else, so the arc of the

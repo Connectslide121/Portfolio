@@ -174,16 +174,36 @@ body.dark-theme {
    Multiply on paper, screen on ink; still under reduced motion.
    ========================================================================== */
 @keyframes live-grain {
-  0% { transform: translate(0, 0); }
-  10% { transform: translate(-83px, 41px); }
-  20% { transform: translate(57px, -112px); }
-  30% { transform: translate(-141px, -29px); }
-  40% { transform: translate(119px, 88px); }
-  50% { transform: translate(-22px, 153px); }
-  60% { transform: translate(171px, -64px); }
-  70% { transform: translate(-108px, -167px); }
-  80% { transform: translate(36px, 119px); }
-  90% { transform: translate(-176px, 74px); }
+  0% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-83px, 41px);
+  }
+  20% {
+    transform: translate(57px, -112px);
+  }
+  30% {
+    transform: translate(-141px, -29px);
+  }
+  40% {
+    transform: translate(119px, 88px);
+  }
+  50% {
+    transform: translate(-22px, 153px);
+  }
+  60% {
+    transform: translate(171px, -64px);
+  }
+  70% {
+    transform: translate(-108px, -167px);
+  }
+  80% {
+    transform: translate(36px, 119px);
+  }
+  90% {
+    transform: translate(-176px, 74px);
+  }
 }
 
 /* The CV's grain: fixed behind the page content, over the paper colour. */
@@ -492,10 +512,12 @@ section:first-child {
     transform: translateY(var(--wy, 0)) rotate(var(--wr, 0deg));
   }
   52% {
-    transform: translateY(calc(var(--wy, 0) * -0.4)) rotate(calc(var(--wr, 0deg) * -0.38));
+    transform: translateY(calc(var(--wy, 0) * -0.4))
+      rotate(calc(var(--wr, 0deg) * -0.38));
   }
   74% {
-    transform: translateY(calc(var(--wy, 0) * 0.14)) rotate(calc(var(--wr, 0deg) * 0.12));
+    transform: translateY(calc(var(--wy, 0) * 0.14))
+      rotate(calc(var(--wr, 0deg) * 0.12));
   }
   100% {
     transform: none;
