@@ -1,9 +1,9 @@
 {
   "files": {
-    "main.css": "/Portfolio/static/css/main.efba3730.css",
-    "main.js": "/Portfolio/static/js/main.5d41753d.js",
-    "static/css/940.b10d752c.chunk.css": "/Portfolio/static/css/940.b10d752c.chunk.css",
-    "static/js/940.8ce803c1.chunk.js": "/Portfolio/static/js/940.8ce803c1.chunk.js",
+    "main.css": "/Portfolio/static/css/main.2b6b9fb7.css",
+    "main.js": "/Portfolio/static/js/main.91c2c291.js",
+    "static/css/940.6f467fde.chunk.css": "/Portfolio/static/css/940.6f467fde.chunk.css",
+    "static/js/940.9cc4cc6f.chunk.js": "/Portfolio/static/js/940.9cc4cc6f.chunk.js",
     "static/js/516.ca072e3f.chunk.js": "/Portfolio/static/js/516.ca072e3f.chunk.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.9b446f65b0a351953505.mp4",
     "static/media/CodepenAI.mp4": "/Portfolio/static/media/CodepenAI.67099e612ecd577ff4f7.mp4",
@@ -56,14 +56,14 @@
     "static/media/atpl.webp": "/Portfolio/static/media/atpl.4afdb6ed8e16fa6f6a94.webp",
     "static/media/lexicon.svg": "/Portfolio/static/media/lexicon.a3a9394e0035213881511dbb09bbe4ab.svg",
     "index.html": "/Portfolio/index.html",
-    "main.efba3730.css.map": "/Portfolio/static/css/main.efba3730.css.map",
-    "main.5d41753d.js.map": "/Portfolio/static/js/main.5d41753d.js.map",
-    "940.b10d752c.chunk.css.map": "/Portfolio/static/css/940.b10d752c.chunk.css.map",
-    "940.8ce803c1.chunk.js.map": "/Portfolio/static/js/940.8ce803c1.chunk.js.map",
+    "main.2b6b9fb7.css.map": "/Portfolio/static/css/main.2b6b9fb7.css.map",
+    "main.91c2c291.js.map": "/Portfolio/static/js/main.91c2c291.js.map",
+    "940.6f467fde.chunk.css.map": "/Portfolio/static/css/940.6f467fde.chunk.css.map",
+    "940.9cc4cc6f.chunk.js.map": "/Portfolio/static/js/940.9cc4cc6f.chunk.js.map",
     "516.ca072e3f.chunk.js.map": "/Portfolio/static/js/516.ca072e3f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.efba3730.css",
-    "static/js/main.5d41753d.js"
+    "static/css/main.2b6b9fb7.css",
+    "static/js/main.91c2c291.js"
   ]
 }
