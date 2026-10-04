@@ -1978,7 +1978,7 @@
 
 body.dark-theme .j-atmos::before {
   mix-blend-mode: screen;
-  opacity: 0.2;
+  opacity: 0.3;
 }
 
 body.dark-theme .j-atmos::after {
