@@ -8,6 +8,8 @@
 // `heat` is the hot -> cold position of an entry, 1 = the foundry, 0 = today.
 // It drives the accent colour in both modes.
 
+import { orgById } from "./orgLogos";
+
 /**
  * Product URLs, in one place.
  *
@@ -161,7 +163,9 @@ export const experience = [
         text: "Managed sand casting steel foundry production including MTO planning, CAD design, and process simulation",
       },
       {
-        text: "Led AML’s expansion into India in 2017, establishing operations at *Arihant Technocast Private Limited* — transferring production processes and bringing the plant up to standard",
+        text: "Led AML’s expansion into India in 2017, establishing operations at {Arihant Technocast Private Limited} — transferring production processes and bringing the plant up to standard",
+        // The address lives once, with the organisation's logo.
+        links: { "Arihant Technocast Private Limited": orgById("atpl").url },
       },
       {
         text: "Trained international teams and coordinated cross-cultural operations between countries",
