@@ -240,6 +240,17 @@
   background: var(--paper);
 }
 
+/* The same hover as the journey ticket in the hero: a wash of butter over
+   the paper. Mixed INTO the paper rather than laid over it transparently,
+   so the plate behind the card stays hidden. */
+.experience-card:hover::after {
+  background: color-mix(in srgb, var(--butter) 22%, var(--paper));
+}
+
+.experience-card::after {
+  transition: background-color 0.25s ease;
+}
+
 /* the plate behind the corner */
 .experience-card::before {
   content: "";
