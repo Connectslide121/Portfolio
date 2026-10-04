@@ -21,6 +21,9 @@
 // as far and in the same direction as a letter does.
 
 const R = 58; // ring radius, px
+// Controls hold their own letters still while hovered or focused: a label
+// you are about to click has to be readable.
+const CONTROL = "button, a, label, summary, [role='button'], [role='tab'], .hero-teaser, .j-trail button";
 const CELL = 120; // grid cell, px
 const STALE = 220; // ms before rest positions are re-measured while moving
 const PUSH = 1.0; // how far past the ring's edge a piece is shoved
@@ -43,6 +46,7 @@ let items = []; // { el, svg, host, x, y, vx, vy, tx, ty, rect, mass }
 let grid = new Map();
 let builtAt = 0;
 let pointer = { x: -9999, y: -9999, in: false };
+let hovered = null; // the control under the pointer, if any
 let raf = 0;
 let active = new Set();
 let visibleHosts = new Set();
@@ -259,9 +263,14 @@ function frame() {
     it.tx = 0;
     it.ty = 0;
   }
+  const focused =
+    document.activeElement && document.activeElement !== document.body
+      ? document.activeElement.closest(CONTROL)
+      : null;
   for (const it of hit) {
     const r = it.rect;
     if (!r) continue;
+    if ((hovered && hovered.contains(it.el)) || (focused && focused.contains(it.el))) continue;
     // Distance from the ring's centre to the piece's box.
     const nx = Math.max(r.l, Math.min(pointer.x, r.r));
     const ny = Math.max(r.t, Math.min(pointer.y, r.b));
@@ -319,6 +328,7 @@ function onMove(e) {
   pointer.x = e.clientX;
   pointer.y = e.clientY;
   pointer.in = true;
+  hovered = e.target && e.target.closest ? e.target.closest(CONTROL) : null;
   if (ring) {
     ring.style.translate = `${e.clientX - R}px ${e.clientY - R}px`;
     ring.style.opacity = "1";
@@ -328,6 +338,7 @@ function onMove(e) {
 
 function onLeave() {
   pointer.in = false;
+  hovered = null;
   if (ring) ring.style.opacity = "0";
   wake();
 }
@@ -392,6 +403,8 @@ export function startField(rootFn) {
   window.addEventListener("blur", onLeave);
   window.addEventListener("scroll", onScroll, { passive: true, capture: true });
   window.addEventListener("resize", onScroll);
+  // Keyboard focus landing on a control should settle its label too.
+  document.addEventListener("focusin", wake);
   mo = new MutationObserver(onMutations);
   mo.observe(document.body, { childList: true, subtree: true });
 
@@ -401,6 +414,7 @@ export function startField(rootFn) {
     window.removeEventListener("blur", onLeave);
     window.removeEventListener("scroll", onScroll, { capture: true });
     window.removeEventListener("resize", onScroll);
+    document.removeEventListener("focusin", wake);
     mo && mo.disconnect();
     io && io.disconnect();
     if (raf) cancelAnimationFrame(raf);
