@@ -89,6 +89,10 @@ video:-webkit-full-screen {
   pointer-events: none;
 }
 
+.project-card:nth-child(2n) .project-type-badge {
+  background: var(--lime);
+}
+
 .project-content {
   display: flex;
   flex-direction: column;

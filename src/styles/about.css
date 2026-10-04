@@ -60,7 +60,7 @@
 
 .tool-card:hover {
   border-color: var(--ink);
-  background: color-mix(in srgb, var(--butter) 35%, transparent);
+  background: color-mix(in srgb, var(--lime) 45%, transparent);
 }
 
 /* Logos keep their own colours, so they sit on a fixed pale disc that
@@ -165,7 +165,7 @@
   --tint: color-mix(in oklab, var(--coral) calc(var(--cardHeat, 0) * 100%), var(--sky));
   position: relative;
   padding-left: 3rem;
-  padding-bottom: var(--space-2xl);
+  padding-bottom: 3.5rem;
 }
 
 .timeline-marker {
@@ -206,8 +206,70 @@
   position: relative;
 }
 
+/* Each entry is a card pinned to the timeline, the same object as the
+   contact card and the journey ticket: paper, an ink rule, a hard offset
+   shadow, a slight tilt that straightens on hover, and a pastel plate
+   peeking out from behind its top corner. */
 .experience-card {
+  --plate: var(--apricot);
+  --tilt: -0.22deg;
   position: relative;
+  isolation: isolate;
+  padding: 1.6rem 1.8rem 1.4rem;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  box-shadow: 6px 6px 0 var(--ink);
+  rotate: var(--tilt);
+  transition:
+    rotate 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.experience-card:hover {
+  rotate: 0deg;
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+/* the card's paper, over the plate */
+.experience-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--paper);
+}
+
+/* the plate behind the corner */
+.experience-card::before {
+  content: "";
+  position: absolute;
+  top: -1.7rem;
+  right: -1.5rem;
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  background: var(--plate);
+  z-index: -2;
+}
+
+/* Alternate the tilt and cycle the plates down the list. */
+.timeline-item:nth-child(2n) .experience-card {
+  --tilt: 0.2deg;
+}
+.timeline-item:nth-child(4n + 2) .experience-card {
+  --plate: var(--sky);
+}
+.timeline-item:nth-child(4n + 3) .experience-card {
+  --plate: var(--rose);
+}
+.timeline-item:nth-child(4n + 4) .experience-card {
+  --plate: var(--butter);
+}
+
+/* The entry still being written gets the live colour. */
+.timeline-marker.current + .timeline-content .experience-card {
+  --plate: var(--lime);
 }
 
 .experience-header {
@@ -339,7 +401,7 @@
   height: 0.5rem;
   margin-right: 0.4rem;
   border-radius: 50%;
-  background: var(--tint);
+  background: var(--lime);
   box-shadow: 0 0 0 1px var(--ink);
 }
 
@@ -481,6 +543,16 @@
   }
   .timeline-item {
     padding-left: 2.2rem;
+  }
+  .experience-card {
+    padding: 1.2rem 1.1rem 1.1rem;
+    box-shadow: 4px 4px 0 var(--ink);
+    margin-right: 4px;
+  }
+  .experience-card::before {
+    width: 4rem;
+    height: 4rem;
+    right: -0.6rem;
   }
   .experience-header {
     flex-wrap: wrap;

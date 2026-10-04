@@ -12,7 +12,7 @@ import "../styles/hero-teaser.css";
  */
 const LINE = "M 20 44 C 300 44 420 40 620 44 S 960 48 1180 44";
 const STOPS = [
-  { x: 20, tint: "var(--sage)" },
+  { x: 20, tint: "var(--lime)" },
   { x: 330, tint: "var(--coral)" },
   { x: 640, tint: "var(--rose)" },
   { x: 900, tint: "var(--sky)" },
@@ -38,7 +38,7 @@ export default function HeroTeaser({ onEnter }) {
       <svg viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="teaserRamp" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="var(--sage)" />
+            <stop offset="0%" stopColor="var(--lime)" />
             <stop offset="25%" stopColor="var(--coral)" />
             <stop offset="50%" stopColor="var(--rose)" />
             <stop offset="75%" stopColor="var(--sky)" />

@@ -53,6 +53,10 @@ body {
   --lilac: #c4b3f2;
   --sky: #9fc0f0;
   --sage: #a6d0ac;
+  /* The one sharp pastel: a high-key lime for the thing that is live now —
+     the current entry, a hover, an active stop. Used sparingly so it keeps
+     its snap. */
+  --lime: #cfe86a;
 
   /* Pastels are fills, never text: on paper they fail contrast. These are
      the same hues pushed dark enough to carry a word. */
@@ -60,6 +64,7 @@ body {
   --sky-ink: #2f5bc4;
   --sage-ink: #2f7a47;
   --lilac-ink: #6247c4;
+  --lime-ink: #4f6b0c;
 
   /* How overlapping pastel shapes combine: multiply on paper, like ink. */
   --print-blend: multiply;
@@ -79,6 +84,7 @@ body.dark-theme {
   --sky-ink: #a8c6ff;
   --sage-ink: #a6dcb2;
   --lilac-ink: #cdbdff;
+  --lime-ink: #d9f07a;
 
   /* Multiply on black is black. On ink paper the layers add light instead. */
   --print-blend: screen;

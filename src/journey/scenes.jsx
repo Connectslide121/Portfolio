@@ -440,7 +440,7 @@ export function Office({ ax }) {
   ];
   return (
     <g>
-      <Disc cx={X(470)} cy={560} r={220} tint="var(--sage)" seed={15} />
+      <Disc cx={X(470)} cy={560} r={220} tint="var(--lime)" seed={15} />
       <Disc cx={X(700)} cy={450} r={160} tint="var(--sky)" seed={16} />
       <Disc cx={X(860)} cy={650} r={120} tint="var(--lilac)" seed={17} />
       <Orbit cx={X(600)} cy={540} r={330} opacity={0.5} />
