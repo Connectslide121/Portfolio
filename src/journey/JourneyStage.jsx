@@ -17,6 +17,7 @@ import IntroArt from "./IntroArt";
 import { heatColor } from "./heat";
 import ThemeToggle from "../components/ThemeToggle";
 import Wobble from "../components/Wobble";
+import Monogram from "../components/Monogram";
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
@@ -282,7 +283,10 @@ export default function JourneyStage({ onExit }) {
           the CV has to be unmissable: centred, filled, and plainly labelled. */}
       <div className="j-topbar">
         <p className="j-brand">
-          Jon Mendizabal <span className="j-dot">·</span> the journey
+          <Monogram className="j-brand-mark" />
+          <span>
+            Jon Mendizabal <span className="j-dot">·</span> the journey
+          </span>
         </p>
         <ThemeToggle id="journey-theme-toggle" />
         <button className="j-exit" onClick={onExit}>

@@ -262,10 +262,20 @@
 }
 
 .j-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
   font-size: 0.74rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink);
+}
+
+/* The monogram keeps its own setting, not the label's tracked caps. */
+.j-brand-mark {
+  --mono: 2.5rem;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 /* --- chrome -------------------------------------------------------------- */
@@ -614,7 +624,7 @@
     font-size: 0.86rem;
   }
   .j-hint,
-  .j-brand {
+  .j-brand > span:not(.monogram) {
     display: none;
   }
 
