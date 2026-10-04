@@ -1,0 +1,39 @@
+/* The cursor field (src/field/cursorField.js). */
+
+/* One span per letter, kept on its line with its word. inline-block is what
+   lets a letter take a translate; the nowrap word keeps line breaking where
+   it was. */
+.fx-w {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.fx-l {
+  display: inline-block;
+}
+
+/* The collision ring: a hairline circle in the ink, with a faint fill of
+   the paper so it reads as a lens rather than a hole. */
+.fx-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  background: color-mix(in srgb, var(--lime) 14%, transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  will-change: translate;
+}
+
+/* a dotted orbit just outside it, like the orbits on the prints */
+.fx-ring::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 1px dotted var(--ink);
+  opacity: 0.45;
+}

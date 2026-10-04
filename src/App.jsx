@@ -6,6 +6,8 @@ import About from "./pages/About";
 import Projects from "./pages/Projects";
 import Contact from "./pages/Contact";
 import Footer from "./components/Footer";
+import { startField } from "./field/cursorField";
+import "./field/field.css";
 
 // Journey mode is lazy so GSAP and the world SVG never touch first paint for a
 // visitor who only wants the CV (guardrail in docs/JOURNEY_PLAN.md §8).
@@ -50,6 +52,19 @@ const startInJourney = () => {
 
 export default function App() {
   const [journeyOpen, setJourneyOpen] = useState(startInJourney);
+
+  // The cursor field. It follows whichever mode is on screen: the journey's
+  // stage when it is open, the CV otherwise — re-resolved on every DOM
+  // change, so opening and closing the journey moves it across.
+  useEffect(
+    () =>
+      startField(
+        () =>
+          document.querySelector(".j-stage") ||
+          document.querySelector(".App"),
+      ),
+    [],
+  );
 
   const closeJourney = useCallback(() => {
     setJourneyOpen(false);
