@@ -1096,6 +1096,28 @@
   }
   .j-gallery {
     align-self: auto;
+    isolation: isolate;
+  }
+  /* The lifted map of places is still drawn behind the slide, and on a
+     phone it runs straight through the rows. Same feathered paper wash as
+     the story cards: the list sits on the sheet, the art fades out under
+     it. On a pseudo-element so the feathering cannot touch the type. */
+  .j-gallery::before {
+    content: "";
+    position: absolute;
+    inset: -1.25rem -1rem -1rem;
+    z-index: -1;
+    background: var(--paper);
+    opacity: 0.94;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, #000 1rem, #000 calc(100% - 1rem), transparent),
+      linear-gradient(to bottom, transparent, #000 1.25rem, #000 calc(100% - 1.5rem), transparent);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent, #000 1rem, #000 calc(100% - 1rem), transparent),
+      linear-gradient(to bottom, transparent, #000 1.25rem, #000 calc(100% - 1.5rem), transparent);
+    mask-composite: intersect;
+    pointer-events: none;
   }
   /* The list fills the slide and scrolls inside it; without min-height the
      flex column refuses to shrink and the overflow never engages. */
