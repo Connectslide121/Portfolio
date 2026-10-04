@@ -39,6 +39,12 @@ const startInJourney = () => {
   const hash = window.location.hash;
   if (params.has("cv") || hash.startsWith("#cv")) return false;
   if (params.has("journey") || hash.startsWith("#journey")) return true;
+  // Phones land on the CV (amends D17). The journey is built for a wide
+  // stage — on a phone it is a stack of panels over a cropped world — and a
+  // phone visitor is more often someone checking a link in a hurry. The
+  // hero's ticket is right there to go in, and an explicit #journey link
+  // still opens it anywhere.
+  if (window.matchMedia("(max-width: 768px)").matches) return false;
   return read(CV_PREFERRED) !== "1";
 };
 
