@@ -88,7 +88,7 @@
 /* The stream grows FROM the lip rather than fading in — liquid arrives, it
    does not materialise. */
 .j-pour-spout {
-  transform-origin: 196px 104px;
+  transform-origin: 227px 107px;
   animation-name: j-pour-stream;
 }
 

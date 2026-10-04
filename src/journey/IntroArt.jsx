@@ -126,11 +126,15 @@ export default function IntroArt({ className = "j-intro-art" }) {
           <path className="j-pour-melt" d="M 74 84 H 190 L 186 102 Q 130 118 78 102 Z" fill="var(--coral)" />
         </g>
 
-        {/* The stream out of the lip. Scales down from the lip rather than
+        {/* The stream out of the spout. Scales down from its tip rather than
             fading in: liquid arrives, it does not materialise. */}
         <path
           className="j-pour-spout"
-          d="M 196 104 C 206 130 210 162 214 196"
+          // Leaves from the TIP of the spout: (230, 92) on the ladle, which
+          // the 26deg tip around (196, 92) carries to about (227, 107). Not
+          // inside the tipping group, because it must hang straight down
+          // rather than tilt with the vessel.
+          d="M 227 107 C 229 132 224 166 214 196"
           fill="none"
           stroke="var(--coral)"
           strokeWidth="9"
