@@ -366,7 +366,8 @@ export function startDestruction({ onExit } = {}) {
   const collect = () => {
     const root = scope();
     const out = [];
-    root.querySelectorAll(".fx-l, .wb-l").forEach((el) => {
+    // Not the link spaces (.fx-sp): an invisible piece is no target.
+    root.querySelectorAll(".fx-l:not(.fx-sp), .wb-l").forEach((el) => {
       if (!el.closest(NO)) out.push({ el, kind: "letter" });
     });
     root.querySelectorAll("svg").forEach((svg) => {
