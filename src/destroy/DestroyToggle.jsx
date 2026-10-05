@@ -1,26 +1,32 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { canPlay, DZ_START } from "./launch";
 import "./toggle.css";
 
 /**
- * The way into destruction mode: a small printed crosshair badge in the
- * bottom-right corner. The mode itself is a separate chunk, fetched the
- * first time someone presses this, so nobody who never plays pays for it.
+ * The corner badge for destruction mode, and the one place a game starts.
  *
- * Desktop only (it needs a mouse to aim) and never under reduced motion.
+ * In the CV, the hero carries the full button (HeroDestroy). While that is
+ * on screen the badge is parked out of sight; when the hero scrolls away
+ * the badge FLIES from the hero button's position down into the corner, so
+ * the visitor sees where it went, and flies back up when they return. In
+ * the journey there is no hero, so the badge is always docked, and opens its
+ * label for a few seconds when it first appears so it is not missed.
+ *
+ * The mode itself is a separate chunk, fetched on the first press.
  */
-const canPlay = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia("(pointer: fine)").matches &&
-  !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-export default function DestroyToggle() {
+export default function DestroyToggle({ journeyOpen = false }) {
+  const [allowed] = useState(canPlay);
   const [on, setOn] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [heroInView, setHeroInView] = useState(false);
   const stop = useRef(null);
-  const [allowed] = useState(canPlay);
+  const badge = useRef(null);
+  const prevDocked = useRef(undefined);
+  const prevEl = useRef(null);
+  const introTimer = useRef(0);
 
   const start = useCallback(async () => {
-    if (on || loading) return;
+    if (stop.current || loading) return;
     setLoading(true);
     try {
       const { startDestruction } = await import("./destroyMode");
@@ -34,17 +40,103 @@ export default function DestroyToggle() {
     } finally {
       setLoading(false);
     }
-  }, [on, loading]);
+  }, [loading]);
+
+  // Either the hero button or the badge can ask for a game.
+  useEffect(() => {
+    window.addEventListener(DZ_START, start);
+    return () => window.removeEventListener(DZ_START, start);
+  }, [start]);
 
   // Leaving the page mid-game repairs it first.
   useEffect(() => () => stop.current && stop.current(), []);
+
+  // Is the hero's button on screen?
+  useEffect(() => {
+    if (!allowed) return;
+    let io = null;
+    let tries = 0;
+    let retry = 0;
+    const attach = () => {
+      const target = document.querySelector(".dz-hero-btn");
+      if (!target) {
+        if (tries++ < 40) retry = setTimeout(attach, 250);
+        return;
+      }
+      io = new IntersectionObserver(([e]) => setHeroInView(e.isIntersecting), { threshold: 0 });
+      io.observe(target);
+    };
+    attach();
+    return () => {
+      clearTimeout(retry);
+      io && io.disconnect();
+    };
+  }, [allowed]);
+
+  const docked = journeyOpen || !heroInView;
+
+  // The flight between the hero and the corner.
+  useEffect(() => {
+    const el = badge.current;
+    if (!el) return;
+    // A fresh badge (first mount, or back after a game) just takes its place.
+    const first = prevDocked.current === undefined || prevEl.current !== el;
+    prevEl.current = el;
+    const changed = prevDocked.current !== docked;
+    prevDocked.current = docked;
+    if (!first && !changed) return;
+
+    const intro = (ms) => {
+      clearTimeout(introTimer.current);
+      el.classList.add("intro");
+      introTimer.current = setTimeout(() => el.classList.remove("intro"), ms);
+    };
+
+    const icon = document.querySelector(".dz-hero-btn .dz-hero-icon");
+    if (first || journeyOpen || !icon) {
+      el.classList.toggle("parked", !docked);
+      if (docked) intro(journeyOpen ? 4500 : 2600);
+      return;
+    }
+
+    el.getAnimations().forEach((a) => a.cancel());
+    el.classList.remove("parked", "intro");
+    const h = icon.getBoundingClientRect();
+    const b = el.getBoundingClientRect();
+    const dx = h.left + h.width / 2 - (b.left + b.height / 2);
+    const dy = h.top + h.height / 2 - (b.top + b.height / 2);
+
+    if (docked) {
+      el.animate(
+        [
+          { translate: `${dx}px ${dy}px`, scale: 1.3, opacity: 0.3 },
+          { translate: "0 0", scale: 1, opacity: 1 },
+        ],
+        { duration: 760, easing: "cubic-bezier(0.3, 1.25, 0.4, 1)" },
+      ).onfinish = () => intro(2400);
+    } else {
+      el.animate(
+        [
+          { translate: "0 0", scale: 1, opacity: 1 },
+          { translate: `${dx}px ${dy}px`, scale: 1.3, opacity: 0 },
+        ],
+        { duration: 520, easing: "cubic-bezier(0.5, 0, 0.75, 0.4)", fill: "forwards" },
+      ).onfinish = (e) => {
+        el.classList.add("parked");
+        e.target.cancel();
+      };
+    }
+  }, [docked, journeyOpen, on]);
+
+  useEffect(() => () => clearTimeout(introTimer.current), []);
 
   if (!allowed || on) return null;
 
   return (
     <button
       type="button"
-      className="dz-toggle"
+      ref={badge}
+      className="dz-toggle parked"
       onClick={start}
       aria-label="Destruction mode — shoot the portfolio"
       data-no-destroy

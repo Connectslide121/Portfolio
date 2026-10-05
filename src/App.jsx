@@ -131,7 +131,7 @@ export default function App() {
           there is nothing to see underneath while the chunk arrives. */}
       {/* Shoot the portfolio. Its z-index puts it above the journey stage
           as well as the CV. */}
-      <DestroyToggle />
+      <DestroyToggle journeyOpen={journeyOpen} />
 
       {journeyOpen && (
         <Suspense fallback={<div className="j-curtain" aria-hidden="true" />}>

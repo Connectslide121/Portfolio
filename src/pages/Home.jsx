@@ -5,6 +5,7 @@ import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import HeroTeaser from "../journey/HeroTeaser";
 import IntroArt from "../journey/IntroArt";
 import Wobble from "../components/Wobble";
+import HeroDestroy from "../destroy/HeroDestroy";
 import { profile } from "../data/journey";
 
 export default function Home({ onEnterJourney }) {
@@ -42,6 +43,7 @@ export default function Home({ onEnterJourney }) {
           >
             Get in touch
           </button>
+          <HeroDestroy />
         </div>
         <HeroTeaser onEnter={onEnterJourney} />
       </div>

@@ -19,7 +19,6 @@
   border-radius: 99px;
   box-shadow: 4px 4px 0 var(--ink);
   cursor: pointer;
-  overflow: hidden;
   transition:
     gap 0.3s ease,
     padding 0.3s ease,
@@ -44,9 +43,18 @@
   stroke: none;
 }
 
-/* The label slides out on hover. */
+/* Out of sight while the hero's own button is on screen. */
+.dz-toggle.parked {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* The label slides out on hover — and on its own for a few seconds when
+   the badge first lands, so it is noticed. */
 .dz-toggle span {
   max-width: 0;
+  overflow: hidden;
   opacity: 0;
   white-space: nowrap;
   transition:
@@ -55,7 +63,8 @@
 }
 
 .dz-toggle:hover,
-.dz-toggle:focus-visible {
+.dz-toggle:focus-visible,
+.dz-toggle.intro {
   gap: 0.5rem;
   padding: 0 1rem 0 0.62rem;
   background: var(--lime);
@@ -65,12 +74,112 @@
 }
 
 .dz-toggle:hover svg,
-.dz-toggle:focus-visible svg {
+.dz-toggle:focus-visible svg,
+.dz-toggle.intro svg {
   rotate: 90deg;
 }
 
 .dz-toggle:hover span,
-.dz-toggle:focus-visible span {
+.dz-toggle:focus-visible span,
+.dz-toggle.intro span {
   max-width: 12rem;
   opacity: 1;
+}
+
+/* A ring pulsing out of the badge while it introduces itself. */
+.dz-toggle.intro::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 2px solid var(--coral);
+  animation: dz-toggle-ping 1.2s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes dz-toggle-ping {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.25, 1.6);
+  }
+}
+
+/* --- the hero's button --------------------------------------------------- */
+.dz-hero-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.3rem 1.2rem 0.3rem 0.3rem;
+  font: inherit;
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--ink);
+  background: transparent;
+  border: 1px dashed var(--ink);
+  border-radius: 99px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-style 0.2s ease,
+    box-shadow 0.2s ease,
+    translate 0.2s ease;
+}
+
+.dz-hero-btn:hover,
+.dz-hero-btn:focus-visible {
+  border-style: solid;
+  background: color-mix(in srgb, var(--coral) 28%, var(--paper));
+  box-shadow: 4px 4px 0 var(--ink);
+  translate: -2px -2px;
+}
+
+.dz-hero-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--lime);
+  border: 1px solid var(--ink);
+}
+
+.dz-hero-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: none;
+  stroke: #1d1b19;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  transition: rotate 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.dz-hero-btn:hover .dz-hero-icon svg {
+  rotate: 90deg;
+}
+
+.dz-hero-text {
+  white-space: nowrap;
+}
+
+/* A sticker on the corner. */
+.dz-hero-new {
+  position: absolute;
+  top: -0.55rem;
+  right: -0.5rem;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #1d1b19;
+  background: var(--butter);
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  padding: 0.12rem 0.3rem;
+  rotate: 6deg;
 }
