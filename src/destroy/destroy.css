@@ -255,11 +255,15 @@ body.dz-on .dz-hud * {
 }
 
 .dz-actions {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-content: center;
   gap: 0.35rem;
   padding: 0.5rem 0.7rem;
+}
+
+.dz-exit {
+  grid-column: 1 / -1;
 }
 
 .dz-btn {

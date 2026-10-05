@@ -16,6 +16,7 @@
 
 import "./destroy.css";
 import { setFieldPaused } from "../field/cursorField";
+import { createChiptune } from "./chiptune";
 
 const TAU = Math.PI * 2;
 const NO = "[data-no-destroy], .dz-hud, .dz-toggle, .dz-cross, .dz-plane, .dz-toast";
@@ -81,8 +82,11 @@ function makeAudio() {
   let master = null;
   let noise = null;
   let muted = false;
+  let musicOn = true;
+  let music = null;
   try {
     muted = localStorage.getItem("jm-destroy-muted") === "1";
+    musicOn = localStorage.getItem("jm-destroy-music") !== "0";
   } catch {
     /* fine */
   }
@@ -98,6 +102,8 @@ function makeAudio() {
     noise = ctx.createBuffer(1, ctx.sampleRate * 1.5, ctx.sampleRate);
     const d = noise.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    music = createChiptune(ctx, master, noise);
+    if (musicOn) music.start();
   };
 
   const burst = ({ dur, from, to, type = "lowpass", gain }) => {
@@ -146,6 +152,25 @@ function makeAudio() {
       if (master) master.gain.value = muted ? 0 : 0.5;
       return muted;
     },
+    get musicOn() {
+      return musicOn;
+    },
+    toggleMusic() {
+      musicOn = !musicOn;
+      try {
+        localStorage.setItem("jm-destroy-music", musicOn ? "1" : "0");
+      } catch {
+        /* fine */
+      }
+      if (music) musicOn ? music.start() : music.stop();
+      return musicOn;
+    },
+    intensity(n) {
+      if (music) music.setIntensity(n);
+    },
+    muffle(on) {
+      if (music) music.setMuffled(on);
+    },
     shot() {
       burst({ dur: 0.07, from: 6000, to: 1500, type: "highpass", gain: 0.25 });
     },
@@ -182,6 +207,7 @@ function makeAudio() {
       burst({ dur: 2.6, from: 260, to: 120, gain: 0.18 });
     },
     close() {
+      if (music) music.stop();
       if (ctx) ctx.close();
       ctx = null;
     },
@@ -267,6 +293,7 @@ export function startDestruction({ onExit } = {}) {
     </div>
     <div class="dz-actions">
       <button type="button" class="dz-btn dz-sound" title="Sound (M)"></button>
+      <button type="button" class="dz-btn dz-music" title="Music (N)"></button>
       <button type="button" class="dz-btn dz-exit" title="Repair everything and exit (Esc)">Repair &amp; exit</button>
     </div>`;
   const $ = (s) => hud.querySelector(s);
@@ -280,11 +307,15 @@ export function startDestruction({ onExit } = {}) {
     rank: $(".dz-rank-n"),
     ruin: $(".dz-ruin-n"),
     sound: $(".dz-sound"),
+    music: $(".dz-music"),
     heat: $(".dz-heat"),
     heatFill: $(".dz-heat-fill"),
     heatNote: $(".dz-heat-note"),
   };
-  const soundLabel = () => (ui.sound.textContent = audio.muted ? "Sound off" : "Sound on");
+  const soundLabel = () => {
+    ui.sound.textContent = audio.muted ? "Sound off" : "Sound on";
+    ui.music.textContent = audio.musicOn ? "Music on" : "Music off";
+  };
   soundLabel();
 
   const toastEl = document.createElement("div");
@@ -621,6 +652,7 @@ export function startDestruction({ onExit } = {}) {
     const mult = Math.min(6, 1 + Math.floor(S.combo / 5));
     if (mult > S.mult && CALLOUTS[mult]) toast(`${CALLOUTS[mult]} ×${mult}`, "combo");
     S.mult = mult;
+    if (!S.striking) audio.intensity(mult);
 
     let pts = hits.reduce((n, p) => n + valueOf(p), 0) * S.mult;
 
@@ -706,6 +738,7 @@ export function startDestruction({ onExit } = {}) {
     S.heat = 100;
     stopFire();
     audio.hiss();
+    audio.muffle(true);
     ui.heat.classList.add("hot");
     cross.classList.add("hot");
     ui.heatNote.textContent = "overheated — cooling";
@@ -717,6 +750,7 @@ export function startDestruction({ onExit } = {}) {
   const cooled = () => {
     S.hot = false;
     S.heat = 0;
+    audio.muffle(false);
     ui.heat.classList.remove("hot");
     cross.classList.remove("hot");
     ui.heatNote.textContent = "holding fire heats it";
@@ -801,6 +835,7 @@ export function startDestruction({ onExit } = {}) {
     S.charge = 0;
     render();
     toast("Air strike inbound!", "strike");
+    audio.intensity(6);
     audio.engine();
     later(() => audio.whistle(), 500);
 
@@ -840,6 +875,7 @@ export function startDestruction({ onExit } = {}) {
     }
     later(() => {
       S.striking = false;
+      audio.intensity(S.mult);
       toast(`Strike complete — ${RANKS[S.rank][1]}`, "rank");
     }, dur + 900);
   };
@@ -1015,6 +1051,7 @@ export function startDestruction({ onExit } = {}) {
       if (S.comboT <= 0) {
         S.combo = 0;
         S.mult = 1;
+        if (!S.striking) audio.intensity(1);
         ui.mult.textContent = "×1";
         ui.comboFill.style.width = "0%";
       }
@@ -1109,6 +1146,9 @@ export function startDestruction({ onExit } = {}) {
     } else if (e.key === "m" || e.key === "M") {
       audio.toggle();
       soundLabel();
+    } else if (e.key === "n" || e.key === "N") {
+      audio.toggleMusic();
+      soundLabel();
     }
   };
 
@@ -1131,6 +1171,10 @@ export function startDestruction({ onExit } = {}) {
 
   ui.sound.addEventListener("click", () => {
     audio.toggle();
+    soundLabel();
+  });
+  ui.music.addEventListener("click", () => {
+    audio.toggleMusic();
     soundLabel();
   });
   hud.querySelector(".dz-exit").addEventListener("click", () => exit());
