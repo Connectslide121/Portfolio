@@ -1,0 +1,76 @@
+/* The badge that starts destruction mode. Lives in the main bundle; the
+   mode's own styles arrive with its chunk. */
+.dz-toggle {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  z-index: 2500; /* above the journey stage (2000) */
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  height: 2.9rem;
+  padding: 0 0.62rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: 99px;
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    gap 0.3s ease,
+    padding 0.3s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    translate 0.2s ease;
+}
+
+.dz-toggle svg {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  transition: rotate 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.dz-toggle-dot {
+  fill: var(--coral);
+  stroke: none;
+}
+
+/* The label slides out on hover. */
+.dz-toggle span {
+  max-width: 0;
+  opacity: 0;
+  white-space: nowrap;
+  transition:
+    max-width 0.3s ease,
+    opacity 0.2s ease;
+}
+
+.dz-toggle:hover,
+.dz-toggle:focus-visible {
+  gap: 0.5rem;
+  padding: 0 1rem 0 0.62rem;
+  background: var(--lime);
+  color: #1d1b19;
+  box-shadow: 6px 6px 0 var(--ink);
+  translate: -2px -2px;
+}
+
+.dz-toggle:hover svg,
+.dz-toggle:focus-visible svg {
+  rotate: 90deg;
+}
+
+.dz-toggle:hover span,
+.dz-toggle:focus-visible span {
+  max-width: 12rem;
+  opacity: 1;
+}

@@ -1,0 +1,1085 @@
+// Destruction mode. The cursor becomes a crosshair, the portfolio becomes the
+// target range.
+//
+//   * Click to shoot, hold to auto-fire. Every letter, art shape, icon and
+//     image inside the blast breaks for real: it is hidden in place and its
+//     pieces fly off as debris (the letter itself, shards of the shape in its
+//     own colour, or actual fragments of the image).
+//   * Points per piece, a combo multiplier for keeping the hits coming,
+//     shatter and word bonuses, ranks, and a best score kept per browser.
+//   * Points charge the AIR STRIKE: a plane crosses the page and carpet-bombs
+//     it. Right-click or A.
+//   * Esc or Exit repairs everything — every piece flies back into place.
+//
+// Loaded on demand (DestroyToggle imports it), so none of this is in the
+// main bundle. Plain DOM and one canvas; no React, no GSAP.
+
+import "./destroy.css";
+import { setFieldPaused } from "../field/cursorField";
+
+const TAU = Math.PI * 2;
+const NO = "[data-no-destroy], .dz-hud, .dz-toggle, .dz-cross, .dz-plane, .dz-toast";
+const SHAPES = "path, circle, rect, ellipse, polygon, polyline, line, text, image";
+const NOT_SHAPE = "defs, clipPath, mask, pattern, linearGradient, radialGradient, symbol, marker";
+
+const SHOT_R = 26; // blast radius of a single shot
+const STRIKE_R = 125; // blast radius of an air-strike bomb
+const COMBO_WINDOW = 1.7; // seconds a combo survives without a hit
+const CHARGE_FULL = 4000; // points to arm the air strike
+const AUTO_FIRE = 110; // ms between shots while held
+
+const RANKS = [
+  [0, "Intern"],
+  [3000, "Junior demolisher"],
+  [10000, "Senior wrecker"],
+  [25000, "Lead demolition engineer"],
+  [50000, "Platform architect of ruin"],
+  [100000, "Molten steel"],
+];
+
+const CALLOUTS = {
+  2: "Double!",
+  3: "Triple!",
+  4: "Rampage!",
+  5: "Meltdown!",
+  6: "Foundry fire!",
+};
+
+const best = {
+  get() {
+    try {
+      return +localStorage.getItem("jm-destroy-best") || 0;
+    } catch {
+      return 0;
+    }
+  },
+  set(v) {
+    try {
+      localStorage.setItem("jm-destroy-best", String(v));
+    } catch {
+      /* fine */
+    }
+  },
+};
+
+const rand = (a, b) => a + Math.random() * (b - a);
+const ease = (p) => 1 - Math.pow(1 - p, 3);
+
+/* ==========================================================================
+   Sound — synthesised, so there are no files to load.
+   ========================================================================== */
+
+function makeAudio() {
+  let ctx = null;
+  let master = null;
+  let noise = null;
+  let muted = false;
+  try {
+    muted = localStorage.getItem("jm-destroy-muted") === "1";
+  } catch {
+    /* fine */
+  }
+
+  const init = () => {
+    if (ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = muted ? 0 : 0.5;
+    master.connect(ctx.destination);
+    noise = ctx.createBuffer(1, ctx.sampleRate * 1.5, ctx.sampleRate);
+    const d = noise.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  };
+
+  const burst = ({ dur, from, to, type = "lowpass", gain }) => {
+    if (!ctx || muted) return;
+    const t = ctx.currentTime;
+    const src = ctx.createBufferSource();
+    src.buffer = noise;
+    const f = ctx.createBiquadFilter();
+    f.type = type;
+    f.frequency.setValueAtTime(from, t);
+    f.frequency.exponentialRampToValueAtTime(Math.max(40, to), t + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(gain, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f).connect(g).connect(master);
+    src.start(t, Math.random() * 0.5);
+    src.stop(t + dur);
+  };
+
+  const thump = (freq, dur, gain) => {
+    if (!ctx || muted) return;
+    const t = ctx.currentTime;
+    const o = ctx.createOscillator();
+    o.frequency.setValueAtTime(freq, t);
+    o.frequency.exponentialRampToValueAtTime(freq * 0.35, t + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(gain, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(master);
+    o.start(t);
+    o.stop(t + dur);
+  };
+
+  return {
+    init,
+    get muted() {
+      return muted;
+    },
+    toggle() {
+      muted = !muted;
+      try {
+        localStorage.setItem("jm-destroy-muted", muted ? "1" : "0");
+      } catch {
+        /* fine */
+      }
+      if (master) master.gain.value = muted ? 0 : 0.5;
+      return muted;
+    },
+    shot() {
+      burst({ dur: 0.07, from: 6000, to: 1500, type: "highpass", gain: 0.25 });
+    },
+    pop(n) {
+      burst({ dur: 0.25 + Math.min(n, 20) * 0.01, from: 2400, to: 300, gain: 0.35 });
+      thump(140, 0.18, 0.25);
+    },
+    boom() {
+      burst({ dur: 1.1, from: 1200, to: 60, gain: 0.9 });
+      thump(70, 0.7, 0.9);
+    },
+    whistle() {
+      if (!ctx || muted) return;
+      const t = ctx.currentTime;
+      const o = ctx.createOscillator();
+      o.type = "sine";
+      o.frequency.setValueAtTime(1500, t);
+      o.frequency.exponentialRampToValueAtTime(380, t + 1.4);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.07, t + 0.2);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 1.5);
+      o.connect(g).connect(master);
+      o.start(t);
+      o.stop(t + 1.5);
+    },
+    engine() {
+      burst({ dur: 2.6, from: 260, to: 120, gain: 0.18 });
+    },
+    close() {
+      if (ctx) ctx.close();
+      ctx = null;
+    },
+  };
+}
+
+/* ==========================================================================
+   The mode
+   ========================================================================== */
+
+export function startDestruction({ onExit } = {}) {
+  const dark = () => document.body.classList.contains("dark-theme");
+  const css = getComputedStyle(document.body);
+  const tok = (n) => css.getPropertyValue(n).trim();
+  const C = {
+    ink: tok("--ink") || "#1d1b19",
+    coral: tok("--coral") || "#ff7657",
+    apricot: tok("--apricot") || "#ffad85",
+    butter: tok("--butter") || "#f6d56b",
+    rose: tok("--rose") || "#f4a3bf",
+    lilac: tok("--lilac") || "#c4b3f2",
+    sky: tok("--sky") || "#9fc0f0",
+    lime: tok("--lime") || "#cfe86a",
+  };
+
+  const audio = makeAudio();
+  audio.init();
+  setFieldPaused(true);
+  document.body.classList.add("dz-on");
+
+  /* --- DOM: canvas, crosshair, HUD ------------------------------------- */
+
+  const canvas = document.createElement("canvas");
+  canvas.className = "dz-canvas";
+  const ctx = canvas.getContext("2d");
+  let dpr = 1;
+  const resize = () => {
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = Math.round(window.innerWidth * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
+  };
+  resize();
+
+  const cross = document.createElement("div");
+  cross.className = "dz-cross";
+  cross.innerHTML = `<svg viewBox="-32 -32 64 64" aria-hidden="true">
+    <circle class="dz-cross-ring" r="17" />
+    <circle class="dz-cross-ready" r="24" />
+    <path d="M0 -28 V-11 M0 11 V28 M-28 0 H-11 M11 0 H28" />
+    <path class="dz-cross-hit" d="M-9 -9 L-4 -4 M9 -9 L4 -4 M-9 9 L-4 4 M9 9 L4 4" />
+    <circle class="dz-cross-dot" r="2.6" />
+  </svg>`;
+
+  const hud = document.createElement("div");
+  hud.className = "dz-hud";
+  hud.setAttribute("data-no-destroy", "");
+  hud.innerHTML = `
+    <div class="dz-cell dz-score">
+      <span class="dz-label">Score</span>
+      <b class="dz-score-n">0</b>
+      <span class="dz-best">best <span class="dz-best-n">${best.get()}</span></span>
+    </div>
+    <div class="dz-cell dz-combo">
+      <span class="dz-label">Combo</span>
+      <b class="dz-mult">×1</b>
+      <i class="dz-bar"><b class="dz-combo-fill"></b></i>
+    </div>
+    <div class="dz-cell dz-strike">
+      <span class="dz-label">Air strike</span>
+      <i class="dz-bar dz-charge"><b class="dz-charge-fill"></b></i>
+      <span class="dz-key">right-click · A</span>
+    </div>
+    <div class="dz-cell dz-rank">
+      <span class="dz-label">Rank</span>
+      <em class="dz-rank-n">Intern</em>
+      <span class="dz-ruin"><span class="dz-ruin-n">0</span>% ruined</span>
+    </div>
+    <div class="dz-actions">
+      <button type="button" class="dz-btn dz-sound" title="Sound (M)"></button>
+      <button type="button" class="dz-btn dz-exit" title="Repair everything and exit (Esc)">Repair &amp; exit</button>
+    </div>`;
+  const $ = (s) => hud.querySelector(s);
+  const ui = {
+    score: $(".dz-score-n"),
+    best: $(".dz-best-n"),
+    mult: $(".dz-mult"),
+    comboFill: $(".dz-combo-fill"),
+    chargeFill: $(".dz-charge-fill"),
+    strike: $(".dz-strike"),
+    rank: $(".dz-rank-n"),
+    ruin: $(".dz-ruin-n"),
+    sound: $(".dz-sound"),
+  };
+  const soundLabel = () => (ui.sound.textContent = audio.muted ? "Sound off" : "Sound on");
+  soundLabel();
+
+  const toastEl = document.createElement("div");
+  toastEl.className = "dz-toast";
+
+  document.body.append(canvas, toastEl, hud, cross);
+
+  /* --- state ------------------------------------------------------------- */
+
+  const S = {
+    score: 0,
+    combo: 0,
+    comboT: 0,
+    mult: 1,
+    charge: 0,
+    rank: 0,
+    best: best.get(),
+    broken: [],
+    total: 1,
+    pointer: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+    firing: 0,
+    shake: 0,
+    striking: false,
+    timers: new Set(),
+  };
+  const P = []; // particles and effects
+  let raf = 0;
+  let last = performance.now();
+
+  const later = (fn, ms) => {
+    const id = setTimeout(() => {
+      S.timers.delete(id);
+      fn();
+    }, ms);
+    S.timers.add(id);
+  };
+
+  /* --- pieces -------------------------------------------------------------- */
+
+  const scope = () => document.querySelector(".j-stage") || document.querySelector(".App") || document.body;
+
+  let pieces = [];
+  let piecesAt = 0;
+  let rectsAt = 0;
+
+  const collect = () => {
+    const root = scope();
+    const out = [];
+    root.querySelectorAll(".fx-l, .wb-l").forEach((el) => {
+      if (!el.closest(NO)) out.push({ el, kind: "letter" });
+    });
+    root.querySelectorAll("svg").forEach((svg) => {
+      if (svg.closest(NO)) return;
+      const r = svg.getBoundingClientRect();
+      if (r.width && r.width < 64 && r.height < 64) {
+        out.push({ el: svg, kind: "icon" });
+        return;
+      }
+      svg.querySelectorAll(SHAPES).forEach((el) => {
+        if (!el.closest(NOT_SHAPE)) out.push({ el, kind: "shape" });
+      });
+    });
+    root.querySelectorAll("img, video").forEach((el) => {
+      if (!el.closest(NO) && !el.closest("svg")) out.push({ el, kind: "media" });
+    });
+    // Keep what we already know about pieces we have seen before.
+    const known = new Map(pieces.map((p) => [p.el, p]));
+    pieces = out.map((p) => known.get(p.el) || p);
+    piecesAt = performance.now();
+    rectsAt = 0;
+  };
+
+  const measure = () => {
+    for (const p of pieces) {
+      if (p.broken) continue;
+      const b = p.el.getBoundingClientRect();
+      p.rect = b.width || b.height ? { l: b.left, t: b.top, r: b.right, b: b.bottom, w: b.width, h: b.height } : null;
+    }
+    rectsAt = performance.now();
+  };
+
+  const fresh = () => {
+    const now = performance.now();
+    if (now - piecesAt > 2500) collect();
+    if (now - rectsAt > 250) measure();
+  };
+
+  collect();
+  measure();
+  S.total = Math.max(1, pieces.filter((p) => p.rect).length);
+
+  const visible = (el) => {
+    if (!el.isConnected) return false;
+    if (el.checkVisibility) {
+      return el.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+    }
+    return true;
+  };
+
+  /** Every unbroken piece whose box the circle touches, nearest first. */
+  const inBlast = (x, y, r) => {
+    fresh();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const hits = [];
+    for (const p of pieces) {
+      if (p.broken || !p.rect) continue;
+      const q = p.rect;
+      if (q.r < 0 || q.b < 0 || q.l > vw || q.t > vh) continue;
+      // Background-sized shapes (the ground, a world-wide band) are scenery,
+      // not targets.
+      if (p.kind === "shape" && q.w * q.h > vw * vh * 0.3) continue;
+      const nx = Math.max(q.l, Math.min(x, q.r));
+      const ny = Math.max(q.t, Math.min(y, q.b));
+      const d = Math.hypot(x - nx, y - ny);
+      if (d > r) continue;
+      if (!visible(p.el)) continue;
+      hits.push({ p, d });
+    }
+    hits.sort((a, b) => a.d - b.d);
+    return hits.map((h) => h.p);
+  };
+
+  /* --- debris -------------------------------------------------------------- */
+
+  const colourOf = (el) => {
+    const cs = getComputedStyle(el);
+    const ok = (v) => v && v !== "none" && !v.startsWith("url") && v !== "rgba(0, 0, 0, 0)";
+    if (ok(cs.fill)) return cs.fill;
+    if (ok(cs.stroke)) return cs.stroke;
+    return C.ink;
+  };
+
+  const fling = (cx, cy, x, y, force) => {
+    let dx = x - cx;
+    let dy = y - cy;
+    const len = Math.hypot(dx, dy) || 1;
+    dx /= len;
+    dy /= len;
+    const sp = rand(260, 620) * force;
+    return {
+      vx: dx * sp + rand(-120, 120),
+      vy: dy * sp - rand(180, 420) * force,
+      vr: rand(-9, 9) * force,
+    };
+  };
+
+  const debrisFor = (p, cx, cy, force) => {
+    const q = p.rect;
+    const mx = (q.l + q.r) / 2;
+    const my = (q.t + q.b) / 2;
+    if (p.kind === "letter") {
+      const cs = getComputedStyle(p.el);
+      P.push({
+        k: "glyph",
+        ch: p.el.textContent,
+        font: `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`,
+        c: cs.color,
+        x: mx,
+        y: my,
+        rot: 0,
+        t: 0,
+        life: rand(1.4, 2.1),
+        ...fling(cx, cy, mx, my, force),
+      });
+      for (let i = 0; i < 2; i++) {
+        P.push({ k: "dot", x: mx, y: my, r: rand(1, 2.2), c: cs.color, t: 0, life: rand(0.5, 0.9), g: 1, ...fling(cx, cy, mx, my, force * 1.2) });
+      }
+      return;
+    }
+    // Shapes, icons and media shatter into a grid of jittered shards.
+    const area = q.w * q.h;
+    const k = Math.max(2, Math.min(6, Math.round(Math.sqrt(area) / 45)));
+    const cw = q.w / k;
+    const ch = q.h / k;
+    const c = p.kind === "media" ? null : p.kind === "icon" ? C.ink : colourOf(p.el);
+    for (let i = 0; i < k; i++) {
+      for (let j = 0; j < k; j++) {
+        const sx = q.l + i * cw;
+        const sy = q.t + j * ch;
+        const px = sx + cw / 2;
+        const py = sy + ch / 2;
+        const jit = () => [rand(-0.15, 0.15) * cw, rand(-0.15, 0.15) * ch];
+        // a quad with each corner nudged, relative to the shard centre
+        const pts = [
+          [-cw / 2, -ch / 2],
+          [cw / 2, -ch / 2],
+          [cw / 2, ch / 2],
+          [-cw / 2, ch / 2],
+        ].map(([a, b]) => {
+          const [ja, jb] = jit();
+          return [a + ja, b + jb];
+        });
+        P.push({
+          k: p.kind === "media" ? "img" : "shard",
+          pts,
+          c,
+          src: p.kind === "media" ? p.el : null,
+          sx,
+          sy,
+          sw: cw,
+          sh: ch,
+          rect: q,
+          x: px,
+          y: py,
+          rot: 0,
+          t: 0,
+          life: rand(1.3, 2),
+          ...fling(cx, cy, px, py, force * (p.kind === "media" ? 0.8 : 1)),
+        });
+      }
+    }
+  };
+
+  /* --- effects ------------------------------------------------------------- */
+
+  const explode = (x, y, r, big = false) => {
+    const pal = [C.coral, C.apricot, C.butter, C.rose];
+    P.push({ k: "flash", x, y, r: r * 0.9, t: 0, life: big ? 0.18 : 0.1 });
+    const n = big ? 7 : 4;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * TAU;
+      const d = Math.random() * r * 0.5;
+      P.push({
+        k: "disc",
+        x: x + Math.cos(a) * d,
+        y: y + Math.sin(a) * d,
+        r: r * rand(0.35, 0.8),
+        c: pal[i % pal.length],
+        t: -i * 0.025,
+        life: rand(0.35, 0.6) * (big ? 1.4 : 1),
+      });
+    }
+    P.push({ k: "ring", x, y, r: r * 1.6, t: 0, life: big ? 0.6 : 0.4, w: big ? 4 : 2.5 });
+    const sparks = big ? 42 : 14;
+    for (let i = 0; i < sparks; i++) {
+      const a = Math.random() * TAU;
+      const sp = rand(260, 820) * (big ? 1.5 : 1);
+      P.push({
+        k: "dot",
+        x,
+        y,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp - 120,
+        r: rand(1.4, 3.6),
+        c: Math.random() < 0.35 ? C.ink : pal[i % pal.length],
+        t: 0,
+        life: rand(0.35, 0.8),
+        g: 1,
+      });
+    }
+    const smoke = big ? 9 : 3;
+    for (let i = 0; i < smoke; i++) {
+      P.push({
+        k: "smoke",
+        x: x + rand(-r, r) * 0.4,
+        y: y + rand(-r, r) * 0.3,
+        vx: rand(-30, 30),
+        vy: rand(-90, -40),
+        r: r * rand(0.25, 0.5),
+        c: Math.random() < 0.5 ? C.lilac : C.sky,
+        t: -rand(0, 0.15),
+        life: rand(0.9, 1.5),
+      });
+    }
+    scorch(x, y, r * (big ? 0.85 : 0.6));
+  };
+
+  /** A burn left on the page, printed in halftone, that scrolls with it. */
+  const scorches = [];
+  const scorch = (x, y, r) => {
+    const host = document.querySelector(".j-stage") || document.body;
+    const box = host === document.body ? { left: -window.scrollX, top: -window.scrollY } : host.getBoundingClientRect();
+    const el = document.createElement("i");
+    el.className = "dz-scorch";
+    el.style.left = `${x - box.left - r}px`;
+    el.style.top = `${y - box.top - r}px`;
+    el.style.width = el.style.height = `${r * 2}px`;
+    el.style.rotate = `${rand(0, 360)}deg`;
+    host.appendChild(el);
+    scorches.push(el);
+    if (scorches.length > 70) scorches.shift().remove();
+  };
+
+  const pop = (x, y, text, size = 1, c = C.ink) => {
+    P.push({ k: "text", x, y, text, size, c, t: 0, life: 0.9 + size * 0.15 });
+  };
+
+  let toastTimer = 0;
+  const toast = (text, kind = "") => {
+    toastEl.textContent = text;
+    toastEl.className = `dz-toast ${kind}`;
+    void toastEl.offsetWidth;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1400);
+  };
+
+  const shake = (amount) => {
+    S.shake = Math.max(S.shake, amount);
+  };
+
+  const shakeTargets = () =>
+    document.querySelector(".j-stage")
+      ? [document.querySelector(".j-stage")]
+      : [document.querySelector(".main-container"), document.querySelector(".footer")].filter(Boolean);
+
+  /* --- scoring ------------------------------------------------------------- */
+
+  const valueOf = (p) => {
+    if (p.kind === "letter") return 10;
+    if (p.kind === "icon") return 30;
+    if (p.kind === "media") return 80;
+    const q = p.rect;
+    return Math.round(15 + Math.min(60, Math.sqrt(q.w * q.h) / 4));
+  };
+
+  const award = (hits, x, y, { big = false } = {}) => {
+    if (!hits.length) return;
+    // combo
+    S.combo += 1;
+    S.comboT = COMBO_WINDOW;
+    const mult = Math.min(6, 1 + Math.floor(S.combo / 5));
+    if (mult > S.mult && CALLOUTS[mult]) toast(`${CALLOUTS[mult]} ×${mult}`, "combo");
+    S.mult = mult;
+
+    let pts = hits.reduce((n, p) => n + valueOf(p), 0) * S.mult;
+
+    // a whole word gone
+    const words = new Set();
+    hits.forEach((p) => {
+      if (p.kind === "letter") {
+        const w = p.el.closest(".fx-w");
+        if (w) words.add(w);
+      }
+    });
+    let wordBonus = 0;
+    words.forEach((w) => {
+      const letters = w.querySelectorAll(".fx-l");
+      // A word you took out on purpose: long enough to count, and gone in
+      // this one blast rather than chipped away over many.
+      const all = Array.from(letters);
+      const now = all.filter((l) => hits.some((p) => p.el === l)).length;
+      if (all.length >= 4 && now >= all.length * 0.6 && all.every((l) => l.style.visibility === "hidden") && !w.__dzDone) {
+        w.__dzDone = true;
+        wordBonus += 8 * all.length;
+      }
+    });
+    if (wordBonus) {
+      pts += wordBonus * S.mult;
+      pop(x + rand(-30, 30), y - 34, "word!", 0.9, C.coral);
+    }
+
+    if (!big && hits.length >= 14) {
+      pts += 80 * S.mult;
+      pop(x, y - 52, "shatter!", 1.3, C.coral);
+    }
+
+    // The strike pays out at half rate and never charges the next one.
+    if (big) pts = Math.round(pts / 2);
+    S.score += pts;
+    if (!big && !S.striking) S.charge = Math.min(CHARGE_FULL, S.charge + pts);
+    pop(x, y - 18, `+${pts}`, big ? 1.6 : Math.min(1.5, 0.8 + hits.length * 0.04));
+
+    // rank
+    let rank = 0;
+    RANKS.forEach(([at], i) => {
+      if (S.score >= at) rank = i;
+    });
+    if (rank > S.rank) {
+      S.rank = rank;
+      toast(`Promoted: ${RANKS[rank][1]}`, "rank");
+    }
+    if (S.charge >= CHARGE_FULL && !ui.strike.classList.contains("ready")) {
+      toast("Air strike ready — right-click or A", "ready");
+    }
+    if (S.score > S.best) {
+      S.best = S.score;
+      best.set(S.best);
+    }
+    render();
+  };
+
+  const render = () => {
+    ui.score.textContent = S.score.toLocaleString();
+    ui.best.textContent = S.best.toLocaleString();
+    ui.mult.textContent = `×${S.mult}`;
+    ui.chargeFill.style.width = `${(S.charge / CHARGE_FULL) * 100}%`;
+    ui.strike.classList.toggle("ready", S.charge >= CHARGE_FULL);
+    cross.classList.toggle("ready", S.charge >= CHARGE_FULL);
+    ui.rank.textContent = RANKS[S.rank][1];
+    ui.ruin.textContent = Math.min(100, Math.round((S.broken.length / S.total) * 100));
+  };
+
+  /* --- breaking ------------------------------------------------------------ */
+
+  const breakAll = (hits, cx, cy, force) => {
+    for (const p of hits) {
+      debrisFor(p, cx, cy, force);
+      p.broken = true;
+      p.prevVis = p.el.style.visibility;
+      p.el.style.visibility = "hidden";
+      S.broken.push(p);
+    }
+    // keep the canvas from drowning
+    if (P.length > 2600) P.splice(0, P.length - 2600);
+  };
+
+  const shoot = (x, y, spread = 0) => {
+    x += rand(-spread, spread);
+    y += rand(-spread, spread);
+    audio.shot();
+    cross.classList.remove("fire");
+    void cross.offsetWidth;
+    cross.classList.add("fire");
+    P.push({ k: "flash", x, y, r: 9, t: 0, life: 0.06 });
+    const hits = inBlast(x, y, SHOT_R);
+    if (!hits.length) {
+      // a miss still marks the paper
+      P.push({ k: "ring", x, y, r: 12, t: 0, life: 0.25, w: 1.5 });
+      wake();
+      return;
+    }
+    cross.classList.remove("hit");
+    void cross.offsetWidth;
+    cross.classList.add("hit");
+    explode(x, y, SHOT_R + 6 + Math.min(hits.length, 16) * 1.5);
+    breakAll(hits, x, y, 1);
+    audio.pop(hits.length);
+    shake(Math.min(7, 2 + hits.length * 0.3));
+    award(hits, x, y);
+    wake();
+  };
+
+  /* --- the air strike ------------------------------------------------------ */
+
+  const airStrike = () => {
+    if (S.charge < CHARGE_FULL || S.striking) return;
+    S.striking = true;
+    S.charge = 0;
+    render();
+    toast("Air strike inbound!", "strike");
+    audio.engine();
+    later(() => audio.whistle(), 500);
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const y0 = 104;
+    const dur = 2600;
+    const plane = document.createElement("div");
+    plane.className = "dz-plane";
+    plane.innerHTML = `<svg viewBox="0 0 240 90" aria-hidden="true">
+      <path d="M 18 46 Q 20 34 60 33 L 190 30 Q 226 31 232 45 Q 226 58 190 58 L 60 56 Q 20 56 18 46 Z" fill="${C.ink}"/>
+      <path d="M 110 34 L 150 2 L 166 2 L 150 34 Z M 110 56 L 150 88 L 166 88 L 150 56 Z" fill="${C.ink}"/>
+      <path d="M 22 40 L 6 18 L 20 18 L 44 36 Z" fill="${C.ink}"/>
+      <circle cx="138" cy="45" r="7" fill="${C.coral}"/>
+      <path d="M 60 45 H 186" stroke="${C.lime}" stroke-width="3"/>
+      <circle cx="214" cy="42" r="5" fill="${C.sky}"/>
+    </svg>`;
+    document.body.appendChild(plane);
+    const anim = plane.animate(
+      [
+        { translate: `-280px ${y0 - 45}px` },
+        { translate: `${vw + 40}px ${y0 - 60}px` },
+      ],
+      { duration: dur, easing: "linear", fill: "forwards" },
+    );
+    anim.onfinish = () => plane.remove();
+
+    const bombs = Math.round(vw / 105);
+    for (let i = 0; i < bombs; i++) {
+      const at = 260 + (i / bombs) * (dur - 520);
+      later(() => {
+        const x = -280 + ((vw + 320) * at) / dur + 120;
+        const ty = rand(vh * 0.28, vh * 0.92);
+        P.push({ k: "bomb", x0: x, y0: y0, x: x + rand(20, 60), y: ty, t: 0, life: 0.55 });
+        wake();
+      }, at);
+    }
+    later(() => {
+      S.striking = false;
+      toast(`Strike complete — ${RANKS[S.rank][1]}`, "rank");
+    }, dur + 900);
+  };
+
+  const bombLands = (x, y) => {
+    explode(x, y, STRIKE_R * 0.8, true);
+    const hits = inBlast(x, y, STRIKE_R);
+    breakAll(hits, x, y, 1.6);
+    audio.boom();
+    shake(16);
+    if (hits.length) award(hits, x, y, { big: true });
+  };
+
+  /* --- the loop ------------------------------------------------------------ */
+
+  const blend = () => (dark() ? "screen" : "multiply");
+
+  const draw = (dt) => {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const print = blend();
+    for (let i = P.length - 1; i >= 0; i--) {
+      const q = P[i];
+      q.t += dt;
+      if (q.t >= q.life) {
+        if (q.k === "bomb") bombLands(q.x, q.y);
+        P.splice(i, 1);
+        continue;
+      }
+      if (q.t < 0) continue;
+      const p = q.t / q.life;
+      ctx.save();
+      switch (q.k) {
+        case "flash":
+          ctx.globalAlpha = 1 - p;
+          ctx.fillStyle = C.butter;
+          ctx.beginPath();
+          ctx.arc(q.x, q.y, q.r * (0.6 + 0.4 * p), 0, TAU);
+          ctx.fill();
+          break;
+        case "disc": {
+          const s = p < 0.3 ? ease(p / 0.3) : 1 - (p - 0.3) / 0.7;
+          ctx.globalCompositeOperation = print;
+          ctx.fillStyle = q.c;
+          ctx.beginPath();
+          ctx.arc(q.x, q.y, Math.max(0, q.r * s), 0, TAU);
+          ctx.fill();
+          break;
+        }
+        case "ring":
+          ctx.globalAlpha = 1 - p;
+          ctx.strokeStyle = C.ink;
+          ctx.lineWidth = q.w * (1 - p) + 0.3;
+          ctx.setLineDash([2, 6]);
+          ctx.beginPath();
+          ctx.arc(q.x, q.y, q.r * ease(p), 0, TAU);
+          ctx.stroke();
+          break;
+        case "smoke":
+          q.x += q.vx * dt;
+          q.y += q.vy * dt;
+          ctx.globalCompositeOperation = print;
+          ctx.globalAlpha = 0.6 * (1 - p);
+          ctx.fillStyle = q.c;
+          ctx.beginPath();
+          ctx.arc(q.x, q.y, q.r * (0.6 + p), 0, TAU);
+          ctx.fill();
+          break;
+        case "dot":
+          q.vy += 900 * q.g * dt;
+          q.vx *= 0.985;
+          q.x += q.vx * dt;
+          q.y += q.vy * dt;
+          ctx.globalAlpha = 1 - p * p;
+          ctx.fillStyle = q.c;
+          ctx.beginPath();
+          ctx.arc(q.x, q.y, q.r, 0, TAU);
+          ctx.fill();
+          break;
+        case "glyph":
+        case "shard":
+        case "img":
+          q.vy += 1700 * dt;
+          q.vx *= 0.99;
+          q.x += q.vx * dt;
+          q.y += q.vy * dt;
+          q.rot += q.vr * dt;
+          ctx.globalAlpha = p > 0.7 ? 1 - (p - 0.7) / 0.3 : 1;
+          ctx.translate(q.x, q.y);
+          ctx.rotate(q.rot);
+          if (q.k === "glyph") {
+            ctx.font = q.font;
+            ctx.fillStyle = q.c;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(q.ch, 0, 0);
+          } else {
+            ctx.beginPath();
+            q.pts.forEach(([a, b], n) => (n ? ctx.lineTo(a, b) : ctx.moveTo(a, b)));
+            ctx.closePath();
+            if (q.k === "img") {
+              ctx.save();
+              ctx.clip();
+              try {
+                const r = q.rect;
+                ctx.drawImage(q.src, r.l - q.x, r.t - q.y, r.w, r.h);
+              } catch {
+                /* a video not ready yet — the outline still flies */
+              }
+              ctx.restore();
+              ctx.strokeStyle = C.ink;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            } else {
+              ctx.fillStyle = q.c;
+              ctx.fill();
+            }
+          }
+          break;
+        case "text": {
+          const s = q.size * (p < 0.15 ? 0.6 + (p / 0.15) * 0.5 : 1.1 - (p - 0.15) * 0.15);
+          ctx.globalAlpha = p > 0.6 ? 1 - (p - 0.6) / 0.4 : 1;
+          ctx.translate(q.x, q.y - 50 * ease(p));
+          ctx.scale(s, s);
+          ctx.font = `italic 400 30px "Instrument Serif", serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.lineWidth = 5;
+          ctx.strokeStyle = dark() ? "#191816" : "#f4efe6";
+          ctx.strokeText(q.text, 0, 0);
+          ctx.fillStyle = q.c;
+          ctx.fillText(q.text, 0, 0);
+          break;
+        }
+        case "bomb": {
+          const e = p * p;
+          const bx = q.x0 + (q.x - q.x0) * p;
+          const by = q.y0 + (q.y - q.y0) * e;
+          ctx.translate(bx, by);
+          ctx.fillStyle = C.ink;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 5, 11, 0, 0, TAU);
+          ctx.fill();
+          ctx.fillStyle = C.lime;
+          ctx.fillRect(-5, -14, 10, 4);
+          // target marker on the paper below
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.globalAlpha = 0.5 + 0.5 * p;
+          ctx.strokeStyle = C.coral;
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([3, 4]);
+          ctx.beginPath();
+          ctx.arc(q.x, q.y, 18 * (1.4 - p * 0.6), 0, TAU);
+          ctx.stroke();
+          break;
+        }
+        default:
+          break;
+      }
+      ctx.restore();
+    }
+  };
+
+  const frame = (now) => {
+    raf = 0;
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+
+    // combo decay
+    if (S.comboT > 0) {
+      S.comboT -= dt;
+      ui.comboFill.style.width = `${Math.max(0, S.comboT / COMBO_WINDOW) * 100}%`;
+      if (S.comboT <= 0) {
+        S.combo = 0;
+        S.mult = 1;
+        ui.mult.textContent = "×1";
+        ui.comboFill.style.width = "0%";
+      }
+    }
+
+    draw(dt);
+
+    // screen shake
+    if (S.shake > 0.3) {
+      const a = S.shake;
+      shakeTargets().forEach((el) => (el.style.translate = `${rand(-a, a).toFixed(1)}px ${rand(-a, a).toFixed(1)}px`));
+      S.shake *= 0.86;
+    } else if (S.shake) {
+      S.shake = 0;
+      shakeTargets().forEach((el) => (el.style.translate = ""));
+    }
+
+    if (P.length || S.comboT > 0 || S.shake) wake();
+  };
+
+  function wake() {
+    if (!raf) {
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    }
+  }
+
+  /* --- input --------------------------------------------------------------- */
+
+  const inUI = (t) => t && t.closest && t.closest(".dz-hud, .dz-toggle");
+
+  const onMove = (e) => {
+    S.pointer.x = e.clientX;
+    S.pointer.y = e.clientY;
+    cross.style.translate = `${e.clientX}px ${e.clientY}px`;
+    cross.classList.toggle("over-ui", !!inUI(e.target));
+  };
+
+  const stopFire = () => {
+    if (S.firing) clearInterval(S.firing);
+    S.firing = 0;
+  };
+
+  const block = (e) => {
+    if (inUI(e.target)) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  };
+
+  const onDown = (e) => {
+    if (inUI(e.target)) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if (e.button === 2) {
+      airStrike();
+      return;
+    }
+    if (e.button !== 0) return;
+    shoot(e.clientX, e.clientY);
+    stopFire();
+    S.firing = setInterval(() => shoot(S.pointer.x, S.pointer.y, 7), AUTO_FIRE);
+  };
+
+  const onUp = (e) => {
+    stopFire();
+    block(e);
+  };
+
+  const onKey = (e) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      exit();
+    } else if (e.key === "a" || e.key === "A") {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      airStrike();
+    } else if (e.key === "m" || e.key === "M") {
+      audio.toggle();
+      soundLabel();
+    }
+  };
+
+  const onScroll = () => {
+    rectsAt = 0;
+  };
+
+  const opts = { capture: true, passive: false };
+  window.addEventListener("pointermove", onMove, { capture: true, passive: true });
+  window.addEventListener("pointerdown", onDown, opts);
+  window.addEventListener("pointerup", onUp, opts);
+  window.addEventListener("pointercancel", stopFire, true);
+  window.addEventListener("blur", stopFire);
+  ["mousedown", "mouseup", "click", "dblclick", "auxclick", "contextmenu", "dragstart", "selectstart"].forEach((t) =>
+    window.addEventListener(t, block, opts),
+  );
+  window.addEventListener("keydown", onKey, true);
+  window.addEventListener("scroll", onScroll, { capture: true, passive: true });
+  window.addEventListener("resize", resize);
+
+  ui.sound.addEventListener("click", () => {
+    audio.toggle();
+    soundLabel();
+  });
+  hud.querySelector(".dz-exit").addEventListener("click", () => exit());
+
+  cross.style.translate = `${S.pointer.x}px ${S.pointer.y}px`;
+  render();
+  toast("Destruction mode — click to shoot, hold to fire", "rank");
+
+  /* --- exit: repair everything --------------------------------------------- */
+
+  let exited = false;
+  function exit() {
+    if (exited) return;
+    exited = true;
+    stopFire();
+    S.timers.forEach(clearTimeout);
+    window.removeEventListener("pointermove", onMove, true);
+    window.removeEventListener("pointerdown", onDown, true);
+    window.removeEventListener("pointerup", onUp, true);
+    window.removeEventListener("pointercancel", stopFire, true);
+    window.removeEventListener("blur", stopFire);
+    ["mousedown", "mouseup", "click", "dblclick", "auxclick", "contextmenu", "dragstart", "selectstart"].forEach((t) =>
+      window.removeEventListener(t, block, true),
+    );
+    window.removeEventListener("keydown", onKey, true);
+    window.removeEventListener("scroll", onScroll, true);
+    window.removeEventListener("resize", resize);
+    if (raf) cancelAnimationFrame(raf);
+    shakeTargets().forEach((el) => (el.style.translate = ""));
+    document.querySelectorAll(".dz-plane").forEach((el) => el.remove());
+
+    // Everything flies back into place, staggered.
+    S.broken.forEach((p, i) => {
+      const el = p.el;
+      el.style.visibility = p.prevVis || "";
+      if (!el.isConnected || !el.animate) return;
+      el.animate(
+        [
+          { translate: `${rand(-60, 60)}px ${rand(-140, -60)}px`, opacity: 0 },
+          { translate: "0 0", opacity: 1 },
+        ],
+        { duration: 520, delay: Math.min(900, i * 2), easing: "cubic-bezier(0.2, 1.4, 0.4, 1)", fill: "backwards" },
+      );
+    });
+    document.querySelectorAll(".fx-w").forEach((w) => delete w.__dzDone);
+    scorches.forEach((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 600 }).finished.then(() => el.remove(), () => el.remove()));
+
+    hud.classList.add("leaving");
+    cross.remove();
+    canvas.remove();
+    setTimeout(() => {
+      hud.remove();
+      toastEl.remove();
+    }, 300);
+    document.body.classList.remove("dz-on");
+    audio.close();
+    setFieldPaused(false);
+    onExit && onExit();
+  }
+
+  return exit;
+}

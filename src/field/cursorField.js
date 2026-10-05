@@ -56,6 +56,22 @@ let ring = null;
 let dirty = true;
 let root = null;
 let getRoot = () => document.body;
+let paused = false;
+
+/**
+ * Stand the field down (destruction mode owns the pointer while it runs).
+ * Everything pushed springs home and the ring hides; splitting and the piece
+ * registry stay as they are, so resuming is instant.
+ */
+export function setFieldPaused(next) {
+  paused = next;
+  if (paused) {
+    pointer.in = false;
+    hovered = null;
+    if (ring) ring.style.opacity = "0";
+  }
+  wake();
+}
 
 /* --- splitting ----------------------------------------------------------- */
 
@@ -324,6 +340,7 @@ function wake() {
 /* --- wiring --------------------------------------------------------------- */
 
 function onMove(e) {
+  if (paused) return;
   if (e.pointerType && e.pointerType !== "mouse" && e.pointerType !== "pen") return;
   pointer.x = e.clientX;
   pointer.y = e.clientY;
