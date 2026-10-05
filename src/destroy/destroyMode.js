@@ -39,25 +39,25 @@ const HEAT_COOL_LOCKED = 42;
 // The clock. A time attack: you start with TIME_START seconds (the clock
 // waits for the first shot), and earn more by playing well. What stops it
 // running forever:
-//   * every bonus is scaled by 1 / (1 + earned / TIME_HALF), so after 30 s
-//     earned they pay half, after 90 s a quarter;
+//   * every bonus is scaled by 1 / (1 + earned / TIME_HALF), so after 15 s
+//     earned they pay half, after 45 s a quarter;
 //   * the clock never holds more than TIME_MAX;
 //   * a miss costs MISS_COST;
-//   * the clock itself runs ~10% faster every minute (CLOCK_SPEEDUP).
+//   * the clock itself runs ~17% faster every minute (CLOCK_SPEEDUP).
 const TIME_START = 45;
-const TIME_MAX = 60;
-const TIME_HALF = 30;
-const MISS_COST = 0.3;
+const TIME_MAX = 50;
+const TIME_HALF = 15;
+const MISS_COST = 0.5;
 const LOW_TIME = 10;
-const CLOCK_SPEEDUP = 600; // seconds of play per +100% clock speed
+const CLOCK_SPEEDUP = 360; // seconds of play per +100% clock speed
 // Seconds for reaching each multiplier tier, paid once per combo run.
-const TIER_TIME = { 2: 2, 3: 2, 4: 3, 5: 3, 6: 4 };
-const WORD_TIME = 0.5;
-const SHATTER_TIME = 1.5;
+const TIER_TIME = { 3: 1, 4: 1.5, 5: 2, 6: 2.5 };
+const WORD_TIME = 0.25;
+const SHATTER_TIME = 1;
 // Time capsules: a stopwatch that drifts across the page now and then.
-const CAPSULE_TIME = 5;
+const CAPSULE_TIME = 3;
 const CAPSULE_LIFE = 4;
-const CAPSULE_EVERY = [10, 15];
+const CAPSULE_EVERY = [14, 20];
 const CAPSULE_R = 30;
 
 const RANKS = [
