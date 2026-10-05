@@ -27,6 +27,13 @@ const STRIKE_R = 125; // blast radius of an air-strike bomb
 const COMBO_WINDOW = 1.7; // seconds a combo survives without a hit
 const CHARGE_FULL = 4000; // points to arm the air strike
 const AUTO_FIRE = 110; // ms between shots while held
+// Barrel heat, 0..100. Each shot adds HEAT_SHOT and the barrel sheds
+// HEAT_COOL a second, so tapping never overheats but holding the trigger
+// does in about three seconds. Past 100 it locks until it is back to 0,
+// cooling faster while locked.
+const HEAT_SHOT = 6;
+const HEAT_COOL = 22;
+const HEAT_COOL_LOCKED = 42;
 
 const RANKS = [
   [0, "Intern"],
@@ -165,6 +172,12 @@ function makeAudio() {
       o.start(t);
       o.stop(t + 1.5);
     },
+    hiss() {
+      burst({ dur: 1.1, from: 7000, to: 2500, type: "highpass", gain: 0.22 });
+    },
+    dry() {
+      burst({ dur: 0.03, from: 3000, to: 2500, type: "bandpass", gain: 0.3 });
+    },
     engine() {
       burst({ dur: 2.6, from: 260, to: 120, gain: 0.18 });
     },
@@ -217,6 +230,7 @@ export function startDestruction({ onExit } = {}) {
   cross.innerHTML = `<svg viewBox="-32 -32 64 64" aria-hidden="true">
     <circle class="dz-cross-ring" r="17" />
     <circle class="dz-cross-ready" r="24" />
+    <circle class="dz-cross-heat" r="21" pathLength="100" />
     <path d="M0 -28 V-11 M0 11 V28 M-28 0 H-11 M11 0 H28" />
     <path class="dz-cross-hit" d="M-9 -9 L-4 -4 M9 -9 L4 -4 M-9 9 L-4 4 M9 9 L4 4" />
     <circle class="dz-cross-dot" r="2.6" />
@@ -235,6 +249,11 @@ export function startDestruction({ onExit } = {}) {
       <span class="dz-label">Combo</span>
       <b class="dz-mult">×1</b>
       <i class="dz-bar"><b class="dz-combo-fill"></b></i>
+    </div>
+    <div class="dz-cell dz-heat">
+      <span class="dz-label">Barrel</span>
+      <i class="dz-bar"><b class="dz-heat-fill"></b></i>
+      <span class="dz-key dz-heat-note">holding fire heats it</span>
     </div>
     <div class="dz-cell dz-strike">
       <span class="dz-label">Air strike</span>
@@ -261,6 +280,9 @@ export function startDestruction({ onExit } = {}) {
     rank: $(".dz-rank-n"),
     ruin: $(".dz-ruin-n"),
     sound: $(".dz-sound"),
+    heat: $(".dz-heat"),
+    heatFill: $(".dz-heat-fill"),
+    heatNote: $(".dz-heat-note"),
   };
   const soundLabel = () => (ui.sound.textContent = audio.muted ? "Sound off" : "Sound on");
   soundLabel();
@@ -285,6 +307,8 @@ export function startDestruction({ onExit } = {}) {
     pointer: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
     firing: 0,
     shake: 0,
+    heat: 0,
+    hot: false,
     striking: false,
     timers: new Set(),
   };
@@ -666,6 +690,55 @@ export function startDestruction({ onExit } = {}) {
     ui.ruin.textContent = Math.min(100, Math.round((S.broken.length / S.total) * 100));
   };
 
+  /* --- barrel heat ---------------------------------------------------------- */
+
+  const heatArc = cross.querySelector(".dz-cross-heat");
+  const renderHeat = () => {
+    const h = Math.max(0, Math.min(100, S.heat));
+    ui.heatFill.style.width = `${h}%`;
+    heatArc.style.strokeDasharray = `${h.toFixed(1)} 100`;
+    // butter -> coral as it climbs; the arc deepens with it
+    cross.style.setProperty("--heat", (h / 100).toFixed(3));
+  };
+
+  const overheat = () => {
+    S.hot = true;
+    S.heat = 100;
+    stopFire();
+    audio.hiss();
+    ui.heat.classList.add("hot");
+    cross.classList.add("hot");
+    ui.heatNote.textContent = "overheated — cooling";
+    pop(S.pointer.x, S.pointer.y - 40, "overheated!", 1.1, C.coral);
+    steam(S.pointer.x, S.pointer.y, 8);
+    wake();
+  };
+
+  const cooled = () => {
+    S.hot = false;
+    S.heat = 0;
+    ui.heat.classList.remove("hot");
+    cross.classList.remove("hot");
+    ui.heatNote.textContent = "holding fire heats it";
+    renderHeat();
+  };
+
+  const steam = (x, y, n) => {
+    for (let i = 0; i < n; i++) {
+      P.push({
+        k: "smoke",
+        x: x + rand(-14, 14),
+        y: y + rand(-8, 8),
+        vx: rand(-25, 25),
+        vy: rand(-120, -60),
+        r: rand(5, 11),
+        c: Math.random() < 0.5 ? C.sky : C.lilac,
+        t: -rand(0, 0.25),
+        life: rand(0.7, 1.2),
+      });
+    }
+  };
+
   /* --- breaking ------------------------------------------------------------ */
 
   const breakAll = (hits, cx, cy, force) => {
@@ -681,6 +754,20 @@ export function startDestruction({ onExit } = {}) {
   };
 
   const shoot = (x, y, spread = 0) => {
+    if (S.hot) {
+      stopFire();
+      audio.dry();
+      cross.classList.remove("jam");
+      void cross.offsetWidth;
+      cross.classList.add("jam");
+      return;
+    }
+    S.heat += HEAT_SHOT;
+    renderHeat();
+    if (S.heat >= 100) {
+      overheat();
+      return;
+    }
     x += rand(-spread, spread);
     y += rand(-spread, spread);
     audio.shot();
@@ -933,6 +1020,19 @@ export function startDestruction({ onExit } = {}) {
       }
     }
 
+    // the barrel sheds heat
+    if (S.heat > 0) {
+      S.heat -= (S.hot ? HEAT_COOL_LOCKED : HEAT_COOL) * dt;
+      if (S.hot && Math.random() < dt * 6) steam(S.pointer.x, S.pointer.y, 1);
+      if (S.heat <= 0) {
+        if (S.hot) cooled();
+        else {
+          S.heat = 0;
+          renderHeat();
+        }
+      } else renderHeat();
+    }
+
     draw(dt);
 
     // screen shake
@@ -945,7 +1045,7 @@ export function startDestruction({ onExit } = {}) {
       shakeTargets().forEach((el) => (el.style.translate = ""));
     }
 
-    if (P.length || S.comboT > 0 || S.shake) wake();
+    if (P.length || S.comboT > 0 || S.shake || S.heat > 0) wake();
   };
 
   function wake() {

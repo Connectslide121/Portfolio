@@ -441,3 +441,85 @@ body.dz-on .dz-hud * {
   width: 100%;
   filter: drop-shadow(5px 5px 0 rgb(29 27 25 / 0.25));
 }
+
+/* --- barrel heat --------------------------------------------------------- */
+
+/* The heat arc around the crosshair: starts at twelve o'clock and fills
+   clockwise, butter to coral as it climbs. */
+.dz-cross-heat {
+  --heat: 0;
+  fill: none;
+  stroke: color-mix(in srgb, var(--coral) calc(var(--heat) * 100%), var(--butter));
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-dasharray: 0 100;
+  transform: rotate(-90deg);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.dz-cross {
+  --heat: 0;
+}
+
+/* Overheated: the arc turns to an ink dash and throbs, the sights go faint. */
+.dz-cross.hot .dz-cross-heat {
+  stroke: var(--coral);
+  stroke-dasharray: 4 4 !important;
+  animation: dz-throb 0.5s ease-in-out infinite;
+}
+
+.dz-cross.hot path,
+.dz-cross.hot .dz-cross-ring {
+  opacity: 0.35;
+}
+
+.dz-cross.jam svg {
+  animation: dz-jam 0.22s ease-out;
+}
+
+@keyframes dz-throb {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes dz-jam {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.dz-heat {
+  min-width: 8.5rem;
+}
+
+.dz-heat-fill {
+  background: linear-gradient(to right, var(--butter), var(--apricot) 55%, var(--coral)) !important;
+  background-size: 8.5rem 100% !important;
+}
+
+.dz-heat.hot {
+  background: color-mix(in srgb, var(--coral) 30%, var(--paper));
+}
+
+.dz-heat.hot .dz-heat-fill {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--coral) 0 5px,
+    var(--ink) 5px 7px
+  ) !important;
+}
+
+.dz-heat.hot .dz-heat-note {
+  color: var(--ink);
+  font-weight: 600;
+  animation: dz-blink 0.6s steps(2, end) infinite;
+}
