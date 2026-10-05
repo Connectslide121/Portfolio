@@ -46,10 +46,20 @@ body.dz-on .dz-hud * {
   transition: transform 0.12s ease;
 }
 
+/* Rings spin and pulse about their OWN centre. An SVG element's transform
+   origin is resolved against the viewBox by default, and this viewBox starts
+   at -32, so "center" was a point 32 units off — the ring orbited the dot
+   instead of turning around it. */
+.dz-cross-ring,
+.dz-cross-ready,
+.dz-cross-hit {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
 .dz-cross-ring {
   stroke-dasharray: 3 4;
   animation: dz-spin 6s linear infinite;
-  transform-origin: center;
 }
 
 .dz-cross-dot {
@@ -66,7 +76,6 @@ body.dz-on .dz-hud * {
 .dz-cross.ready .dz-cross-ready {
   opacity: 1;
   animation: dz-pulse 1s ease-in-out infinite;
-  transform-origin: center;
 }
 
 .dz-cross-hit {
