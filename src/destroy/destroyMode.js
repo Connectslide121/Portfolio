@@ -265,6 +265,7 @@ export function startDestruction({ onExit } = {}) {
   const hud = document.createElement("div");
   hud.className = "dz-hud";
   hud.setAttribute("data-no-destroy", "");
+  hud.setAttribute("data-no-field", "");
   hud.innerHTML = `
     <div class="dz-cell dz-score">
       <span class="dz-label">Score</span>
@@ -320,6 +321,7 @@ export function startDestruction({ onExit } = {}) {
 
   const toastEl = document.createElement("div");
   toastEl.className = "dz-toast";
+  toastEl.setAttribute("data-no-field", "");
 
   document.body.append(canvas, toastEl, hud, cross);
 

@@ -147,6 +147,7 @@ export default function DestroyToggle({ journeyOpen = false }) {
       onClick={start}
       aria-label="Destruction mode — shoot the portfolio"
       data-no-destroy
+      data-no-field
     >
       <svg viewBox="-16 -16 32 32" aria-hidden="true">
         <circle r="9" />

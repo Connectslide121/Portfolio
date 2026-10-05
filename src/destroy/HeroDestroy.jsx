@@ -17,6 +17,7 @@ export default function HeroDestroy() {
       onClick={requestStart}
       title="Rather not read? Blow the whole thing up."
       data-no-destroy
+      data-no-field
     >
       <span className="dz-hero-icon" aria-hidden="true">
         <svg viewBox="-16 -16 32 32">

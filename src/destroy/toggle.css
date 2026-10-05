@@ -57,6 +57,7 @@
      inline span they do not, and the label sat off-centre. */
   display: block;
   line-height: 1;
+  white-space: nowrap;
   max-width: 0;
   overflow: hidden;
   opacity: 0;
