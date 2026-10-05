@@ -13,8 +13,10 @@
 .home-text-wrapper {
   flex: 1 1 34rem;
   max-width: 38rem;
+  /* No z-index here: it would make a stacking context, and the Destruction
+     mode button, which docks out of this column as position: fixed, could
+     then never rise above the journey stage. */
   position: relative;
-  z-index: 2;
 }
 
 .home-text-wrapper h1 {

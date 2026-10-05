@@ -8,7 +8,6 @@ import Contact from "./pages/Contact";
 import Footer from "./components/Footer";
 import { startField } from "./field/cursorField";
 import "./field/field.css";
-import DestroyToggle from "./destroy/DestroyToggle";
 
 // Journey mode is lazy so GSAP and the world SVG never touch first paint for a
 // visitor who only wants the CV (guardrail in docs/JOURNEY_PLAN.md §8).
@@ -117,7 +116,7 @@ export default function App() {
       <div>
         <Sidebar />
         <main className="main-container">
-          <Home onEnterJourney={openJourney} />
+          <Home onEnterJourney={openJourney} journeyOpen={journeyOpen} />
           <About />
           <Projects />
           <Contact />
@@ -129,9 +128,6 @@ export default function App() {
           painted first and then got covered — it read as landing on the wrong
           page. The curtain paints in the same commit as the page behind it, so
           there is nothing to see underneath while the chunk arrives. */}
-      {/* Shoot the portfolio. Its z-index puts it above the journey stage
-          as well as the CV. */}
-      <DestroyToggle journeyOpen={journeyOpen} />
 
       {journeyOpen && (
         <Suspense fallback={<div className="j-curtain" aria-hidden="true" />}>

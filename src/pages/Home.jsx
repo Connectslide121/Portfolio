@@ -8,7 +8,7 @@ import Wobble from "../components/Wobble";
 import HeroDestroy from "../destroy/HeroDestroy";
 import { profile } from "../data/journey";
 
-export default function Home({ onEnterJourney }) {
+export default function Home({ onEnterJourney, journeyOpen }) {
   const NAVBAR_HEIGHT = 80; // Fixed navbar height
 
   const scrollToSection = (sectionId) => {
@@ -43,7 +43,7 @@ export default function Home({ onEnterJourney }) {
           >
             Get in touch
           </button>
-          <HeroDestroy />
+          <HeroDestroy journeyOpen={journeyOpen} />
         </div>
         <HeroTeaser onEnter={onEnterJourney} />
       </div>

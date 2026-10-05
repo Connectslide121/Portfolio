@@ -11,7 +11,7 @@
 //     it. Right-click or A.
 //   * Esc or Exit repairs everything — every piece flies back into place.
 //
-// Loaded on demand (DestroyToggle imports it), so none of this is in the
+// Loaded on demand (HeroDestroy imports it), so none of this is in the
 // main bundle. Plain DOM and one canvas; no React, no GSAP.
 
 import "./destroy.css";
@@ -19,7 +19,7 @@ import { setFieldPaused } from "../field/cursorField";
 import { createChiptune } from "./chiptune";
 
 const TAU = Math.PI * 2;
-const NO = "[data-no-destroy], .dz-hud, .dz-toggle, .dz-cross, .dz-plane, .dz-toast";
+const NO = "[data-no-destroy], .dz-hud, .dz-dest, .dz-cross, .dz-plane, .dz-toast";
 const SHAPES = "path, circle, rect, ellipse, polygon, polyline, line, text, image";
 const NOT_SHAPE = "defs, clipPath, mask, pattern, linearGradient, radialGradient, symbol, marker";
 
@@ -1097,7 +1097,7 @@ export function startDestruction({ onExit } = {}) {
 
   /* --- input --------------------------------------------------------------- */
 
-  const inUI = (t) => t && t.closest && t.closest(".dz-hud, .dz-toggle");
+  const inUI = (t) => t && t.closest && t.closest(".dz-hud, .dz-dest");
 
   const onMove = (e) => {
     S.pointer.x = e.clientX;
