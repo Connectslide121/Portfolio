@@ -149,6 +149,8 @@
 .timeline {
   position: relative;
   max-width: 56rem;
+  /* Centred in the column, like every other block on the page. */
+  margin-inline: auto;
 }
 
 .timeline::before {
