@@ -53,6 +53,10 @@
 /* The label slides out on hover — and on its own for a few seconds when
    the badge first lands, so it is noticed. */
 .dz-toggle span {
+  /* A block, so the clip and the width transition actually apply — on an
+     inline span they do not, and the label sat off-centre. */
+  display: block;
+  line-height: 1;
   max-width: 0;
   overflow: hidden;
   opacity: 0;

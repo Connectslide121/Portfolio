@@ -63,7 +63,14 @@ export default function DestroyToggle({ journeyOpen = false }) {
         if (tries++ < 40) retry = setTimeout(attach, 250);
         return;
       }
-      io = new IntersectionObserver(([e]) => setHeroInView(e.isIntersecting), { threshold: 0 });
+      // The fixed navbar covers the top of the viewport, so the button counts
+      // as gone the moment it slides under it, not when it leaves the window.
+      const nav = document.querySelector("nav");
+      const top = nav ? Math.round(nav.getBoundingClientRect().height) : 0;
+      io = new IntersectionObserver(([e]) => setHeroInView(e.isIntersecting), {
+        threshold: 0,
+        rootMargin: `-${top}px 0px 0px 0px`,
+      });
       io.observe(target);
     };
     attach();
