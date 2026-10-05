@@ -75,6 +75,17 @@ export function setFieldPaused(next) {
 
 /* --- splitting ----------------------------------------------------------- */
 
+/** Whether text here is drawn with an inherited underline (a link, usually). */
+function underlined(el) {
+  for (let e = el; e && e.nodeType === 1; e = e.parentElement) {
+    const cs = getComputedStyle(e);
+    if (cs.textDecorationLine && cs.textDecorationLine !== "none") return true;
+    // decoration only propagates through inline boxes
+    if (!cs.display.startsWith("inline")) return false;
+  }
+  return false;
+}
+
 function splitTextNode(node) {
   const text = node.nodeValue;
   if (!text || !text.trim()) return;
@@ -82,10 +93,21 @@ function splitTextNode(node) {
   if (!parent) return;
   const wrap = document.createElement("span");
   wrap.className = "fx-t";
+  // Inside an underlined link, a plain space between words would keep the
+  // link's own underline painted under it — a dash left behind when the
+  // letters around it are pushed. There, each space becomes a piece too.
+  const decorated = underlined(parent);
   for (const token of text.split(/(\s+)/)) {
     if (!token) continue;
     if (/^\s+$/.test(token)) {
-      wrap.appendChild(document.createTextNode(token));
+      if (decorated) {
+        const sp = document.createElement("span");
+        sp.className = "fx-l fx-sp";
+        sp.textContent = " ";
+        wrap.appendChild(sp);
+      } else {
+        wrap.appendChild(document.createTextNode(token));
+      }
       continue;
     }
     const word = document.createElement("span");

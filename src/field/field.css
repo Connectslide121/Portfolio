@@ -12,6 +12,12 @@
   display: inline-block;
 }
 
+/* A space inside a link, kept as a piece so its underline moves too. pre,
+   or an inline-block holding only a space collapses to nothing. */
+.fx-sp {
+  white-space: pre;
+}
+
 /* A link's underline is not drawn through inline-blocks, so splitting a
    link into letters erased it. Each layer hands the decoration down
    (text-decoration is not inherited by default) so every letter draws its
