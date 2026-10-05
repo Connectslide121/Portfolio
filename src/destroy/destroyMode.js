@@ -36,6 +36,30 @@ const HEAT_SHOT = 6;
 const HEAT_COOL = 22;
 const HEAT_COOL_LOCKED = 42;
 
+// The clock. A time attack: you start with TIME_START seconds (the clock
+// waits for the first shot), and earn more by playing well. What stops it
+// running forever:
+//   * every bonus is scaled by 1 / (1 + earned / TIME_HALF), so after 30 s
+//     earned they pay half, after 90 s a quarter;
+//   * the clock never holds more than TIME_MAX;
+//   * a miss costs MISS_COST;
+//   * the clock itself runs ~10% faster every minute (CLOCK_SPEEDUP).
+const TIME_START = 45;
+const TIME_MAX = 60;
+const TIME_HALF = 30;
+const MISS_COST = 0.3;
+const LOW_TIME = 10;
+const CLOCK_SPEEDUP = 600; // seconds of play per +100% clock speed
+// Seconds for reaching each multiplier tier, paid once per combo run.
+const TIER_TIME = { 2: 2, 3: 2, 4: 3, 5: 3, 6: 4 };
+const WORD_TIME = 0.5;
+const SHATTER_TIME = 1.5;
+// Time capsules: a stopwatch that drifts across the page now and then.
+const CAPSULE_TIME = 5;
+const CAPSULE_LIFE = 4;
+const CAPSULE_EVERY = [10, 15];
+const CAPSULE_R = 30;
+
 const RANKS = [
   [0, "Intern"],
   [3000, "Junior demolisher"],
@@ -197,6 +221,51 @@ function makeAudio() {
       o.start(t);
       o.stop(t + 1.5);
     },
+    tick(high) {
+      if (!ctx || muted) return;
+      const t = ctx.currentTime;
+      const o = ctx.createOscillator();
+      o.type = "square";
+      o.frequency.value = high ? 1760 : 1320;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.08, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+      o.connect(g).connect(master);
+      o.start(t);
+      o.stop(t + 0.06);
+    },
+    chime() {
+      if (!ctx || muted) return;
+      const t = ctx.currentTime;
+      [880, 1320, 1760].forEach((f, i) => {
+        const o = ctx.createOscillator();
+        o.type = "square";
+        o.frequency.value = f;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t + i * 0.06);
+        g.gain.exponentialRampToValueAtTime(0.09, t + i * 0.06 + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.06 + 0.12);
+        o.connect(g).connect(master);
+        o.start(t + i * 0.06);
+        o.stop(t + i * 0.06 + 0.13);
+      });
+    },
+    gameOver() {
+      if (!ctx || muted) return;
+      const t = ctx.currentTime;
+      [659, 523, 440, 330].forEach((f, i) => {
+        const o = ctx.createOscillator();
+        o.type = "square";
+        o.frequency.value = f;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t + i * 0.22);
+        g.gain.exponentialRampToValueAtTime(0.11, t + i * 0.22 + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.22 + (i === 3 ? 0.7 : 0.2));
+        o.connect(g).connect(master);
+        o.start(t + i * 0.22);
+        o.stop(t + i * 0.22 + 0.75);
+      });
+    },
     hiss() {
       burst({ dur: 1.1, from: 7000, to: 2500, type: "highpass", gain: 0.22 });
     },
@@ -231,6 +300,7 @@ export function startDestruction({ onExit } = {}) {
     lilac: tok("--lilac") || "#c4b3f2",
     sky: tok("--sky") || "#9fc0f0",
     lime: tok("--lime") || "#cfe86a",
+    limeInk: tok("--lime-ink") || "#4f6b0c",
   };
 
   const audio = makeAudio();
@@ -267,6 +337,11 @@ export function startDestruction({ onExit } = {}) {
   hud.setAttribute("data-no-destroy", "");
   hud.setAttribute("data-no-field", "");
   hud.innerHTML = `
+    <div class="dz-cell dz-time">
+      <span class="dz-label">Time</span>
+      <b class="dz-time-n">45.0</b>
+      <span class="dz-key dz-time-note">starts on your first shot</span>
+    </div>
     <div class="dz-cell dz-score">
       <span class="dz-label">Score</span>
       <b class="dz-score-n">0</b>
@@ -307,6 +382,9 @@ export function startDestruction({ onExit } = {}) {
     strike: $(".dz-strike"),
     rank: $(".dz-rank-n"),
     ruin: $(".dz-ruin-n"),
+    timeCell: $(".dz-time"),
+    time: $(".dz-time-n"),
+    timeNote: $(".dz-time-note"),
     sound: $(".dz-sound"),
     music: $(".dz-music"),
     heat: $(".dz-heat"),
@@ -344,7 +422,22 @@ export function startDestruction({ onExit } = {}) {
     hot: false,
     striking: false,
     timers: new Set(),
+    // the clock
+    time: TIME_START,
+    running: false,
+    over: false,
+    earned: 0,
+    elapsed: 0,
+    shots: 0,
+    hitShots: 0,
+    maxMult: 1,
+    tiersPaid: new Set(),
+    capsuleT: rand(CAPSULE_EVERY[0] - 3, CAPSULE_EVERY[1] - 3),
+    capsule: null,
+    lastTick: Infinity,
   };
+  // Development only: the state, for driving the game from a test script.
+  if (process.env.NODE_ENV !== "production") window.__dz = S;
   const P = []; // particles and effects
   let raf = 0;
   let last = performance.now();
@@ -591,8 +684,27 @@ export function startDestruction({ onExit } = {}) {
 
   /** A burn left on the page, printed in halftone, that scrolls with it. */
   const scorches = [];
-  const scorch = (x, y, r) => {
+  // All burns live in one layer the size of the page that clips its
+  // contents: a mark near the edge (an air-strike crater can be 200px wide)
+  // would otherwise stick out past the page and give it a horizontal
+  // scrollbar.
+  let burnLayer = null;
+  const burns = () => {
     const host = document.querySelector(".j-stage") || document.body;
+    if (!burnLayer || burnLayer.parentNode !== host) {
+      burnLayer && burnLayer.remove();
+      burnLayer = document.createElement("div");
+      burnLayer.className = "dz-burns";
+      host.appendChild(burnLayer);
+    }
+    if (host === document.body) {
+      burnLayer.style.height = `${document.documentElement.scrollHeight}px`;
+    }
+    return host;
+  };
+
+  const scorch = (x, y, r) => {
+    const host = burns();
     const box = host === document.body ? { left: -window.scrollX, top: -window.scrollY } : host.getBoundingClientRect();
     const el = document.createElement("i");
     el.className = "dz-scorch";
@@ -600,7 +712,7 @@ export function startDestruction({ onExit } = {}) {
     el.style.top = `${y - box.top - r}px`;
     el.style.width = el.style.height = `${r * 2}px`;
     el.style.rotate = `${rand(0, 360)}deg`;
-    host.appendChild(el);
+    burnLayer.appendChild(el);
     scorches.push(el);
     if (scorches.length > 70) scorches.shift().remove();
   };
@@ -648,14 +760,20 @@ export function startDestruction({ onExit } = {}) {
   };
 
   const award = (hits, x, y, { big = false } = {}) => {
-    if (!hits.length) return;
+    if (!hits.length || S.over) return;
     // combo
     S.combo += 1;
     S.comboT = COMBO_WINDOW;
     const mult = Math.min(6, 1 + Math.floor(S.combo / 5));
     if (mult > S.mult && CALLOUTS[mult]) toast(`${CALLOUTS[mult]} ×${mult}`, "combo");
     S.mult = mult;
+    S.maxMult = Math.max(S.maxMult, mult);
     if (!S.striking) audio.intensity(mult);
+    // each new tier of this combo run buys time, once
+    if (!big && TIER_TIME[mult] && !S.tiersPaid.has(mult)) {
+      S.tiersPaid.add(mult);
+      gainTime(TIER_TIME[mult], x + 40, y - 70);
+    }
 
     let pts = hits.reduce((n, p) => n + valueOf(p), 0) * S.mult;
 
@@ -682,11 +800,13 @@ export function startDestruction({ onExit } = {}) {
     if (wordBonus) {
       pts += wordBonus * S.mult;
       pop(x + rand(-30, 30), y - 34, "word!", 0.9, C.coral);
+      if (!big) gainTime(WORD_TIME, x - 40, y - 60);
     }
 
     if (!big && hits.length >= 14) {
       pts += 80 * S.mult;
       pop(x, y - 52, "shatter!", 1.3, C.coral);
+      gainTime(SHATTER_TIME, x, y - 86);
     }
 
     // The strike pays out at half rate and never charges the next one.
@@ -776,6 +896,203 @@ export function startDestruction({ onExit } = {}) {
     }
   };
 
+  /* --- the clock ----------------------------------------------------------- */
+
+  const fmt = (t) => Math.max(0, t).toFixed(1);
+
+  const renderTime = () => {
+    ui.time.textContent = fmt(S.time);
+    ui.timeCell.classList.toggle("low", S.running && !S.over && S.time <= LOW_TIME);
+  };
+
+  const flashTime = (cls) => {
+    ui.timeCell.classList.remove("gain", "loss");
+    void ui.timeCell.offsetWidth;
+    ui.timeCell.classList.add(cls);
+  };
+
+  /** Add time, scaled down by how much has been earned already. */
+  function gainTime(base, x, y) {
+    if (S.over) return;
+    const scaled = base / (1 + S.earned / TIME_HALF);
+    const amt = Math.min(scaled, TIME_MAX - S.time);
+    if (amt < 0.05) return;
+    S.time += amt;
+    S.earned += amt;
+    pop(x, y, `+${amt.toFixed(1)}s`, 1.05, C.limeInk);
+    flashTime("gain");
+    renderTime();
+  }
+
+  const loseTime = (amt, x, y) => {
+    if (!S.running || S.over) return;
+    S.time -= amt;
+    pop(x, y - 14, `−${amt.toFixed(1)}s`, 0.7, C.coral);
+    flashTime("loss");
+    renderTime();
+  };
+
+  /* --- time capsules --------------------------------------------------------- */
+
+  const spawnCapsule = () => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const el = document.createElement("div");
+    el.className = "dz-capsule";
+    el.setAttribute("data-no-field", "");
+    el.innerHTML = `<svg viewBox="-34 -38 68 72" aria-hidden="true">
+      <circle r="27" class="dz-capsule-plate" />
+      <rect x="-6" y="-37" width="12" height="7" rx="2" />
+      <circle r="21" class="dz-capsule-face" />
+      <path d="M0 -14 V0 L9 7" class="dz-capsule-hands" />
+      <text y="30" text-anchor="middle">+${CAPSULE_TIME}s</text>
+    </svg>`;
+    document.body.appendChild(el);
+    const fromLeft = Math.random() < 0.5;
+    S.capsule = {
+      el,
+      x: fromLeft ? vw * rand(0.12, 0.3) : vw * rand(0.7, 0.88),
+      y: vh * rand(0.25, 0.6),
+      vx: (fromLeft ? 1 : -1) * rand(40, 80),
+      vy: rand(-25, 25),
+      t: 0,
+    };
+  };
+
+  const removeCapsule = () => {
+    if (S.capsule) S.capsule.el.remove();
+    S.capsule = null;
+    S.capsuleT = rand(CAPSULE_EVERY[0], CAPSULE_EVERY[1]);
+  };
+
+  /** Returns true when the shot took the capsule. */
+  const hitCapsule = (x, y) => {
+    const c = S.capsule;
+    if (!c || Math.hypot(c.x - x, c.y - y) > CAPSULE_R) return false;
+    explode(c.x, c.y, 34);
+    P.push({ k: "ring", x: c.x, y: c.y, r: 70, t: 0, life: 0.5, w: 3 });
+    audio.chime();
+    S.score += 250 * S.mult;
+    pop(c.x, c.y - 40, `+${250 * S.mult}`, 1);
+    gainTime(CAPSULE_TIME, c.x, c.y - 70);
+    removeCapsule();
+    render();
+    return true;
+  };
+
+  const moveCapsule = (dt) => {
+    const c = S.capsule;
+    if (!c) return;
+    c.t += dt;
+    c.x += c.vx * dt;
+    c.y += c.vy * dt + Math.sin(c.t * 3) * 0.4;
+    c.el.style.translate = `${c.x.toFixed(1)}px ${c.y.toFixed(1)}px`;
+    c.el.classList.toggle("fading", c.t > CAPSULE_LIFE - 1.2);
+    if (c.t >= CAPSULE_LIFE) removeCapsule();
+  };
+
+  /* --- game over ------------------------------------------------------------- */
+
+  let overEl = null;
+
+  const gameOver = () => {
+    S.over = true;
+    S.time = 0;
+    stopFire();
+    removeCapsule();
+    renderTime();
+    audio.gameOver();
+    audio.intensity(1);
+    audio.muffle(true);
+    dismissSticky();
+    const acc = S.shots ? Math.round((S.hitShots / S.shots) * 100) : 0;
+    const isBest = S.score > 0 && S.score >= S.best;
+    overEl = document.createElement("div");
+    overEl.className = "dz-over";
+    overEl.setAttribute("data-no-destroy", "");
+    overEl.setAttribute("data-no-field", "");
+    overEl.innerHTML = `
+      <div class="dz-over-card">
+        <p class="dz-label">Time's up</p>
+        <h2 class="dz-over-score">${S.score.toLocaleString()}</h2>
+        ${isBest ? '<span class="dz-over-best">New best!</span>' : `<p class="dz-over-sub">best ${S.best.toLocaleString()}</p>`}
+        <p class="dz-over-rank"><em>${RANKS[S.rank][1]}</em></p>
+        <dl class="dz-over-stats">
+          <dt>Survived</dt><dd>${fmt(S.elapsed)}s</dd>
+          <dt>Accuracy</dt><dd>${acc}%</dd>
+          <dt>Best combo</dt><dd>×${S.maxMult}</dd>
+          <dt>Broken</dt><dd>${S.broken.length.toLocaleString()}</dd>
+          <dt>Ruined</dt><dd>${Math.min(100, Math.round((S.broken.length / S.total) * 100))}%</dd>
+          <dt>Time earned</dt><dd>+${fmt(S.earned)}s</dd>
+        </dl>
+        <div class="dz-over-actions">
+          <button type="button" class="dz-btn dz-again">Play again</button>
+          <button type="button" class="dz-btn dz-exit dz-over-exit">Repair &amp; exit</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overEl);
+    overEl.querySelector(".dz-again").addEventListener("click", playAgain);
+    overEl.querySelector(".dz-over-exit").addEventListener("click", () => exit());
+  };
+
+  /** Put every broken piece back, flying in, and clear the burns. */
+  function repairAll() {
+    S.broken.forEach((p, i) => {
+      const el = p.el;
+      p.broken = false;
+      el.style.visibility = p.prevVis || "";
+      if (!el.isConnected || !el.animate) return;
+      el.animate(
+        [
+          { translate: `${rand(-60, 60)}px ${rand(-140, -60)}px`, opacity: 0 },
+          { translate: "0 0", opacity: 1 },
+        ],
+        { duration: 520, delay: Math.min(900, i * 2), easing: "cubic-bezier(0.2, 1.4, 0.4, 1)", fill: "backwards" },
+      );
+    });
+    S.broken = [];
+    document.querySelectorAll(".fx-w").forEach((w) => delete w.__dzDone);
+    scorches.splice(0).forEach((el) =>
+      el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 600 }).finished.then(() => el.remove(), () => el.remove()),
+    );
+    rectsAt = 0;
+  }
+
+  function playAgain() {
+    if (overEl) overEl.remove();
+    setTimeout(() => burnLayer && burnLayer.remove(), 700);
+    overEl = null;
+    repairAll();
+    Object.assign(S, {
+      score: 0,
+      combo: 0,
+      comboT: 0,
+      mult: 1,
+      charge: 0,
+      rank: 0,
+      time: TIME_START,
+      running: false,
+      over: false,
+      earned: 0,
+      elapsed: 0,
+      shots: 0,
+      hitShots: 0,
+      maxMult: 1,
+      lastTick: Infinity,
+    });
+    S.tiersPaid.clear();
+    S.capsuleT = rand(CAPSULE_EVERY[0] - 3, CAPSULE_EVERY[1] - 3);
+    if (S.hot) cooled();
+    S.heat = 0;
+    renderHeat();
+    audio.muffle(false);
+    ui.timeNote.textContent = "starts on your first shot";
+    ui.comboFill.style.width = "0%";
+    render();
+    renderTime();
+    toast("Again! The clock starts on your first shot", "rank", { sticky: true });
+  }
+
   /* --- breaking ------------------------------------------------------------ */
 
   const breakAll = (hits, cx, cy, force) => {
@@ -807,18 +1124,31 @@ export function startDestruction({ onExit } = {}) {
     }
     x += rand(-spread, spread);
     y += rand(-spread, spread);
+    if (!S.running) {
+      S.running = true;
+      ui.timeNote.textContent = "combos, words, capsules = time";
+    }
+    S.shots += 1;
     audio.shot();
     cross.classList.remove("fire");
     void cross.offsetWidth;
     cross.classList.add("fire");
     P.push({ k: "flash", x, y, r: 9, t: 0, life: 0.06 });
+    const tookCapsule = hitCapsule(x, y);
     const hits = inBlast(x, y, SHOT_R);
     if (!hits.length) {
-      // a miss still marks the paper
+      if (tookCapsule) {
+        S.hitShots += 1;
+        wake();
+        return;
+      }
+      // a miss still marks the paper — and costs time
       P.push({ k: "ring", x, y, r: 12, t: 0, life: 0.25, w: 1.5 });
+      loseTime(MISS_COST, x, y);
       wake();
       return;
     }
+    S.hitShots += 1;
     cross.classList.remove("hit");
     void cross.offsetWidth;
     cross.classList.add("hit");
@@ -833,7 +1163,7 @@ export function startDestruction({ onExit } = {}) {
   /* --- the air strike ------------------------------------------------------ */
 
   const airStrike = () => {
-    if (S.charge < CHARGE_FULL || S.striking) return;
+    if (S.charge < CHARGE_FULL || S.striking || S.over) return;
     S.striking = true;
     S.charge = 0;
     render();
@@ -1054,11 +1384,34 @@ export function startDestruction({ onExit } = {}) {
       if (S.comboT <= 0) {
         S.combo = 0;
         S.mult = 1;
+        S.tiersPaid.clear();
         if (!S.striking) audio.intensity(1);
         ui.mult.textContent = "×1";
         ui.comboFill.style.width = "0%";
       }
     }
+
+    // the clock
+    if (S.running && !S.over) {
+      S.elapsed += dt;
+      S.time -= dt * (1 + S.elapsed / CLOCK_SPEEDUP);
+      if (S.time <= 0) gameOver();
+      else {
+        // a tick each second through the last five
+        const whole = Math.ceil(S.time);
+        if (S.time <= 5 && whole < S.lastTick) {
+          S.lastTick = whole;
+          audio.tick(whole <= 2);
+        } else if (S.time > 5) S.lastTick = Infinity;
+        renderTime();
+      }
+      // capsules
+      if (!S.capsule) {
+        S.capsuleT -= dt;
+        if (S.capsuleT <= 0) spawnCapsule();
+      }
+    }
+    moveCapsule(dt);
 
     // the barrel sheds heat
     if (S.heat > 0) {
@@ -1085,7 +1438,7 @@ export function startDestruction({ onExit } = {}) {
       shakeTargets().forEach((el) => (el.style.translate = ""));
     }
 
-    if (P.length || S.comboT > 0 || S.shake || S.heat > 0) wake();
+    if (P.length || S.comboT > 0 || S.shake || S.heat > 0 || S.capsule || (S.running && !S.over)) wake();
   };
 
   function wake() {
@@ -1097,7 +1450,7 @@ export function startDestruction({ onExit } = {}) {
 
   /* --- input --------------------------------------------------------------- */
 
-  const inUI = (t) => t && t.closest && t.closest(".dz-hud, .dz-dest");
+  const inUI = (t) => t && t.closest && t.closest(".dz-hud, .dz-dest, .dz-over");
 
   const onMove = (e) => {
     S.pointer.x = e.clientX;
@@ -1122,6 +1475,7 @@ export function startDestruction({ onExit } = {}) {
     e.preventDefault();
     e.stopImmediatePropagation();
     dismissSticky();
+    if (S.over) return;
     if (e.button === 2) {
       airStrike();
       return;
@@ -1184,6 +1538,7 @@ export function startDestruction({ onExit } = {}) {
 
   cross.style.translate = `${S.pointer.x}px ${S.pointer.y}px`;
   render();
+  renderTime();
   toast("Destruction mode — click to shoot, hold to fire", "rank", { sticky: true });
 
   /* --- exit: repair everything --------------------------------------------- */
@@ -1210,20 +1565,9 @@ export function startDestruction({ onExit } = {}) {
     document.querySelectorAll(".dz-plane").forEach((el) => el.remove());
 
     // Everything flies back into place, staggered.
-    S.broken.forEach((p, i) => {
-      const el = p.el;
-      el.style.visibility = p.prevVis || "";
-      if (!el.isConnected || !el.animate) return;
-      el.animate(
-        [
-          { translate: `${rand(-60, 60)}px ${rand(-140, -60)}px`, opacity: 0 },
-          { translate: "0 0", opacity: 1 },
-        ],
-        { duration: 520, delay: Math.min(900, i * 2), easing: "cubic-bezier(0.2, 1.4, 0.4, 1)", fill: "backwards" },
-      );
-    });
-    document.querySelectorAll(".fx-w").forEach((w) => delete w.__dzDone);
-    scorches.forEach((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 600 }).finished.then(() => el.remove(), () => el.remove()));
+    repairAll();
+    removeCapsule();
+    if (overEl) overEl.remove();
 
     hud.classList.add("leaving");
     cross.remove();

@@ -527,3 +527,289 @@ body.dz-on .dz-hud * {
   font-weight: 600;
   animation: dz-blink 0.6s steps(2, end) infinite;
 }
+
+/* The layer the burns are printed on: page-sized, and clipping, so a crater
+   at the edge never widens the page. */
+.dz-burns {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* --- the clock ----------------------------------------------------------- */
+.dz-time {
+  min-width: 8rem;
+}
+
+.dz-time-n {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 2.3rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.dz-time.low {
+  background: color-mix(in srgb, var(--coral) 32%, var(--paper));
+}
+
+.dz-time.low .dz-time-n {
+  color: var(--coral-ink);
+  animation: dz-blink 0.5s steps(2, end) infinite;
+}
+
+.dz-time.gain {
+  animation: dz-time-gain 0.6s ease-out;
+}
+
+.dz-time.loss {
+  animation: dz-time-loss 0.35s ease-out;
+}
+
+@keyframes dz-time-gain {
+  0% {
+    background: var(--lime);
+  }
+}
+
+@keyframes dz-time-loss {
+  0% {
+    background: color-mix(in srgb, var(--coral) 55%, var(--paper));
+  }
+  30% {
+    translate: -3px 0;
+  }
+  60% {
+    translate: 3px 0;
+  }
+}
+
+/* --- time capsule: a printed stopwatch drifting across the page ---------- */
+.dz-capsule {
+  position: fixed;
+  left: -34px;
+  top: -38px;
+  width: 68px;
+  height: 72px;
+  z-index: 9996;
+  pointer-events: none;
+  animation: dz-capsule-in 0.35s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+
+.dz-capsule svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: var(--ink);
+  stroke: none;
+  animation: dz-capsule-bob 0.9s ease-in-out infinite;
+}
+
+.dz-capsule-plate {
+  fill: var(--lime);
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+
+.dz-capsule-face {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+
+.dz-capsule-hands {
+  fill: none;
+  stroke: var(--coral);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transform-box: view-box;
+  transform-origin: 0 0;
+  animation: dz-spin 1s linear infinite;
+}
+
+.dz-capsule text {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 4px;
+}
+
+.dz-capsule.fading {
+  animation: dz-blink 0.25s steps(2, end) infinite;
+}
+
+@keyframes dz-capsule-in {
+  from {
+    opacity: 0;
+    scale: 0.3;
+  }
+}
+
+@keyframes dz-capsule-bob {
+  50% {
+    transform: translateY(-5px) rotate(-6deg);
+  }
+}
+
+/* --- game over ----------------------------------------------------------- */
+.dz-over {
+  position: fixed;
+  inset: 0;
+  z-index: 10003;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--paper) 55%, transparent);
+  animation: dz-over-in 0.4s ease both;
+}
+
+body.dz-on .dz-over,
+body.dz-on .dz-over * {
+  cursor: default !important;
+}
+
+body.dz-on .dz-over button {
+  cursor: pointer !important;
+}
+
+.dz-over-card {
+  width: min(26rem, calc(100vw - 2rem));
+  padding: 1.8rem 2rem 1.6rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  box-shadow: 8px 8px 0 var(--ink);
+  rotate: -1.2deg;
+  text-align: center;
+  animation: dz-over-card 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.dz-over-score {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 4.4rem;
+  line-height: 1;
+  margin: 0.3rem 0 0.2rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.dz-over-sub {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.dz-over-best {
+  display: inline-block;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.2rem;
+  color: #1d1b19;
+  background: var(--lime);
+  border: 1px solid var(--ink);
+  padding: 0.05rem 0.6rem 0.15rem;
+  rotate: -3deg;
+}
+
+.dz-over-rank {
+  margin: 0.8rem 0 1rem;
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  color: var(--ink);
+}
+
+.dz-over-stats {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  margin: 0 0 1.3rem;
+  border-top: 1px solid var(--ink);
+  text-align: left;
+}
+
+.dz-over-stats dt,
+.dz-over-stats dd {
+  margin: 0;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.82rem;
+}
+
+.dz-over-stats dt {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-top: 0.6rem;
+}
+
+.dz-over-stats dd {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.dz-over-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.dz-over-actions .dz-btn {
+  font-size: 0.9rem;
+  padding: 0.6rem 1.3rem;
+}
+
+.dz-again {
+  background: var(--lime);
+  color: #1d1b19;
+}
+
+.dz-again:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+@keyframes dz-over-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dz-over-card {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(30px);
+  }
+}
+
+/* Narrower windows: the scoreboard tightens and drops its footnotes. */
+@media (max-width: 1060px) {
+  .dz-cell,
+  .dz-strike,
+  .dz-heat,
+  .dz-time {
+    min-width: 0;
+    padding: 0.5rem 0.7rem;
+  }
+  .dz-key,
+  .dz-best,
+  .dz-ruin {
+    display: none;
+  }
+  .dz-time-n,
+  .dz-score-n,
+  .dz-mult {
+    font-size: 1.6rem;
+  }
+  .dz-rank-n {
+    font-size: 1rem;
+  }
+}
