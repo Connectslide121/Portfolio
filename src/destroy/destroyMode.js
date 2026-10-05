@@ -552,13 +552,22 @@ export function startDestruction({ onExit } = {}) {
   };
 
   let toastTimer = 0;
-  const toast = (text, kind = "") => {
+  let stickyUp = false;
+  /** A banner. `sticky` ones stay up until dismissSticky() is called. */
+  const toast = (text, kind = "", { sticky = false } = {}) => {
     toastEl.textContent = text;
     toastEl.className = `dz-toast ${kind}`;
     void toastEl.offsetWidth;
-    toastEl.classList.add("show");
+    toastEl.classList.add(sticky ? "stay" : "show");
+    stickyUp = sticky;
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1400);
+    if (!sticky) toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1400);
+  };
+  const dismissSticky = () => {
+    if (!stickyUp) return;
+    stickyUp = false;
+    toastEl.classList.remove("stay");
+    toastEl.classList.add("gone");
   };
 
   const shake = (amount) => {
@@ -972,6 +981,7 @@ export function startDestruction({ onExit } = {}) {
     if (inUI(e.target)) return;
     e.preventDefault();
     e.stopImmediatePropagation();
+    dismissSticky();
     if (e.button === 2) {
       airStrike();
       return;
@@ -1027,7 +1037,7 @@ export function startDestruction({ onExit } = {}) {
 
   cross.style.translate = `${S.pointer.x}px ${S.pointer.y}px`;
   render();
-  toast("Destruction mode — click to shoot, hold to fire", "rank");
+  toast("Destruction mode — click to shoot, hold to fire", "rank", { sticky: true });
 
   /* --- exit: repair everything --------------------------------------------- */
 

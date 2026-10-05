@@ -329,6 +329,56 @@ body.dz-on .dz-hud * {
   font-size: clamp(1.5rem, 3vw, 2.4rem);
 }
 
+/* The opening banner: pops in and stays, bobbing gently, until the first
+   shot sends it off. */
+.dz-toast.stay {
+  animation:
+    dz-toast-in 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both,
+    dz-bob 2.4s ease-in-out 0.45s infinite;
+}
+
+.dz-toast.gone {
+  animation: dz-toast-out 0.35s ease-in both;
+}
+
+@keyframes dz-toast-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dz-bob {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-6px) rotate(0.6deg);
+  }
+}
+
+@keyframes dz-toast-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-24px);
+  }
+}
+
 .dz-toast.show {
   animation: dz-toast 1.4s cubic-bezier(0.2, 1.4, 0.4, 1) both;
 }
