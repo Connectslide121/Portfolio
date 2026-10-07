@@ -218,6 +218,15 @@ body.dz-on .dz-hud * {
   background: var(--coral);
 }
 
+/* The bars that move every frame are full width and clipped from the right
+   (see fillTo in destroyMode.js): a clip only repaints, a width re-lays out
+   the HUD. */
+.dz-combo-fill,
+.dz-heat-fill {
+  width: 100% !important;
+  clip-path: inset(0 100% 0 0);
+}
+
 .dz-charge b {
   background: linear-gradient(to right, var(--butter), var(--coral));
   transition: width 0.3s ease;
@@ -418,7 +427,6 @@ body.dz-on .dz-hud * {
     radial-gradient(circle, color-mix(in srgb, var(--coral) 45%, transparent), transparent 70%);
   -webkit-mask-image: radial-gradient(circle, #000 25%, transparent 70%);
   mask-image: radial-gradient(circle, #000 25%, transparent 70%);
-  mix-blend-mode: var(--print-blend);
   opacity: 0.55;
   animation: dz-scorch-in 0.3s ease-out both;
 }
@@ -529,8 +537,11 @@ body.dz-on .dz-hud * {
 }
 
 /* The layer the burns are printed on: page-sized, and clipping, so a crater
-   at the edge never widens the page. */
+   at the edge never widens the page. The print blend is set here, once for
+   the whole layer, rather than on each of up to 70 burns — one blend group
+   instead of 70 is far cheaper to paint, and looks the same. */
 .dz-burns {
+  mix-blend-mode: var(--print-blend);
   position: absolute;
   left: 0;
   top: 0;

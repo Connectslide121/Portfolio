@@ -132,7 +132,7 @@ export default function HeroDestroy({ journeyOpen = false }) {
         className="dz-dest"
         onClick={start}
         title="Rather not read? Blow the whole thing up."
-        aria-label="Destruction mode — shoot the portfolio"
+        aria-label="Wreck this page — shoot the portfolio"
         style={playing ? { visibility: "hidden" } : undefined}
         data-no-destroy
         data-no-field
@@ -144,7 +144,7 @@ export default function HeroDestroy({ journeyOpen = false }) {
             <circle className="dz-dest-dot" r="2" />
           </svg>
         </span>
-        <span className="dz-dest-label">{loading ? "Arming…" : "Destruction mode"}</span>
+        <span className="dz-dest-label">{loading ? "Arming…" : "Wreck this page"}</span>
         <span className="dz-dest-new" aria-hidden="true">
           new
         </span>
