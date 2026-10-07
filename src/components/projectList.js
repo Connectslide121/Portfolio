@@ -4,7 +4,7 @@ export const featuredProjects = [
     category: "Desktop App",
     media: "video",
     description:
-      "An assessment tool for language teachers in Swedish schools, built for real day-to-day marking and adopted by a whole teaching team. Teachers set assignments against Skolverket's knowledge requirements, grade each language skill from A to F, track homework and retakes, and follow every student's progress per skill at a glance. An offline-first Electron app that keeps all data on the teacher's own computer, in Swedish and English. The live demo runs in the browser with fictional classes.",
+      "An assessment tool for teachers in Swedish schools, built for real day-to-day marking and adopted by a whole teaching team. Teachers set assignments against Skolverket's knowledge requirements, grade each skill from A to F, track homework and retakes, and follow every student's progress per skill at a glance. An offline-first Electron app that keeps all data on the teacher's own computer, in Swedish and English. The live demo runs in the browser with fictional classes.",
     technologies: ["angular", "ts", "tailwind"],
     livedemo: "https://connectslide121.github.io/Lektoria-livedemo/",
     button: "Live demo",
