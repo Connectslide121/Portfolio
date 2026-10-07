@@ -312,18 +312,16 @@ export function startDestruction({ onExit } = {}) {
 
   const canvas = document.createElement("canvas");
   canvas.className = "dz-canvas";
-  // Drawn through an OffscreenCanvas where the browser has one. On a canvas
-  // that is part of the page, every `ctx.font =` is resolved against the
-  // document's styles, which forces a style pass over the whole page — and
-  // every flying letter sets a font. That was the single largest cost of a
-  // busy frame. The offscreen surface draws exactly the same pixels.
-  const surface = canvas.transferControlToOffscreen ? canvas.transferControlToOffscreen() : canvas;
-  const ctx = surface.getContext("2d");
+  // Drawn on the page's own canvas, not through transferControlToOffscreen:
+  // a transferred canvas driven from the main thread commits every frame
+  // synchronously, which blocked half of a busy air-strike frame and got
+  // worse with every strike.
+  const ctx = canvas.getContext("2d");
   let dpr = 1;
   const resize = () => {
     dpr = Math.min(2, window.devicePixelRatio || 1);
-    surface.width = Math.round(window.innerWidth * dpr);
-    surface.height = Math.round(window.innerHeight * dpr);
+    canvas.width = Math.round(window.innerWidth * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
   };
   resize();
 
@@ -1355,7 +1353,7 @@ export function startDestruction({ onExit } = {}) {
 
   const draw = (dt) => {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, surface.width, surface.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     const print = blend();
     const halo = dark() ? "#191816" : "#f4efe6";
     // State is set per particle, and only when it changes, instead of a full
