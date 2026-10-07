@@ -179,7 +179,7 @@ export const allProjects = [
     title: "Spotify clone",
     category: "Website",
     media: "image",
-    description: "A spotify clone I made for practicing HTML &#38; CSS.",
+    description: "A spotify clone I made for practicing HTML & CSS.",
     technologies: ["html", "css"],
     repository: "https://github.com/Connectslide121/Spotify-clone",
     livedemo: "https://connectslide121.github.io/Spotify-clone",
