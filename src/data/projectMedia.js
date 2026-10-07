@@ -10,6 +10,8 @@ import Sokoban from "../images/projects/Sokoban.mp4";
 import SlidingPuzzles from "../images/projects/sliding-puzzles.mp4";
 import FlapryBlirb from "../images/projects/flapry-blirb.mp4";
 import ContactBook from "../images/projects/contact-book.mp4";
+import Lektoria from "../images/projects/lektoria.mp4";
+import TheLastAlibi from "../images/projects/the-last-alibi.mp4";
 
 import Calculator from "../images/projects/calculator.webp";
 import imageGenerator from "../images/projects/ai-image-generator.webp";
@@ -22,6 +24,8 @@ import PatisserieLente from "../images/projects/patisserie-lente.webp";
 import none from "../images/projects/none.jpg";
 
 const VIDEOS = {
+  Lektoria,
+  "The Last Alibi": TheLastAlibi,
   DAIETpedia,
   CodepenAI,
   "Password input npm package": PasswordInput,
