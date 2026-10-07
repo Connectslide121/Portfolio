@@ -1,5 +1,30 @@
 export const featuredProjects = [
   {
+    title: "Lektoria",
+    category: "Desktop App",
+    media: "video",
+    description:
+      "An assessment tool for teachers in Swedish schools, built for real day-to-day marking and adopted by a whole teaching team. Teachers set assignments against Skolverket's knowledge requirements, grade each skill from A to F, track homework and retakes, and follow every student's progress per skill at a glance. An offline-first Electron app that keeps all data on the teacher's own computer, in Swedish and English. The live demo runs in the browser with fictional classes.",
+    technologies: ["angular", "ts", "tailwind"],
+    livedemo: "https://connectslide121.github.io/Lektoria-livedemo/",
+    button: "Live demo",
+    date: "November 2025"
+  },
+  {
+    title: "The Last Alibi",
+    category: "AI Game",
+    media: "video",
+    description:
+      "An AI detective game where every case is new. Before you play, an LLM writes a complete mystery: the hidden truth, suspects with motives and alibis, clues, a timeline, puzzles and a visual style. The game engine then runs it without ever changing the truth, so every case stays solvable. Interview suspects in a live chat, examine AI-illustrated scenes with narration, pin evidence to a board and name the culprit. AI calls run through a Cloudflare Worker.",
+    technologies: ["ai", "angular", "ts", "tailwind"],
+    repository: "https://github.com/Connectslide121/TheLastAlibi",
+    livedemo: "https://connectslide121.github.io/TheLastAlibi/",
+    button: "Play game",
+    date: "March 2026"
+  },
+
+
+  {
     title: "CodepenAI",
     media: "video",
     description:
@@ -15,29 +40,8 @@ export const featuredProjects = [
     date: "January 2024"
   },
   {
-    title: "Contact book",
-    media: "video",
-    description:
-      "A simple web application built with Angular that allows users to manage their contacts easily. This project is designed to demonstrate a simple CRUD (Create, Read, Update, Delete) operation using Angular as the front-end framework and CosmosDB with Azure functions for the back-end.",
-    technologies: ["angular", "csharp", "nosql", "azure", "html", "css", "ts"],
-    repository: "https://github.com/Connectslide121/contact-book",
-    livedemo: "https://connectslide121.github.io/contact-book-live-demo/",
-    button: "Live demo",
-    date: "February 2024"
-  },
-  {
-    title: "Password input npm package",
-    media: "video",
-    description:
-      "The Password Input Component is a reusable and secure UI component designed for user password input in web applications. It enhances security by including strength indication. The strength requirements default to the same as ASP.NET Core Identity and can be easily customized via props.",
-    technologies: ["react", "js", "node"],
-    repository: "https://github.com/Connectslide121/password-input-component",
-    livedemo: "https://www.npmjs.com/package/password-input-component",
-    button: "Documentation",
-    date: "January 2024"
-  },
-  {
     title: "Plastic Slurg",
+    category: "Unity Game",
     media: "video",
     description:
       "2D shooter platformer. A “metal slug” style game made with Unity.",
@@ -50,6 +54,29 @@ export const featuredProjects = [
 ];
 
 export const allProjects = [
+  {
+    title: "Contact book",
+    media: "video",
+    description:
+      "A simple web application built with Angular that allows users to manage their contacts easily. This project is designed to demonstrate a simple CRUD (Create, Read, Update, Delete) operation using Angular as the front-end framework and CosmosDB with Azure functions for the back-end.",
+    technologies: ["angular", "csharp", "nosql", "azure", "html", "css", "ts"],
+    repository: "https://github.com/Connectslide121/contact-book",
+    livedemo: "https://connectslide121.github.io/contact-book-live-demo/",
+    button: "Live demo",
+    date: "February 2024"
+  },
+  {
+    title: "Password input npm package",
+    category: "npm Package",
+    media: "video",
+    description:
+      "The Password Input Component is a reusable and secure UI component designed for user password input in web applications. It enhances security by including strength indication. The strength requirements default to the same as ASP.NET Core Identity and can be easily customized via props.",
+    technologies: ["react", "js", "node"],
+    repository: "https://github.com/Connectslide121/password-input-component",
+    livedemo: "https://www.npmjs.com/package/password-input-component",
+    button: "Documentation",
+    date: "January 2024"
+  },
   {
     title: "DAIETpedia",
     media: "video",
@@ -106,6 +133,7 @@ export const allProjects = [
   },
   {
     title: "Sokoban game",
+    category: "Web Game",
     media: "video",
     description:
       "A sokoban game with a built-in map converter made with JavaScript. 30 maps and christmas edition available in-game.",
@@ -117,6 +145,7 @@ export const allProjects = [
   },
   {
     title: "Community portal",
+    category: "REST API",
     media: "image",
     description:
       "The backend of a community portal site. An API project with a connection to an SQL database using Entity Framework. User authentication and authorization with ASP-NET Core Identity.",
@@ -127,6 +156,7 @@ export const allProjects = [
   },
   {
     title: "Vending machine",
+    category: "Console App",
     media: "image",
     description: "A console app for managing vending machine operations.",
     technologies: ["csharp"],
@@ -135,6 +165,7 @@ export const allProjects = [
   },
   {
     title: "Sliding puzzles",
+    category: "Unity Game",
     media: "video",
     description:
       "Sliding puzzle game with 5 difficulties. Images generated by DALL-E.",
@@ -146,6 +177,7 @@ export const allProjects = [
   },
   {
     title: "Spotify clone",
+    category: "Website",
     media: "image",
     description: "A spotify clone I made for practicing HTML &#38; CSS.",
     technologies: ["html", "css"],
@@ -156,6 +188,7 @@ export const allProjects = [
   },
   {
     title: "Lawn mower rental",
+    category: "Console App",
     media: "image",
     description: "A console app for managing a lawn mower rental business.",
     technologies: ["csharp"],
@@ -164,6 +197,7 @@ export const allProjects = [
   },
   {
     title: "Flapry Blirb",
+    category: "Unity Game",
     media: "video",
     description:
       "My first ever game. A “flappy bird” style game made with Unity.",
@@ -175,6 +209,7 @@ export const allProjects = [
   },
   {
     title: "Patisserie Lente",
+    category: "Website",
     media: "image",
     description: "My first ever code. A site for a made-up pastry business.",
     technologies: ["html", "css"],

@@ -416,7 +416,7 @@ export const beats = [
     org: "Side projects, games & packages",
     role: "My Work",
     material: "whatever fits the problem",
-    note: "Things built to learn with, outside the day job — web apps, a couple of games, and a published npm package. Every tile links to its code and, where there is one, a live demo.",
+    note: "Things built outside the day job — an assessment tool teachers use every week, an AI detective game, web apps and a couple of games. Every tile links to a live demo, its code, or both.",
     kind: "projects",
     status: "Ongoing",
     heat: 0,
@@ -463,12 +463,12 @@ export const chapters = [
  * only needs listing here to appear.
  */
 export const galleryProjects = [
+  "Lektoria",
+  "The Last Alibi",
   "CodepenAI",
   "DAIETpedia",
-  "Contact book",
   "Plastic Slurg",
   "Sokoban game",
-  "Password input npm package",
 ];
 
 /**
@@ -477,6 +477,10 @@ export const galleryProjects = [
  * descriptions stay there for Résumé mode.
  */
 export const projectBlurbs = {
+  Lektoria:
+    "Assessment tool for teachers in Swedish schools: marks per skill, homework, retakes, progress.",
+  "The Last Alibi":
+    "AI detective game: every case is a new, solvable mystery written by an LLM.",
   CodepenAI: "AI code editor — build and edit web apps by prompt, or write it yourself.",
   "Contact book": "Angular CRUD on CosmosDB + Azure Functions, end to end.",
   "Password input npm package":

@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Other projects kept in this workspace for reference; they have their own repos.
+/Lektoria/
+/TheLastAlibi/
