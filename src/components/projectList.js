@@ -11,6 +11,20 @@ export const featuredProjects = [
     date: "November 2025"
   },
   {
+    title: "The Last Alibi",
+    category: "AI Game",
+    media: "video",
+    description:
+      "An AI detective game where every case is new. Before you play, an LLM writes a complete mystery: the hidden truth, suspects with motives and alibis, clues, a timeline, puzzles and a visual style. The game engine then runs it without ever changing the truth, so every case stays solvable. Interview suspects in a live chat, examine AI-illustrated scenes with narration, pin evidence to a board and name the culprit. AI calls run through a Cloudflare Worker.",
+    technologies: ["ai", "angular", "ts", "tailwind"],
+    repository: "https://github.com/Connectslide121/TheLastAlibi",
+    livedemo: "https://connectslide121.github.io/TheLastAlibi/",
+    button: "Play game",
+    date: "March 2026"
+  },
+
+
+  {
     title: "CodepenAI",
     media: "video",
     description:
@@ -24,20 +38,6 @@ export const featuredProjects = [
     livedemo: "https://connectslide121.github.io/CodepenAI-livedemo",
     button: "Live demo",
     date: "January 2024"
-  },
-
-
-  {
-    title: "The Last Alibi",
-    category: "AI Game",
-    media: "video",
-    description:
-      "An AI detective game where every case is new. Before you play, an LLM writes a complete mystery: the hidden truth, suspects with motives and alibis, clues, a timeline, puzzles and a visual style. The game engine then runs it without ever changing the truth, so every case stays solvable. Interview suspects in a live chat, examine AI-illustrated scenes with narration, pin evidence to a board and name the culprit. AI calls run through a Cloudflare Worker.",
-    technologies: ["ai", "angular", "ts", "tailwind"],
-    repository: "https://github.com/Connectslide121/TheLastAlibi",
-    livedemo: "https://connectslide121.github.io/TheLastAlibi/",
-    button: "Play game",
-    date: "March 2026"
   },
   {
     title: "Plastic Slurg",
