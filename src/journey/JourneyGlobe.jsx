@@ -232,14 +232,24 @@ export default function JourneyGlobe({ preview = false }) {
      *
      * Returns null when there is nothing to read: the art is display:none
      * below 900px, where a display:none element's animations do not progress.
+     *
+     * The animation is looked up once and kept: getAnimations() brings style
+     * up to date before it answers, so calling it every frame forced an extra
+     * style pass on every frame. It is looked up again only when the element
+     * leaves the page or its animation ends (a restarted CSS animation is a
+     * new object, and the old one goes idle).
      */
+    let charge = null;
+    let anim = null;
     const pourPhase = () => {
-      // Scoped to the stage: the CV hero carries its own pour, started at
-      // a different moment, and it comes first in the document.
-      const charge = (el.closest(".j-stage") || document).querySelector(
-        ".j-pour-charge",
-      );
-      const anim = charge?.getAnimations?.()[0];
+      if (!anim || anim.playState === "idle" || !charge?.isConnected) {
+        // Scoped to the stage: the CV hero carries its own pour, started at
+        // a different moment, and it comes first in the document.
+        charge = (el.closest(".j-stage") || document).querySelector(
+          ".j-pour-charge",
+        );
+        anim = charge?.getAnimations?.()[0] || null;
+      }
       const time = anim?.currentTime;
       if (time == null) return null;
       const span = anim.effect?.getComputedTiming?.().duration;

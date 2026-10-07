@@ -9,11 +9,12 @@
 //     moved with the individual `translate` property, which composes with
 //     any transform an element already animates (the Wobble letters, the
 //     tipping ladle) instead of replacing it, and never triggers layout.
-//   * Rest positions are measured into a coarse grid of viewport cells, and
-//     only re-measured when stale (scroll, resize, the journey moving), and
-//     only for pieces whose host is on screen (IntersectionObserver).
-//   * Each frame only touches the pieces in the cells under the ring, plus
-//     the ones still springing home. When nothing is moving the loop stops.
+//   * A coarse grid of viewport cells indexes pieces by group (a word, an
+//     SVG group), rebuilt a few times a second and only for hosts on screen
+//     (IntersectionObserver). It only answers "what might be under the ring".
+//   * Each frame measures just the pieces the index finds near the ring, so
+//     collisions use where they really are, and touches only those plus the
+//     ones still springing home. When nothing is moving the loop stops.
 //
 // SVG shapes are moved in their parent's user space: the screen-space push
 // is mapped through the inverse of the parent's screen matrix, so a shape
@@ -25,7 +26,17 @@ const R = 58; // ring radius, px
 // you are about to click has to be readable.
 const CONTROL = "button, a, label, summary, [role='button'], [role='tab'], .hero-teaser, .j-trail button";
 const CELL = 120; // grid cell, px
-const STALE = 220; // ms before rest positions are re-measured while moving
+// Pieces are indexed by group — a word, or the SVG group a shape sits in —
+// rather than one by one: the index only has to say which pieces MIGHT be
+// under the ring, and a few hundred words measure far faster than thousands
+// of letters. The pieces that are near the ring are then measured fresh
+// every frame (measure()), so a collision follows art that is moving — the
+// journey's pointer lean, a wobbling letter — instead of snapping to where it
+// was when the index was last built.
+const MARGIN = 40; // px a group may drift between index rebuilds
+const BIG = 360; // px: a larger SVG group is indexed shape by shape
+const STALE = 200; // ms between index rebuilds
+const STALE_SCROLL = 90; // …while the page or the journey is scrolling
 const PUSH = 1.0; // how far past the ring's edge a piece is shoved
 const K = 0.16; // spring stiffness
 const DAMP = 0.74; // velocity kept per frame
@@ -43,7 +54,9 @@ const NOT_ART = [
 ].join(", ");
 
 let items = []; // { el, svg, host, x, y, vx, vy, tx, ty, rect, mass }
-let grid = new Map();
+let grid = new Map(); // cell -> [{ list, l, t, r, b }]
+let groups = new Map(); // group element -> its pieces
+let scrolled = false;
 let builtAt = 0;
 let pointer = { x: -9999, y: -9999, in: false };
 let hovered = null; // the control under the pointer, if any
@@ -57,11 +70,15 @@ let dirty = true;
 let root = null;
 let getRoot = () => document.body;
 let paused = false;
+let missed = false; // content changed while paused; rescan on resume
 
 /**
  * Stand the field down (destruction mode owns the pointer while it runs).
  * Everything pushed springs home and the ring hides; splitting and the piece
- * registry stay as they are, so resuming is instant.
+ * registry stay as they are, so resuming is instant. While paused the field
+ * neither splits nor measures — destruction mode rewrites its HUD every
+ * frame, and rescanning the page for each of those writes was most of its
+ * lag.
  */
 export function setFieldPaused(next) {
   paused = next;
@@ -69,6 +86,15 @@ export function setFieldPaused(next) {
     pointer.in = false;
     hovered = null;
     if (ring) ring.style.opacity = "0";
+    // The visibility observer would recompute for every host on each frame
+    // of screen shake; it is rebuilt on resume.
+    if (io) io.disconnect();
+    io = null;
+    visibleHosts.clear();
+    dirty = true;
+  } else if (missed) {
+    missed = false;
+    rescan();
   }
   wake();
 }
@@ -163,6 +189,8 @@ function collect() {
     const prev = el.__fx;
     const it = prev || { el, svg, x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, rect: null, mass: 1 };
     it.host = svg ? el.ownerSVGElement || el : hostOf(el);
+    // what it is indexed with: its word, its SVG group, or itself (an icon)
+    it.group = svg ? el.parentNode : el.tagName === "svg" ? el : el.closest(".fx-w") || el.parentElement;
     el.__fx = it;
     next.push(it);
   };
@@ -192,6 +220,12 @@ function collect() {
     }
   }
   items = next;
+  groups = new Map();
+  for (const it of items) {
+    let list = groups.get(it.group);
+    if (!list) groups.set(it.group, (list = []));
+    list.push(it);
+  }
 
   // Visibility: observe each distinct host once.
   if (io) io.disconnect();
@@ -228,48 +262,73 @@ function localBasis(it) {
   return { a: m.d / det, b: -m.b / det, c: -m.c / det, d: m.a / det };
 }
 
+/** File a group's pieces in every grid cell its (padded) box touches. */
+function index(list, l, t, r, b) {
+  const e = { list, l: l - MARGIN, t: t - MARGIN, r: r + MARGIN, b: b + MARGIN };
+  const c0 = Math.floor(e.l / CELL);
+  const c1 = Math.floor(e.r / CELL);
+  const r0 = Math.floor(e.t / CELL);
+  const r1 = Math.floor(e.b / CELL);
+  for (let cx = c0; cx <= c1; cx++) {
+    for (let cy = r0; cy <= r1; cy++) {
+      const key = cx * 100003 + cy;
+      let cell = grid.get(key);
+      if (!cell) grid.set(key, (cell = []));
+      cell.push(e);
+    }
+  }
+}
+
+/**
+ * Rebuild the index: where each group roughly is. Only good for finding the
+ * pieces that MIGHT be under the ring — see measure() for the real thing.
+ */
 function build() {
   grid = new Map();
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  for (const it of items) {
-    if (!it.el.isConnected) continue;
-    if (it.host && !visibleHosts.has(it.host)) {
-      it.rect = null;
-      continue;
-    }
-    const b = it.el.getBoundingClientRect();
-    if (!b.width && !b.height) {
-      it.rect = null;
-      continue;
-    }
-    // Rest position: what is on screen minus the push currently applied.
-    const left = b.left - it.x;
-    const top = b.top - it.y;
-    if (left > vw + R || top > vh + R || left + b.width < -R || top + b.height < -R) {
-      it.rect = null;
-      continue;
-    }
-    it.rect = { l: left, t: top, r: left + b.width, b: top + b.height };
-    // Heavier things move less — a letter takes the full push, a 500px disc
-    // about a third of it — but nothing is so heavy it ignores the ring.
-    const size = Math.sqrt(b.width * b.height);
-    it.mass = Math.min(1, Math.max(0.35, 110 / Math.max(size, 1)));
-    if (it.svg) it.basis = localBasis(it);
-    const c0 = Math.floor(left / CELL);
-    const c1 = Math.floor((left + b.width) / CELL);
-    const r0 = Math.floor(top / CELL);
-    const r1 = Math.floor((top + b.height) / CELL);
-    for (let cx = c0; cx <= c1; cx++) {
-      for (let cy = r0; cy <= r1; cy++) {
-        const key = cx * 100003 + cy;
-        let cell = grid.get(key);
-        if (!cell) grid.set(key, (cell = []));
-        cell.push(it);
+  const m = R + MARGIN;
+  for (const [g, list] of groups) {
+    if (!g.isConnected) continue;
+    const host = list[0].host;
+    if (host && !visibleHosts.has(host)) continue;
+    const b = g.getBoundingClientRect();
+    if (!b.width && !b.height) continue;
+    if (b.left > vw + m || b.top > vh + m || b.right < -m || b.bottom < -m) continue;
+    // A sprawling SVG group would put every shape in it under the ring at
+    // once, so its shapes are filed one by one instead.
+    if (list.length > 1 && (b.width > BIG || b.height > BIG)) {
+      for (const it of list) {
+        const q = it.el.getBoundingClientRect();
+        if (q.width || q.height) index([it], q.left, q.top, q.right, q.bottom);
       }
+    } else {
+      index(list, b.left, b.top, b.right, b.bottom);
     }
   }
   builtAt = performance.now();
+  scrolled = false;
+}
+
+/**
+ * Measure one piece where it is right now. Called every frame for the few
+ * pieces near the ring, so a collision always uses the piece's real position
+ * even while the art under it is moving.
+ */
+function measure(it) {
+  const b = it.el.getBoundingClientRect();
+  if (!b.width && !b.height) {
+    it.rect = null;
+    return;
+  }
+  // Rest position: what is on screen minus the push currently applied.
+  const left = b.left - it.x;
+  const top = b.top - it.y;
+  it.rect = { l: left, t: top, r: left + b.width, b: top + b.height };
+  // Heavier things move less — a letter takes the full push, a 500px disc
+  // about a third of it — but nothing is so heavy it ignores the ring.
+  const size = Math.sqrt(b.width * b.height);
+  it.mass = Math.min(1, Math.max(0.35, 110 / Math.max(size, 1)));
 }
 
 /* --- the loop ------------------------------------------------------------- */
@@ -277,14 +336,19 @@ function build() {
 function near() {
   const out = new Set();
   if (!pointer.in) return out;
-  const c0 = Math.floor((pointer.x - R) / CELL);
-  const c1 = Math.floor((pointer.x + R) / CELL);
-  const r0 = Math.floor((pointer.y - R) / CELL);
-  const r1 = Math.floor((pointer.y + R) / CELL);
+  const { x, y } = pointer;
+  const c0 = Math.floor((x - R) / CELL);
+  const c1 = Math.floor((x + R) / CELL);
+  const r0 = Math.floor((y - R) / CELL);
+  const r1 = Math.floor((y + R) / CELL);
   for (let cx = c0; cx <= c1; cx++) {
     for (let cy = r0; cy <= r1; cy++) {
       const cell = grid.get(cx * 100003 + cy);
-      if (cell) cell.forEach((it) => out.add(it));
+      if (!cell) continue;
+      for (const e of cell) {
+        if (x + R < e.l || x - R > e.r || y + R < e.t || y - R > e.b) continue;
+        for (const it of e.list) out.add(it);
+      }
     }
   }
   return out;
@@ -292,10 +356,20 @@ function near() {
 
 function frame() {
   raf = 0;
-  if (dirty) collect();
-  if (performance.now() - builtAt > STALE) build();
+  // Paused, only the springs run: whatever was pushed settles home on the
+  // positions it already has.
+  if (!paused) {
+    if (dirty) collect();
+    const age = performance.now() - builtAt;
+    if (age > STALE || (scrolled && age > STALE_SCROLL)) build();
+  }
 
-  const hit = near();
+  const hit = paused ? new Set() : near();
+  // All reads happen here, before this frame writes anything.
+  for (const it of hit) measure(it);
+  // An SVG shape's screen matrix is costly to read, so it is read only for
+  // shapes actually inside the ring, once per parent per frame.
+  const bases = new Map();
   // Everything currently pushed is retargeted: home unless the ring is on it.
   for (const it of active) {
     it.tx = 0;
@@ -320,6 +394,11 @@ function frame() {
     const len = Math.hypot(dx, dy) || 1;
     dx /= len;
     dy /= len;
+    if (it.svg) {
+      const p = it.el.parentNode;
+      if (!bases.has(p)) bases.set(p, localBasis(it));
+      it.basis = bases.get(p);
+    }
     const amount = (R - d) * PUSH * it.mass;
     it.tx = dx * amount;
     it.ty = dy * amount;
@@ -383,7 +462,9 @@ function onLeave() {
 }
 
 function onScroll() {
-  builtAt = 0;
+  // Re-indexed soon, not on every scroll event: the pieces under the ring are
+  // measured fresh each frame anyway.
+  scrolled = true;
   wake();
 }
 
@@ -396,22 +477,41 @@ function retarget() {
   }
 }
 
+// Nodes that are never content: our own spans and ring, anything opted out,
+// and destruction mode's HUD, canvas, burns and effects.
+const NOT_CONTENT = ".fx-t, .fx-ring, [data-no-field], [class^='dz-'], [class*=' dz-']";
+
+function isOurs(n) {
+  return n.nodeType === 1 && n.matches(NOT_CONTENT);
+}
+
+function foreignRecord(r) {
+  // A change inside an opted-out subtree (the HUD's clock text, a toast).
+  const t = r.target;
+  if (t.nodeType === 1 && t.closest("[data-no-field], .dz-burns")) return false;
+  for (const n of r.addedNodes) if (!isOurs(n)) return true;
+  return false;
+}
+
+function rescan() {
+  retarget();
+  splitWithin(root);
+  dirty = true;
+  wake();
+}
+
 let pending = 0;
 function onMutations(records) {
   // Our own splitting adds nodes too; only react to content that is not ours.
-  const foreign = records.some((r) =>
-    Array.from(r.addedNodes).some(
-      (n) => !(n.nodeType === 1 && (n.classList.contains("fx-t") || n.classList.contains("fx-ring"))),
-    ),
-  );
-  if (!foreign) return;
+  if (!records.some(foreignRecord)) return;
+  if (paused) {
+    missed = true;
+    return;
+  }
   if (pending) return;
   pending = requestAnimationFrame(() => {
     pending = 0;
-    retarget();
-    splitWithin(root);
-    dirty = true;
-    wake();
+    rescan();
   });
 }
 

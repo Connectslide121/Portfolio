@@ -273,6 +273,10 @@ export function buildJourney({ root }) {
   // Whether any overrides are currently written, so the clearing pass runs
   // once on the way out instead of every frame.
   let tintsLive = false;
+  // The DOM that reads the pointer lean (see render). Live, so pour art that
+  // mounts later is picked up.
+  const leaners = root.getElementsByClassName("j-pour");
+  const leanWritten = { x: "", y: "", n: -1 };
 
   const render = () => {
     // Pointer lean rides the same depth rates as the camera's own travel, so
@@ -287,8 +291,23 @@ export function buildJourney({ root }) {
     // beside the card, and reading the lean from here is what stops it
     // needing a second pointer listener of its own. In world units — whoever
     // uses it decides what a unit is worth to them.
-    root.style.setProperty("--j-lean-x", (lean * 0.1).toFixed(3));
-    root.style.setProperty("--j-lean-y", (camera.leanY * leanStill * 0.1).toFixed(3));
+    //
+    // Written on the pour art itself, not the stage: a custom property is
+    // inherited, so changing one on the stage restyled every element in it
+    // (thousands) on each frame the pointer moved, which is what made the
+    // cursor field stutter here. Anything else that wants the lean has to be
+    // added to `leaners`.
+    const lx = (lean * 0.1).toFixed(3);
+    const ly = (camera.leanY * leanStill * 0.1).toFixed(3);
+    if (lx !== leanWritten.x || ly !== leanWritten.y || leaners.length !== leanWritten.n) {
+      for (const el of leaners) {
+        el.style.setProperty("--j-lean-x", lx);
+        el.style.setProperty("--j-lean-y", ly);
+      }
+      leanWritten.x = lx;
+      leanWritten.y = ly;
+      leanWritten.n = leaners.length;
+    }
     if (cameraGroup) {
       cameraGroup.setAttribute(
         "transform",

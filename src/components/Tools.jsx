@@ -25,8 +25,8 @@ import rag from "../images/tools/rag.webp";
 import azureai from "../images/tools/azureai.webp";
 import cosmosdb from "../images/tools/cosmosdb.webp";
 import mongodb from "../images/tools/mongodb.webp";
-import mcp from "../images/tools/mcp.PNG";
-import mithriljs from "../images/tools/mithriljs.png";
+import mcp from "../images/tools/mcp.webp";
+import mithriljs from "../images/tools/mithriljs.webp";
 
 export default function Tools() {
   const toolCategories = [
@@ -99,7 +99,7 @@ export default function Tools() {
           <div className="tool-cards-wrapper">
             {category.tools.map((tool, index) => (
               <div key={index} className="tool-card" title={tool.name}>
-                <img src={tool.image} alt={tool.alt} />
+                <img src={tool.image} alt={tool.alt} width="64" height="64" decoding="async" />
                 <h3>{tool.name}</h3>
               </div>
             ))}

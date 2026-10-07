@@ -22,7 +22,9 @@
   contain: paint;
 }
 
-/* Pointer parallax, read from --j-lean-x / --j-lean-y on the stage (D71).
+/* Pointer parallax, read from --j-lean-x / --j-lean-y, which the timeline
+   writes on .j-pour itself rather than the stage (D71; see render() in
+   timeline.js for why).
    It goes on WRAPPERS, never on the animated elements: the ladle tips with a
    transform of its own, and two transforms on one element is the animation
    winning and the parallax silently doing nothing. */

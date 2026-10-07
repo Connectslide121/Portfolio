@@ -312,12 +312,18 @@ export function startDestruction({ onExit } = {}) {
 
   const canvas = document.createElement("canvas");
   canvas.className = "dz-canvas";
-  const ctx = canvas.getContext("2d");
+  // Drawn through an OffscreenCanvas where the browser has one. On a canvas
+  // that is part of the page, every `ctx.font =` is resolved against the
+  // document's styles, which forces a style pass over the whole page — and
+  // every flying letter sets a font. That was the single largest cost of a
+  // busy frame. The offscreen surface draws exactly the same pixels.
+  const surface = canvas.transferControlToOffscreen ? canvas.transferControlToOffscreen() : canvas;
+  const ctx = surface.getContext("2d");
   let dpr = 1;
   const resize = () => {
     dpr = Math.min(2, window.devicePixelRatio || 1);
-    canvas.width = Math.round(window.innerWidth * dpr);
-    canvas.height = Math.round(window.innerHeight * dpr);
+    surface.width = Math.round(window.innerWidth * dpr);
+    surface.height = Math.round(window.innerHeight * dpr);
   };
   resize();
 
@@ -455,8 +461,33 @@ export function startDestruction({ onExit } = {}) {
   const scope = () => document.querySelector(".j-stage") || document.querySelector(".App") || document.body;
 
   let pieces = [];
+  let hosts = new Map(); // host element -> its pieces
   let piecesAt = 0;
   let rectsAt = 0;
+
+  // A piece's host is the block it sits in. Measuring goes host first, and a
+  // host well off screen skips all of its pieces: measuring every letter on
+  // a long page, several times a second while firing, cost more than
+  // everything else a shot did.
+  const HOST = "p, h1, h2, h3, h4, h5, h6, li, dd, dt, button, a, label, figure, div";
+  const hostFor = (p) =>
+    p.kind === "letter" ? p.el.closest(HOST) || p.el.parentElement : p.kind === "shape" ? p.el.ownerSVGElement || p.el : p.el;
+
+  // Pieces are only re-collected when the page's content changes, not on a
+  // timer. Our own HUD, burns and effects do not count.
+  let changed = false;
+  const OURS = "[class^='dz-'], [class*=' dz-']";
+  const contentMo = new MutationObserver((records) => {
+    if (changed) return;
+    changed = records.some((r) => {
+      const t = r.target;
+      if (t.nodeType === 1 && t.closest(`${NO}, .dz-burns, .dz-over`)) return false;
+      for (const n of r.addedNodes) if (!(n.nodeType === 1 && n.matches(OURS))) return true;
+      for (const n of r.removedNodes) if (!(n.nodeType === 1 && n.matches(OURS))) return true;
+      return false;
+    });
+  });
+  contentMo.observe(document.body, { childList: true, subtree: true });
 
   const collect = () => {
     const root = scope();
@@ -482,27 +513,56 @@ export function startDestruction({ onExit } = {}) {
     // Keep what we already know about pieces we have seen before.
     const known = new Map(pieces.map((p) => [p.el, p]));
     pieces = out.map((p) => known.get(p.el) || p);
+    hosts = new Map();
+    for (const p of pieces) {
+      if (!p.host) p.host = hostFor(p);
+      let list = hosts.get(p.host);
+      if (!list) hosts.set(p.host, (list = []));
+      list.push(p);
+    }
+    changed = false;
     piecesAt = performance.now();
     rectsAt = 0;
   };
 
-  const measure = () => {
-    for (const p of pieces) {
-      if (p.broken) continue;
-      const b = p.el.getBoundingClientRect();
-      p.rect = b.width || b.height ? { l: b.left, t: b.top, r: b.right, b: b.bottom, w: b.width, h: b.height } : null;
+  const rectOf = (p) => {
+    const b = p.el.getBoundingClientRect();
+    p.rect = b.width || b.height ? { l: b.left, t: b.top, r: b.right, b: b.bottom, w: b.width, h: b.height } : null;
+  };
+
+  /** Measure the pieces on or near the screen; `all` measures every one. */
+  const measure = (all = false) => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const m = STRIKE_R * 2;
+    for (const [host, list] of hosts) {
+      let near = all;
+      if (!near) {
+        const h = host.getBoundingClientRect();
+        // A zero-size host (display: contents, say) proves nothing about
+        // where its pieces are, so they are measured anyway.
+        near = (!h.width && !h.height) || (h.right > -m && h.bottom > -m && h.left < vw + m && h.top < vh + m);
+      }
+      for (const p of list) {
+        if (p.broken) continue;
+        if (near) rectOf(p);
+        else p.rect = null;
+      }
     }
     rectsAt = performance.now();
   };
 
   const fresh = () => {
     const now = performance.now();
-    if (now - piecesAt > 2500) collect();
+    if (changed && now - piecesAt > 500) {
+      collect();
+      sizeBurns();
+    }
     if (now - rectsAt > 250) measure();
   };
 
   collect();
-  measure();
+  measure(true);
   S.total = Math.max(1, pieces.filter((p) => p.rect).length);
 
   const visible = (el) => {
@@ -561,17 +621,51 @@ export function startDestruction({ onExit } = {}) {
     };
   };
 
-  const debrisFor = (p, cx, cy, force) => {
+  /** A letter's font and colour, read once per word: letters share them. */
+  const letterStyle = (el, styles) => {
+    const key = el.parentElement || el;
+    let st = styles.get(key);
+    if (!st) {
+      const cs = getComputedStyle(el);
+      st = { font: `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`, color: cs.color };
+      styles.set(key, st);
+    }
+    return st;
+  };
+
+  /**
+   * An image or video copied once, at the size it is shown, for its shards to
+   * draw from. Drawing the source itself meant decoding and scaling a full
+   * resolution photo (or a video frame) for every shard on every frame.
+   */
+  const snapshot = (el, q) => {
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(q.w * dpr));
+    c.height = Math.max(1, Math.round(q.h * dpr));
+    try {
+      c.getContext("2d").drawImage(el, 0, 0, c.width, c.height);
+    } catch {
+      /* a video not ready yet — the outline still flies */
+    }
+    return c;
+  };
+
+  /**
+   * Debris for one piece, pushed onto `out`. Reads styles only; the caller
+   * hides the pieces afterwards, so a whole blast costs one style pass
+   * instead of one per piece.
+   */
+  const debrisFor = (p, cx, cy, force, out, styles) => {
     const q = p.rect;
     const mx = (q.l + q.r) / 2;
     const my = (q.t + q.b) / 2;
     if (p.kind === "letter") {
-      const cs = getComputedStyle(p.el);
-      P.push({
+      const st = letterStyle(p.el, styles);
+      out.push({
         k: "glyph",
         ch: p.el.textContent,
-        font: `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`,
-        c: cs.color,
+        font: st.font,
+        c: st.color,
         x: mx,
         y: my,
         rot: 0,
@@ -580,7 +674,7 @@ export function startDestruction({ onExit } = {}) {
         ...fling(cx, cy, mx, my, force),
       });
       for (let i = 0; i < 2; i++) {
-        P.push({ k: "dot", x: mx, y: my, r: rand(1, 2.2), c: cs.color, t: 0, life: rand(0.5, 0.9), g: 1, ...fling(cx, cy, mx, my, force * 1.2) });
+        out.push({ k: "dot", x: mx, y: my, r: rand(1, 2.2), c: st.color, t: 0, life: rand(0.5, 0.9), g: 1, ...fling(cx, cy, mx, my, force * 1.2) });
       }
       return;
     }
@@ -590,6 +684,7 @@ export function startDestruction({ onExit } = {}) {
     const cw = q.w / k;
     const ch = q.h / k;
     const c = p.kind === "media" ? null : p.kind === "icon" ? C.ink : colourOf(p.el);
+    const src = p.kind === "media" ? snapshot(p.el, q) : null;
     for (let i = 0; i < k; i++) {
       for (let j = 0; j < k; j++) {
         const sx = q.l + i * cw;
@@ -607,11 +702,11 @@ export function startDestruction({ onExit } = {}) {
           const [ja, jb] = jit();
           return [a + ja, b + jb];
         });
-        P.push({
+        out.push({
           k: p.kind === "media" ? "img" : "shard",
           pts,
           c,
-          src: p.kind === "media" ? p.el : null,
+          src,
           sx,
           sy,
           sw: cw,
@@ -696,12 +791,18 @@ export function startDestruction({ onExit } = {}) {
       burnLayer = document.createElement("div");
       burnLayer.className = "dz-burns";
       host.appendChild(burnLayer);
-    }
-    if (host === document.body) {
-      burnLayer.style.height = `${document.documentElement.scrollHeight}px`;
+      sizeBurns();
     }
     return host;
   };
+
+  // Reading the page height forces a layout, so it is read when the layer is
+  // made, when the content changes and on resize — not for every burn.
+  function sizeBurns() {
+    if (burnLayer && burnLayer.parentNode === document.body) {
+      burnLayer.style.height = `${document.documentElement.scrollHeight}px`;
+    }
+  }
 
   const scorch = (x, y, r) => {
     const host = burns();
@@ -748,6 +849,17 @@ export function startDestruction({ onExit } = {}) {
     document.querySelector(".j-stage")
       ? [document.querySelector(".j-stage")]
       : [document.querySelector(".main-container"), document.querySelector(".footer")].filter(Boolean);
+
+  const unshake = () =>
+    shakeTargets().forEach((el) => {
+      el.style.translate = "";
+      el.style.willChange = "";
+    });
+
+  /** A HUD bar's fill, clipped rather than resized so it never re-lays out. */
+  const fillTo = (el, pct) => {
+    el.style.clipPath = `inset(0 ${(100 - Math.max(0, Math.min(100, pct))).toFixed(2)}% 0 0)`;
+  };
 
   /* --- scoring ------------------------------------------------------------- */
 
@@ -850,7 +962,7 @@ export function startDestruction({ onExit } = {}) {
   const heatArc = cross.querySelector(".dz-cross-heat");
   const renderHeat = () => {
     const h = Math.max(0, Math.min(100, S.heat));
-    ui.heatFill.style.width = `${h}%`;
+    fillTo(ui.heatFill, h);
     heatArc.style.strokeDasharray = `${h.toFixed(1)} 100`;
     // butter -> coral as it climbs; the arc deepens with it
     cross.style.setProperty("--heat", (h / 100).toFixed(3));
@@ -900,8 +1012,11 @@ export function startDestruction({ onExit } = {}) {
 
   const fmt = (t) => Math.max(0, t).toFixed(1);
 
+  let timeText = "";
   const renderTime = () => {
-    ui.time.textContent = fmt(S.time);
+    // Written only when the tenths change, not on every frame.
+    const t = fmt(S.time);
+    if (t !== timeText) ui.time.textContent = timeText = t;
     ui.timeCell.classList.toggle("low", S.running && !S.over && S.time <= LOW_TIME);
   };
 
@@ -1087,7 +1202,7 @@ export function startDestruction({ onExit } = {}) {
     renderHeat();
     audio.muffle(false);
     ui.timeNote.textContent = "starts on your first shot";
-    ui.comboFill.style.width = "0%";
+    fillTo(ui.comboFill, 0);
     render();
     renderTime();
     toast("Again! The clock starts on your first shot", "rank", { sticky: true });
@@ -1095,9 +1210,18 @@ export function startDestruction({ onExit } = {}) {
 
   /* --- breaking ------------------------------------------------------------ */
 
-  const breakAll = (hits, cx, cy, force) => {
+  /** The debris for a blast. Reads only — see debrisFor. */
+  const shatter = (hits, cx, cy, force) => {
+    const out = [];
+    const styles = new Map();
+    for (const p of hits) debrisFor(p, cx, cy, force, out, styles);
+    return out;
+  };
+
+  /** Launch the debris and hide the pieces it came from. Writes only. */
+  const breakAll = (hits, debris) => {
+    for (const q of debris) P.push(q);
     for (const p of hits) {
-      debrisFor(p, cx, cy, force);
       p.broken = true;
       p.prevVis = p.el.style.visibility;
       p.el.style.visibility = "hidden";
@@ -1149,11 +1273,12 @@ export function startDestruction({ onExit } = {}) {
       return;
     }
     S.hitShots += 1;
+    const debris = shatter(hits, x, y, 1);
     cross.classList.remove("hit");
     void cross.offsetWidth;
     cross.classList.add("hit");
     explode(x, y, SHOT_R + 6 + Math.min(hits.length, 16) * 1.5);
-    breakAll(hits, x, y, 1);
+    breakAll(hits, debris);
     audio.pop(hits.length);
     shake(Math.min(7, 2 + hits.length * 0.3));
     award(hits, x, y);
@@ -1214,9 +1339,11 @@ export function startDestruction({ onExit } = {}) {
   };
 
   const bombLands = (x, y) => {
-    explode(x, y, STRIKE_R * 0.8, true);
+    // Measure and read before the explosion prints its burn on the page.
     const hits = inBlast(x, y, STRIKE_R);
-    breakAll(hits, x, y, 1.6);
+    const debris = shatter(hits, x, y, 1.6);
+    explode(x, y, STRIKE_R * 0.8, true);
+    breakAll(hits, debris);
     audio.boom();
     shake(16);
     if (hits.length) award(hits, x, y, { big: true });
@@ -1228,21 +1355,51 @@ export function startDestruction({ onExit } = {}) {
 
   const draw = (dt) => {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, surface.width, surface.height);
     const print = blend();
+    const halo = dark() ? "#191816" : "#f4efe6";
+    // State is set per particle, and only when it changes, instead of a full
+    // save and restore around each one: with a couple of thousand particles
+    // in flight that bookkeeping was a large share of the frame. The order
+    // they are drawn in, and so how they overlap, is unchanged.
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.globalCompositeOperation = "source-over";
+    ctx.setLineDash([]);
+    let comp = "source-over";
+    let dash = "";
+    let font = "";
+    const composite = (v) => {
+      if (v !== comp) ctx.globalCompositeOperation = comp = v;
+    };
+    const dashes = (key, seg) => {
+      if (key !== dash) {
+        ctx.setLineDash(seg);
+        dash = key;
+      }
+    };
+    const setFont = (f) => {
+      if (f !== font) ctx.font = font = f;
+    };
+    const home = () => ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    let dead = 0;
     for (let i = P.length - 1; i >= 0; i--) {
       const q = P[i];
+      if (!q) continue;
       q.t += dt;
       if (q.t >= q.life) {
         if (q.k === "bomb") bombLands(q.x, q.y);
-        P.splice(i, 1);
+        q.dead = true;
+        dead++;
         continue;
       }
       if (q.t < 0) continue;
       const p = q.t / q.life;
-      ctx.save();
+      ctx.globalAlpha = 1;
       switch (q.k) {
         case "flash":
+          composite("source-over");
           ctx.globalAlpha = 1 - p;
           ctx.fillStyle = C.butter;
           ctx.beginPath();
@@ -1251,7 +1408,7 @@ export function startDestruction({ onExit } = {}) {
           break;
         case "disc": {
           const s = p < 0.3 ? ease(p / 0.3) : 1 - (p - 0.3) / 0.7;
-          ctx.globalCompositeOperation = print;
+          composite(print);
           ctx.fillStyle = q.c;
           ctx.beginPath();
           ctx.arc(q.x, q.y, Math.max(0, q.r * s), 0, TAU);
@@ -1259,10 +1416,11 @@ export function startDestruction({ onExit } = {}) {
           break;
         }
         case "ring":
+          composite("source-over");
+          dashes("ring", [2, 6]);
           ctx.globalAlpha = 1 - p;
           ctx.strokeStyle = C.ink;
           ctx.lineWidth = q.w * (1 - p) + 0.3;
-          ctx.setLineDash([2, 6]);
           ctx.beginPath();
           ctx.arc(q.x, q.y, q.r * ease(p), 0, TAU);
           ctx.stroke();
@@ -1270,7 +1428,7 @@ export function startDestruction({ onExit } = {}) {
         case "smoke":
           q.x += q.vx * dt;
           q.y += q.vy * dt;
-          ctx.globalCompositeOperation = print;
+          composite(print);
           ctx.globalAlpha = 0.6 * (1 - p);
           ctx.fillStyle = q.c;
           ctx.beginPath();
@@ -1282,6 +1440,7 @@ export function startDestruction({ onExit } = {}) {
           q.vx *= 0.985;
           q.x += q.vx * dt;
           q.y += q.vy * dt;
+          composite("source-over");
           ctx.globalAlpha = 1 - p * p;
           ctx.fillStyle = q.c;
           ctx.beginPath();
@@ -1290,35 +1449,36 @@ export function startDestruction({ onExit } = {}) {
           break;
         case "glyph":
         case "shard":
-        case "img":
+        case "img": {
           q.vy += 1700 * dt;
           q.vx *= 0.99;
           q.x += q.vx * dt;
           q.y += q.vy * dt;
           q.rot += q.vr * dt;
+          composite("source-over");
           ctx.globalAlpha = p > 0.7 ? 1 - (p - 0.7) / 0.3 : 1;
-          ctx.translate(q.x, q.y);
-          ctx.rotate(q.rot);
+          // translate(x, y) then rotate(rot), in one matrix
+          const cos = Math.cos(q.rot) * dpr;
+          const sin = Math.sin(q.rot) * dpr;
+          ctx.setTransform(cos, sin, -sin, cos, q.x * dpr, q.y * dpr);
           if (q.k === "glyph") {
-            ctx.font = q.font;
+            setFont(q.font);
             ctx.fillStyle = q.c;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
             ctx.fillText(q.ch, 0, 0);
           } else {
+            const pts = q.pts;
             ctx.beginPath();
-            q.pts.forEach(([a, b], n) => (n ? ctx.lineTo(a, b) : ctx.moveTo(a, b)));
+            ctx.moveTo(pts[0][0], pts[0][1]);
+            for (let n = 1; n < pts.length; n++) ctx.lineTo(pts[n][0], pts[n][1]);
             ctx.closePath();
             if (q.k === "img") {
+              // the clip is the one thing that needs a save and restore
               ctx.save();
               ctx.clip();
-              try {
-                const r = q.rect;
-                ctx.drawImage(q.src, r.l - q.x, r.t - q.y, r.w, r.h);
-              } catch {
-                /* a video not ready yet — the outline still flies */
-              }
+              const r = q.rect;
+              ctx.drawImage(q.src, r.l - q.x, r.t - q.y, r.w, r.h);
               ctx.restore();
+              dashes("", []);
               ctx.strokeStyle = C.ink;
               ctx.lineWidth = 1;
               ctx.stroke();
@@ -1327,27 +1487,31 @@ export function startDestruction({ onExit } = {}) {
               ctx.fill();
             }
           }
+          home();
           break;
+        }
         case "text": {
           const s = q.size * (p < 0.15 ? 0.6 + (p / 0.15) * 0.5 : 1.1 - (p - 0.15) * 0.15);
+          composite("source-over");
+          dashes("", []);
           ctx.globalAlpha = p > 0.6 ? 1 - (p - 0.6) / 0.4 : 1;
-          ctx.translate(q.x, q.y - 50 * ease(p));
-          ctx.scale(s, s);
-          ctx.font = `italic 400 30px "Instrument Serif", serif`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
+          // translate(x, y - rise) then scale(s)
+          ctx.setTransform(dpr * s, 0, 0, dpr * s, q.x * dpr, (q.y - 50 * ease(p)) * dpr);
+          setFont(`italic 400 30px "Instrument Serif", serif`);
           ctx.lineWidth = 5;
-          ctx.strokeStyle = dark() ? "#191816" : "#f4efe6";
+          ctx.strokeStyle = halo;
           ctx.strokeText(q.text, 0, 0);
           ctx.fillStyle = q.c;
           ctx.fillText(q.text, 0, 0);
+          home();
           break;
         }
         case "bomb": {
           const e = p * p;
           const bx = q.x0 + (q.x - q.x0) * p;
           const by = q.y0 + (q.y - q.y0) * e;
-          ctx.translate(bx, by);
+          composite("source-over");
+          ctx.setTransform(dpr, 0, 0, dpr, bx * dpr, by * dpr);
           ctx.fillStyle = C.ink;
           ctx.beginPath();
           ctx.ellipse(0, 0, 5, 11, 0, 0, TAU);
@@ -1355,11 +1519,11 @@ export function startDestruction({ onExit } = {}) {
           ctx.fillStyle = C.lime;
           ctx.fillRect(-5, -14, 10, 4);
           // target marker on the paper below
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          home();
           ctx.globalAlpha = 0.5 + 0.5 * p;
           ctx.strokeStyle = C.coral;
           ctx.lineWidth = 1.5;
-          ctx.setLineDash([3, 4]);
+          dashes("bomb", [3, 4]);
           ctx.beginPath();
           ctx.arc(q.x, q.y, 18 * (1.4 - p * 0.6), 0, TAU);
           ctx.stroke();
@@ -1368,7 +1532,16 @@ export function startDestruction({ onExit } = {}) {
         default:
           break;
       }
-      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+    composite("source-over");
+
+    // Drop the finished ones in one pass, keeping the rest in order (a
+    // splice per particle made each frame quadratic in the particle count).
+    if (dead) {
+      let j = 0;
+      for (let i = 0; i < P.length; i++) if (!P[i].dead) P[j++] = P[i];
+      P.length = j;
     }
   };
 
@@ -1380,14 +1553,14 @@ export function startDestruction({ onExit } = {}) {
     // combo decay
     if (S.comboT > 0) {
       S.comboT -= dt;
-      ui.comboFill.style.width = `${Math.max(0, S.comboT / COMBO_WINDOW) * 100}%`;
+      fillTo(ui.comboFill, (S.comboT / COMBO_WINDOW) * 100);
       if (S.comboT <= 0) {
         S.combo = 0;
         S.mult = 1;
         S.tiersPaid.clear();
         if (!S.striking) audio.intensity(1);
         ui.mult.textContent = "×1";
-        ui.comboFill.style.width = "0%";
+        fillTo(ui.comboFill, 0);
       }
     }
 
@@ -1428,14 +1601,19 @@ export function startDestruction({ onExit } = {}) {
 
     draw(dt);
 
-    // screen shake
+    // Screen shake. The page is lifted onto its own compositor layer for the
+    // length of the shake, so each jolt moves a layer the GPU already has
+    // instead of repainting the whole page.
     if (S.shake > 0.3) {
       const a = S.shake;
-      shakeTargets().forEach((el) => (el.style.translate = `${rand(-a, a).toFixed(1)}px ${rand(-a, a).toFixed(1)}px`));
+      shakeTargets().forEach((el) => {
+        el.style.willChange = "translate";
+        el.style.translate = `${rand(-a, a).toFixed(1)}px ${rand(-a, a).toFixed(1)}px`;
+      });
       S.shake *= 0.86;
     } else if (S.shake) {
       S.shake = 0;
-      shakeTargets().forEach((el) => (el.style.translate = ""));
+      unshake();
     }
 
     if (P.length || S.comboT > 0 || S.shake || S.heat > 0 || S.capsule || (S.running && !S.over)) wake();
@@ -1524,7 +1702,12 @@ export function startDestruction({ onExit } = {}) {
   );
   window.addEventListener("keydown", onKey, true);
   window.addEventListener("scroll", onScroll, { capture: true, passive: true });
-  window.addEventListener("resize", resize);
+  const onResize = () => {
+    resize();
+    sizeBurns();
+    rectsAt = 0;
+  };
+  window.addEventListener("resize", onResize);
 
   ui.sound.addEventListener("click", () => {
     audio.toggle();
@@ -1539,7 +1722,7 @@ export function startDestruction({ onExit } = {}) {
   cross.style.translate = `${S.pointer.x}px ${S.pointer.y}px`;
   render();
   renderTime();
-  toast("Destruction mode — click to shoot, hold to fire", "rank", { sticky: true });
+  toast("Wreck this page — click to shoot, hold to fire", "rank", { sticky: true });
 
   /* --- exit: repair everything --------------------------------------------- */
 
@@ -1559,9 +1742,10 @@ export function startDestruction({ onExit } = {}) {
     );
     window.removeEventListener("keydown", onKey, true);
     window.removeEventListener("scroll", onScroll, true);
-    window.removeEventListener("resize", resize);
+    window.removeEventListener("resize", onResize);
+    contentMo.disconnect();
     if (raf) cancelAnimationFrame(raf);
-    shakeTargets().forEach((el) => (el.style.translate = ""));
+    unshake();
     document.querySelectorAll(".dz-plane").forEach((el) => el.remove());
 
     // Everything flies back into place, staggered.
