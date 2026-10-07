@@ -10,7 +10,7 @@
 
 import angular from "../images/tools/angular.webp";
 import reactjs from "../images/tools/reactjs.webp";
-import mithriljs from "../images/tools/mithriljs.png";
+import mithriljs from "../images/tools/mithriljs.webp";
 import ts from "../images/tools/ts.webp";
 import csharp from "../images/tools/csharp.webp";
 import azure from "../images/tools/azure.webp";
