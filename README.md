@@ -2,11 +2,28 @@
 
 A personal portfolio website built with React. It showcases the developer Jon Mendizabal, highlighting projects, experience and contact information. The site is deployed through GitHub Pages.
 
+## Design — Blueprint
+
+This branch presents the portfolio as an engineering drawing set. Every
+section is a numbered sheet with a double-ruled frame, zone references and a
+title block, drawn in one line colour on cyanotype blue — or, with
+*Print: White*, on whiteprint paper. Red is the checker's pencil.
+
+- **Cover** — an exploded isometric view of the stack, standing on a hatched
+  steel foundation (the foundry years). Click it to assemble / explode.
+- **Process & parts** — the three acts as a flowchart, the tools as a bill of
+  materials.
+- **Revision history** — the career chain-dimensioned in years, then each
+  role and degree as a lettered detail.
+- **Works** — dimensioned project plates and a drawing register.
+- **Change request** — the contact form, with an approval stamp.
+- A crosshair and millimetre readout follow the mouse.
+
 ## Features
 
 - **Single Page Application** built with React and React Router style sections
 - **Dark/Light theme toggle** implemented via CSS variables
-- **Projects gallery** with media previews and technology icons
+- **Projects** — featured plates and a register of every other project
 - **About section** summarising tools, work experience and education
 - **Responsive design** suitable for mobile and desktop screens
 - **Contact form** powered by [Getform](https://getform.io/)
@@ -50,7 +67,12 @@ src/           React components, pages and styles
 src/images/    Media assets used on the site
 ```
 
-Project data for the **Projects** section is stored in `src/components/projectList.js`.
+Content lives in data files, separate from the layout:
+
+- `src/components/projectList.js` — projects
+- `src/data/journey.js` — profile, experience, education, career chapters, stack
+- `src/data/tools.js`, `src/data/social.js`, `src/data/site.js` — tools, profiles elsewhere, contact and section copy
+- `src/data/projectMedia.js`, `projectTech.js`, `orgLogos.js` — media and logo lookups
 
 ## License
 
