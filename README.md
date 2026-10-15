@@ -2,11 +2,27 @@
 
 A personal portfolio website built with React. It showcases the developer Jon Mendizabal, highlighting projects, experience and contact information. The site is deployed through GitHub Pages.
 
+## Design — Sticker book
+
+This branch is loud on purpose: neo-brutalism with thick outlines, hard
+offset shadows, six flat colours and chunky Bricolage Grotesque type, with
+hand-written asides. Day is cream paper; night is aubergine with cream
+outlines.
+
+- **Stickers** — seven hand-drawn die-cut stickers around the hero. Grab one
+  and move it; arrow keys work too.
+- **The story** on taped notes, **tools** on sticker sheets, **experience**
+  as tickets with a stamp on the live role.
+- **Projects** as chunky cards you can filter: AI, apps & sites, games,
+  tools & APIs.
+- **Say hello** — a speech bubble, a one-click copy for the email address,
+  and the form.
+
 ## Features
 
 - **Single Page Application** built with React and React Router style sections
 - **Dark/Light theme toggle** implemented via CSS variables
-- **Projects gallery** with media previews and technology icons
+- **Projects** — filterable cards, featured ones twice the size
 - **About section** summarising tools, work experience and education
 - **Responsive design** suitable for mobile and desktop screens
 - **Contact form** powered by [Getform](https://getform.io/)
@@ -50,7 +66,12 @@ src/           React components, pages and styles
 src/images/    Media assets used on the site
 ```
 
-Project data for the **Projects** section is stored in `src/components/projectList.js`.
+Content lives in data files, separate from the layout:
+
+- `src/components/projectList.js` — projects
+- `src/data/journey.js` — profile, experience, education, career chapters
+- `src/data/tools.js`, `src/data/social.js`, `src/data/site.js` — tools, profiles elsewhere, contact and section copy
+- `src/data/projectMedia.js`, `projectTech.js`, `orgLogos.js` — media and logo lookups
 
 ## License
 
