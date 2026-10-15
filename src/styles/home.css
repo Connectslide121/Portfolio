@@ -1,187 +1,85 @@
-/* The hero: a title page. Type on the left, the opening print on the right,
-   nothing behind either — the paper is the background. */
-#home {
-  display: flex;
-  justify-content: space-between;
+.cover {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(24px, 4vw, 64px);
   align-items: center;
-  gap: var(--space-2xl);
-  min-height: calc(100vh - 80px);
-  padding: var(--space-3xl) 0;
-  position: relative;
 }
 
-.home-text-wrapper {
-  flex: 1 1 34rem;
-  max-width: 38rem;
-  /* No z-index here: it would make a stacking context, and the Destruction
-     mode button, which docks out of this column as position: fixed, could
-     then never rise above the journey stage. */
-  position: relative;
-}
-
-.home-text-wrapper h1 {
-  font-size: clamp(3.6rem, 8.4vw, 7.4rem);
+.cover-name {
+  font-family: var(--cond);
+  font-size: clamp(48px, 6.4vw, 108px);
+  font-weight: 700;
   line-height: 0.88;
-  letter-spacing: -0.025em;
-  margin: 1.1rem 0 1.2rem;
-  text-align: left;
-}
-
-.home-text-wrapper h2 {
-  font-family: var(--sans);
-  font-size: 0.86rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--ink);
-  line-height: 1.4;
-  margin-bottom: var(--space-xl);
+  letter-spacing: -0.005em;
 }
 
-/* The hook, set larger than the blurb under it: one sentence a recruiter
-   reads even if they read nothing else. */
-.home-lede {
-  font-size: 1.3rem;
-  line-height: 1.45;
-  color: var(--ink);
-  max-width: 32rem;
-  margin-bottom: var(--space-md);
+.cover-title {
+  margin-top: 26px;
+  font-size: clamp(13px, 1.1vw, 16px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-.home-description {
-  font-size: 0.98rem;
-  color: var(--ink-soft);
-  max-width: 32rem;
-  margin-bottom: var(--space-xl);
-  padding-top: var(--space-md);
-  border-top: 1px solid var(--rule);
+.general-note {
+  margin-top: 40px;
+  border: 1px solid var(--line-2);
+  padding: 16px 18px 18px;
+  position: relative;
 }
 
-.home-cta {
-  display: flex;
-  gap: var(--space-md);
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.home-cta .btn {
-  padding: 0.8rem 1.6rem;
-  font-size: var(--font-size-base);
-}
-
-/* The print, as tall as the hero allows. */
-.home-art {
-  flex: 0 1 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 0;
-}
-
-.home-art-svg {
-  height: min(74vh, 46rem);
-  width: auto;
-  max-width: 44vw;
-  display: block;
-  pointer-events: none;
-}
-
-/* --- discover more ------------------------------------------------------- */
-
-.discover-more-wrapper {
+.note-label {
   position: absolute;
-  bottom: var(--space-lg);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-}
-
-.discover-more-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-  background: none;
-  border: 0;
-  color: var(--ink-soft);
-  font: inherit;
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
+  top: -10px;
+  left: 12px;
+  padding: 0 8px;
+  background: var(--sheet);
+  font-size: 11px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  cursor: pointer;
-  transition: color 0.2s ease;
+  color: var(--note);
+  transition: background-color 0.4s ease;
 }
 
-.discover-more-btn:hover {
-  color: var(--ink);
+.cover-lede {
+  font-family: var(--cond);
+  font-size: clamp(22px, 2.1vw, 32px);
+  font-weight: 500;
+  line-height: 1.15;
 }
 
-.discover-arrow {
-  font-size: 0.8rem;
-  animation: discover-drop 2.4s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+.cover-blurb {
+  margin-top: 22px;
+  max-width: 54ch;
+  color: var(--line-2);
 }
 
-@keyframes discover-drop {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateY(5px);
-  }
+.cover-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 32px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .discover-arrow {
-    animation: none;
-  }
+.cover-coords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 36px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
-/* --- responsive ---------------------------------------------------------- */
-
-@media screen and (max-width: 1024px) {
-  #home {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-xl);
-    padding: var(--space-2xl) 0;
-  }
-  .home-text-wrapper {
-    max-width: 100%;
-    flex-basis: auto;
-  }
-  .home-art {
-    order: -1;
-  }
-  .home-art-svg {
-    height: min(46vh, 26rem);
-    max-width: 100%;
-  }
+.cover-coords span::before {
+  content: "⌖ ";
+  color: var(--note);
 }
 
-@media screen and (max-width: 768px) {
-  #home {
-    min-height: auto;
-    padding: var(--space-lg) 0 var(--space-2xl);
-  }
-  .home-text-wrapper h1 {
-    font-size: clamp(3rem, 15vw, 4.2rem);
-  }
-  .home-lede {
-    font-size: 1.12rem;
-  }
-  .discover-more-wrapper {
-    display: none;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .home-cta {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .home-cta .btn {
-    justify-content: center;
+@media (max-width: 1000px) {
+  .cover {
+    grid-template-columns: 1fr;
   }
 }

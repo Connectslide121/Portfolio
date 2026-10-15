@@ -1,69 +1,50 @@
 import React from "react";
 import "../styles/home.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import HeroTeaser from "../journey/HeroTeaser";
-import IntroArt from "../journey/IntroArt";
-import Wobble from "../components/Wobble";
-import HeroDestroy from "../destroy/HeroDestroy";
-import { profile } from "../data/journey";
+import Sheet from "../components/Sheet";
+import IsoStack from "../art/IsoStack";
+import RevCloud from "../art/RevCloud";
+import { profile, experience } from "../data/journey";
+import { scrollToSection } from "../components/hooks";
 
-export default function Home({ onEnterJourney, journeyOpen }) {
-  const NAVBAR_HEIGHT = 80; // Fixed navbar height
+const since = experience[0].dateLabel.split(/\s*-\s*/)[0];
 
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      window.scrollTo({
-        top: element.offsetTop - NAVBAR_HEIGHT,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const [first, ...rest] = profile.name.split(" ");
-
+export default function Home() {
   return (
-    <section id="home">
-      <div className="home-text-wrapper">
-        <p className="eyebrow">Portfolio · Växjö, Sweden</p>
-        <h1>
-          {first} <Wobble>{rest.join(" ")}</Wobble>
-        </h1>
-        <h2>{profile.title}</h2>
-        <p className="home-lede">{profile.lede}</p>
-        <p className="home-description">{profile.blurb}</p>
-        <div className="home-cta">
-          <button className="btn" onClick={() => scrollToSection("projects")}>
-            View my work
-          </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => scrollToSection("contact")}
-          >
-            Get in touch
-          </button>
-          <HeroDestroy journeyOpen={journeyOpen} />
+    <Sheet id="home" kicker="General arrangement · Portfolio · Växjö, Sweden" scale="1 : 1">
+      <div className="cover">
+        <div className="cover-text" data-reveal>
+          <h1 className="cover-name">{profile.name}</h1>
+          <p className="cover-title">
+            <RevCloud tag={`△ ${since}`}>{profile.title}</RevCloud>
+          </p>
+
+          <div className="general-note">
+            <p className="note-label">Note 1</p>
+            <p className="cover-lede">{profile.lede}</p>
+          </div>
+
+          <p className="cover-blurb">{profile.blurb}</p>
+
+          <div className="cover-cta">
+            <button type="button" className="draft-btn draft-btn-solid" onClick={() => scrollToSection("projects")}>
+              View my work <span aria-hidden="true">→</span>
+            </button>
+            <button type="button" className="draft-btn" onClick={() => scrollToSection("contact")}>
+              Get in touch <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <p className="cover-coords">
+            <span>56.88° N</span>
+            <span>14.81° E</span>
+            <span>Växjö, Sweden</span>
+          </p>
         </div>
-        <HeroTeaser onEnter={onEnterJourney} />
-      </div>
 
-      {/* The same opening print as the journey's landing beat, so both
-          modes open on one image: steel poured in Spain, cast as a developer
-          in Sweden. */}
-      <div className="home-art">
-        <IntroArt className="home-art-svg" />
+        <div className="cover-art" data-reveal>
+          <IsoStack />
+        </div>
       </div>
-
-      <div className="discover-more-wrapper">
-        <button
-          className="discover-more-btn"
-          onClick={() => scrollToSection("about")}
-        >
-          <span>Discover more</span>
-          <FontAwesomeIcon icon={faArrowDown} className="discover-arrow" />
-        </button>
-      </div>
-    </section>
+    </Sheet>
   );
 }
