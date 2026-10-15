@@ -1,14 +1,26 @@
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
+import { socialLinks } from "../data/social";
+import { scrollToSection } from "./hooks";
 
 export default function Footer() {
   return (
-    <div className="footer">
-      <h4>
-        {new Date().getFullYear()} - Made with <FontAwesomeIcon icon={faHeart} />{" "}
-        by Jon Mendizabal
-      </h4>
-    </div>
+    <footer className="page imprint">
+      <p>
+        © {new Date().getFullYear()} The Mendizabal Chronicle · Printed in Växjö, Sweden · Made with ♥ by Jon Mendizabal
+      </p>
+      <p>
+        {socialLinks.map((l, i) => (
+          <React.Fragment key={l.id}>
+            {i > 0 && " · "}
+            <a href={l.href} target="_blank" rel="noreferrer">
+              {l.label}
+            </a>
+          </React.Fragment>
+        ))}
+      </p>
+      <button type="button" className="jump" onClick={() => scrollToSection("home")}>
+        Back to the front page ↑
+      </button>
+    </footer>
   );
 }
