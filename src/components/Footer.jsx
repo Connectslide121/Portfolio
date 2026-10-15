@@ -1,14 +1,21 @@
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
+import { socialLinks } from "../data/social";
 
 export default function Footer() {
   return (
-    <div className="footer">
-      <h4>
-        {new Date().getFullYear()} - Made with <FontAwesomeIcon icon={faHeart} />{" "}
-        by Jon Mendizabal
-      </h4>
-    </div>
+    <footer className="footer">
+      <p>
+        {new Date().getFullYear()} · Made with <span className="heart">♥</span> by Jon Mendizabal · observed from 56.88° N, 14.81° E
+      </p>
+      <ul>
+        {socialLinks.map((l) => (
+          <li key={l.id}>
+            <a href={l.href} target="_blank" rel="noreferrer">
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </footer>
   );
 }
