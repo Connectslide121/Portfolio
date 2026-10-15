@@ -1,68 +1,34 @@
 import React from "react";
 import "../styles/home.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import HeroTeaser from "../journey/HeroTeaser";
-import IntroArt from "../journey/IntroArt";
-import Wobble from "../components/Wobble";
-import HeroDestroy from "../destroy/HeroDestroy";
+import Orrery from "../art/Orrery";
 import { profile } from "../data/journey";
+import { scrollToSection } from "../components/hooks";
 
-export default function Home({ onEnterJourney, journeyOpen }) {
-  const NAVBAR_HEIGHT = 80; // Fixed navbar height
-
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      window.scrollTo({
-        top: element.offsetTop - NAVBAR_HEIGHT,
-        behavior: "smooth",
-      });
-    }
-  };
-
+export default function Home() {
   const [first, ...rest] = profile.name.split(" ");
-
   return (
-    <section id="home">
-      <div className="home-text-wrapper">
-        <p className="eyebrow">Portfolio · Växjö, Sweden</p>
+    <section id="home" className="hero">
+      <div className="hero-text">
+        <p className="eyebrow">Portfolio · Växjö, Sweden · 56.88° N 14.81° E</p>
         <h1>
-          {first} <Wobble>{rest.join(" ")}</Wobble>
+          <span>{first}</span>
+          <em>{rest.join(" ")}</em>
         </h1>
-        <h2>{profile.title}</h2>
-        <p className="home-lede">{profile.lede}</p>
-        <p className="home-description">{profile.blurb}</p>
-        <div className="home-cta">
-          <button className="btn" onClick={() => scrollToSection("projects")}>
+        <p className="hero-title">{profile.title}</p>
+        <p className="hero-lede">{profile.lede}</p>
+        <p className="hero-blurb">{profile.blurb}</p>
+        <div className="hero-cta">
+          <button type="button" className="btn btn-glow" onClick={() => scrollToSection("catalogue")}>
             View my work
           </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => scrollToSection("contact")}
-          >
+          <button type="button" className="btn" onClick={() => scrollToSection("signal")}>
             Get in touch
           </button>
-          <HeroDestroy journeyOpen={journeyOpen} />
         </div>
-        <HeroTeaser onEnter={onEnterJourney} />
       </div>
-
-      {/* The same opening print as the journey's landing beat, so both
-          modes open on one image: steel poured in Spain, cast as a developer
-          in Sweden. */}
-      <div className="home-art">
-        <IntroArt className="home-art-svg" />
-      </div>
-
-      <div className="discover-more-wrapper">
-        <button
-          className="discover-more-btn"
-          onClick={() => scrollToSection("about")}
-        >
-          <span>Discover more</span>
-          <FontAwesomeIcon icon={faArrowDown} className="discover-arrow" />
-        </button>
+      <div className="hero-art">
+        <Orrery />
+        <p className="caption">The featured work, in orbit. Click a planet.</p>
       </div>
     </section>
   );

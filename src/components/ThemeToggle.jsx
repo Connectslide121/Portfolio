@@ -1,59 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
+import React, { useState } from "react";
 
-export default function ThemeToggle({ id = "darkmode-toggle" }) {
-  const [isLightTheme, setIsLightTheme] = useState(
-    () => !document.body.classList.contains("dark-theme")
-  );
+/**
+ * Night sky (dark, the default here) or star atlas (light). The sky canvas
+ * listens for the change event when it is drawing still frames.
+ */
+export default function ThemeToggle() {
+  const [dark, setDark] = useState(() => document.body.classList.contains("dark-theme"));
 
-  // Navbar and journey controls can coexist in the DOM. Keep both views of
-  // the shared body preference synchronized when either one is used.
-  useEffect(() => {
-    const sync = (event) => {
-      setIsLightTheme(
-        event.detail?.isLight ?? !document.body.classList.contains("dark-theme")
-      );
-    };
-    window.addEventListener("jm-theme-change", sync);
-    return () => window.removeEventListener("jm-theme-change", sync);
-  }, []);
-
-  const handleToggle = (event) => {
-    const showLightTheme = event.target.checked;
-
-    if (showLightTheme) {
-      document.body.classList.remove("dark-theme");
-    } else {
-      document.body.classList.add("dark-theme");
-    }
-
+  const toggle = () => {
+    const next = !dark;
+    document.body.classList.toggle("dark-theme", next);
     try {
-      window.localStorage.setItem("jm-theme", showLightTheme ? "light" : "dark");
+      window.localStorage.setItem("jm-theme", next ? "dark" : "light");
     } catch {
       /* the preference just will not persist */
     }
-
-    setIsLightTheme(showLightTheme);
-    window.dispatchEvent(
-      new CustomEvent("jm-theme-change", { detail: { isLight: showLightTheme } })
-    );
+    setDark(next);
+    window.dispatchEvent(new CustomEvent("jm-theme-change", { detail: { isLight: !next } }));
   };
 
   return (
-    <div className="theme-toggle-wrapper">
-      <input
-        type="checkbox"
-        id={id}
-        className="theme-toggle-input"
-        aria-label={isLightTheme ? "Use dark theme" : "Use light theme"}
-        checked={isLightTheme}
-        onChange={handleToggle}
-      />
-      <label htmlFor={id} className="darkmode-toggle-label">
-        <FontAwesomeIcon icon={faSun} className="sun" />
-        <FontAwesomeIcon icon={faMoon} className="moon" />
-      </label>
-    </div>
+    <button type="button" className="theme-toggle" onClick={toggle} aria-label={dark ? "Show the star atlas (light theme)" : "Show the night sky (dark theme)"}>
+      <span className={`moon${dark ? "" : " is-full"}`} aria-hidden="true" />
+      {dark ? "Night sky" : "Star atlas"}
+    </button>
   );
 }
