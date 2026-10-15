@@ -1,561 +1,303 @@
-* {
+/* ==========================================================================
+   Constellation. The portfolio as a sky: the night sky (dark, default) with
+   a turning starfield, or a star atlas (light) printed in brown ink on old
+   paper. Cormorant for the names of things, Jost for everything else.
+   ========================================================================== */
+
+:root {
+  --display: "Cormorant Garamond", "Cormorant", Garamond, serif;
+  --sans: "Jost", "Futura", "Century Gothic", sans-serif;
+  --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+
+/* Star atlas (light). */
+body {
+  --bg: #efe6d2;
+  --ink: #2a1e10;
+  --ink-2: #5a4630;
+  --muted: #8a7558;
+  --line: rgb(60 44 24 / 0.2);
+  --line-2: rgb(60 44 24 / 0.4);
+  --star: #2a1e10;
+  --glow: #a8471d;
+  --cool: #2d5b8a;
+  --card: rgb(246 239 224 / 0.86);
+  --card-edge: rgb(60 44 24 / 0.25);
+  --on-glow: #fff8ec;
+}
+
+/* Night sky (dark). */
+body.dark-theme {
+  --bg: #05060f;
+  --ink: #eef1ff;
+  --ink-2: #aab2d6;
+  --muted: #737ba3;
+  --line: rgb(170 180 255 / 0.16);
+  --line-2: rgb(170 180 255 / 0.32);
+  --star: #fff4dd;
+  --glow: #ffc46b;
+  --cool: #8cc8ff;
+  --card: rgb(12 15 34 / 0.72);
+  --card-edge: rgb(170 180 255 / 0.18);
+  --on-glow: #1a1206;
+}
+
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html {
   scroll-behavior: smooth;
-}
-
-/* On body, not on *: a universal font-family beats inheritance, so an <em>
-   inside a serif heading came out in the sans. Form controls do not inherit
-   fonts by default, so they are named explicitly. */
-body,
-button,
-input,
-select,
-textarea {
-  font-family: var(--sans);
-}
-
-.App {
-  scrollbar-color: var(--ink-faint) transparent;
-  scrollbar-width: thin;
-}
-
-/* ==========================================================================
-   The print system. Everything — the journey and the CV — is printed on the
-   same paper with the same inks: a near-black key plate, and a set of
-   high-contrast pastels that overprint each other like risograph layers.
-   Light ("paper") is the default; dark ("ink") swaps paper and key and keeps
-   the pastels, which read even louder on black.
-   ========================================================================== */
-:root {
-  --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
-  --sans: "Inter Tight", "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+  scroll-padding-top: 80px;
 }
 
 body {
-  --paper: #f4efe6;
-  --paper-2: #ece5d9;
-  --paper-3: #e1d8c9;
-  --ink: #1d1b19;
-  --ink-soft: #57514a;
-  --ink-faint: #8b8379;
-  --rule: rgb(29 27 25 / 0.16);
-  --rule-strong: rgb(29 27 25 / 0.55);
-
-  /* The pastels. Named for what they look like, used for what they mean:
-     apricot / coral / butter are the foundry years, sky / lilac / sage the
-     software ones, rose the bridge between them. */
-  --apricot: #ffad85;
-  --coral: #ff7657;
-  --butter: #f6d56b;
-  --rose: #f4a3bf;
-  --lilac: #c4b3f2;
-  --sky: #9fc0f0;
-  --sage: #a6d0ac;
-  /* The one sharp pastel: a high-key lime for the thing that is live now —
-     the current entry, a hover, an active stop. Used sparingly so it keeps
-     its snap. */
-  --lime: #cfe86a;
-
-  /* Pastels are fills, never text: on paper they fail contrast. These are
-     the same hues pushed dark enough to carry a word. */
-  --coral-ink: #c9401f;
-  --sky-ink: #2f5bc4;
-  --sage-ink: #2f7a47;
-  --lilac-ink: #6247c4;
-  --lime-ink: #4f6b0c;
-
-  /* How overlapping pastel shapes combine: multiply on paper, like ink. */
-  --print-blend: multiply;
-}
-
-body.dark-theme {
-  --paper: #191816;
-  --paper-2: #211f1c;
-  --paper-3: #2b2925;
-  --ink: #f1ebe0;
-  --ink-soft: #bdb4a6;
-  --ink-faint: #857d72;
-  --rule: rgb(241 235 224 / 0.16);
-  --rule-strong: rgb(241 235 224 / 0.55);
-
-  --coral-ink: #ff9a7e;
-  --sky-ink: #a8c6ff;
-  --sage-ink: #a6dcb2;
-  --lilac-ink: #cdbdff;
-  --lime-ink: #d9f07a;
-
-  /* Multiply on black is black. On ink paper the layers add light instead. */
-  --print-blend: screen;
-}
-
-/* The CV's own vocabulary, mapped onto the print system. Older rules across
-   the site still speak in these names; pointing them at the paper tokens is
-   what lets one theme switch (body.dark-theme) restyle everything at once. */
-body {
-  --primaryColor: var(--ink);
-  --secondaryColor: var(--ink-soft);
-  --accentColor: var(--ink);
-  --accentHover: var(--ink);
-  --moltenColor: var(--coral);
-  --backgroundColor: var(--paper);
-  --surfaceColor: var(--paper-2);
-  --cardBackground: var(--paper);
-
-  --textPrimary: var(--ink);
-  --textSecondary: var(--ink-soft);
-  --textMuted: var(--ink-faint);
-
-  --borderColor: var(--rule);
-  --shadowSm: none;
-  --shadowMd: 0 18px 30px -24px rgb(29 27 25 / 0.5);
-  --shadowLg: 0 24px 40px -26px rgb(29 27 25 / 0.55);
-  --shadowXl: 0 30px 50px -28px rgb(29 27 25 / 0.6);
-
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
-
-  --radius-sm: 2px;
-  --radius-md: 3px;
-  --radius-lg: 4px;
-  --radius-xl: 6px;
-  --radius-2xl: 8px;
-  --radius-full: 999px;
-
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
-  --font-size-5xl: 3rem;
-  --font-size-6xl: 3.75rem;
-
-  --leading-tight: 1.15;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.6;
-
-  /* The tooth of the sheet: a fine noise, tinted to the ink, laid over the
-     paper colour. A background image rather than an overlay, so it is
-     printed UNDER the type, the way paper texture is. */
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 -0.75 0.5'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
-  --static: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='2 -0.35 -0.35 0 -0.2 -0.35 2 -0.35 0 -0.2 -0.35 -0.35 2 0 -0.2 0 0 0 -1.3 0.95'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
-
+  background: var(--bg);
   color: var(--ink);
-  background-color: var(--paper);
-  line-height: var(--leading-normal);
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 350;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.6s ease, color 0.6s ease;
 }
 
+/* The night sky gets depth: a faint band of the galaxy behind the stars. */
 body.dark-theme {
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.92 0 0 0 0 0.86 0 0 0 -0.4 0.22'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
-  --static: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='2 -0.35 -0.35 0 0.05 -0.35 2 -0.35 0 0.05 -0.35 -0.35 2 0 0.05 0 0 0 -1.3 0.85'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
-  --shadowMd: 0 18px 30px -22px rgb(0 0 0 / 0.8);
-  --shadowLg: 0 24px 40px -24px rgb(0 0 0 / 0.85);
-  --shadowXl: 0 30px 50px -26px rgb(0 0 0 / 0.9);
-  color-scheme: dark;
-}
-
-/* ==========================================================================
-   Live grain — the sheet is never quite still.
-
-   Colour noise that jumps to a new position about ten times a second, like
-   the snow on an old television between channels, but quiet enough to read
-   as paper that is alive rather than as a broken signal. Each speck has its
-   own hue, and every jump also turns the colour wheel by a different
-   amount, so a speck never lands on the same colour twice in a row.
-   hue-rotate on an already-composited layer is a GPU colour transform; like
-   the translate it never re-rasterises the noise.
-
-   The motion is a transform with steps(), so the browser only moves an
-   already-painted layer — nothing is re-rasterised per frame. The layer is
-   oversized (inset -240px, one tile) so a jump never shows an edge.
-   Multiply on paper, screen on ink; still under reduced motion.
-   ========================================================================== */
-@keyframes live-grain {
-  0% {
-    transform: translate(0px, 0px);
-    filter: hue-rotate(0deg);
-  }
-  10% {
-    transform: translate(-83px, 41px);
-    filter: hue-rotate(137deg);
-  }
-  20% {
-    transform: translate(57px, -112px);
-    filter: hue-rotate(274deg);
-  }
-  30% {
-    transform: translate(-141px, -29px);
-    filter: hue-rotate(48deg);
-  }
-  40% {
-    transform: translate(119px, 88px);
-    filter: hue-rotate(191deg);
-  }
-  50% {
-    transform: translate(-22px, 153px);
-    filter: hue-rotate(323deg);
-  }
-  60% {
-    transform: translate(171px, -64px);
-    filter: hue-rotate(96deg);
-  }
-  70% {
-    transform: translate(-108px, -167px);
-    filter: hue-rotate(229deg);
-  }
-  80% {
-    transform: translate(36px, 119px);
-    filter: hue-rotate(12deg);
-  }
-  90% {
-    transform: translate(-176px, 74px);
-    filter: hue-rotate(165deg);
-  }
-}
-
-/* The CV's grain: fixed behind the page content, over the paper colour. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: -240px;
-  z-index: -1;
-  background-image: var(--static);
-  background-size: 240px 240px;
-  mix-blend-mode: multiply;
-  opacity: 0.38;
-  animation: live-grain 1s steps(1, end) infinite;
-  pointer-events: none;
-  will-change: transform;
-}
-
-body.dark-theme::before {
-  mix-blend-mode: screen;
-  opacity: 0.28;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body::before {
-    animation: none;
-  }
-}
-
-body.other-projects-open {
-  overflow: hidden;
+  background-image: radial-gradient(ellipse 80% 40% at 70% 20%, rgb(80 70 160 / 0.18), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 10% 90%, rgb(160 70 90 / 0.12), transparent 70%);
+  background-attachment: fixed;
 }
 
 ::selection {
-  background: var(--butter);
-  color: #1d1b19;
+  background: var(--glow);
+  color: var(--on-glow);
 }
 
-.main-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: var(--space-3xl);
-  width: min(90%, 1200px);
-  margin-inline: auto;
-  padding: 0 var(--space-lg);
-  gap: var(--space-3xl);
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
 }
 
-/* --- type ----------------------------------------------------------------
-   Two voices: Instrument Serif for anything that is a title, Inter Tight for
-   everything that is read. Tracked uppercase labels do the work that bold
-   used to. */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  line-height: var(--leading-tight);
-  font-weight: 500;
-  color: var(--ink);
-}
-
-h1,
-h2 {
-  font-family: var(--serif);
-  font-weight: 400;
-  letter-spacing: -0.01em;
-}
-
-h1 {
-  font-size: clamp(3rem, 7vw, 6rem);
-  line-height: 0.92;
-}
-
-h2 {
-  font-size: clamp(2.4rem, 4.6vw, 3.8rem);
-  line-height: 1;
-}
-
-h3 {
-  font-size: var(--font-size-xl);
-}
-
-p {
-  line-height: var(--leading-relaxed);
-  color: var(--ink-soft);
-}
-
-/* A label: the tracked, uppercase line above a title. */
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  font-size: 0.74rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.eyebrow::after {
-  content: "";
-  width: 1.75rem;
-  height: 1px;
-  background: currentColor;
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
 }
 
 a {
-  color: var(--ink);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--rule-strong);
-  transition: text-decoration-color 0.2s ease;
+  color: inherit;
 }
 
-a:hover {
-  color: var(--ink);
-  text-decoration-color: var(--ink);
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
 }
 
-/* --- buttons -------------------------------------------------------------
-   Stamped labels: an ink pill that empties on hover, or an outline that
-   fills. No shadows, no lift — print does not float. */
+ul,
+ol {
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 1px solid var(--glow);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.sky {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.skip-link {
+  position: absolute;
+  top: -60px;
+  left: 12px;
+  z-index: 300;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 6px 10px;
+}
+.skip-link:focus {
+  top: 8px;
+}
+
+main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 48px);
+}
+
+.section {
+  padding-top: clamp(96px, 12vw, 180px);
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 450;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.section-head {
+  max-width: 760px;
+  margin: 0 auto clamp(40px, 6vw, 72px);
+  text-align: center;
+}
+
+.sign {
+  color: var(--glow);
+  letter-spacing: 0.6em;
+  font-size: 16px;
+}
+
+.section-head h2 {
+  margin-top: 10px;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(44px, 6vw, 84px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.section-intro {
+  margin-top: 16px;
+  color: var(--ink-2);
+  font-size: 17px;
+}
 
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: 0.7rem 1.4rem;
-  background: var(--ink);
-  color: var(--paper);
-  border: 1px solid var(--ink);
-  border-radius: var(--radius-full);
-  font-weight: 500;
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  gap: 10px;
+  padding: 12px 24px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 450;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.4s ease, color 0.3s ease;
 }
 
 .btn:hover {
-  background: transparent;
-  color: var(--ink);
+  border-color: var(--glow);
 }
 
-.btn-secondary {
-  background: transparent;
-  color: var(--ink);
+.btn-glow {
+  background: var(--glow);
+  border-color: var(--glow);
+  color: var(--on-glow);
+  box-shadow: 0 0 30px -6px var(--glow);
 }
 
-.btn-secondary:hover {
-  background: var(--ink);
-  color: var(--paper);
+.btn-glow:hover {
+  box-shadow: 0 0 46px -2px var(--glow);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chips li {
+  padding: 2px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+}
+
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}
+
+.project-links a {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--glow);
+}
+
+.project-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.product-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--glow);
+  text-underline-offset: 3px;
+}
+
+.product-link:hover {
+  color: var(--glow);
 }
 
 .card {
-  background: var(--paper);
-  border-radius: var(--radius-md);
-  padding: var(--space-xl);
-  border: 1px solid var(--rule);
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: 18px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
-
-section {
-  padding: var(--space-3xl) 0;
-  scroll-margin-top: 80px; /* Account for fixed navbar height */
-}
-
-section:first-child {
-  padding-top: var(--space-2xl);
-  scroll-margin-top: 0; /* Home section doesn't need scroll margin */
-}
-
-/* --- section headers -----------------------------------------------------
-   Every section opens the same way: a label, a serif title, one line of
-   standfirst. Left-aligned, like a chapter opening in a book. */
-
-.section-header,
-.projects-header,
-.contact-header {
-  max-width: 46rem;
-  margin: 0 0 var(--space-2xl);
-  text-align: left;
-}
-
-.section-header h2,
-.projects-header h2,
-.contact-header h2 {
-  margin: 0.6rem 0 0.9rem;
-  color: var(--ink);
-  background: none;
-  -webkit-text-fill-color: currentColor;
-}
-
-.section-header p,
-.projects-header p,
-.contact-header p {
-  font-size: 1.05rem;
-  color: var(--ink-soft);
-  max-width: 40rem;
-  margin: 0;
-}
-
-/* --- footer -------------------------------------------------------------- */
 
 .footer {
+  max-width: 1280px;
+  margin: clamp(96px, 12vw, 160px) auto 0;
+  padding: 24px clamp(16px, 4vw, 48px) 40px;
+  border-top: 1px solid var(--line);
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
-  padding: var(--space-2xl) var(--space-lg);
-  border-top: 1px solid var(--ink);
-  margin: var(--space-3xl) auto 0;
-  width: min(90%, 1200px);
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 24px;
+  font-size: 13px;
+  color: var(--muted);
 }
 
-.footer h4 {
-  color: var(--ink-soft);
-  font-size: var(--font-size-sm);
-  font-weight: 400;
+.footer ul {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+  gap: 18px;
 }
 
-.footer h4 svg {
-  color: var(--coral);
+.footer a {
+  text-decoration: none;
 }
 
-.footer-links {
-  display: flex;
-  gap: var(--space-xl);
-  align-items: center;
-}
-
-.experience-link {
-  color: var(--ink-soft);
-}
-
-@media screen and (max-width: 1024px) {
-  .main-container {
-    width: 95%;
-    padding: 0 var(--space-md);
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .main-container {
-    width: 100%;
-    padding: 0 var(--space-md);
-    margin-top: var(--space-2xl);
-    gap: var(--space-2xl);
-  }
-
-  .footer {
-    padding-bottom: calc(70px + var(--space-xl));
-  }
-
-  .card {
-    padding: var(--space-lg);
-  }
-
-  section {
-    padding: var(--space-2xl) 0;
-  }
-}
-
-/* Pastel plates overprint each other: multiply on paper, screen on ink. Used
-   by every printed illustration on the site. */
-.j-print {
-  mix-blend-mode: var(--print-blend);
-}
-
-/* ==========================================================================
-   Wobble — italic type that shifts now and then (src/components/Wobble.jsx).
-   The component writes each letter's target (--wr rotation, --wy lift,
-   --wd delay) and toggles .is-wobbling; this is the spring it plays.
-   ========================================================================== */
-.wobble {
-  font-style: italic;
-}
-
-.wb-w {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.wb-l {
-  display: inline-block;
-  transform-origin: 50% 85%;
-}
-
-.wobble.is-wobbling .wb-l {
-  animation: wb-spring 1.25s cubic-bezier(0.37, 0, 0.3, 1) both;
-  animation-delay: var(--wd, 0ms);
-}
-
-/* Out, back past rest, and settle — a damped spring, not a there-and-back. */
-@keyframes wb-spring {
-  0% {
-    transform: none;
-  }
-  26% {
-    transform: translateY(var(--wy, 0)) rotate(var(--wr, 0deg));
-  }
-  52% {
-    transform: translateY(calc(var(--wy, 0) * -0.4))
-      rotate(calc(var(--wr, 0deg) * -0.38));
-  }
-  74% {
-    transform: translateY(calc(var(--wy, 0) * 0.14))
-      rotate(calc(var(--wr, 0deg) * 0.12));
-  }
-  100% {
-    transform: none;
-  }
-}
-
-/* Visually hidden, still read: the letters themselves are aria-hidden. */
-.wb-sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
+.footer a:hover,
+.heart {
+  color: var(--glow);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wobble.is-wobbling .wb-l {
-    animation: none;
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

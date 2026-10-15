@@ -3,15 +3,13 @@ import ReactDOM from "react-dom/client";
 import "./styles/styles.css";
 import App from "./App";
 
-// The site is printed on paper: light is the default and public/index.html
-// ships a bare <body>. Dark ("ink") is opt-in, so only an explicit stored
-// choice adds the class — toggle, never add-if, so a stored "light" also wins
-// over anything a cached HTML might still carry.
+// The night sky is the default here; only an explicit stored "light" asks
+// for the star atlas.
 try {
-  const prefersDark = window.localStorage.getItem("jm-theme") === "dark";
-  document.body.classList.toggle("dark-theme", prefersDark);
+  const stored = window.localStorage.getItem("jm-theme");
+  document.body.classList.toggle("dark-theme", stored !== "light");
 } catch {
-  /* blocked storage — keep whatever default the HTML set */
+  document.body.classList.add("dark-theme");
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
