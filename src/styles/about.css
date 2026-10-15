@@ -1,580 +1,165 @@
-/* About: the tools as a ruled index, and the résumé as a printed timeline. */
+/* --- Three acts -------------------------------------------------------- */
 
-#about {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3xl);
+.acts {
+  row-gap: 48px;
 }
 
-/* ==========================================================================
-   Technologies & tools — one ruled row per category: the category set in
-   the serif on the left, its tools as small labels on the right.
-   ========================================================================== */
-
-.tools-wrapper {
+.act {
+  grid-column: span 4;
   display: flex;
   flex-direction: column;
+  gap: 18px;
 }
 
-.tool-category {
+.act-text {
+  border-top: 2px solid var(--rule);
+  padding-top: 12px;
   display: grid;
-  grid-template-columns: minmax(10rem, 15rem) 1fr;
-  gap: var(--space-lg);
-  align-items: start;
-  padding: var(--space-lg) 0;
-  border-top: 1px solid var(--rule);
+  grid-template-columns: 1fr 2fr;
+  column-gap: var(--gutter);
 }
 
-.tool-category:first-of-type {
-  border-top-color: var(--ink);
+.act-span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  padding-top: 6px;
 }
 
-.category-title {
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 1.45rem;
-  line-height: 1.1;
-  color: var(--ink);
-  padding-top: 0.15rem;
-}
-
-.tool-cards-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.tool-card {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.3rem 0.8rem 0.3rem 0.32rem;
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius-full);
-  background: transparent;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.tool-card:hover {
-  border-color: var(--ink);
-  background: color-mix(in srgb, var(--lime) 45%, transparent);
-}
-
-/* Logos keep their own colours, so they sit on a fixed pale disc that
-   reads in both themes. */
-.tool-card img {
-  width: 1.55rem;
-  height: 1.55rem;
-  padding: 0.2rem;
-  border-radius: 50%;
-  background: #fbf8f2;
-  object-fit: contain;
-}
-
-.tool-card h3 {
-  font-family: var(--sans);
-  font-size: 0.84rem;
-  font-weight: 500;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-/* ==========================================================================
-   Experience / Education tabs — two serif titles, the current one in ink
-   and underlined, the other faded back.
-   ========================================================================== */
-
-.about-info-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-}
-
-.about-tabs {
-  display: flex;
-  gap: var(--space-xl);
-  border-bottom: 1px solid var(--ink);
-}
-
-.about-tab {
-  position: relative;
-  background: none;
-  border: 0;
-  padding: 0 0 0.6rem;
-  font-family: var(--serif);
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1;
-  color: var(--ink-faint);
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.about-tab:hover {
-  color: var(--ink-soft);
-}
-
-.about-tab.active {
-  color: var(--ink);
-  font-style: italic;
-}
-
-.about-tab.active::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 4px;
-  background: var(--coral);
-}
-
-.about-tab:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 4px;
-}
-
-/* ==========================================================================
-   The timeline. A hairline down the left, a stop on it per entry tinted by
-   the entry's heat (coral for the foundry years, sky for software), and
-   each entry set as ruled type rather than boxed in a card.
-   ========================================================================== */
-
-.about-item-wrapper {
-  --sectionHeat: 0;
-}
-
-.timeline {
-  position: relative;
-  max-width: 56rem;
-  /* Centred in the column, like every other block on the page. */
-  margin-inline: auto;
-}
-
-.timeline::before {
-  content: "";
-  position: absolute;
-  left: 0.55rem;
-  top: 0.5rem;
-  bottom: 0;
-  width: 1px;
-  background: var(--ink);
-}
-
-.timeline-item {
-  --tint: color-mix(in oklab, var(--coral) calc(var(--cardHeat, 0) * 100%), var(--sky));
-  position: relative;
-  padding-left: 3rem;
-  padding-bottom: 3.5rem;
-}
-
-.timeline-marker {
-  position: absolute;
-  left: 0;
-  top: 0.35rem;
-  width: 1.1rem;
-  height: 1.1rem;
-  border-radius: 50%;
-  background: var(--tint);
-  border: 1px solid var(--ink);
-  box-shadow: 0 0 0 4px var(--paper);
-}
-
-/* The entry still being written: a ring printed around its stop. */
-.timeline-marker.current::after {
-  content: "";
-  position: absolute;
-  inset: -7px;
-  border-radius: 50%;
-  border: 1px dashed var(--ink);
-  animation: marker-turn 18s linear infinite;
-}
-
-@keyframes marker-turn {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .timeline-marker.current::after {
-    animation: none;
-  }
-}
-
-.timeline-content {
-  position: relative;
-}
-
-/* Each entry is a card pinned to the timeline, the same object as the
-   contact card and the journey ticket: paper, an ink rule, a hard offset
-   shadow, a slight tilt that straightens on hover, and a pastel plate
-   peeking out from behind its top corner. */
-.experience-card {
-  --plate: var(--apricot);
-  --tilt: -0.22deg;
-  position: relative;
-  isolation: isolate;
-  padding: 1.6rem 1.8rem 1.4rem;
-  border: 1px solid var(--ink);
-  border-radius: 4px;
-  box-shadow: 6px 6px 0 var(--ink);
-  rotate: var(--tilt);
-  transition:
-    rotate 0.3s ease,
-    box-shadow 0.3s ease;
-}
-
-.experience-card:hover {
-  rotate: 0deg;
-  box-shadow: 8px 8px 0 var(--ink);
-}
-
-/* the card's paper, over the plate */
-.experience-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: var(--paper);
-}
-
-/* The same hover as the journey ticket in the hero: a wash of butter over
-   the paper. Mixed INTO the paper rather than laid over it transparently,
-   so the plate behind the card stays hidden. */
-.experience-card:hover::after {
-  background: color-mix(in srgb, var(--butter) 22%, var(--paper));
-}
-
-.experience-card::after {
-  transition: background-color 0.25s ease;
-}
-
-/* the plate behind the corner */
-.experience-card::before {
-  content: "";
-  position: absolute;
-  top: -1.7rem;
-  right: -1.5rem;
-  width: 5.5rem;
-  height: 5.5rem;
-  border-radius: 50%;
-  background: var(--plate);
-  z-index: -2;
-}
-
-/* Alternate the tilt and cycle the plates down the list. */
-.timeline-item:nth-child(2n) .experience-card {
-  --tilt: 0.2deg;
-}
-.timeline-item:nth-child(4n + 2) .experience-card {
-  --plate: var(--sky);
-}
-.timeline-item:nth-child(4n + 3) .experience-card {
-  --plate: var(--rose);
-}
-.timeline-item:nth-child(4n + 4) .experience-card {
-  --plate: var(--butter);
-}
-
-/* The entry still being written gets the live colour. */
-.timeline-marker.current + .timeline-content .experience-card {
-  --plate: var(--lime);
-}
-
-.experience-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-md);
-  margin-bottom: 0.6rem;
-}
-
-.experience-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.3rem 1.2rem;
-}
-
-.experience-date,
-.experience-location {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.74rem;
-  letter-spacing: 0.14em;
+.act h3 {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: clamp(32px, 3.4vw, 56px);
+  font-weight: 800;
+  font-stretch: 80%;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
   text-transform: uppercase;
-  color: var(--ink-soft);
 }
 
-.experience-date svg,
-.experience-location svg {
-  width: 0.7rem;
-  color: var(--ink-faint);
+.act-text p:last-child {
+  grid-column: 2;
+  margin-top: 10px;
+  color: var(--ink-2);
+  max-width: 32ch;
 }
 
-.visit-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex: none;
-  font-size: 0.74rem;
-  font-weight: 500;
-  color: var(--ink);
-  text-decoration: none;
-  padding: 0.35rem 0.85rem;
-  border: 1px solid var(--ink);
-  border-radius: var(--radius-full);
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+@media (max-width: 900px) {
+  .act {
+    grid-column: 1 / -1;
+  }
 }
 
-.visit-link svg {
-  width: 0.65rem;
+/* --- Tools ------------------------------------------------------------- */
+
+.tools {
+  margin-top: clamp(80px, 10vw, 150px);
 }
 
-.visit-link:hover {
-  background: var(--ink);
-  color: var(--paper);
-  text-decoration: none;
-}
-
-.experience-title {
-  margin-bottom: var(--space-md);
-}
-
-.experience-title h3 {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: clamp(1.9rem, 3.2vw, 2.5rem);
-  line-height: 1.02;
-  margin-bottom: 0.6rem;
-}
-
-.experience-org {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.experience-title h4,
-.experience-org h4 {
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: var(--ink-soft);
-}
-
-/* --- the brief ----------------------------------------------------------
-   Constraint / Objective as ruled rows, the same layout as the journey's
-   cards, under the brief's own name set in italic. */
-
-.quest-block {
-  margin: var(--space-md) 0 var(--space-lg);
-  border-top: 1px solid var(--ink);
-}
-
-.quest-name {
-  display: flex;
-  justify-content: space-between;
+.tools-head {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
   align-items: baseline;
-  gap: var(--space-md);
-  padding: 0.7rem 0 0.5rem;
-  margin: 0;
+  border-top: 2px solid var(--rule);
+  padding-top: 14px;
+  margin-bottom: 8px;
 }
 
-.quest-title {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 1.25rem;
-  color: var(--ink);
+.tools-head h3 {
+  grid-column: 1 / span 5;
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 700;
+  font-stretch: 88%;
+  letter-spacing: -0.03em;
 }
 
-.quest-status {
-  flex: none;
-  font-size: 0.64rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
+.tools-head p {
+  grid-column: 6 / -1;
+  color: var(--ink-2);
 }
 
-.quest-status.active {
-  color: var(--ink);
-  font-weight: 600;
+.tools-list {
+  grid-column: 1 / -1;
 }
 
-.quest-status.active::before {
-  content: "";
-  display: inline-block;
-  width: 0.5rem;
-  height: 0.5rem;
-  margin-right: 0.4rem;
-  border-radius: 50%;
-  background: var(--lime);
-  box-shadow: 0 0 0 1px var(--ink);
-}
-
-.quest-brief {
+.tools-row {
   display: grid;
-  grid-template-columns: 7rem 1fr;
-  margin: 0;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  padding: 18px 0;
+  border-bottom: 1px solid var(--hair);
 }
 
-.quest-brief dt,
-.quest-brief dd {
-  padding: 0.65rem 0;
-  border-top: 1px solid var(--rule);
-}
-
-.quest-brief dt {
-  padding-top: 0.85rem;
-  font-size: 0.64rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-.quest-brief dd {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--ink);
-}
-
-/* --- the long form ------------------------------------------------------- */
-
-.experience-description {
+.tools-row dt {
+  grid-column: 1 / span 4;
+  font-weight: 700;
+  font-size: 18px;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
+  gap: 14px;
+  align-items: baseline;
 }
 
-.experience-summary {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--ink);
-  margin: 0;
+.tools-count {
+  font-size: 12px;
+  color: var(--red-ink);
+  min-width: 2ch;
 }
 
-.experience-bullets {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.tools-row dd {
+  grid-column: 5 / -1;
+}
+
+.tools-row ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px var(--gutter);
+}
+
+.tools-row li {
   display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
 }
 
-.experience-bullets li {
-  position: relative;
-  padding-left: 1.2rem;
-  font-size: 0.93rem;
-  line-height: 1.55;
-  color: var(--ink-soft);
+.tools-row img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: grayscale(1) contrast(1.2);
+  opacity: 0.8;
+  transition: filter 0.3s ease, opacity 0.3s ease;
 }
 
-.experience-bullets li::before {
-  content: "";
-  position: absolute;
-  left: 0.15rem;
-  top: 0.62em;
-  width: 0.38rem;
-  height: 0.38rem;
-  border-radius: 50%;
-  background: var(--tint);
-  box-shadow: 0 0 0 1px var(--ink);
+.tools-row li:hover img {
+  filter: none;
+  opacity: 1;
 }
 
-.experience-bullets li strong {
-  color: var(--ink);
-  font-weight: 600;
-}
-
-/* Product names inside the prose: ink, with a pastel underline in the
-   entry's own heat. */
-.product-link {
-  color: var(--ink);
-  font-weight: 500;
-  text-decoration: underline;
-  text-decoration-color: var(--tint, var(--coral));
-  text-decoration-thickness: 3px;
-  text-underline-offset: 3px;
-}
-
-.product-link:hover {
-  text-decoration-color: var(--ink);
-}
-
-.tech-stack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-top: 0.3rem;
-}
-
-.tech-tag {
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--ink);
-  padding: 0.22rem 0.65rem;
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius-full);
-}
-
-.card-material {
-  margin: 0.3rem 0 0;
-  padding-top: 0.7rem;
-  border-top: 1px solid var(--rule);
-  font-size: 0.74rem;
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
-}
-
-.card-material strong {
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 1.05rem;
-  letter-spacing: 0;
-  color: var(--ink);
-}
-
-/* --- responsive ---------------------------------------------------------- */
-
-@media screen and (max-width: 768px) {
-  .tool-category {
+@media (max-width: 900px) {
+  .tools-head h3,
+  .tools-head p {
+    grid-column: 1 / -1;
+  }
+  .tools-row {
     grid-template-columns: 1fr;
-    gap: var(--space-sm);
+    row-gap: 12px;
   }
-  .about-tabs {
-    gap: var(--space-lg);
+  .tools-row dt,
+  .tools-row dd {
+    grid-column: 1;
   }
-  .timeline-item {
-    padding-left: 2.2rem;
+  .tools-row ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .experience-card {
-    padding: 1.2rem 1.1rem 1.1rem;
-    box-shadow: 4px 4px 0 var(--ink);
-    margin-right: 4px;
-  }
-  .experience-card::before {
-    width: 4rem;
-    height: 4rem;
-    right: -0.6rem;
-  }
-  .experience-header {
-    flex-wrap: wrap;
-  }
-  .quest-brief {
-    grid-template-columns: 1fr;
-  }
-  .quest-brief dd {
-    border-top: 0;
-    padding-top: 0;
-  }
+}
+
+/* Several marks are black on transparent. On the dark theme they sit on a
+   small paper tile so they do not vanish. */
+body.dark-theme .tools-row img {
+  background: #e8e8e3;
+  padding: 2px;
+  filter: grayscale(1);
+  opacity: 1;
 }

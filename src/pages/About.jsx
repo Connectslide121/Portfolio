@@ -1,63 +1,55 @@
-import React, { useState } from "react";
+import React from "react";
 import "../styles/about.css";
-import Tools from "../components/Tools";
-import Education from "../components/Education";
-import Experience from "../components/Experience";
+import SectionHead from "../components/SectionHead";
+import ActPoster from "../art/ActPoster";
+import { chapters } from "../data/journey";
+import { toolCategories, toolsIntro } from "../data/tools";
 
 export default function About() {
-  const [activeTab, setActiveTab] = useState("experience");
-
   return (
-    <section id="about">
-      <Tools />
-      <div className="about-info-wrapper">
-        <div
-          className="about-tabs"
-          role="tablist"
-          aria-label="Experience and education"
-        >
-          <button
-            type="button"
-            role="tab"
-            id="tab-experience"
-            aria-selected={activeTab === "experience"}
-            aria-controls="panel-experience"
-            className={`about-tab ${activeTab === "experience" ? "active" : ""}`}
-            onClick={() => setActiveTab("experience")}
-          >
-            Experience
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tab-education"
-            aria-selected={activeTab === "education"}
-            aria-controls="panel-education"
-            className={`about-tab ${activeTab === "education" ? "active" : ""}`}
-            onClick={() => setActiveTab("education")}
-          >
-            Education
-          </button>
-        </div>
-        <div className="about-tab-panels">
-          {activeTab === "experience" ? (
-            <div
-              role="tabpanel"
-              id="panel-experience"
-              aria-labelledby="tab-experience"
-            >
-              <Experience />
+    <section id="about" className="section">
+      <SectionHead num="01" title="Three acts" aside="2005 — today">
+        <p>Steel, a reset, then software.</p>
+      </SectionHead>
+
+      <ol className="wrap acts">
+        {chapters.map((c, i) => (
+          <li key={c.id} className="act" data-reveal style={{ "--d": i }}>
+            <ActPoster id={c.id} label={`${c.title}: ${c.detail}`} />
+            <div className="act-text">
+              <p className="act-span">{c.span}</p>
+              <h3>{c.title}</h3>
+              <p>{c.detail}</p>
             </div>
-          ) : (
-            <div
-              role="tabpanel"
-              id="panel-education"
-              aria-labelledby="tab-education"
-            >
-              <Education />
-            </div>
-          )}
+          </li>
+        ))}
+      </ol>
+
+      <div className="wrap tools">
+        <div className="tools-head" data-reveal>
+          <h3>{toolsIntro.title}</h3>
+          <p>{toolsIntro.tagline}</p>
         </div>
+        <dl className="tools-list">
+          {toolCategories.map((cat) => (
+            <div key={cat.name} className="tools-row" data-reveal>
+              <dt>
+                <span className="tools-count">{String(cat.tools.length).padStart(2, "0")}</span>
+                {cat.name}
+              </dt>
+              <dd>
+                <ul>
+                  {cat.tools.map((tool) => (
+                    <li key={tool.name}>
+                      <img src={tool.image} alt="" width="20" height="20" decoding="async" />
+                      {tool.name}
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   );
