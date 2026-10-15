@@ -2,11 +2,28 @@
 
 A personal portfolio website built with React. It showcases the developer Jon Mendizabal, highlighting projects, experience and contact information. The site is deployed through GitHub Pages.
 
+## Design — Constellation
+
+This branch sets the portfolio in the sky. A canvas starfield turns slowly
+behind the page and further as you scroll; now and then a meteor. Switch
+between the *Night sky* (dark, default) and the *Star atlas* (light), the
+same sky printed in ink on old paper.
+
+- **Orrery** — the featured projects orbit the initials; click a planet.
+- **Three ages** — a red giant (steel), an eclipse (reset), a blue star with
+  a planet (software).
+- **Atlas** — every tool category is a constellation with a Latin name,
+  every tool a star. Hover a star to read it.
+- **The path** — work and education on one comet track, its head at today,
+  its tail running back, hotter, to the foundry.
+- **Catalogue** — projects as numbered objects (JM 1–19) in planet discs.
+- **Signal** — the contact form, with a radio dish.
+
 ## Features
 
 - **Single Page Application** built with React and React Router style sections
 - **Dark/Light theme toggle** implemented via CSS variables
-- **Projects gallery** with media previews and technology icons
+- **Projects** — a catalogue of numbered objects
 - **About section** summarising tools, work experience and education
 - **Responsive design** suitable for mobile and desktop screens
 - **Contact form** powered by [Getform](https://getform.io/)
@@ -50,7 +67,12 @@ src/           React components, pages and styles
 src/images/    Media assets used on the site
 ```
 
-Project data for the **Projects** section is stored in `src/components/projectList.js`.
+Content lives in data files, separate from the layout:
+
+- `src/components/projectList.js` — projects
+- `src/data/journey.js` — profile, experience, education, career chapters
+- `src/data/tools.js`, `src/data/social.js`, `src/data/site.js` — tools, profiles elsewhere, contact and section copy
+- `src/data/projectMedia.js`, `projectTech.js`, `orgLogos.js` — media and logo lookups
 
 ## License
 

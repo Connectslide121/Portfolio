@@ -28,35 +28,26 @@ This is a personal portfolio website built with React 18, showcasing Jon Mendiza
 
 ```
 src/
-├── App.jsx                 # Main app component with all sections
-├── index.js               # React app entry point
-├── components/            # Reusable UI components
-│   ├── Navbar.jsx         # Navigation with scroll-based active states
-│   ├── Sidebar.jsx        # Social media links sidebar
-│   ├── ThemeToggle.jsx    # Dark/light theme switcher
-│   ├── Tools.jsx          # Technology stack display
-│   ├── Experience.jsx     # Work experience section
-│   ├── Education.jsx      # Education background
-│   ├── Footer.jsx         # Site footer
-│   └── projectList.js     # Project data configuration
-├── pages/                 # Page section components
-│   ├── Home.jsx           # Hero section
-│   ├── About.jsx          # About me section
-│   ├── Projects.jsx       # Projects showcase
-│   └── Contact.jsx        # Contact form
-├── styles/                # CSS modules
-│   ├── styles.css         # Global styles and CSS variables
-│   ├── navbar.css         # Navigation styling
-│   ├── home.css           # Hero section styling
-│   ├── about.css          # About section styling
-│   ├── projects.css       # Projects gallery styling
-│   ├── contact.css        # Contact form styling
-│   └── sidebar.css        # Sidebar styling
+├── App.jsx                # The sky behind six sections
+├── index.js               # Entry point; night sky (dark) unless "light" is stored
+├── art/
+│   ├── Sky.jsx            # Canvas starfield that turns with time and scroll
+│   ├── StarAtlas.jsx      # Planisphere: tool categories as constellations
+│   ├── Orrery.jsx         # Featured projects in orbit (hero)
+│   ├── ActBody.jsx        # One celestial body per career act
+│   ├── RadioDish.jsx      # Contact illustration
+│   └── rng.js             # Seeded random numbers
+├── components/            # Nav, ThemeToggle, SectionHead, Footer,
+│   │                      # ProjectMedia (lazy video), ProjectLinks,
+│   │                      # SocialIcon, hooks.js
+│   ├── projectList.js     # Project data
+│   └── richText.jsx       # {Link} / *bold* markup for data text
+├── data/                  # Content: journey.js (profile, experience,
+│                          # education, chapters), tools, social, site copy,
+│                          # media / tech / organisation lookups
+├── pages/                 # Home, Acts, Atlas, Path, Catalogue, Signal
+├── styles/                # styles.css (tokens, shared) + one per section
 └── images/                # Static assets
-    ├── home-image.webp    # Profile image
-    ├── logo.webp          # Personal logo
-    ├── projects/          # Project preview media
-    └── tools/             # Technology icons
 ```
 
 ## Coding Standards & Conventions
@@ -89,7 +80,7 @@ export default function ComponentName() {
 ### CSS & Styling
 
 - **Use CSS Custom Properties** extensively for theming
-- **Follow the existing CSS variable naming**: `--primaryColor`, `--textPrimary`, etc.
+- **Follow the existing CSS variable naming**: `--bg`, `--ink`, `--ink-2`, `--muted`, `--line`, `--glow`, `--cool`, `--card`, etc. (see `src/styles/styles.css`)
 - **Dark theme support**: All new styles must support both light and dark themes
 - **Responsive design**: Use existing breakpoint patterns
 - **No inline styles**: Keep all styling in CSS files
@@ -98,16 +89,18 @@ export default function ComponentName() {
 ```css
 /* CSS Variable Pattern */
 body {
-  --primaryColor: #0f172a;
-  --textPrimary: #0f172a;
-  --accentColor: #3b82f6;
+  /* star atlas */
+  --bg: #efe6d2;
+  --ink: #2a1e10;
+  --glow: #a8471d;
   /* ... more variables */
 }
 
 body.dark-theme {
-  --primaryColor: #f8fafc;
-  --textPrimary: #f8fafc;
-  --accentColor: #60a5fa;
+  /* night sky */
+  --bg: #05060f;
+  --ink: #eef1ff;
+  --glow: #ffc46b;
   /* ... dark theme overrides */
 }
 ```
@@ -157,13 +150,13 @@ body.dark-theme {
 
 1. Add project data to `projectList.js` in appropriate array
 2. Add media file to `src/images/projects/`
-3. Import media in `Projects.jsx` and add to media mapping objects
+3. Import the media in `src/data/projectMedia.js` and add it to the `VIDEOS` or `IMAGES` map
 4. Ensure project has required fields: title, description, technologies, repository, etc.
 
 ### Adding a New Technology/Tool
 
 1. Add icon to `src/images/tools/`
-2. Update the tools array in `Tools.jsx`
+2. Add it to `toolCategories` in `src/data/tools.js`
 3. Ensure icon follows the naming convention (lowercase, no spaces)
 
 ### Adding New Sections
