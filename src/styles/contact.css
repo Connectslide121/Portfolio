@@ -1,242 +1,136 @@
-/* Contact: a calling card on the left, a ruled form on the right — written
-   on the page rather than boxed into widgets. */
-
-#contact {
-  padding: var(--space-3xl) 0;
-}
-
-.contact-content {
+.contact {
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: var(--space-3xl);
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(28px, 4vw, 56px);
   align-items: start;
 }
 
-/* --- the card ------------------------------------------------------------ */
-
-.contact-info {
+.bubble {
   position: relative;
-  /* Its own stacking context, so the plate below can sit BEHIND the card's
-     paper while staying inside the card's tilt. */
-  isolation: isolate;
-  background: transparent;
-  border: 1px solid var(--ink);
-  border-radius: 4px;
-  padding: var(--space-xl);
-  box-shadow: 6px 6px 0 var(--ink);
-  rotate: -1deg;
-  transition: rotate 0.3s ease;
+  padding: 28px 30px 32px;
+  border: var(--b) solid var(--line);
+  border-radius: 34px;
+  box-shadow: var(--pop) var(--pop) 0 var(--line);
+  transform: rotate(-2deg);
 }
 
-.contact-info:hover {
-  rotate: 0deg;
-}
-
-/* The card's paper, and a pastel plate peeking out from behind its
-   corner. */
-.contact-info::after {
+/* The speech bubble's tail. */
+.bubble::after {
   content: "";
   position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--paper);
+  left: 48px;
+  bottom: -30px;
+  width: 40px;
+  height: 40px;
+  background: inherit;
+  border-right: var(--b) solid var(--line);
+  border-bottom: var(--b) solid var(--line);
+  transform: skewX(30deg) rotate(30deg);
+  border-bottom-right-radius: 8px;
 }
 
-.contact-info::before {
-  content: "";
-  position: absolute;
-  top: -2.2rem;
-  right: -2rem;
-  width: 6.5rem;
-  height: 6.5rem;
-  border-radius: 50%;
-  background: var(--apricot);
-  z-index: -2;
+.bubble h2 {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(44px, 5.6vw, 76px);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  margin-bottom: 12px;
 }
 
-.contact-info-header {
+.details {
+  margin-top: 56px;
   display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding-bottom: var(--space-lg);
-  margin-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--ink);
+  flex-direction: column;
+  gap: 12px;
 }
 
-.contact-info-header h3 {
-  font-family: var(--serif);
+.detail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.detail a {
+  text-decoration: none;
+}
+
+.detail a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-color: var(--pink);
+}
+
+.detail-label {
+  min-width: 90px;
+  font-family: var(--hand);
   font-weight: 400;
-  font-size: 2rem;
-  line-height: 1;
-  color: var(--ink);
-  margin: 0;
+  font-size: 24px;
+  color: var(--ink-2);
 }
 
-.contact-info-details {
+.form {
   display: flex;
   flex-direction: column;
+  gap: 18px;
+  padding: 26px 26px 30px;
+  border: var(--b) solid var(--line);
+  border-radius: 24px;
+  box-shadow: 10px 10px 0 var(--line);
 }
 
-.contact-detail {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: 0.85rem 0;
-  border-bottom: 1px solid var(--rule);
+.form h3 {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 30px;
+  letter-spacing: -0.03em;
 }
 
-.contact-detail:last-child {
-  border-bottom: 0;
-}
-
-.contact-detail-icon {
-  flex: none;
-  width: 2.2rem;
-  height: 2.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 1px solid var(--ink);
-  color: #1d1b19;
-  font-size: 0.85rem;
-}
-
-.contact-detail:nth-child(1) .contact-detail-icon {
-  background: var(--sky);
-}
-.contact-detail:nth-child(2) .contact-detail-icon {
-  background: var(--butter);
-}
-.contact-detail:nth-child(3) .contact-detail-icon {
-  background: var(--rose);
-}
-
-.contact-detail-content h4 {
-  font-size: 0.64rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin: 0 0 0.1rem;
-}
-
-.contact-detail-content p {
-  margin: 0;
-  font-size: 1rem;
-  color: var(--ink);
-}
-
-/* --- the form ------------------------------------------------------------ */
-
-.contact-form h3 {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: 2rem;
-  line-height: 1;
-  margin-bottom: var(--space-lg);
-}
-
-.contact-form form {
+.form label {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: 6px;
 }
 
-.contact-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+.form label span {
+  font-weight: 700;
+  font-size: 14px;
 }
 
-.contact-form-group label {
-  font-size: 0.64rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-/* Ruled lines to write on, not boxes. */
-.contact-form-group input,
-.contact-form-group textarea {
+.form input,
+.form textarea {
   width: 100%;
-  font: inherit;
-  font-size: 1.05rem;
-  color: var(--ink);
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--ink);
-  border-radius: 0;
-  padding: 0.45rem 0;
-  outline: none;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-.contact-form-group textarea {
+  padding: 12px 14px;
+  border: var(--b) solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 16px;
   resize: vertical;
-  min-height: 8rem;
-  line-height: 1.6;
-  /* the lines of a writing pad */
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent calc(1.6em + 0.45rem - 1px),
-    var(--rule) calc(1.6em + 0.45rem - 1px),
-    var(--rule) calc(1.6em + 0.45rem)
-  );
-  background-attachment: local;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-.contact-form-group input::placeholder,
-.contact-form-group textarea::placeholder {
-  color: var(--ink-faint);
+.form input::placeholder,
+.form textarea::placeholder {
+  color: var(--ink-2);
+  opacity: 0.7;
 }
 
-.contact-form-group input:focus,
-.contact-form-group textarea:focus {
-  border-bottom-width: 2px;
-  background-color: color-mix(in srgb, var(--butter) 18%, transparent);
+.form input:focus,
+.form textarea:focus {
+  outline: none;
+  box-shadow: 4px 4px 0 var(--blue);
+  transform: translate(-2px, -2px);
 }
 
-.contact-form button[type="submit"] {
+.form .chunky {
   align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font: inherit;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  color: var(--paper);
-  background: var(--ink);
-  border: 1px solid var(--ink);
-  border-radius: var(--radius-full);
-  padding: 0.85rem 1.8rem;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
 }
 
-.contact-form button[type="submit"]:hover {
-  background: transparent;
-  color: var(--ink);
-}
-
-/* --- responsive ---------------------------------------------------------- */
-
-@media screen and (max-width: 900px) {
-  .contact-content {
+@media (max-width: 860px) {
+  .contact {
     grid-template-columns: 1fr;
-    gap: var(--space-2xl);
-  }
-  .contact-info {
-    rotate: 0deg;
-    margin-right: 6px;
-  }
-  .contact-info::before {
-    right: -0.6rem;
-    width: 5rem;
-    height: 5rem;
   }
 }
