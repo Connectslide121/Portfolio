@@ -1,0 +1,249 @@
+.path {
+  position: relative;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding-left: 0;
+}
+
+/* The comet's track: ice blue at the head (today), molten at the tail. */
+.path::before {
+  content: "";
+  position: absolute;
+  left: 180px;
+  top: 10px;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, #8cc8ff, #c9a8ff 35%, #ff8a3d 80%, rgb(255 138 61 / 0));
+  border-radius: 2px;
+}
+
+.path-entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 60px;
+  padding-bottom: 40px;
+}
+
+.path-node {
+  position: absolute;
+  left: 174px;
+  top: 8px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--heat);
+  box-shadow: 0 0 0 4px var(--bg), 0 0 18px 2px var(--heat);
+}
+
+/* Today is the comet's head. */
+.is-now .path-node {
+  left: 169px;
+  top: 3px;
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle, #fff 0 25%, var(--heat) 60%);
+  box-shadow: 0 0 0 4px var(--bg), 0 0 30px 8px var(--heat);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 4px var(--bg), 0 0 44px 14px var(--heat);
+  }
+}
+
+.path-when {
+  text-align: right;
+  padding-top: 2px;
+}
+
+.path-date {
+  font-family: var(--display);
+  font-size: 24px;
+  line-height: 1.1;
+  color: var(--heat);
+}
+
+body:not(.dark-theme) .path-date {
+  color: var(--ink);
+}
+
+.path-kind {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.path-card {
+  padding: 22px 26px 24px;
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: 18px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.path-card header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.path-card h3 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(26px, 2.6vw, 36px);
+  line-height: 1.05;
+}
+
+.path-org {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.path-org a {
+  text-decoration: none;
+}
+
+.path-org a:hover {
+  color: var(--glow);
+}
+
+.path-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 46px;
+  padding: 6px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.path-mark[data-tone="light"] {
+  background: #14152a;
+}
+
+.path-mark img {
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.path-quest {
+  padding: 12px 16px;
+  border-left: 2px solid var(--heat);
+  background: color-mix(in srgb, var(--heat) 8%, transparent);
+  border-radius: 0 10px 10px 0;
+}
+
+.path-quest-name {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 20px;
+}
+
+.path-quest-name span {
+  margin-left: 8px;
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.path-quest-name span.is-live {
+  color: var(--glow);
+}
+
+.path-quest dl {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 4px 12px;
+  margin-top: 6px;
+  font-size: 15px;
+}
+
+.path-quest dt {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 3px;
+}
+
+.path-summary {
+  font-size: 16px;
+}
+
+.path-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+.path-bullets li {
+  position: relative;
+  padding-left: 18px;
+}
+
+.path-bullets li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  font-size: 10px;
+  top: 4px;
+  color: var(--heat);
+}
+
+body:not(.dark-theme) .path-bullets li::before {
+  color: var(--glow);
+}
+
+.path-bullets strong {
+  color: var(--ink);
+  font-weight: 550;
+}
+
+.path-material {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.path-material b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+@media (max-width: 760px) {
+  .path::before {
+    left: 6px;
+  }
+  .path-entry {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding-left: 32px;
+  }
+  .path-node {
+    left: 0;
+  }
+  .is-now .path-node {
+    left: -5px;
+  }
+  .path-when {
+    text-align: left;
+  }
+  .path-card {
+    padding: 18px;
+  }
+  .path-quest dl {
+    grid-template-columns: 1fr;
+  }
+}
