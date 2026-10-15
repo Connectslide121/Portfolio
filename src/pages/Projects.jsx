@@ -13,6 +13,7 @@ import { featuredProjects, allProjects } from "../components/projectList";
 
 import { mediaFor } from "../data/projectMedia";
 import { techFor } from "../data/projectTech";
+import { projectsIntro } from "../data/site";
 
 /**
  * A project clip that does not exist on the network until it is nearly on
@@ -194,12 +195,7 @@ export default function Projects() {
         <h2>
           Selected <Wobble>projects</Wobble>
         </h2>
-        <p>
-          A collection of AI-powered applications and full-stack solutions that
-          showcase my expertise in artificial intelligence, machine learning,
-          and modern web development. From intelligent chatbots to vector
-          databases and everything in between.
-        </p>
+        <p>{projectsIntro.text}</p>
       </div>
 
       {/* Featured Projects */}
