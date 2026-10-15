@@ -15,10 +15,10 @@ const foundry = experience.find((e) => e.material === "steel");
 // or the buttons until someone moves it there. [x, y] for wide screens and
 // for phones, as percentages of the board.
 const INITIAL = [
-  { id: "spark", label: "AI where it adds value", wide: [7, 6], narrow: [2, 1], r: 6, size: 110 },
-  { id: "pad", label: "Games, too", wide: [12, 36], narrow: [72, 2], r: -10, size: 120 },
+  { id: "spark", label: "AI where it adds value", wide: [7, 6], narrow: [12, 1], r: 6, size: 110 },
+  { id: "pad", label: "Games, too", wide: [12, 36], narrow: [76, 2], r: -10, size: 120 },
   { id: "ladle", label: `${foundry.dateLabel.replace(" - ", "–")}: steel`, wide: [4, 64], narrow: [2, 88], r: -12, size: 150 },
-  { id: "sweden", label: "Växjö, Sweden", wide: [76, 8], narrow: [37, 0], r: 8, size: 130 },
+  { id: "sweden", label: "Växjö, Sweden", wide: [76, 8], narrow: [44, 0], r: 8, size: 130 },
   { id: "cup", label: "Ships MVPs fast", wide: [86, 34], narrow: [27, 90], r: 12, size: 100 },
   { id: "code", label: "Full-stack", wide: [79, 60], narrow: [52, 88], r: -6, size: 120 },
   { id: "star", label: current.title.split(" & ")[0], wide: [88, 80], narrow: [76, 89], r: 14, size: 140 },
