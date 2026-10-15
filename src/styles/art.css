@@ -1,0 +1,171 @@
+/* Shared fills for the poster art. Colours come from the theme, so every
+   composition reprints itself in dark mode. */
+
+.tone-red {
+  fill: var(--red);
+}
+.tone-ink {
+  fill: var(--ink);
+}
+.tone-grey {
+  fill: var(--grey);
+}
+.tone-paper {
+  fill: var(--bg);
+}
+
+/* --- Hero composition --------------------------------------------------- */
+
+.composition {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  background: var(--bg);
+}
+
+.composition-grid line {
+  stroke: var(--hair);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.composition .shape {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: shape-in 0.7s var(--ease) both;
+  animation-delay: calc(var(--i) * 45ms);
+}
+
+.composition line.shape {
+  stroke: var(--ink);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  animation-name: line-in;
+  stroke-dasharray: 2000;
+}
+
+.composition .quiet {
+  animation-name: dot-in;
+  animation-duration: 0.4s;
+}
+
+.home-art-btn:hover .composition .tone-red {
+  fill: var(--ink);
+}
+.home-art-btn:hover .composition .tone-ink:not(.quiet) {
+  fill: var(--red);
+}
+.composition .shape {
+  transition: fill 0.35s ease;
+}
+
+@keyframes shape-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes dot-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes line-in {
+  from {
+    stroke-dashoffset: 2000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* --- Act posters ------------------------------------------------------- */
+
+.act-poster {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  background: var(--bg-2);
+  overflow: hidden;
+}
+
+.act-poster .outline {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 4;
+}
+
+.act-poster .hair {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.act-steel .pour {
+  stroke: var(--red);
+  stroke-width: 6;
+  stroke-dasharray: 14 10;
+  animation: pour 0.9s linear infinite;
+}
+
+@keyframes pour {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+.act-reset .traveller {
+  animation: travel 4.5s var(--ease) infinite;
+}
+
+@keyframes travel {
+  0%,
+  15% {
+    transform: translateX(0);
+  }
+  50%,
+  65% {
+    transform: translateX(140px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.act-software .bit {
+  transition: fill 0.4s ease, stroke 0.4s ease;
+}
+
+.act-software .outline.bit {
+  stroke-width: 3;
+}
+
+/* --- Grid overlay ------------------------------------------------------ */
+
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+}
+
+.grid-overlay-cols {
+  height: 100%;
+}
+
+.grid-overlay-cols span {
+  height: 100%;
+  background: rgb(227 0 27 / 0.09);
+  border-inline: 1px solid rgb(227 0 27 / 0.35);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--red);
+  padding: calc(var(--header) + 6px) 4px 0;
+}
+
+@media (max-width: 900px) {
+  .grid-overlay-cols span:nth-child(n + 5) {
+    display: none;
+  }
+}
