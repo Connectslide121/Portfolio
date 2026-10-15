@@ -1,0 +1,201 @@
+.tickets {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.ticket {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  border: var(--b) solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--pop) var(--pop) 0 var(--line);
+  overflow: hidden;
+}
+
+.ticket:nth-child(even) {
+  transform: rotate(0.6deg);
+}
+
+.ticket:nth-child(odd) {
+  transform: rotate(-0.4deg);
+}
+
+/* The stub, torn along a dotted perforation. */
+.ticket-stub {
+  position: relative;
+  padding: 22px 18px;
+  border-right: var(--b) dashed var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stub-date {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.stub-place {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.stub-mark {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: 6px 10px;
+  border: 2px solid var(--on-colour);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.stub-mark[data-tone="light"] {
+  background: #111;
+}
+
+.stub-mark img {
+  height: 28px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
+}
+
+.ticket-main {
+  position: relative;
+  padding: 22px 26px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ticket h3 {
+  padding-right: 130px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(26px, 2.8vw, 38px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.ticket-org {
+  margin-top: -4px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.stamp {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 4px 12px;
+  border: 3px solid var(--ink-2);
+  border-radius: 8px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transform: rotate(8deg);
+  opacity: 0.7;
+}
+
+.stamp.is-live {
+  border-color: #e0245e;
+  color: #e0245e;
+  opacity: 1;
+  animation: wobble 2.4s ease-in-out infinite;
+}
+
+body.dark-theme .stamp.is-live {
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+@keyframes wobble {
+  50% {
+    transform: rotate(-4deg) scale(1.05);
+  }
+}
+
+.quest {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 15px;
+}
+
+.quest-name {
+  font-size: 26px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.ticket-summary {
+  font-size: 16px;
+}
+
+.ticket-more ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.ticket-more li {
+  position: relative;
+  padding-left: 26px;
+}
+
+.ticket-more li::before {
+  content: "✺";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--pink);
+  font-size: 16px;
+}
+
+.material {
+  font-family: var(--hand);
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ink-2);
+}
+
+.material b {
+  color: var(--ink);
+}
+
+@media (max-width: 760px) {
+  .ticket {
+    grid-template-columns: 1fr;
+  }
+  .ticket-stub {
+    border-right: 0;
+    border-bottom: var(--b) dashed var(--line);
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+  }
+  .stub-mark {
+    margin: 0 0 0 auto;
+  }
+  .ticket h3 {
+    padding-right: 0;
+  }
+  .stamp {
+    position: static;
+    align-self: flex-end;
+    margin-bottom: -4px;
+  }
+}
