@@ -1,187 +1,187 @@
-/* The hero: a title page. Type on the left, the opening print on the right,
-   nothing behind either — the paper is the background. */
-#home {
+.home {
+  padding-top: calc(var(--header) + clamp(24px, 4vw, 56px));
+  min-height: 100svh;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  gap: var(--space-2xl);
-  min-height: calc(100vh - 80px);
-  padding: var(--space-3xl) 0;
-  position: relative;
+  overflow: hidden;
 }
 
-.home-text-wrapper {
-  flex: 1 1 34rem;
-  max-width: 38rem;
-  /* No z-index here: it would make a stacking context, and the Destruction
-     mode button, which docks out of this column as position: fixed, could
-     then never rise above the journey stage. */
-  position: relative;
+.home-grid {
+  row-gap: clamp(24px, 3vw, 40px);
+  align-items: start;
 }
 
-.home-text-wrapper h1 {
-  font-size: clamp(3.6rem, 8.4vw, 7.4rem);
-  line-height: 0.88;
-  letter-spacing: -0.025em;
-  margin: 1.1rem 0 1.2rem;
-  text-align: left;
-}
-
-.home-text-wrapper h2 {
-  font-family: var(--sans);
-  font-size: 0.86rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
+.home-meta {
+  grid-column: 1 / span 2;
+  font-size: 13px;
+  font-weight: 600;
   text-transform: uppercase;
-  color: var(--ink);
-  line-height: 1.4;
-  margin-bottom: var(--space-xl);
+  letter-spacing: 0.05em;
+  line-height: 1.6;
 }
 
-/* The hook, set larger than the blurb under it: one sentence a recruiter
-   reads even if they read nothing else. */
+.home-copy {
+  grid-column: 3 / span 5;
+  max-width: 620px;
+}
+
+.home-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--red-ink);
+  margin-bottom: 18px;
+}
+
 .home-lede {
-  font-size: 1.3rem;
-  line-height: 1.45;
-  color: var(--ink);
-  max-width: 32rem;
-  margin-bottom: var(--space-md);
+  font-size: clamp(26px, 2.7vw, 44px);
+  font-weight: 600;
+  font-stretch: 92%;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 
-.home-description {
-  font-size: 0.98rem;
-  color: var(--ink-soft);
-  max-width: 32rem;
-  margin-bottom: var(--space-xl);
-  padding-top: var(--space-md);
-  border-top: 1px solid var(--rule);
+.home-blurb {
+  margin-top: 22px;
+  max-width: 48ch;
+  font-size: 16px;
+  color: var(--ink-2);
 }
 
 .home-cta {
+  margin-top: 30px;
   display: flex;
-  gap: var(--space-md);
-  align-items: center;
   flex-wrap: wrap;
+  gap: 12px;
 }
 
-.home-cta .btn {
-  padding: 0.8rem 1.6rem;
-  font-size: var(--font-size-base);
-}
-
-/* The print, as tall as the hero allows. */
 .home-art {
-  flex: 0 1 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 0;
+  grid-column: 9 / span 4;
+  grid-row: 1 / span 2;
 }
 
-.home-art-svg {
-  height: min(74vh, 46rem);
-  width: auto;
-  max-width: 44vw;
+.home-art-btn {
   display: block;
-  pointer-events: none;
+  width: 100%;
+  cursor: crosshair;
 }
 
-/* --- discover more ------------------------------------------------------- */
-
-.discover-more-wrapper {
-  position: absolute;
-  bottom: var(--space-lg);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-}
-
-.discover-more-btn {
+.home-art figcaption {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-  background: none;
-  border: 0;
-  color: var(--ink-soft);
-  font: inherit;
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
-  cursor: pointer;
-  transition: color 0.2s ease;
+  letter-spacing: 0.06em;
 }
 
-.discover-more-btn:hover {
-  color: var(--ink);
+/* The name. Set so large it becomes the poster's ground line. */
+.home-name {
+  grid-column: 1 / -1;
+  margin-top: clamp(24px, 4vw, 48px);
+  font-weight: 800;
+  font-stretch: 72%;
+  line-height: 0.8;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
 }
 
-.discover-arrow {
-  font-size: 0.8rem;
-  animation: discover-drop 2.4s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+.home-name-first {
+  display: block;
+  font-size: clamp(56px, 9.4vw, 170px);
+  color: var(--red);
 }
 
-@keyframes discover-drop {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateY(5px);
-  }
+.home-name-last {
+  position: relative;
+  display: block;
+  font-size: clamp(64px, 18vw, 330px);
+  margin-left: -0.03em;
+  white-space: nowrap;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .discover-arrow {
-    animation: none;
-  }
+.home-name-dot {
+  display: inline-block;
+  width: 0.14em;
+  height: 0.14em;
+  margin-left: 0.04em;
+  border-radius: 50%;
+  background: var(--red);
 }
 
-/* --- responsive ---------------------------------------------------------- */
-
-@media screen and (max-width: 1024px) {
-  #home {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-xl);
-    padding: var(--space-2xl) 0;
-  }
-  .home-text-wrapper {
-    max-width: 100%;
-    flex-basis: auto;
+@media (max-width: 1100px) {
+  .home-copy {
+    grid-column: 3 / span 6;
   }
   .home-art {
-    order: -1;
-  }
-  .home-art-svg {
-    height: min(46vh, 26rem);
-    max-width: 100%;
+    grid-column: 9 / span 4;
   }
 }
 
-@media screen and (max-width: 768px) {
-  #home {
-    min-height: auto;
-    padding: var(--space-lg) 0 var(--space-2xl);
+@media (max-width: 900px) {
+  .home-meta {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
   }
-  .home-text-wrapper h1 {
-    font-size: clamp(3rem, 15vw, 4.2rem);
+  .home-copy {
+    grid-column: 1 / -1;
   }
-  .home-lede {
-    font-size: 1.12rem;
+  .home-art {
+    grid-column: 2 / span 3;
+    grid-row: auto;
   }
-  .discover-more-wrapper {
-    display: none;
+  .home-name-last {
+    font-size: 18vw;
   }
 }
 
-@media screen and (max-width: 480px) {
-  .home-cta {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .home-cta .btn {
-    justify-content: center;
+/* --- Ticker ------------------------------------------------------------ */
+
+.ticker {
+  margin-top: clamp(28px, 4vw, 56px);
+  background: var(--red);
+  color: var(--on-red);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 70s linear infinite;
+}
+
+.ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+.ticker ul {
+  display: flex;
+}
+
+.ticker li {
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ticker li::after {
+  content: "●";
+  font-size: 0.6em;
+  vertical-align: 0.25em;
+  margin: 0 22px;
+}
+
+@keyframes ticker {
+  to {
+    transform: translateX(-50%);
   }
 }

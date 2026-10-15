@@ -1,69 +1,70 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/home.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import HeroTeaser from "../journey/HeroTeaser";
-import IntroArt from "../journey/IntroArt";
-import Wobble from "../components/Wobble";
-import HeroDestroy from "../destroy/HeroDestroy";
+import Composition from "../art/Composition";
+import Ticker from "../components/Ticker";
 import { profile } from "../data/journey";
+import { scrollToSection } from "../components/hooks";
 
-export default function Home({ onEnterJourney, journeyOpen }) {
-  const NAVBAR_HEIGHT = 80; // Fixed navbar height
+// 121 for Connectslide121. Every press after that draws a new poster.
+const FIRST_SEED = 121;
 
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      window.scrollTo({
-        top: element.offsetTop - NAVBAR_HEIGHT,
-        behavior: "smooth",
-      });
-    }
-  };
-
+export default function Home() {
+  const [seed, setSeed] = useState(FIRST_SEED);
   const [first, ...rest] = profile.name.split(" ");
 
+  const recompose = () => setSeed(Math.floor(100 + Math.random() * 9900));
+
   return (
-    <section id="home">
-      <div className="home-text-wrapper">
-        <p className="eyebrow">Portfolio · Växjö, Sweden</p>
-        <h1>
-          {first} <Wobble>{rest.join(" ")}</Wobble>
-        </h1>
-        <h2>{profile.title}</h2>
-        <p className="home-lede">{profile.lede}</p>
-        <p className="home-description">{profile.blurb}</p>
-        <div className="home-cta">
-          <button className="btn" onClick={() => scrollToSection("projects")}>
-            View my work
-          </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => scrollToSection("contact")}
-          >
-            Get in touch
-          </button>
-          <HeroDestroy journeyOpen={journeyOpen} />
+    <section id="home" className="home">
+      <div className="wrap home-grid">
+        <div className="home-meta" data-reveal>
+          <p>Portfolio</p>
+          <p>Växjö, Sweden</p>
+          <p className="muted">56°53′N 14°49′E</p>
         </div>
-        <HeroTeaser onEnter={onEnterJourney} />
-      </div>
 
-      {/* The same opening print as the journey's landing beat, so both
-          modes open on one image: steel poured in Spain, cast as a developer
-          in Sweden. */}
-      <div className="home-art">
-        <IntroArt className="home-art-svg" />
-      </div>
+        <div className="home-copy" data-reveal>
+          <p className="home-title">{profile.title}</p>
+          <p className="home-lede">{profile.lede}</p>
+          <p className="home-blurb">{profile.blurb}</p>
+          <div className="home-cta">
+            <button type="button" className="btn btn-solid" onClick={() => scrollToSection("projects")}>
+              View my work <span aria-hidden="true">→</span>
+            </button>
+            <button type="button" className="btn" onClick={() => scrollToSection("contact")}>
+              Get in touch <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
 
-      <div className="discover-more-wrapper">
-        <button
-          className="discover-more-btn"
-          onClick={() => scrollToSection("about")}
-        >
-          <span>Discover more</span>
-          <FontAwesomeIcon icon={faArrowDown} className="discover-arrow" />
-        </button>
+        <figure className="home-art" data-reveal>
+          <button
+            type="button"
+            className="home-art-btn"
+            onClick={recompose}
+            aria-label="Draw a new composition"
+          >
+            <Composition seed={seed} />
+          </button>
+          <figcaption>
+            <span>Komposition Nr. {seed}</span>
+            <button type="button" className="link-btn" onClick={recompose}>
+              Recompose ↻
+            </button>
+          </figcaption>
+        </figure>
+
+        <h1 className="home-name" aria-label={profile.name}>
+          <span className="home-name-first" aria-hidden="true">
+            {first}
+          </span>
+          <span className="home-name-last" aria-hidden="true">
+            {rest.join(" ")}
+            <span className="home-name-dot" />
+          </span>
+        </h1>
       </div>
+      <Ticker />
     </section>
   );
 }
