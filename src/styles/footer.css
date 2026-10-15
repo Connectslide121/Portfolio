@@ -1,0 +1,40 @@
+.site-footer {
+  max-width: 1480px;
+  margin: 40px auto 0;
+  padding: 0 clamp(10px, 2.4vw, 36px) 48px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.footer-end {
+  text-align: center;
+  color: var(--muted);
+  padding: 18px 0;
+}
+
+.footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--line-2);
+  padding-top: 16px;
+}
+
+.footer-row ul {
+  display: flex;
+  gap: 18px;
+}
+
+.footer-row a {
+  text-decoration: none;
+}
+
+.footer-row a:hover {
+  color: var(--red);
+}
+
+.heart {
+  color: var(--red);
+}
