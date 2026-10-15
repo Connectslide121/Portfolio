@@ -1,242 +1,151 @@
-/* Contact: a calling card on the left, a ruled form on the right — written
-   on the page rather than boxed into widgets. */
-
-#contact {
-  padding: var(--space-3xl) 0;
-}
-
-.contact-content {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: var(--space-3xl);
+.contact-grid {
+  row-gap: 56px;
   align-items: start;
 }
 
-/* --- the card ------------------------------------------------------------ */
-
-.contact-info {
-  position: relative;
-  /* Its own stacking context, so the plate below can sit BEHIND the card's
-     paper while staying inside the card's tilt. */
-  isolation: isolate;
-  background: transparent;
-  border: 1px solid var(--ink);
-  border-radius: 4px;
-  padding: var(--space-xl);
-  box-shadow: 6px 6px 0 var(--ink);
-  rotate: -1deg;
-  transition: rotate 0.3s ease;
+.contact-details {
+  grid-column: 1 / span 6;
 }
 
-.contact-info:hover {
-  rotate: 0deg;
-}
-
-/* The card's paper, and a pastel plate peeking out from behind its
-   corner. */
-.contact-info::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--paper);
-}
-
-.contact-info::before {
-  content: "";
-  position: absolute;
-  top: -2.2rem;
-  right: -2rem;
-  width: 6.5rem;
-  height: 6.5rem;
-  border-radius: 50%;
-  background: var(--apricot);
-  z-index: -2;
-}
-
-.contact-info-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding-bottom: var(--space-lg);
-  margin-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--ink);
-}
-
-.contact-info-header h3 {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: 2rem;
+.contact-email {
+  display: inline-block;
+  font-size: clamp(30px, 4.4vw, 76px);
+  font-weight: 800;
+  font-stretch: 78%;
+  letter-spacing: -0.04em;
   line-height: 1;
-  color: var(--ink);
-  margin: 0;
+  text-decoration: none;
+  border-bottom: 6px solid var(--red);
+  padding-bottom: 6px;
+  word-break: break-all;
+  transition: color 0.2s ease;
 }
 
-.contact-info-details {
+.contact-email:hover {
+  color: var(--red-ink);
+}
+
+.contact-details dl {
+  margin-top: 48px;
+}
+
+.contact-details dl > div {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: var(--gutter);
+  padding: 16px 0;
+  border-top: 1px solid var(--hair);
+}
+
+.contact-details dt {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  padding-top: 4px;
+}
+
+.contact-details dd {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.contact-details dd a {
+  text-decoration: none;
+}
+
+.contact-details dd a:hover {
+  color: var(--red-ink);
+}
+
+.contact-social {
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
-.contact-detail {
-  display: flex;
+.contact-social a {
+  display: grid;
+  grid-template-columns: 22px 110px 1fr;
   align-items: center;
-  gap: var(--space-md);
-  padding: 0.85rem 0;
-  border-bottom: 1px solid var(--rule);
+  gap: 12px;
 }
 
-.contact-detail:last-child {
-  border-bottom: 0;
+.contact-social .muted {
+  font-weight: 400;
+  font-size: 15px;
 }
 
-.contact-detail-icon {
-  flex: none;
-  width: 2.2rem;
-  height: 2.2rem;
+.social-icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.contact-form {
+  grid-column: 8 / span 5;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 1px solid var(--ink);
-  color: #1d1b19;
-  font-size: 0.85rem;
+  flex-direction: column;
+  gap: 26px;
+  background: var(--bg-2);
+  padding: clamp(20px, 2.4vw, 36px);
 }
-
-.contact-detail:nth-child(1) .contact-detail-icon {
-  background: var(--sky);
-}
-.contact-detail:nth-child(2) .contact-detail-icon {
-  background: var(--butter);
-}
-.contact-detail:nth-child(3) .contact-detail-icon {
-  background: var(--rose);
-}
-
-.contact-detail-content h4 {
-  font-size: 0.64rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin: 0 0 0.1rem;
-}
-
-.contact-detail-content p {
-  margin: 0;
-  font-size: 1rem;
-  color: var(--ink);
-}
-
-/* --- the form ------------------------------------------------------------ */
 
 .contact-form h3 {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: 2rem;
-  line-height: 1;
-  margin-bottom: var(--space-lg);
-}
-
-.contact-form form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-.contact-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.contact-form-group label {
-  font-size: 0.64rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
+  font-size: 13px;
+  font-weight: 700;
   text-transform: uppercase;
-  color: var(--ink);
+  letter-spacing: 0.08em;
 }
 
-/* Ruled lines to write on, not boxes. */
-.contact-form-group input,
-.contact-form-group textarea {
+.contact-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contact-form label span {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.contact-form input,
+.contact-form textarea {
   width: 100%;
-  font: inherit;
-  font-size: 1.05rem;
-  color: var(--ink);
   background: transparent;
   border: 0;
-  border-bottom: 1px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
   border-radius: 0;
-  padding: 0.45rem 0;
-  outline: none;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-.contact-form-group textarea {
+  padding: 8px 0;
+  font-size: 18px;
   resize: vertical;
-  min-height: 8rem;
-  line-height: 1.6;
-  /* the lines of a writing pad */
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent calc(1.6em + 0.45rem - 1px),
-    var(--rule) calc(1.6em + 0.45rem - 1px),
-    var(--rule) calc(1.6em + 0.45rem)
-  );
-  background-attachment: local;
+  transition: border-color 0.2s ease;
 }
 
-.contact-form-group input::placeholder,
-.contact-form-group textarea::placeholder {
-  color: var(--ink-faint);
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+  color: var(--muted);
 }
 
-.contact-form-group input:focus,
-.contact-form-group textarea:focus {
-  border-bottom-width: 2px;
-  background-color: color-mix(in srgb, var(--butter) 18%, transparent);
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: var(--red);
 }
 
-.contact-form button[type="submit"] {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font: inherit;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  color: var(--paper);
-  background: var(--ink);
-  border: 1px solid var(--ink);
-  border-radius: var(--radius-full);
-  padding: 0.85rem 1.8rem;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.contact-form button[type="submit"]:hover {
-  background: transparent;
-  color: var(--ink);
-}
-
-/* --- responsive ---------------------------------------------------------- */
-
-@media screen and (max-width: 900px) {
-  .contact-content {
-    grid-template-columns: 1fr;
-    gap: var(--space-2xl);
+@media (max-width: 900px) {
+  .contact-details,
+  .contact-form {
+    grid-column: 1 / -1;
   }
-  .contact-info {
-    rotate: 0deg;
-    margin-right: 6px;
+  .contact-social a {
+    grid-template-columns: 22px 1fr;
   }
-  .contact-info::before {
-    right: -0.6rem;
-    width: 5rem;
-    height: 5rem;
+  .contact-social .muted {
+    display: none;
   }
 }
