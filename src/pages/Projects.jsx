@@ -1,252 +1,135 @@
-import React, { useState, useEffect, useRef } from "react";
-import Wobble from "../components/Wobble";
+import React, { useEffect, useRef, useState } from "react";
 import "../styles/projects.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGamepad,
-  faExternalLinkAlt,
-  faTimes
-} from "@fortawesome/free-solid-svg-icons";
-import { faGithub, faNpm } from "@fortawesome/free-brands-svg-icons";
-
+import SectionHead from "../components/SectionHead";
+import ProjectMedia from "../components/ProjectMedia";
+import ProjectLinks from "../components/ProjectLinks";
 import { featuredProjects, allProjects } from "../components/projectList";
-
-import { mediaFor } from "../data/projectMedia";
 import { techFor } from "../data/projectTech";
 import { projectsIntro } from "../data/site";
 
+const year = (date = "") => date.split(" ").pop();
+const pad = (n) => String(n).padStart(2, "0");
+const techName = (t) => techFor(t)?.name || t;
+
+function TechList({ technologies = [] }) {
+  return (
+    <ul className="tag-list">
+      {technologies.map((t) => (
+        <li key={t}>{techName(t)}</li>
+      ))}
+    </ul>
+  );
+}
+
+function Featured({ project, index }) {
+  return (
+    <article className="feature" data-reveal>
+      <div className="feature-media">
+        <ProjectMedia title={project.title} className="media" />
+        <span className="feature-num">{pad(index + 1)}</span>
+      </div>
+      <div className="feature-text">
+        <p className="feature-meta">
+          <span>{project.category || "Web App"}</span>
+          <span>{project.date}</span>
+        </p>
+        <h3>{project.title}</h3>
+        <p className="feature-desc">{project.description}</p>
+        <TechList technologies={project.technologies} />
+        <ProjectLinks project={project} />
+      </div>
+    </article>
+  );
+}
+
 /**
- * A project clip that does not exist on the network until it is nearly on
- * screen.
- *
- * These files are tens of megabytes each, and `autoPlay` on a card three
- * screens down starts pulling them the moment the page loads — including
- * behind Journey mode, which covers this page entirely and is the default
- * landing. Nothing is requested until the card is within a screen of the
- * viewport; then it loads and plays, exactly as before, and pauses again when
- * it leaves so a phone is not decoding video nobody is looking at.
+ * The index: every other project as one row of a catalogue. On a mouse, the
+ * row under the pointer shows its picture next to the cursor; a click opens
+ * the row in place.
  */
-function ProjectVideo({ src, title }) {
-  const ref = useRef(null);
+function Index({ projects, offset }) {
+  const [openTitle, setOpenTitle] = useState(null);
+  const [hover, setHover] = useState(null);
+  const previewRef = useRef(null);
+  const [canHover, setCanHover] = useState(false);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    // No observer (older Safari): fall back to the old behaviour rather than
-    // to a card that never plays.
-    if (typeof IntersectionObserver === "undefined") {
-      el.preload = "auto";
-      el.play().catch(() => {});
-      return;
-    }
-
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.preload = "auto";
-          el.play().catch(() => {});
-        } else {
-          el.pause();
-        }
-      },
-      { rootMargin: "100% 0px" },
-    );
-
-    io.observe(el);
-    return () => io.disconnect();
+    setCanHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
   }, []);
 
+  const move = (e) => {
+    const el = previewRef.current;
+    if (!el) return;
+    el.style.setProperty("--px", `${e.clientX}px`);
+    el.style.setProperty("--py", `${e.clientY}px`);
+  };
+
   return (
-    <video
-      ref={ref}
-      className="project-media"
-      src={src}
-      aria-label={title}
-      loop
-      muted
-      playsInline
-      controls
-      preload="none"
-    />
+    <div className="wrap index" onMouseMove={canHover ? move : undefined}>
+      <div className="index-head" aria-hidden="true">
+        <span>No.</span>
+        <span>Title</span>
+        <span>Type</span>
+        <span>Built with</span>
+        <span>Year</span>
+      </div>
+      <ol className="index-list" onMouseLeave={() => setHover(null)}>
+        {projects.map((p, i) => {
+          const open = openTitle === p.title;
+          const id = `idx-${i}`;
+          return (
+            <li key={p.title} className={`index-item${open ? " is-open" : ""}`}>
+              <button
+                type="button"
+                className="index-row"
+                aria-expanded={open}
+                aria-controls={id}
+                onClick={() => setOpenTitle(open ? null : p.title)}
+                onMouseEnter={() => canHover && setHover(p.title)}
+              >
+                <span className="index-num">{pad(offset + i + 1)}</span>
+                <span className="index-title">{p.title}</span>
+                <span className="index-type">{p.category || "Web App"}</span>
+                <span className="index-tech">{(p.technologies || []).map(techName).join(", ")}</span>
+                <span className="index-year">{year(p.date)}</span>
+              </button>
+              <div className="index-panel" id={id} hidden={!open}>
+                {open && <ProjectMedia title={p.title} className="media" />}
+                <div>
+                  <p>{p.description}</p>
+                  <ProjectLinks project={p} />
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+      {canHover && (
+        <div ref={previewRef} className={`index-preview${hover && !openTitle ? " is-on" : ""}`} aria-hidden="true">
+          {hover && <ProjectMedia key={hover} title={hover} className="media" />}
+        </div>
+      )}
+    </div>
   );
 }
 
 export default function Projects() {
-  const [showOtherProjects, setShowOtherProjects] = useState(false);
-
-  // Lock/unlock body scroll when modal opens/closes
-  useEffect(() => {
-    if (showOtherProjects) {
-      // Lock scroll
-      document.body.style.overflow = "hidden";
-    } else {
-      // Unlock scroll
-      document.body.style.overflow = "unset";
-    }
-
-    // Cleanup function to ensure scroll is unlocked when component unmounts
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [showOtherProjects]);
-
-  const ProjectCard = ({ project }) => {
-    const media = mediaFor(project.title);
-
-    return (
-      <div className="project-card">
-        <div className="project-media-container">
-          {media.type === "video" ? (
-            <ProjectVideo src={media.src} title={project.title} />
-          ) : (
-            <img
-              className="project-media"
-              src={media.src}
-              alt={project.title}
-            />
-          )}
-          <div className="project-type-badge">
-            {project.category || "Web App"}
-          </div>
-        </div>
-
-        <div className="project-content">
-          <div className="project-header">
-            <h4 className="project-title">{project.title}</h4>
-            <div className="project-links">
-              {project.repository && (
-                <a
-                  href={project.repository}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="View on GitHub"
-                >
-                  <FontAwesomeIcon icon={faGithub} />
-                </a>
-              )}
-              {project.livedemo && (
-                <a
-                  href={project.livedemo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="View Live Demo"
-                >
-                  <FontAwesomeIcon icon={faExternalLinkAlt} />
-                </a>
-              )}
-              {project.npm && (
-                <a
-                  href={project.npm}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="View on NPM"
-                >
-                  <FontAwesomeIcon icon={faNpm} />
-                </a>
-              )}
-              {project.play && (
-                <a
-                  href={project.play}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="Play Game"
-                >
-                  <FontAwesomeIcon icon={faGamepad} />
-                </a>
-              )}
-            </div>
-          </div>
-
-          <p className="project-description">
-            {project.description ||
-              "A modern web application built with cutting-edge technologies."}
-          </p>
-
-          {project.technologies && (
-            <div className="project-tech-stack">
-              {project.technologies.map((tech, index) => {
-                const techInfo = techFor(tech);
-                return techInfo ? (
-                  <div key={index} className="tech-icon" title={techInfo.name}>
-                    <img src={techInfo.icon} alt={techInfo.name} />
-                  </div>
-                ) : (
-                  <span key={index} className="tech-tag">
-                    {tech}
-                  </span>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <section id="projects">
-      <div className="projects-header">
-        <p className="eyebrow">02 · Work</p>
-        <h2>
-          Selected <Wobble>projects</Wobble>
-        </h2>
+    <section id="projects" className="section">
+      <SectionHead num="03" title={projectsIntro.title} aside={`${featuredProjects.length + allProjects.length} works`}>
         <p>{projectsIntro.text}</p>
+      </SectionHead>
+
+      <div className="wrap features">
+        {featuredProjects.map((p, i) => (
+          <Featured key={p.title} project={p} index={i} />
+        ))}
       </div>
 
-      {/* Featured Projects */}
-      <div className="featured-projects">
-        <h3>Featured Projects</h3>
-        <div className="project-cards-wrapper">
-          {featuredProjects.map((project, index) => (
-            <ProjectCard key={index} project={project} />
-          ))}
-        </div>
-      </div>
-
-      {/* Show More Button */}
-      <div className="show-more-container">
-        <button
-          className="show-more-btn"
-          onClick={() => setShowOtherProjects(true)}
-        >
-          View All Projects
-        </button>
-      </div>
-
-      {/* Other Projects Modal */}
-      {showOtherProjects && (
-        <div className="other-projects-wrapper">
-          <div
-            className="overlay"
-            onClick={() => setShowOtherProjects(false)}
-          ></div>
-          <div className="other-projects-content">
-            <div className="modal-header">
-              <h3>All Projects</h3>
-              <button
-                className="modal-close"
-                onClick={() => setShowOtherProjects(false)}
-                title="Close"
-              >
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-
-            <div className="modal-body">
-              <div className="project-cards-wrapper">
-                {allProjects.map((project, index) => (
-                  <ProjectCard key={index} project={project} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <h3 className="wrap index-caption" data-reveal>
+        Index of all works
+      </h3>
+      <Index projects={allProjects} offset={featuredProjects.length} />
     </section>
   );
 }
