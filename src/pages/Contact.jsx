@@ -9,6 +9,7 @@ import {
   faMapMarkerAlt
 } from "@fortawesome/free-solid-svg-icons";
 import Monogram from "../components/Monogram";
+import { contact } from "../data/site";
 
 export default function Contact() {
   return (
@@ -18,10 +19,7 @@ export default function Contact() {
         <h2>
           Get in <Wobble>touch</Wobble>
         </h2>
-        <p>
-          I'm always open to discussing new opportunities and interesting
-          projects. Let's connect and create something amazing together!
-        </p>
+        <p>{contact.intro}</p>
       </div>
 
       <div className="contact-content">
@@ -39,7 +37,7 @@ export default function Contact() {
               <div className="contact-detail-content">
                 <h4>Email</h4>
                 <p>
-                  <a href="mailto:jonmendi@gmail.com">jonmendi@gmail.com</a>
+                  <a href={`mailto:${contact.email}`}>{contact.email}</a>
                 </p>
               </div>
             </div>
@@ -50,7 +48,7 @@ export default function Contact() {
               </div>
               <div className="contact-detail-content">
                 <h4>Phone</h4>
-                <p>+46 79-354 10 60</p>
+                <p>{contact.phone}</p>
               </div>
             </div>
 
@@ -60,7 +58,7 @@ export default function Contact() {
               </div>
               <div className="contact-detail-content">
                 <h4>Location</h4>
-                <p>Växjö, Sweden</p>
+                <p>{contact.location}</p>
               </div>
             </div>
           </div>
@@ -68,7 +66,7 @@ export default function Contact() {
 
         <div className="contact-form">
           <h3>Send me a message</h3>
-          <form action="https://getform.io/f/penL3Eb7" method="POST">
+          <form action={contact.formAction} method="POST">
             <div className="contact-form-group">
               <label htmlFor="name">Name</label>
               <input
