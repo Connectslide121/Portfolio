@@ -1,0 +1,110 @@
+.acts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 4vw, 56px);
+  text-align: center;
+}
+
+.act-body {
+  width: min(220px, 100%);
+  margin: 0 auto 10px;
+  overflow: visible;
+}
+
+.act-span {
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.acts h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(34px, 3.4vw, 48px);
+  line-height: 1.1;
+}
+
+.acts li > p:last-child {
+  max-width: 30ch;
+  margin: 6px auto 0;
+  color: var(--ink-2);
+}
+
+.body-core {
+  fill: #fff7ea;
+}
+
+.body-steel .body-core {
+  fill: #ffb070;
+}
+
+.body-steel .body-glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: breathe 3.6s ease-in-out infinite;
+}
+
+.eclipse-moon {
+  fill: var(--bg);
+  animation: eclipse 9s ease-in-out infinite;
+}
+
+.body-reset .body-glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: corona 9s ease-in-out infinite;
+}
+
+.body-software .body-core {
+  fill: #e8f4ff;
+}
+
+.body-orbit {
+  fill: none;
+  stroke: var(--line-2);
+  stroke-dasharray: 2 4;
+}
+
+.body-planet {
+  fill: var(--cool);
+}
+
+body:not(.dark-theme) .body-glow {
+  opacity: 0.55;
+}
+
+@keyframes eclipse {
+  0%,
+  10% {
+    transform: translateX(-90px);
+  }
+  45%,
+  55% {
+    transform: translateX(0);
+  }
+  90%,
+  100% {
+    transform: translateX(90px);
+  }
+}
+
+@keyframes corona {
+  0%,
+  30%,
+  70%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  .acts {
+    grid-template-columns: 1fr;
+  }
+}
