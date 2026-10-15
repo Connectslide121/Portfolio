@@ -1,5 +1,11 @@
 # Copilot Instructions for Jon Mendizabal's Portfolio
 
+## Commits
+
+- **Commit as you go**, in small, logical commits: each commit is one coherent change — a feature step, a fix or a refactor, together with its tests and docs — with a clear message saying what changed and why. Don't bundle unrelated changes, and don't leave finished work uncommitted.
+- **Never push.** The user reviews and pushes manually.
+- **No AI attribution in commit messages.** Don't add `Co-Authored-By` trailers or any "generated with" lines.
+
 ## Ending a session
 
 End every session with a short recap for the user. Include only the points that have something to say — skip the rest entirely, and never write filler such as "no decisions were made":
