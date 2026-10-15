@@ -1,5 +1,16 @@
 # Copilot Instructions for Jon Mendizabal's Portfolio
 
+## Ending a session
+
+End every session with a short recap for the user. Include only the points that have something to say — skip the rest entirely, and never write filler such as "no decisions were made":
+
+- **Done** — what was changed or completed.
+- **Need to know** — anything the user should be aware of: risks, things not verified, actions needed from them.
+- **Decisions** — choices you made on the user's behalf that they should know about.
+- **Next steps** — sensible follow-ups, if any.
+
+---
+
 ## Project Overview
 
 This is a personal portfolio website built with React 18, showcasing Jon Mendizabal's work as a full-stack developer. It's a single-page application deployed on GitHub Pages with a focus on clean, modern design and responsive functionality.
