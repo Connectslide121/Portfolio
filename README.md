@@ -2,11 +2,26 @@
 
 A personal portfolio website built with React. It showcases the developer Jon Mendizabal, highlighting projects, experience and contact information. The site is deployed through GitHub Pages.
 
+## Design — JonOS
+
+This branch turns the portfolio into a 90s desktop operating system.
+
+- **Boot** — a BIOS that detects every material of the career, oldest first,
+  then a splash (once per session; any key skips it).
+- **Desktop** — hand-drawn 16x16 pixel icons; click to select, double-click
+  to open (one tap on a phone). Windows drag, resize, minimise, maximise.
+- **About_Me.txt** in Notepad, a **Career Setup Wizard** with a pixel scene
+  per act, **Experience** in an Explorer, **Projects** as a folder that opens
+  files in a Media Player, **Tools** as a Control Panel, **Mail** for contact.
+- **Start menu** — programs, Display: Standard / Night, the pipes
+  screensaver (also after 90 s idle) and Shut Down.
+- Deep links: `#projects`, `#experience`, `#contact`, `#tools`, `#career`.
+
 ## Features
 
-- **Single Page Application** built with React and React Router style sections
+- **Single Page Application** built with React — a desktop with windows
 - **Dark/Light theme toggle** implemented via CSS variables
-- **Projects gallery** with media previews and technology icons
+- **Projects** — a folder of files, each opening in a media player
 - **About section** summarising tools, work experience and education
 - **Responsive design** suitable for mobile and desktop screens
 - **Contact form** powered by [Getform](https://getform.io/)
@@ -50,7 +65,12 @@ src/           React components, pages and styles
 src/images/    Media assets used on the site
 ```
 
-Project data for the **Projects** section is stored in `src/components/projectList.js`.
+Content lives in data files, separate from the layout:
+
+- `src/components/projectList.js` — projects
+- `src/data/journey.js` — profile, experience, education, career chapters
+- `src/data/tools.js`, `src/data/social.js`, `src/data/site.js` — tools, profiles elsewhere, contact and section copy
+- `src/data/projectMedia.js`, `projectTech.js`, `orgLogos.js` — media and logo lookups
 
 ## License
 
