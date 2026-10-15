@@ -1,63 +1,53 @@
-import React, { useState } from "react";
+import React from "react";
 import "../styles/about.css";
-import Tools from "../components/Tools";
-import Education from "../components/Education";
-import Experience from "../components/Experience";
+import { chapters } from "../data/journey";
+import { toolCategories, toolsIntro } from "../data/tools";
+
+const NOTE_COLORS = ["orange", "pink", "blue"];
+const SHEET_COLORS = ["pink", "blue", "green", "yellow", "purple"];
 
 export default function About() {
-  const [activeTab, setActiveTab] = useState("experience");
-
   return (
-    <section id="about">
-      <Tools />
-      <div className="about-info-wrapper">
-        <div
-          className="about-tabs"
-          role="tablist"
-          aria-label="Experience and education"
-        >
-          <button
-            type="button"
-            role="tab"
-            id="tab-experience"
-            aria-selected={activeTab === "experience"}
-            aria-controls="panel-experience"
-            className={`about-tab ${activeTab === "experience" ? "active" : ""}`}
-            onClick={() => setActiveTab("experience")}
-          >
-            Experience
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tab-education"
-            aria-selected={activeTab === "education"}
-            aria-controls="panel-education"
-            className={`about-tab ${activeTab === "education" ? "active" : ""}`}
-            onClick={() => setActiveTab("education")}
-          >
-            Education
-          </button>
-        </div>
-        <div className="about-tab-panels">
-          {activeTab === "experience" ? (
-            <div
-              role="tabpanel"
-              id="panel-experience"
-              aria-labelledby="tab-experience"
-            >
-              <Experience />
-            </div>
-          ) : (
-            <div
-              role="tabpanel"
-              id="panel-education"
-              aria-labelledby="tab-education"
-            >
-              <Education />
-            </div>
-          )}
-        </div>
+    <section id="about" className="section">
+      <h2 className="section-title">
+        <span className="tag tag-xl bg-pink">The story</span>
+        <span className="hand">in three chapters</span>
+      </h2>
+      <ol className="notes">
+        {chapters.map((c, i) => (
+          <li key={c.id} className={`note bg-${NOTE_COLORS[i]}`} style={{ "--tilt": `${[-2.5, 1.5, -1][i]}deg` }}>
+            <span className="tape" aria-hidden="true" />
+            <span className="note-num">0{i + 1}</span>
+            <p className="note-span">{c.span}</p>
+            <h3>{c.title}</h3>
+            <p>{c.detail}</p>
+          </li>
+        ))}
+      </ol>
+
+      <h2 className="section-title">
+        <span className="tag tag-xl bg-green">{toolsIntro.title}</span>
+        <span className="hand">{toolsIntro.tagline}</span>
+      </h2>
+      <div className="sheets">
+        {toolCategories.map((cat, i) => (
+          <section key={cat.name} className={`sheet bg-${SHEET_COLORS[i % SHEET_COLORS.length]}`}>
+            <h3>
+              {cat.name}
+              <span className="count">{cat.tools.length}</span>
+            </h3>
+            <ul>
+              {cat.tools.map((t, ti) => (
+                <li key={t.name} className="tool-sticker" style={{ "--tilt": `${((ti * 37) % 15) - 7}deg` }}>
+                  <span className="tool-disc">
+                    <img src={t.image} alt="" width="34" height="34" decoding="async" />
+                  </span>
+                  <span className="tool-name">{t.name}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
       </div>
     </section>
   );
