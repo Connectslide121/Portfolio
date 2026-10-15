@@ -1,139 +1,172 @@
-import React, { Suspense, lazy, useCallback, useEffect, useState } from "react";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Projects from "./pages/Projects";
-import Contact from "./pages/Contact";
-import Footer from "./components/Footer";
-import { startField } from "./field/cursorField";
-import "./field/field.css";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import Desktop from "./os/Desktop";
+import Window from "./os/Window";
+import Taskbar from "./os/Taskbar";
+import StartMenu from "./os/StartMenu";
+import Boot from "./os/Boot";
+import ShutDown from "./os/ShutDown";
+import Screensaver from "./os/Screensaver";
+import useWindows from "./os/useWindows";
+import { APPS } from "./os/apps";
 
-// Journey mode is lazy so GSAP and the world SVG never touch first paint for a
-// visitor who only wants the CV (guardrail in docs/JOURNEY_PLAN.md §8).
-const JourneyStage = lazy(() => import("./journey/JourneyStage"));
+const BOOTED = "jonos-booted";
+const IDLE_MS = 90000;
 
-// D17: Journey mode is what a first-time visitor lands on. Once someone has
-// chosen the CV we remember it, so a return visit does not put the animation
-// in front of them again — the hero teaser is always there to go back in.
-const CV_PREFERRED = "jm-prefers-cv";
+const media = (q) => window.matchMedia(q).matches;
+const reducedMotion = () => media("(prefers-reduced-motion: reduce)");
 
-const read = (key) => {
+const alreadyBooted = () => {
   try {
-    return window.localStorage.getItem(key);
+    return window.sessionStorage.getItem(BOOTED) === "1";
   } catch {
-    return null; // private mode, blocked storage — fall back to the default
+    return false;
   }
 };
 
-const write = (key, value) => {
-  try {
-    value === null
-      ? window.localStorage.removeItem(key)
-      : window.localStorage.setItem(key, value);
-  } catch {
-    /* nothing to do — the preference just will not persist */
-  }
-};
-
-const startInJourney = () => {
-  const params = new URLSearchParams(window.location.search);
-  const hash = window.location.hash;
-  if (params.has("cv") || hash.startsWith("#cv")) return false;
-  if (params.has("journey") || hash.startsWith("#journey")) return true;
-  // Phones land on the CV (amends D17). The journey is built for a wide
-  // stage — on a phone it is a stack of panels over a cropped world — and a
-  // phone visitor is more often someone checking a link in a hurry. The
-  // hero's ticket is right there to go in, and an explicit #journey link
-  // still opens it anywhere.
-  if (window.matchMedia("(max-width: 768px)").matches) return false;
-  return read(CV_PREFERRED) !== "1";
+/** The program a #hash link asks for, if any (e.g. #projects, #contact). */
+const fromHash = () => {
+  const id = window.location.hash.slice(1);
+  return APPS[id] && id !== "viewer" ? id : null;
 };
 
 export default function App() {
-  const [journeyOpen, setJourneyOpen] = useState(startInJourney);
+  const wm = useWindows();
+  const [phase, setPhase] = useState(() => (alreadyBooted() || reducedMotion() ? "desktop" : "boot"));
+  const [startOpen, setStartOpen] = useState(false);
+  const [saver, setSaver] = useState(false);
+  const [dark, setDark] = useState(() => document.body.classList.contains("dark-theme"));
+  const [compact, setCompact] = useState(() => media("(max-width: 720px)"));
+  const touch = useMemo(() => media("(hover: none)"), []);
 
-  // The cursor field. It follows whichever mode is on screen: the journey's
-  // stage when it is open, the CV otherwise — re-resolved on every DOM
-  // change, so opening and closing the journey moves it across.
-  useEffect(
-    () =>
-      startField(
-        () =>
-          document.querySelector(".j-stage") ||
-          document.querySelector(".App"),
-      ),
-    [],
+  const launch = useCallback(
+    (id, extra = {}) => {
+      const app = APPS[id];
+      wm.open(extra.id || id, id, { w: app.w, h: app.h, ...extra });
+      setStartOpen(false);
+    },
+    [wm],
   );
 
-  const closeJourney = useCallback(() => {
-    setJourneyOpen(false);
-    write(CV_PREFERRED, "1");
-    window.history.replaceState(null, "", window.location.pathname);
-  }, []);
+  const openProject = useCallback(
+    (project) => launch("viewer", { id: `project:${project.title}`, props: { project } }),
+    [launch],
+  );
 
-  const openJourney = useCallback(() => {
-    setJourneyOpen(true);
-    write(CV_PREFERRED, null);
-  }, []);
+  const os = useMemo(() => ({ launch, openProject, touch }), [launch, openProject, touch]);
 
-  // The stage is fixed and full-screen, so the page behind it must not scroll.
+  // The desktop starts with About_Me.txt open — or whatever a #link asked for.
+  const startDesktop = useCallback(() => {
+    try {
+      window.sessionStorage.setItem(BOOTED, "1");
+    } catch {
+      /* boots again next time, that is all */
+    }
+    setPhase("desktop");
+    launch("about");
+    const asked = fromHash();
+    if (asked && asked !== "about") launch(asked);
+  }, [launch]);
+
   useEffect(() => {
-    if (!journeyOpen) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [journeyOpen]);
+    if (phase === "desktop" && wm.windows.length === 0) startDesktop();
+    // Only on the first arrival at the desktop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // A pasted #journey/... link is a same-document navigation, so React never
-  // re-reads it on its own. Without this, sharing a beat link with someone who
-  // already has the page open does nothing.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 720px)");
+    const on = () => setCompact(mq.matches);
+    mq.addEventListener?.("change", on);
+    return () => mq.removeEventListener?.("change", on);
+  }, []);
+
+  // A #link pasted while the page is open opens that program too.
   useEffect(() => {
     const onHash = () => {
-      const hash = window.location.hash;
-      if (hash.startsWith("#journey")) setJourneyOpen(true);
-      else if (hash.startsWith("#cv")) setJourneyOpen(false);
+      const id = fromHash();
+      if (id) launch(id);
     };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
+  }, [launch]);
+
+  // Screensaver after a while with no input.
+  useEffect(() => {
+    if (phase !== "desktop" || saver || reducedMotion()) return;
+    let timer = window.setTimeout(() => setSaver(true), IDLE_MS);
+    const reset = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setSaver(true), IDLE_MS);
+    };
+    const events = ["pointermove", "pointerdown", "keydown", "wheel", "touchstart"];
+    events.forEach((e) => window.addEventListener(e, reset, { passive: true }));
+    return () => {
+      window.clearTimeout(timer);
+      events.forEach((e) => window.removeEventListener(e, reset));
+    };
+  }, [phase, saver]);
+
+  const toggleTheme = useCallback(() => {
+    const next = !document.body.classList.contains("dark-theme");
+    document.body.classList.toggle("dark-theme", next);
+    try {
+      window.localStorage.setItem("jm-theme", next ? "dark" : "light");
+    } catch {
+      /* the preference just will not persist */
+    }
+    setDark(next);
   }, []);
 
-  useEffect(() => {
-    if (!journeyOpen) return;
-    // An Escape something else already handled (leaving destruction mode)
-    // is not a request to leave the journey too.
-    const onKey = (e) =>
-      e.key === "Escape" && !e.defaultPrevented && closeJourney();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [journeyOpen, closeJourney]);
+  const shutDown = useCallback(() => {
+    wm.closeAll();
+    setPhase("off");
+  }, [wm]);
+
+  const restart = useCallback(() => setPhase("boot"), []);
+  const closeStart = useCallback(() => setStartOpen(false), []);
+  const exitSaver = useCallback(() => setSaver(false), []);
+
+  if (phase === "boot") return <Boot onDone={startDesktop} />;
+  if (phase === "off") return <ShutDown onRestart={restart} />;
 
   return (
-    <div className="App">
-      <Navbar />
-      <div>
-        <Sidebar />
-        <main className="main-container">
-          <Home onEnterJourney={openJourney} journeyOpen={journeyOpen} />
-          <About />
-          <Projects />
-          <Contact />
-        </main>
-        <Footer />
-      </div>
+    <div className={`os${compact ? " is-compact" : ""}`}>
+      <Desktop os={os}>
+        {wm.windows.map((w) => {
+          const app = APPS[w.app];
+          const { Component } = app;
+          const project = w.props?.project;
+          return (
+            <Window
+              key={w.id}
+              win={w}
+              wm={wm}
+              title={project ? `${project.title} - ${app.title}` : app.title}
+              icon={app.icon}
+              menu={app.menu}
+              focused={w.id === wm.focusedId}
+              compact={compact}
+            >
+              <Component os={os} onClose={() => wm.close(w.id)} {...w.props} />
+            </Window>
+          );
+        })}
+      </Desktop>
 
-      {/* The journey chunk is lazy, and a null fallback meant the static page
-          painted first and then got covered — it read as landing on the wrong
-          page. The curtain paints in the same commit as the page behind it, so
-          there is nothing to see underneath while the chunk arrives. */}
-
-      {journeyOpen && (
-        <Suspense fallback={<div className="j-curtain" aria-hidden="true" />}>
-          <JourneyStage onExit={closeJourney} />
-        </Suspense>
+      {startOpen && (
+        <StartMenu
+          os={os}
+          dark={dark}
+          onClose={closeStart}
+          onTheme={toggleTheme}
+          onScreensaver={() => setSaver(true)}
+          onShutDown={shutDown}
+        />
       )}
+
+      <Taskbar wm={wm} startOpen={startOpen} onStart={() => setStartOpen((o) => !o)} dark={dark} onTheme={toggleTheme} />
+
+      {saver && <Screensaver onExit={exitSaver} />}
     </div>
   );
 }
