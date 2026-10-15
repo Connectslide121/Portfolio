@@ -1,252 +1,86 @@
-import React, { useState, useEffect, useRef } from "react";
-import Wobble from "../components/Wobble";
+import React, { useState } from "react";
 import "../styles/projects.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGamepad,
-  faExternalLinkAlt,
-  faTimes
-} from "@fortawesome/free-solid-svg-icons";
-import { faGithub, faNpm } from "@fortawesome/free-brands-svg-icons";
-
+import ProjectMedia from "../components/ProjectMedia";
+import ProjectLinks from "../components/ProjectLinks";
 import { featuredProjects, allProjects } from "../components/projectList";
-
-import { mediaFor } from "../data/projectMedia";
 import { techFor } from "../data/projectTech";
 import { projectsIntro } from "../data/site";
 
-/**
- * A project clip that does not exist on the network until it is nearly on
- * screen.
- *
- * These files are tens of megabytes each, and `autoPlay` on a card three
- * screens down starts pulling them the moment the page loads — including
- * behind Journey mode, which covers this page entirely and is the default
- * landing. Nothing is requested until the card is within a screen of the
- * viewport; then it loads and plays, exactly as before, and pauses again when
- * it leaves so a phone is not decoding video nobody is looking at.
- */
-function ProjectVideo({ src, title }) {
-  const ref = useRef(null);
+const techName = (t) => techFor(t)?.name || t;
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+const kind = (p) => {
+  const c = p.category || "Web App";
+  if (/Game/.test(c)) return "Games";
+  if (/Package|API|Console/.test(c)) return "Tools & APIs";
+  return "Apps & sites";
+};
 
-    // No observer (older Safari): fall back to the old behaviour rather than
-    // to a card that never plays.
-    if (typeof IntersectionObserver === "undefined") {
-      el.preload = "auto";
-      el.play().catch(() => {});
-      return;
-    }
+const FILTERS = [
+  { id: "all", label: "Everything", test: () => true, color: "white" },
+  { id: "ai", label: "AI", test: (p) => (p.technologies || []).includes("ai"), color: "yellow" },
+  { id: "apps", label: "Apps & sites", test: (p) => kind(p) === "Apps & sites", color: "blue" },
+  { id: "games", label: "Games", test: (p) => kind(p) === "Games", color: "purple" },
+  { id: "tools", label: "Tools & APIs", test: (p) => kind(p) === "Tools & APIs", color: "green" },
+];
 
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.preload = "auto";
-          el.play().catch(() => {});
-        } else {
-          el.pause();
-        }
-      },
-      { rootMargin: "100% 0px" },
-    );
-
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  return (
-    <video
-      ref={ref}
-      className="project-media"
-      src={src}
-      aria-label={title}
-      loop
-      muted
-      playsInline
-      controls
-      preload="none"
-    />
-  );
-}
+const ALL = [...featuredProjects.map((p) => ({ ...p, featured: true })), ...allProjects];
+const HEADS = ["yellow", "pink", "blue", "green", "orange", "purple"];
 
 export default function Projects() {
-  const [showOtherProjects, setShowOtherProjects] = useState(false);
-
-  // Lock/unlock body scroll when modal opens/closes
-  useEffect(() => {
-    if (showOtherProjects) {
-      // Lock scroll
-      document.body.style.overflow = "hidden";
-    } else {
-      // Unlock scroll
-      document.body.style.overflow = "unset";
-    }
-
-    // Cleanup function to ensure scroll is unlocked when component unmounts
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [showOtherProjects]);
-
-  const ProjectCard = ({ project }) => {
-    const media = mediaFor(project.title);
-
-    return (
-      <div className="project-card">
-        <div className="project-media-container">
-          {media.type === "video" ? (
-            <ProjectVideo src={media.src} title={project.title} />
-          ) : (
-            <img
-              className="project-media"
-              src={media.src}
-              alt={project.title}
-            />
-          )}
-          <div className="project-type-badge">
-            {project.category || "Web App"}
-          </div>
-        </div>
-
-        <div className="project-content">
-          <div className="project-header">
-            <h4 className="project-title">{project.title}</h4>
-            <div className="project-links">
-              {project.repository && (
-                <a
-                  href={project.repository}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="View on GitHub"
-                >
-                  <FontAwesomeIcon icon={faGithub} />
-                </a>
-              )}
-              {project.livedemo && (
-                <a
-                  href={project.livedemo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="View Live Demo"
-                >
-                  <FontAwesomeIcon icon={faExternalLinkAlt} />
-                </a>
-              )}
-              {project.npm && (
-                <a
-                  href={project.npm}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="View on NPM"
-                >
-                  <FontAwesomeIcon icon={faNpm} />
-                </a>
-              )}
-              {project.play && (
-                <a
-                  href={project.play}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="Play Game"
-                >
-                  <FontAwesomeIcon icon={faGamepad} />
-                </a>
-              )}
-            </div>
-          </div>
-
-          <p className="project-description">
-            {project.description ||
-              "A modern web application built with cutting-edge technologies."}
-          </p>
-
-          {project.technologies && (
-            <div className="project-tech-stack">
-              {project.technologies.map((tech, index) => {
-                const techInfo = techFor(tech);
-                return techInfo ? (
-                  <div key={index} className="tech-icon" title={techInfo.name}>
-                    <img src={techInfo.icon} alt={techInfo.name} />
-                  </div>
-                ) : (
-                  <span key={index} className="tech-tag">
-                    {tech}
-                  </span>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
+  const [filter, setFilter] = useState("all");
+  const f = FILTERS.find((x) => x.id === filter);
+  const shown = ALL.filter(f.test);
 
   return (
-    <section id="projects">
-      <div className="projects-header">
-        <p className="eyebrow">02 · Work</p>
-        <h2>
-          Selected <Wobble>projects</Wobble>
-        </h2>
-        <p>{projectsIntro.text}</p>
+    <section id="projects" className="section">
+      <h2 className="section-title">
+        <span className="tag tag-xl bg-green">{projectsIntro.title}</span>
+        <span className="hand">{ALL.length} things I made</span>
+      </h2>
+      <p className="section-intro">{projectsIntro.text}</p>
+
+      <div className="filters" role="group" aria-label="Filter projects">
+        {FILTERS.map((x) => (
+          <button
+            key={x.id}
+            type="button"
+            className={`chunky chunky-sm bg-${x.color}`}
+            aria-pressed={filter === x.id}
+            onClick={() => setFilter(x.id)}
+          >
+            {x.label} <span className="filter-count">{ALL.filter(x.test).length}</span>
+          </button>
+        ))}
       </div>
 
-      {/* Featured Projects */}
-      <div className="featured-projects">
-        <h3>Featured Projects</h3>
-        <div className="project-cards-wrapper">
-          {featuredProjects.map((project, index) => (
-            <ProjectCard key={index} project={project} />
-          ))}
-        </div>
-      </div>
+      <p className="sr-only" aria-live="polite">
+        Showing {shown.length} projects
+      </p>
 
-      {/* Show More Button */}
-      <div className="show-more-container">
-        <button
-          className="show-more-btn"
-          onClick={() => setShowOtherProjects(true)}
-        >
-          View All Projects
-        </button>
-      </div>
-
-      {/* Other Projects Modal */}
-      {showOtherProjects && (
-        <div className="other-projects-wrapper">
-          <div
-            className="overlay"
-            onClick={() => setShowOtherProjects(false)}
-          ></div>
-          <div className="other-projects-content">
-            <div className="modal-header">
-              <h3>All Projects</h3>
-              <button
-                className="modal-close"
-                onClick={() => setShowOtherProjects(false)}
-                title="Close"
-              >
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
+      <div className="cards">
+        {shown.map((p, i) => (
+          <article key={p.title} className={`card${p.featured ? " is-featured" : ""}`} style={{ "--tilt": `${((i * 53) % 5) - 2}deg` }}>
+            <div className={`card-head bg-${HEADS[i % HEADS.length]}`}>
+              <span>{p.category || "Web App"}</span>
+              <span>{p.date}</span>
             </div>
-
-            <div className="modal-body">
-              <div className="project-cards-wrapper">
-                {allProjects.map((project, index) => (
-                  <ProjectCard key={index} project={project} />
+            <div className="card-media">
+              <ProjectMedia title={p.title} className="media" />
+              {p.featured && <span className="badge">★ Featured</span>}
+            </div>
+            <div className="card-body">
+              <h3>{p.title}</h3>
+              <p>{p.description.trim()}</p>
+              <ul className="tech">
+                {(p.technologies || []).map((t) => (
+                  <li key={t}>{techName(t)}</li>
                 ))}
-              </div>
+              </ul>
+              <ProjectLinks project={p} />
             </div>
-          </div>
-        </div>
-      )}
+          </article>
+        ))}
+      </div>
     </section>
   );
 }
