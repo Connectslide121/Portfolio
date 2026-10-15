@@ -31,6 +31,7 @@ const fromHash = () => {
 
 export default function App() {
   const wm = useWindows();
+  const { open, closeAll } = wm;
   const [phase, setPhase] = useState(() => (alreadyBooted() || reducedMotion() ? "desktop" : "boot"));
   const [startOpen, setStartOpen] = useState(false);
   const [saver, setSaver] = useState(false);
@@ -41,10 +42,10 @@ export default function App() {
   const launch = useCallback(
     (id, extra = {}) => {
       const app = APPS[id];
-      wm.open(extra.id || id, id, { w: app.w, h: app.h, ...extra });
+      open(extra.id || id, id, { w: app.w, h: app.h, ...extra });
       setStartOpen(false);
     },
-    [wm],
+    [open],
   );
 
   const openProject = useCallback(
@@ -118,9 +119,9 @@ export default function App() {
   }, []);
 
   const shutDown = useCallback(() => {
-    wm.closeAll();
+    closeAll();
     setPhase("off");
-  }, [wm]);
+  }, [closeAll]);
 
   const restart = useCallback(() => setPhase("boot"), []);
   const closeStart = useCallback(() => setStartOpen(false), []);

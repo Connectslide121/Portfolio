@@ -75,7 +75,9 @@ export default function Window({ win, title, icon, focused, compact, wm, childre
       hidden={win.min}
       onPointerDown={() => !focused && wm.focus(win.id)}
       onKeyDown={(e) => {
-        if (e.key === "Escape" && !e.defaultPrevented) {
+        // Escape closes the window — but never from inside a text field,
+        // where it would throw away what someone was typing.
+        if (e.key === "Escape" && !e.defaultPrevented && !e.target.closest("input, textarea")) {
           e.preventDefault();
           wm.close(win.id);
         }

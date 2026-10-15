@@ -7,24 +7,18 @@ import { projectsIntro } from "../data/site";
 
 const techName = (t) => techFor(t)?.name || t;
 
-/** C:\Projects — the work as a folder of files, in icon or details view. */
-export default function ProjectsApp({ os }) {
-  const [view, setView] = useState("icons");
-  const [selected, setSelected] = useState(null);
-
-  const openProject = (p) => os.openProject(p);
-
-  const Item = ({ project, featured }) => (
+function FileIcon({ project, featured, selected, onSelect, onOpen, touch }) {
+  return (
     <li>
       <button
         type="button"
-        className={`file-icon${selected === project.title ? " is-selected" : ""}`}
+        className={`file-icon${selected ? " is-selected" : ""}`}
         onClick={(e) => {
-          setSelected(project.title);
+          onSelect(project.title);
           // Touch and keyboard open on a single activation; mice double-click.
-          if (e.detail === 0 || os.touch) openProject(project);
+          if (e.detail === 0 || touch) onOpen(project);
         }}
-        onDoubleClick={() => openProject(project)}
+        onDoubleClick={() => onOpen(project)}
         aria-label={`${project.title}, ${project.category || "Web App"}${featured ? ", featured" : ""}`}
       >
         <span className="file-glyph">
@@ -34,6 +28,25 @@ export default function ProjectsApp({ os }) {
         <span className="file-label">{project.title}</span>
       </button>
     </li>
+  );
+}
+
+/** C:\Projects — the work as a folder of files, in icon or details view. */
+export default function ProjectsApp({ os }) {
+  const [view, setView] = useState("icons");
+  const [selected, setSelected] = useState(null);
+
+  const openProject = (p) => os.openProject(p);
+  const item = (p, featured) => (
+    <FileIcon
+      key={p.title}
+      project={p}
+      featured={featured}
+      selected={selected === p.title}
+      onSelect={setSelected}
+      onOpen={openProject}
+      touch={os.touch}
+    />
   );
 
   const rows = [...featuredProjects.map((p) => ({ ...p, featured: true })), ...allProjects];
@@ -61,15 +74,11 @@ export default function ProjectsApp({ os }) {
           <>
             <h3 className="folder-group">Featured</h3>
             <ul className="file-grid">
-              {featuredProjects.map((p) => (
-                <Item key={p.title} project={p} featured />
-              ))}
+              {featuredProjects.map((p) => item(p, true))}
             </ul>
             <h3 className="folder-group">All projects</h3>
             <ul className="file-grid">
-              {allProjects.map((p) => (
-                <Item key={p.title} project={p} />
-              ))}
+              {allProjects.map((p) => item(p, false))}
             </ul>
           </>
         ) : (
