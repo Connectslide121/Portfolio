@@ -1,561 +1,268 @@
-* {
+/* ==========================================================================
+   JonOS. The portfolio as a 90s desktop: bevelled grey chrome, a teal
+   desktop, navy title bars. "Night" (dark) swaps in a purple desktop and
+   magenta title bars on charcoal. Pixel type for the chrome, a plain
+   readable sans for the reading.
+   ========================================================================== */
+
+:root {
+  --ui: "Pixelify Sans", "MS Sans Serif", Tahoma, sans-serif;
+  --text: Verdana, Tahoma, "DejaVu Sans", "Segoe UI", sans-serif;
+  --term: "VT323", "Courier New", monospace;
+  --taskbar: 42px;
+}
+
+/* Standard (light). */
+body {
+  --desk: #008080;
+  --desk-2: #007070;
+  --face: #c0c0c0;
+  --face-2: #d4d0c8;
+  --hi: #ffffff;
+  --mid: #dfdfdf;
+  --lo: #808080;
+  --dk: #0a0a0a;
+  --ink: #000000;
+  --ink-2: #3a3a3a;
+  --client: #ffffff;
+  --title-a: #000080;
+  --title-b: #1084d0;
+  --title-off-a: #808080;
+  --title-off-b: #b5b5b5;
+  --title-ink: #ffffff;
+  --select: #000080;
+  --select-ink: #ffffff;
+  --link: #0000ee;
+  --accent: #ff8a1f;
+  --desk-ink: #ffffff;
+}
+
+/* Night (dark). */
+body.dark-theme {
+  --desk: #1d1433;
+  --desk-2: #170f2a;
+  --face: #3a3946;
+  --face-2: #34333f;
+  --hi: #6b6a7c;
+  --mid: #4a4958;
+  --lo: #23222c;
+  --dk: #0a0a0f;
+  --ink: #ecebf5;
+  --ink-2: #b9b7c9;
+  --client: #1f1e27;
+  --title-a: #5a1f8f;
+  --title-b: #c2336f;
+  --title-off-a: #2c2b35;
+  --title-off-b: #45444f;
+  --title-ink: #ffffff;
+  --select: #c2336f;
+  --select-ink: #ffffff;
+  --link: #8ab4ff;
+  --accent: #ff9d45;
+  --desk-ink: #ecebf5;
+}
+
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  scroll-behavior: smooth;
 }
 
-/* On body, not on *: a universal font-family beats inheritance, so an <em>
-   inside a serif heading came out in the sans. Form controls do not inherit
-   fonts by default, so they are named explicitly. */
+html,
 body,
+#root {
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+  background: var(--desk);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 15px;
+  line-height: 1.3;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
 button,
 input,
-select,
 textarea {
-  font-family: var(--sans);
+  font: inherit;
+  color: inherit;
 }
 
-.App {
-  scrollbar-color: var(--ink-faint) transparent;
-  scrollbar-width: thin;
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
 }
 
-/* ==========================================================================
-   The print system. Everything — the journey and the CV — is printed on the
-   same paper with the same inks: a near-black key plate, and a set of
-   high-contrast pastels that overprint each other like risograph layers.
-   Light ("paper") is the default; dark ("ink") swaps paper and key and keeps
-   the pastels, which read even louder on black.
-   ========================================================================== */
-:root {
-  --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
-  --sans: "Inter Tight", "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-
-body {
-  --paper: #f4efe6;
-  --paper-2: #ece5d9;
-  --paper-3: #e1d8c9;
-  --ink: #1d1b19;
-  --ink-soft: #57514a;
-  --ink-faint: #8b8379;
-  --rule: rgb(29 27 25 / 0.16);
-  --rule-strong: rgb(29 27 25 / 0.55);
-
-  /* The pastels. Named for what they look like, used for what they mean:
-     apricot / coral / butter are the foundry years, sky / lilac / sage the
-     software ones, rose the bridge between them. */
-  --apricot: #ffad85;
-  --coral: #ff7657;
-  --butter: #f6d56b;
-  --rose: #f4a3bf;
-  --lilac: #c4b3f2;
-  --sky: #9fc0f0;
-  --sage: #a6d0ac;
-  /* The one sharp pastel: a high-key lime for the thing that is live now —
-     the current entry, a hover, an active stop. Used sparingly so it keeps
-     its snap. */
-  --lime: #cfe86a;
-
-  /* Pastels are fills, never text: on paper they fail contrast. These are
-     the same hues pushed dark enough to carry a word. */
-  --coral-ink: #c9401f;
-  --sky-ink: #2f5bc4;
-  --sage-ink: #2f7a47;
-  --lilac-ink: #6247c4;
-  --lime-ink: #4f6b0c;
-
-  /* How overlapping pastel shapes combine: multiply on paper, like ink. */
-  --print-blend: multiply;
-}
-
-body.dark-theme {
-  --paper: #191816;
-  --paper-2: #211f1c;
-  --paper-3: #2b2925;
-  --ink: #f1ebe0;
-  --ink-soft: #bdb4a6;
-  --ink-faint: #857d72;
-  --rule: rgb(241 235 224 / 0.16);
-  --rule-strong: rgb(241 235 224 / 0.55);
-
-  --coral-ink: #ff9a7e;
-  --sky-ink: #a8c6ff;
-  --sage-ink: #a6dcb2;
-  --lilac-ink: #cdbdff;
-  --lime-ink: #d9f07a;
-
-  /* Multiply on black is black. On ink paper the layers add light instead. */
-  --print-blend: screen;
-}
-
-/* The CV's own vocabulary, mapped onto the print system. Older rules across
-   the site still speak in these names; pointing them at the paper tokens is
-   what lets one theme switch (body.dark-theme) restyle everything at once. */
-body {
-  --primaryColor: var(--ink);
-  --secondaryColor: var(--ink-soft);
-  --accentColor: var(--ink);
-  --accentHover: var(--ink);
-  --moltenColor: var(--coral);
-  --backgroundColor: var(--paper);
-  --surfaceColor: var(--paper-2);
-  --cardBackground: var(--paper);
-
-  --textPrimary: var(--ink);
-  --textSecondary: var(--ink-soft);
-  --textMuted: var(--ink-faint);
-
-  --borderColor: var(--rule);
-  --shadowSm: none;
-  --shadowMd: 0 18px 30px -24px rgb(29 27 25 / 0.5);
-  --shadowLg: 0 24px 40px -26px rgb(29 27 25 / 0.55);
-  --shadowXl: 0 30px 50px -28px rgb(29 27 25 / 0.6);
-
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
-
-  --radius-sm: 2px;
-  --radius-md: 3px;
-  --radius-lg: 4px;
-  --radius-xl: 6px;
-  --radius-2xl: 8px;
-  --radius-full: 999px;
-
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
-  --font-size-5xl: 3rem;
-  --font-size-6xl: 3.75rem;
-
-  --leading-tight: 1.15;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.6;
-
-  /* The tooth of the sheet: a fine noise, tinted to the ink, laid over the
-     paper colour. A background image rather than an overlay, so it is
-     printed UNDER the type, the way paper texture is. */
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 -0.75 0.5'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
-  --static: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='2 -0.35 -0.35 0 -0.2 -0.35 2 -0.35 0 -0.2 -0.35 -0.35 2 0 -0.2 0 0 0 -1.3 0.95'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
-
-  color: var(--ink);
-  background-color: var(--paper);
-  line-height: var(--leading-normal);
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
-}
-
-body.dark-theme {
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.92 0 0 0 0 0.86 0 0 0 -0.4 0.22'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
-  --static: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='2 -0.35 -0.35 0 0.05 -0.35 2 -0.35 0 0.05 -0.35 -0.35 2 0 0.05 0 0 0 -1.3 0.85'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
-  --shadowMd: 0 18px 30px -22px rgb(0 0 0 / 0.8);
-  --shadowLg: 0 24px 40px -24px rgb(0 0 0 / 0.85);
-  --shadowXl: 0 30px 50px -26px rgb(0 0 0 / 0.9);
-  color-scheme: dark;
-}
-
-/* ==========================================================================
-   Live grain — the sheet is never quite still.
-
-   Colour noise that jumps to a new position about ten times a second, like
-   the snow on an old television between channels, but quiet enough to read
-   as paper that is alive rather than as a broken signal. Each speck has its
-   own hue, and every jump also turns the colour wheel by a different
-   amount, so a speck never lands on the same colour twice in a row.
-   hue-rotate on an already-composited layer is a GPU colour transform; like
-   the translate it never re-rasterises the noise.
-
-   The motion is a transform with steps(), so the browser only moves an
-   already-painted layer — nothing is re-rasterised per frame. The layer is
-   oversized (inset -240px, one tile) so a jump never shows an edge.
-   Multiply on paper, screen on ink; still under reduced motion.
-   ========================================================================== */
-@keyframes live-grain {
-  0% {
-    transform: translate(0px, 0px);
-    filter: hue-rotate(0deg);
-  }
-  10% {
-    transform: translate(-83px, 41px);
-    filter: hue-rotate(137deg);
-  }
-  20% {
-    transform: translate(57px, -112px);
-    filter: hue-rotate(274deg);
-  }
-  30% {
-    transform: translate(-141px, -29px);
-    filter: hue-rotate(48deg);
-  }
-  40% {
-    transform: translate(119px, 88px);
-    filter: hue-rotate(191deg);
-  }
-  50% {
-    transform: translate(-22px, 153px);
-    filter: hue-rotate(323deg);
-  }
-  60% {
-    transform: translate(171px, -64px);
-    filter: hue-rotate(96deg);
-  }
-  70% {
-    transform: translate(-108px, -167px);
-    filter: hue-rotate(229deg);
-  }
-  80% {
-    transform: translate(36px, 119px);
-    filter: hue-rotate(12deg);
-  }
-  90% {
-    transform: translate(-176px, 74px);
-    filter: hue-rotate(165deg);
-  }
-}
-
-/* The CV's grain: fixed behind the page content, over the paper colour. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: -240px;
-  z-index: -1;
-  background-image: var(--static);
-  background-size: 240px 240px;
-  mix-blend-mode: multiply;
-  opacity: 0.38;
-  animation: live-grain 1s steps(1, end) infinite;
-  pointer-events: none;
-  will-change: transform;
-}
-
-body.dark-theme::before {
-  mix-blend-mode: screen;
-  opacity: 0.28;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body::before {
-    animation: none;
-  }
-}
-
-body.other-projects-open {
-  overflow: hidden;
-}
-
-::selection {
-  background: var(--butter);
-  color: #1d1b19;
-}
-
-.main-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: var(--space-3xl);
-  width: min(90%, 1200px);
-  margin-inline: auto;
-  padding: 0 var(--space-lg);
-  gap: var(--space-3xl);
-}
-
-/* --- type ----------------------------------------------------------------
-   Two voices: Instrument Serif for anything that is a title, Inter Tight for
-   everything that is read. Tracked uppercase labels do the work that bold
-   used to. */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  line-height: var(--leading-tight);
-  font-weight: 500;
-  color: var(--ink);
-}
-
-h1,
-h2 {
-  font-family: var(--serif);
-  font-weight: 400;
-  letter-spacing: -0.01em;
-}
-
-h1 {
-  font-size: clamp(3rem, 7vw, 6rem);
-  line-height: 0.92;
-}
-
-h2 {
-  font-size: clamp(2.4rem, 4.6vw, 3.8rem);
-  line-height: 1;
-}
-
-h3 {
-  font-size: var(--font-size-xl);
-}
-
-p {
-  line-height: var(--leading-relaxed);
-  color: var(--ink-soft);
-}
-
-/* A label: the tracked, uppercase line above a title. */
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  font-size: 0.74rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.eyebrow::after {
-  content: "";
-  width: 1.75rem;
-  height: 1px;
-  background: currentColor;
+ul,
+ol {
+  list-style: none;
 }
 
 a {
-  color: var(--ink);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--rule-strong);
-  transition: text-decoration-color 0.2s ease;
+  color: var(--link);
 }
 
-a:hover {
-  color: var(--ink);
-  text-decoration-color: var(--ink);
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
 }
 
-/* --- buttons -------------------------------------------------------------
-   Stamped labels: an ink pill that empties on hover, or an outline that
-   fills. No shadows, no lift — print does not float. */
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: 0.7rem 1.4rem;
-  background: var(--ink);
-  color: var(--paper);
-  border: 1px solid var(--ink);
-  border-radius: var(--radius-full);
-  font-weight: 500;
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+:focus-visible {
+  outline: 1px dotted var(--ink);
+  outline-offset: -4px;
 }
 
-.btn:hover {
-  background: transparent;
-  color: var(--ink);
-}
-
-.btn-secondary {
-  background: transparent;
-  color: var(--ink);
-}
-
-.btn-secondary:hover {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.card {
-  background: var(--paper);
-  border-radius: var(--radius-md);
-  padding: var(--space-xl);
-  border: 1px solid var(--rule);
-}
-
-section {
-  padding: var(--space-3xl) 0;
-  scroll-margin-top: 80px; /* Account for fixed navbar height */
-}
-
-section:first-child {
-  padding-top: var(--space-2xl);
-  scroll-margin-top: 0; /* Home section doesn't need scroll margin */
-}
-
-/* --- section headers -----------------------------------------------------
-   Every section opens the same way: a label, a serif title, one line of
-   standfirst. Left-aligned, like a chapter opening in a book. */
-
-.section-header,
-.projects-header,
-.contact-header {
-  max-width: 46rem;
-  margin: 0 0 var(--space-2xl);
-  text-align: left;
-}
-
-.section-header h2,
-.projects-header h2,
-.contact-header h2 {
-  margin: 0.6rem 0 0.9rem;
-  color: var(--ink);
-  background: none;
-  -webkit-text-fill-color: currentColor;
-}
-
-.section-header p,
-.projects-header p,
-.contact-header p {
-  font-size: 1.05rem;
-  color: var(--ink-soft);
-  max-width: 40rem;
-  margin: 0;
-}
-
-/* --- footer -------------------------------------------------------------- */
-
-.footer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
-  padding: var(--space-2xl) var(--space-lg);
-  border-top: 1px solid var(--ink);
-  margin: var(--space-3xl) auto 0;
-  width: min(90%, 1200px);
-}
-
-.footer h4 {
-  color: var(--ink-soft);
-  font-size: var(--font-size-sm);
-  font-weight: 400;
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.footer h4 svg {
-  color: var(--coral);
-}
-
-.footer-links {
-  display: flex;
-  gap: var(--space-xl);
-  align-items: center;
-}
-
-.experience-link {
-  color: var(--ink-soft);
-}
-
-@media screen and (max-width: 1024px) {
-  .main-container {
-    width: 95%;
-    padding: 0 var(--space-md);
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .main-container {
-    width: 100%;
-    padding: 0 var(--space-md);
-    margin-top: var(--space-2xl);
-    gap: var(--space-2xl);
-  }
-
-  .footer {
-    padding-bottom: calc(70px + var(--space-xl));
-  }
-
-  .card {
-    padding: var(--space-lg);
-  }
-
-  section {
-    padding: var(--space-2xl) 0;
-  }
-}
-
-/* Pastel plates overprint each other: multiply on paper, screen on ink. Used
-   by every printed illustration on the site. */
-.j-print {
-  mix-blend-mode: var(--print-blend);
-}
-
-/* ==========================================================================
-   Wobble — italic type that shifts now and then (src/components/Wobble.jsx).
-   The component writes each letter's target (--wr rotation, --wy lift,
-   --wd delay) and toggles .is-wobbling; this is the spring it plays.
-   ========================================================================== */
-.wobble {
-  font-style: italic;
-}
-
-.wb-w {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.wb-l {
-  display: inline-block;
-  transform-origin: 50% 85%;
-}
-
-.wobble.is-wobbling .wb-l {
-  animation: wb-spring 1.25s cubic-bezier(0.37, 0, 0.3, 1) both;
-  animation-delay: var(--wd, 0ms);
-}
-
-/* Out, back past rest, and settle — a damped spring, not a there-and-back. */
-@keyframes wb-spring {
-  0% {
-    transform: none;
-  }
-  26% {
-    transform: translateY(var(--wy, 0)) rotate(var(--wr, 0deg));
-  }
-  52% {
-    transform: translateY(calc(var(--wy, 0) * -0.4))
-      rotate(calc(var(--wr, 0deg) * -0.38));
-  }
-  74% {
-    transform: translateY(calc(var(--wy, 0) * 0.14))
-      rotate(calc(var(--wr, 0deg) * 0.12));
-  }
-  100% {
-    transform: none;
-  }
-}
-
-/* Visually hidden, still read: the letters themselves are aria-hidden. */
-.wb-sr {
+.sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
   overflow: hidden;
   clip: rect(0 0 0 0);
-  clip-path: inset(50%);
   white-space: nowrap;
 }
 
+.pixel-art {
+  image-rendering: pixelated;
+  flex: none;
+}
+
+/* --- Bevels: the whole look is these four shadows ----------------------- */
+
+.raised,
+.btn95 {
+  background: var(--face);
+  box-shadow: inset -1px -1px var(--dk), inset 1px 1px var(--hi), inset -2px -2px var(--lo),
+    inset 2px 2px var(--mid);
+}
+
+.sunken,
+.field95 {
+  background: var(--client);
+  box-shadow: inset -1px -1px var(--hi), inset 1px 1px var(--lo), inset -2px -2px var(--mid),
+    inset 2px 2px var(--dk);
+}
+
+.btn95 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 30px;
+  min-width: 84px;
+  padding: 4px 14px;
+  font-family: var(--ui);
+  font-size: 15px;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn95:active:not(:disabled),
+.btn95[aria-pressed="true"] {
+  box-shadow: inset -1px -1px var(--hi), inset 1px 1px var(--dk), inset -2px -2px var(--mid),
+    inset 2px 2px var(--lo);
+  padding: 5px 13px 3px 15px;
+}
+
+.btn95:disabled {
+  color: var(--lo);
+  text-shadow: 1px 1px var(--hi);
+  cursor: default;
+}
+
+/* The default button wears an extra black outline. */
+.btn95-default {
+  outline: 1px solid var(--dk);
+  outline-offset: 0;
+}
+
+.btn95-square {
+  min-width: 34px;
+  padding: 4px 8px;
+}
+
+.field95 {
+  border: 0;
+  padding: 6px 8px;
+  font-family: var(--text);
+  font-size: 14px;
+  color: var(--ink);
+  border-radius: 0;
+}
+
+.field95:focus {
+  outline: none;
+}
+
+.group-box {
+  border: 0;
+  box-shadow: inset -1px -1px var(--hi), inset 1px 1px var(--lo), 1px 1px var(--hi), -1px -1px var(--lo);
+  padding: 14px 12px 12px;
+  margin-top: 10px;
+}
+
+/* The legend sits on the etched line, so it carries the colour of whatever
+   the box is drawn on (white client area by default). */
+.group-box legend {
+  padding: 0 6px;
+  font-family: var(--ui);
+  background: var(--gb-bg, var(--client));
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chips li {
+  padding: 2px 8px;
+  font-size: 13px;
+  background: var(--face);
+  box-shadow: inset -1px -1px var(--lo), inset 1px 1px var(--hi);
+}
+
+.status-bar {
+  display: flex;
+  gap: 4px;
+  padding: 3px 2px 2px;
+  font-family: var(--text);
+  font-size: 12px;
+  flex: none;
+}
+
+.status-bar span {
+  flex: 1;
+  padding: 2px 8px;
+  box-shadow: inset -1px -1px var(--hi), inset 1px 1px var(--lo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-bar span:last-child {
+  flex: 0 0 auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .wobble.is-wobbling .wb-l {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
