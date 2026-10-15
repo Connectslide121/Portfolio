@@ -1,252 +1,116 @@
-import React, { useState, useEffect, useRef } from "react";
-import Wobble from "../components/Wobble";
+import React, { useState } from "react";
 import "../styles/projects.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGamepad,
-  faExternalLinkAlt,
-  faTimes
-} from "@fortawesome/free-solid-svg-icons";
-import { faGithub, faNpm } from "@fortawesome/free-brands-svg-icons";
-
+import Sheet from "../components/Sheet";
+import ProjectMedia from "../components/ProjectMedia";
+import ProjectLinks from "../components/ProjectLinks";
 import { featuredProjects, allProjects } from "../components/projectList";
-
-import { mediaFor } from "../data/projectMedia";
 import { techFor } from "../data/projectTech";
 import { projectsIntro } from "../data/site";
 
-/**
- * A project clip that does not exist on the network until it is nearly on
- * screen.
- *
- * These files are tens of megabytes each, and `autoPlay` on a card three
- * screens down starts pulling them the moment the page loads — including
- * behind Journey mode, which covers this page entirely and is the default
- * landing. Nothing is requested until the card is within a screen of the
- * viewport; then it loads and plays, exactly as before, and pauses again when
- * it leaves so a phone is not decoding video nobody is looking at.
- */
-function ProjectVideo({ src, title }) {
-  const ref = useRef(null);
+const pad = (n) => String(n).padStart(2, "0");
+const techName = (t) => techFor(t)?.name || t;
+const dwg = (n) => `JM-04-${pad(n)}`;
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    // No observer (older Safari): fall back to the old behaviour rather than
-    // to a card that never plays.
-    if (typeof IntersectionObserver === "undefined") {
-      el.preload = "auto";
-      el.play().catch(() => {});
-      return;
-    }
-
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.preload = "auto";
-          el.play().catch(() => {});
-        } else {
-          el.pause();
-        }
-      },
-      { rootMargin: "100% 0px" },
-    );
-
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
+function Plate({ project, n }) {
   return (
-    <video
-      ref={ref}
-      className="project-media"
-      src={src}
-      aria-label={title}
-      loop
-      muted
-      playsInline
-      controls
-      preload="none"
-    />
+    <article className="plate" data-reveal>
+      <div className="plate-figure">
+        <span className="dim-h" aria-hidden="true">
+          <span>{project.category || "Web App"}</span>
+        </span>
+        <span className="dim-v" aria-hidden="true">
+          <span>{project.date}</span>
+        </span>
+        <div className="plate-frame">
+          <ProjectMedia title={project.title} className="media" />
+          <span className="crop crop-tl" />
+          <span className="crop crop-tr" />
+          <span className="crop crop-bl" />
+          <span className="crop crop-br" />
+        </div>
+      </div>
+      <div className="plate-text">
+        <p className="plate-dwg">
+          Dwg {dwg(n)} · {project.category || "Web App"} · {project.date}
+        </p>
+        <h3>{project.title}</h3>
+        <p className="plate-desc">{project.description}</p>
+        <p className="plate-material">
+          <span className="foot-label">Material</span>
+          {(project.technologies || []).map(techName).join(" · ")}
+        </p>
+        <ProjectLinks project={project} />
+      </div>
+    </article>
+  );
+}
+
+function Register({ projects, offset }) {
+  const [open, setOpen] = useState(null);
+  return (
+    <div className="register" data-reveal>
+      <div className="register-head" aria-hidden="true">
+        <span>Dwg no.</span>
+        <span>Title</span>
+        <span>Type</span>
+        <span>Material</span>
+        <span>Date</span>
+      </div>
+      <ol>
+        {projects.map((p, i) => {
+          const n = offset + i + 1;
+          const isOpen = open === p.title;
+          const id = `reg-${n}`;
+          return (
+            <li key={p.title} className={isOpen ? "is-open" : ""}>
+              <button
+                type="button"
+                className="register-row"
+                aria-expanded={isOpen}
+                aria-controls={id}
+                onClick={() => setOpen(isOpen ? null : p.title)}
+              >
+                <span className="reg-no">{dwg(n)}</span>
+                <span className="reg-title">{p.title}</span>
+                <span className="reg-type">{p.category || "Web App"}</span>
+                <span className="reg-tech">{(p.technologies || []).map(techName).join(" · ")}</span>
+                <span className="reg-date">{p.date}</span>
+                <span className="reg-toggle" aria-hidden="true">
+                  {isOpen ? "−" : "+"}
+                </span>
+              </button>
+              <div className="register-panel" id={id} hidden={!isOpen}>
+                {isOpen && (
+                  <div className="register-media">
+                    <ProjectMedia title={p.title} className="media" />
+                  </div>
+                )}
+                <div className="register-text">
+                  <p>{p.description}</p>
+                  <ProjectLinks project={p} />
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
 }
 
 export default function Projects() {
-  const [showOtherProjects, setShowOtherProjects] = useState(false);
-
-  // Lock/unlock body scroll when modal opens/closes
-  useEffect(() => {
-    if (showOtherProjects) {
-      // Lock scroll
-      document.body.style.overflow = "hidden";
-    } else {
-      // Unlock scroll
-      document.body.style.overflow = "unset";
-    }
-
-    // Cleanup function to ensure scroll is unlocked when component unmounts
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [showOtherProjects]);
-
-  const ProjectCard = ({ project }) => {
-    const media = mediaFor(project.title);
-
-    return (
-      <div className="project-card">
-        <div className="project-media-container">
-          {media.type === "video" ? (
-            <ProjectVideo src={media.src} title={project.title} />
-          ) : (
-            <img
-              className="project-media"
-              src={media.src}
-              alt={project.title}
-            />
-          )}
-          <div className="project-type-badge">
-            {project.category || "Web App"}
-          </div>
-        </div>
-
-        <div className="project-content">
-          <div className="project-header">
-            <h4 className="project-title">{project.title}</h4>
-            <div className="project-links">
-              {project.repository && (
-                <a
-                  href={project.repository}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="View on GitHub"
-                >
-                  <FontAwesomeIcon icon={faGithub} />
-                </a>
-              )}
-              {project.livedemo && (
-                <a
-                  href={project.livedemo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="View Live Demo"
-                >
-                  <FontAwesomeIcon icon={faExternalLinkAlt} />
-                </a>
-              )}
-              {project.npm && (
-                <a
-                  href={project.npm}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="View on NPM"
-                >
-                  <FontAwesomeIcon icon={faNpm} />
-                </a>
-              )}
-              {project.play && (
-                <a
-                  href={project.play}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                  title="Play Game"
-                >
-                  <FontAwesomeIcon icon={faGamepad} />
-                </a>
-              )}
-            </div>
-          </div>
-
-          <p className="project-description">
-            {project.description ||
-              "A modern web application built with cutting-edge technologies."}
-          </p>
-
-          {project.technologies && (
-            <div className="project-tech-stack">
-              {project.technologies.map((tech, index) => {
-                const techInfo = techFor(tech);
-                return techInfo ? (
-                  <div key={index} className="tech-icon" title={techInfo.name}>
-                    <img src={techInfo.icon} alt={techInfo.name} />
-                  </div>
-                ) : (
-                  <span key={index} className="tech-tag">
-                    {tech}
-                  </span>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <section id="projects">
-      <div className="projects-header">
-        <p className="eyebrow">02 · Work</p>
-        <h2>
-          Selected <Wobble>projects</Wobble>
-        </h2>
-        <p>{projectsIntro.text}</p>
+    <Sheet id="projects" title={projectsIntro.title} intro={projectsIntro.text}>
+      <div className="plates">
+        {featuredProjects.map((p, i) => (
+          <Plate key={p.title} project={p} n={i + 1} />
+        ))}
       </div>
 
-      {/* Featured Projects */}
-      <div className="featured-projects">
-        <h3>Featured Projects</h3>
-        <div className="project-cards-wrapper">
-          {featuredProjects.map((project, index) => (
-            <ProjectCard key={index} project={project} />
-          ))}
-        </div>
-      </div>
-
-      {/* Show More Button */}
-      <div className="show-more-container">
-        <button
-          className="show-more-btn"
-          onClick={() => setShowOtherProjects(true)}
-        >
-          View All Projects
-        </button>
-      </div>
-
-      {/* Other Projects Modal */}
-      {showOtherProjects && (
-        <div className="other-projects-wrapper">
-          <div
-            className="overlay"
-            onClick={() => setShowOtherProjects(false)}
-          ></div>
-          <div className="other-projects-content">
-            <div className="modal-header">
-              <h3>All Projects</h3>
-              <button
-                className="modal-close"
-                onClick={() => setShowOtherProjects(false)}
-                title="Close"
-              >
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-
-            <div className="modal-body">
-              <div className="project-cards-wrapper">
-                {allProjects.map((project, index) => (
-                  <ProjectCard key={index} project={project} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </section>
+      <h3 className="sub-head" data-reveal>
+        <span>Table 2</span> Drawing register — all projects
+      </h3>
+      <Register projects={allProjects} offset={featuredProjects.length} />
+    </Sheet>
   );
 }
