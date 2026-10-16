@@ -1,139 +1,170 @@
-import React, { Suspense, lazy, useCallback, useEffect, useState } from "react";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Projects from "./pages/Projects";
-import Contact from "./pages/Contact";
-import Footer from "./components/Footer";
-import { startField } from "./field/cursorField";
-import "./field/field.css";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import Game from "./run/Game";
+import { STAGES, stageInfo, zoneAt } from "./run/level";
+import { featuredProjects, allProjects } from "./components/projectList";
+import Hud from "./ui/Hud";
+import Title from "./ui/Title";
+import StageCard from "./ui/StageCard";
+import Collection from "./ui/Collection";
+import StageSelect from "./ui/StageSelect";
+import EndScreen from "./ui/EndScreen";
+import Controls from "./ui/Controls";
+import Toasts from "./ui/Toasts";
+import CV from "./ui/CV";
 
-// Journey mode is lazy so GSAP and the world SVG never touch first paint for a
-// visitor who only wants the CV (guardrail in docs/JOURNEY_PLAN.md §8).
-const JourneyStage = lazy(() => import("./journey/JourneyStage"));
+const TOTAL_SKILLS = STAGES.filter((s) => !s.quiet).reduce((n, s) => n + stageInfo(s).tech.length, 0);
+const TOTAL_COINS = featuredProjects.length + allProjects.length;
 
-// D17: Journey mode is what a first-time visitor lands on. Once someone has
-// chosen the CV we remember it, so a return visit does not put the animation
-// in front of them again — the hero teaser is always there to go back in.
-const CV_PREFERRED = "jm-prefers-cv";
-
-const read = (key) => {
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null; // private mode, blocked storage — fall back to the default
-  }
-};
-
-const write = (key, value) => {
-  try {
-    value === null
-      ? window.localStorage.removeItem(key)
-      : window.localStorage.setItem(key, value);
-  } catch {
-    /* nothing to do — the preference just will not persist */
-  }
-};
-
-const startInJourney = () => {
-  const params = new URLSearchParams(window.location.search);
-  const hash = window.location.hash;
-  if (params.has("cv") || hash.startsWith("#cv")) return false;
-  if (params.has("journey") || hash.startsWith("#journey")) return true;
-  // Phones land on the CV (amends D17). The journey is built for a wide
-  // stage — on a phone it is a stack of panels over a cropped world — and a
-  // phone visitor is more often someone checking a link in a hurry. The
-  // hero's ticket is right there to go in, and an explicit #journey link
-  // still opens it anywhere.
-  if (window.matchMedia("(max-width: 768px)").matches) return false;
-  return read(CV_PREFERRED) !== "1";
+const yearAt = (x) => {
+  const st = [...STAGES].reverse().find((s) => x >= s.from);
+  if (!st) return "2005";
+  if (zoneAt(Math.floor(x)) === "software" && x > STAGES[STAGES.length - 1].to) return "Today";
+  return stageInfo(st).when.split(/\s*[-—]\s*/)[0];
 };
 
 export default function App() {
-  const [journeyOpen, setJourneyOpen] = useState(startInJourney);
+  const game = useRef(null);
+  const [view, setView] = useState(() => (window.location.hash === "#cv" ? "cv" : "game"));
+  const [started, setStarted] = useState(false);
+  const [panel, setPanel] = useState(null); // { kind, stage? }
+  const [hearts, setHearts] = useState(3);
+  const [skills, setSkills] = useState([]);
+  const [coins, setCoins] = useState([]);
+  const [bugs, setBugs] = useState(0);
+  const [reached, setReached] = useState([]);
+  const [progress, setProgress] = useState({ p: 0, year: "2005" });
+  const [toasts, setToasts] = useState([]);
+  const [dark, setDark] = useState(() => document.body.classList.contains("dark-theme"));
+  const startedAt = useRef(0);
+  const [time, setTime] = useState("");
 
-  // The cursor field. It follows whichever mode is on screen: the journey's
-  // stage when it is open, the CV otherwise — re-resolved on every DOM
-  // change, so opening and closing the journey moves it across.
-  useEffect(
-    () =>
-      startField(
-        () =>
-          document.querySelector(".j-stage") ||
-          document.querySelector(".App"),
-      ),
-    [],
+  const toast = useCallback((text, kind = "info") => {
+    const id = Math.random().toString(36).slice(2);
+    setToasts((t) => [...t.slice(-3), { id, text, kind }]);
+    window.setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 2600);
+  }, []);
+
+  const events = useMemo(
+    () => ({
+      onFlag: (stage) => {
+        setReached((r) => (r.includes(stage.id) ? r : [...r, stage.id]));
+        setPanel({ kind: "stage", stage });
+      },
+      onSkill: (b) => {
+        setSkills((s) => [...s, { skill: b.skill, stage: b.stage }]);
+        toast(`? ${b.skill}`, "skill");
+      },
+      onCoin: (p) => {
+        setCoins((c) => (c.includes(p.title) ? c : [...c, p.title]));
+        toast(`● ${p.title}${p.featured ? " ★" : ""}`, "coin");
+      },
+      onBug: () => {
+        setBugs((n) => n + 1);
+        toast("Bug fixed! ✓", "bug");
+      },
+      onHurt: (why, h) => {
+        setHearts(h);
+        toast(why === "lava" ? "Ouch — molten steel! Back to the flag." : why === "pit" ? "Mind the gap! Back to the flag." : "A bug bit you!", "hurt");
+      },
+      onHearts: setHearts,
+      onGoal: () => {
+        const s = Math.round((performance.now() - startedAt.current) / 1000);
+        setTime(`${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`);
+        setPanel({ kind: "end" });
+      },
+      onProgress: (p, x) => setProgress({ p, year: yearAt(x) }),
+    }),
+    [toast],
   );
 
-  const closeJourney = useCallback(() => {
-    setJourneyOpen(false);
-    write(CV_PREFERRED, "1");
-    window.history.replaceState(null, "", window.location.pathname);
+  const toggleTheme = () => {
+    const next = !document.body.classList.contains("dark-theme");
+    document.body.classList.toggle("dark-theme", next);
+    try {
+      window.localStorage.setItem("jm-theme", next ? "dark" : "light");
+    } catch {
+      /* fine */
+    }
+    setDark(next);
+  };
+
+  const start = useCallback(() => {
+    setStarted(true);
+    startedAt.current = performance.now();
   }, []);
 
-  const openJourney = useCallback(() => {
-    setJourneyOpen(true);
-    write(CV_PREFERRED, null);
-  }, []);
+  const again = () => {
+    game.current?.restart();
+    setSkills([]);
+    setCoins([]);
+    setBugs(0);
+    setReached([]);
+    setHearts(3);
+    setPanel(null);
+    startedAt.current = performance.now();
+  };
 
-  // The stage is fixed and full-screen, so the page behind it must not scroll.
-  useEffect(() => {
-    if (!journeyOpen) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [journeyOpen]);
+  if (view === "cv") {
+    return (
+      <CV
+        onPlay={() => {
+          setView("game");
+          window.history.replaceState(null, "", window.location.pathname);
+        }}
+      />
+    );
+  }
 
-  // A pasted #journey/... link is a same-document navigation, so React never
-  // re-reads it on its own. Without this, sharing a beat link with someone who
-  // already has the page open does nothing.
-  useEffect(() => {
-    const onHash = () => {
-      const hash = window.location.hash;
-      if (hash.startsWith("#journey")) setJourneyOpen(true);
-      else if (hash.startsWith("#cv")) setJourneyOpen(false);
-    };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
-
-  useEffect(() => {
-    if (!journeyOpen) return;
-    // An Escape something else already handled (leaving destruction mode)
-    // is not a request to leave the journey too.
-    const onKey = (e) =>
-      e.key === "Escape" && !e.defaultPrevented && closeJourney();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [journeyOpen, closeJourney]);
+  const showCv = () => {
+    setView("cv");
+    window.history.replaceState(null, "", "#cv");
+    window.scrollTo(0, 0);
+  };
+  const close = () => setPanel(null);
 
   return (
-    <div className="App">
-      <Navbar />
-      <div>
-        <Sidebar />
-        <main className="main-container">
-          <Home onEnterJourney={openJourney} journeyOpen={journeyOpen} />
-          <About />
-          <Projects />
-          <Contact />
-        </main>
-        <Footer />
-      </div>
-
-      {/* The journey chunk is lazy, and a null fallback meant the static page
-          painted first and then got covered — it read as landing on the wrong
-          page. The curtain paints in the same commit as the page behind it, so
-          there is nothing to see underneath while the chunk arrives. */}
-
-      {journeyOpen && (
-        <Suspense fallback={<div className="j-curtain" aria-hidden="true" />}>
-          <JourneyStage onExit={closeJourney} />
-        </Suspense>
+    <div className="run">
+      <Game ref={game} paused={!started || Boolean(panel)} night={dark} events={events} />
+      {started && (
+        <Hud
+          hearts={hearts}
+          skills={skills.length}
+          totalSkills={TOTAL_SKILLS}
+          coins={coins.length}
+          totalCoins={TOTAL_COINS}
+          bugs={bugs}
+          progress={progress.p}
+          year={progress.year}
+          onOpen={(kind) => setPanel({ kind })}
+          dark={dark}
+          onTheme={toggleTheme}
+          onCv={showCv}
+        />
       )}
+      {started && <Controls game={game} />}
+      {!started && <Title onStart={start} onCv={showCv} />}
+      {panel?.kind === "stage" && <StageCard stage={panel.stage} onClose={close} />}
+      {panel?.kind === "collection" && <Collection skills={skills} coins={coins} onClose={close} />}
+      {panel?.kind === "stages" && (
+        <StageSelect
+          reached={reached}
+          onClose={close}
+          onTravel={(i) => {
+            game.current?.travel(i);
+            close();
+          }}
+        />
+      )}
+      {panel?.kind === "end" && (
+        <EndScreen
+          stats={{ skills: skills.length, totalSkills: TOTAL_SKILLS, coins: coins.length, totalCoins: TOTAL_COINS, bugs }}
+          time={time}
+          onClose={close}
+          onAgain={again}
+          onCollection={() => setPanel({ kind: "collection" })}
+        />
+      )}
+      <Toasts toasts={toasts} />
     </div>
   );
 }
