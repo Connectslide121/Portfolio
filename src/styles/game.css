@@ -1,0 +1,353 @@
+.game {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #14223a;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.world {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  cursor: pointer;
+  touch-action: none;
+}
+
+/* --- HUD ------------------------------------------------------------- */
+
+.hud {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.hud > * {
+  pointer-events: auto;
+}
+
+.hud-player {
+  padding: 10px 14px 12px;
+  min-width: 220px;
+}
+
+.hud-name {
+  font-family: var(--pixel);
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.hud-name span {
+  color: var(--gold);
+}
+
+.xp {
+  margin: 8px 0 6px;
+  height: 10px;
+  border: 2px solid var(--frame);
+  border-radius: 3px;
+  background: #0a0f2a;
+  overflow: hidden;
+}
+
+.xp span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #57e389, #ffd23f);
+  transition: width 0.6s ease;
+}
+
+.hud-place {
+  font-size: 14px;
+  color: var(--win-dim);
+}
+
+.hud-menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 6px;
+}
+
+.hud-menu button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-family: var(--pixel);
+  font-size: 9px;
+}
+
+.hud-menu button:hover,
+.hud-menu button:focus-visible {
+  background: rgb(255 255 255 / 0.15);
+  outline: none;
+}
+
+.hud-cv {
+  background: var(--gold) !important;
+  color: #10196b;
+}
+
+/* --- Touch pad --------------------------------------------------------- */
+
+.pad {
+  display: none;
+}
+
+@media (hover: none), (max-width: 760px) {
+  .pad {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+  }
+  .dpad {
+    position: relative;
+    width: 138px;
+    height: 138px;
+    pointer-events: auto;
+  }
+  .dpad button,
+  .a-btn {
+    position: absolute;
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border: 3px solid #fff;
+    border-radius: 10px;
+    background: rgb(16 25 107 / 0.75);
+    color: #fff;
+    font-size: 16px;
+    touch-action: none;
+  }
+  .d-up {
+    left: 46px;
+    top: 0;
+  }
+  .d-down {
+    left: 46px;
+    bottom: 0;
+  }
+  .d-left {
+    left: 0;
+    top: 46px;
+  }
+  .d-right {
+    right: 0;
+    top: 46px;
+  }
+  .a-btn {
+    position: static;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgb(255 111 181 / 0.85);
+    font-family: var(--pixel);
+    font-size: 16px;
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .hud {
+    flex-direction: column;
+    align-items: stretch;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+  }
+  .hud-player {
+    min-width: 0;
+    padding: 8px 12px;
+  }
+  .hud-menu {
+    justify-content: space-between;
+  }
+  .hud-menu button {
+    padding: 6px;
+    font-size: 8px;
+  }
+  .hud-menu kbd {
+    display: none;
+  }
+}
+
+/* --- Dialogue ------------------------------------------------------- */
+
+.dialogue-wrap {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  width: min(820px, calc(100% - 24px));
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.dialogue {
+  position: relative;
+  padding: 26px 22px 16px;
+  min-height: 170px;
+  cursor: pointer;
+  animation: rise 0.18s steps(3) both;
+}
+
+.dialogue:focus {
+  outline: none;
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+}
+
+.speaker {
+  position: absolute;
+  top: -16px;
+  left: 16px;
+  padding: 6px 12px;
+  background: var(--win-b);
+  border: 3px solid var(--frame);
+  border-radius: 8px;
+  font-family: var(--pixel);
+  font-size: 10px;
+  color: var(--gold);
+}
+
+.dialogue-mark {
+  float: right;
+  margin: 0 0 8px 14px;
+  padding: 6px 10px;
+  background: #fff;
+  border: 2px solid var(--frame);
+  border-radius: 6px;
+}
+
+.dialogue-mark[data-tone="light"] {
+  background: #111;
+}
+
+.dialogue-mark img {
+  height: 30px;
+  width: auto;
+  max-width: 110px;
+  object-fit: contain;
+}
+
+.dialogue-text {
+  font-size: 19px;
+  line-height: 1.45;
+  white-space: pre-line;
+  min-height: 3em;
+}
+
+.dialogue-links,
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.choices {
+  flex-direction: column;
+}
+
+.choice {
+  text-align: left;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 18px;
+}
+
+.choice:hover,
+.choice:focus-visible {
+  background: rgb(255 255 255 / 0.15);
+  color: var(--gold);
+  outline: none;
+}
+
+.dialogue-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-family: var(--pixel);
+  font-size: 9px;
+  color: var(--win-dim);
+}
+
+/* --- Toasts ------------------------------------------------------------ */
+
+.toasts {
+  position: absolute;
+  top: 100px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  min-width: 240px;
+  animation: slide-in 0.3s steps(4) both;
+}
+
+.toast-achievement {
+  border-color: var(--gold);
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+}
+
+.toast-icon {
+  font-size: 22px;
+}
+
+.toast-title {
+  font-family: var(--pixel);
+  font-size: 9px;
+  color: var(--gold);
+  line-height: 1.6;
+}
+
+.toast-text {
+  font-size: 14px;
+}
+
+@media (max-width: 760px) {
+  .toasts {
+    top: auto;
+    bottom: 170px;
+    left: 12px;
+  }
+}
