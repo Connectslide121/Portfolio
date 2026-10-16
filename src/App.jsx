@@ -38,6 +38,19 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // A HUD button clicked with the mouse lets go of focus, so the next Space
+  // or Enter talks instead of pressing the button again once its menu
+  // closes. Keyboard presses (detail 0) keep focus where the player put it.
+  useEffect(() => {
+    const onClick = (e) => {
+      const button = e.target.closest?.(".hud button");
+      if (button && e.detail > 0) button.blur();
+    };
+    // Capture: before React opens the menu and the menu notes who had focus.
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, []);
+
   // Achievements that follow from what has been visited.
   useEffect(() => {
     const v = progress.visited;
