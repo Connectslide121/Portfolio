@@ -14,6 +14,7 @@ export const emptyCollection = () => ({
   trophies: {},
   night: false,
   traded: false,
+  pairsBest: null,
 });
 
 export function loadCollection() {
@@ -93,6 +94,7 @@ export const TROPHIES = [
   { id: "set-career", name: "Twenty years", text: "Complete the Career set.", test: complete("career") },
   { id: "set-projects", name: "Ship it", text: "Complete the Projects set.", test: complete("projects") },
   { id: "set-tools", name: "Full toolbox", text: "Complete the Toolbox set.", test: complete("tools") },
+  { id: "pairs", name: "Total recall", text: "Clear a game of Pairs in the arcade.", test: (c) => c.pairsBest != null },
   { id: "night", name: "Night shift", text: "Play by lamplight (switch to the dark theme).", test: (c) => c.night },
   { id: "trade", name: "Let's trade", text: "Visit the trade desk.", test: (c) => c.traded },
   { id: "master", name: "Master collector", text: `Collect all ${CARDS.length} cards.`, test: (c) => CARDS.every((x) => c.owned[x.id]) },

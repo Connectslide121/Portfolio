@@ -27,6 +27,9 @@ export default function Header({ view, collection, dark, onView, onPanel, onThem
         <button type="button" className="btn btn-sm" onClick={() => onPanel("trophies")}>
           Trophies <span className="top-count">{earned}/{TROPHIES.length}</span>
         </button>
+        <button type="button" className="btn btn-sm" onClick={() => onPanel("pairs")}>
+          Pairs
+        </button>
         <button type="button" className="btn btn-sm" onClick={() => onPanel("trade")}>
           Trade
         </button>

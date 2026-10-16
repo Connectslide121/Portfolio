@@ -7,6 +7,7 @@ import Inspect from "./ui/Inspect";
 import Trophies from "./ui/Trophies";
 import Trade from "./ui/Trade";
 import Toasts from "./ui/Toasts";
+import Pairs from "./ui/Pairs";
 import CV from "./ui/CV";
 import { SETS, cardById } from "./cards/catalog";
 import { addPack, award, drawPack, emptyCollection, loadCollection, packsLeft, saveCollection } from "./cards/collection";
@@ -175,6 +176,14 @@ export default function App() {
         />
       )}
       {panel === "trade" && <Trade onClose={() => setPanel(null)} />}
+      {panel === "pairs" && (
+        <Pairs
+          owned={collection.owned}
+          best={collection.pairsBest}
+          onClose={() => setPanel(null)}
+          onWin={(moves) => commit({ ...collection, pairsBest: collection.pairsBest == null ? moves : Math.min(collection.pairsBest, moves) })}
+        />
+      )}
 
       <Toasts toasts={toasts} />
     </div>
