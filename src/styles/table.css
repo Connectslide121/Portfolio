@@ -447,6 +447,11 @@ progress::-moz-progress-bar {
   object-fit: cover;
 }
 
+/* The round window would cut a drawn title in half. */
+.pack-art text {
+  display: none;
+}
+
 .pack-art .art-hero img {
   width: 80%;
   height: auto;
