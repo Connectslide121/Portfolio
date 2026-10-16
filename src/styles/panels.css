@@ -1,0 +1,543 @@
+/* ==========================================================================
+   Dialogs on the table: a card in the hand, the trophy case, the trade desk,
+   and toasts.
+   ========================================================================== */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(10 6 30 / 0.66);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fade 0.2s ease both;
+}
+
+.panel,
+.inspect {
+  width: min(620px, 100%);
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.6);
+  animation: rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.panel.is-wide {
+  width: min(980px, 100%);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+}
+
+.panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 24px 14px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.panel-head h2 {
+  margin-top: 4px;
+  font-size: 26px;
+}
+
+.panel-body {
+  padding: 20px 24px 24px;
+  overflow: auto;
+}
+
+.panel-foot {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ---- Inspect: the card in your hand --------------------------------------- */
+
+.inspect {
+  width: min(1060px, 100%);
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.ins-hand {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 30px;
+  background:
+    radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--accent) 28%, transparent), transparent 65%),
+    var(--panel-2);
+}
+
+.card.is-big {
+  --cw: min(360px, 34vw);
+}
+
+.ins-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.ins-text {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 30px 30px;
+  overflow: auto;
+}
+
+.ins-head {
+  position: relative;
+  padding-right: 48px;
+  margin-bottom: 16px;
+}
+
+.ins-head h2 {
+  margin-top: 6px;
+  font-size: clamp(26px, 3vw, 36px);
+}
+
+.ins-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.rarity-rare,
+.rarity-holo {
+  color: var(--gold);
+}
+
+.rarity-legendary {
+  color: var(--legend);
+}
+
+.ins-text > p,
+.ins-text li {
+  font-size: 15.5px;
+}
+
+.ins-text > * + * {
+  margin-top: 12px;
+}
+
+.ins-text h4 {
+  margin-top: 20px;
+  font-family: var(--display);
+  font-size: 16px;
+}
+
+.ins-meta {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ins-title {
+  margin-top: 4px !important;
+  font-family: var(--sans);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.ins-org {
+  margin-top: 2px !important;
+}
+
+.ins-lede {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 20px !important;
+  line-height: 1.4;
+}
+
+.ins-quest {
+  padding: 12px 14px;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 10px 10px 0;
+  background: var(--panel-2);
+  font-size: 15px;
+}
+
+.ins-quest p + p {
+  margin-top: 4px;
+}
+
+.ins-quest span {
+  display: inline-block;
+  min-width: 78px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ins-bullets,
+.ins-chapters {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 20px;
+}
+
+.ins-bullets {
+  list-style: "★  ";
+}
+
+.ins-chapters span {
+  color: var(--muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px !important;
+  list-style: none;
+}
+
+.ins-note {
+  color: var(--muted);
+  font-size: 14px !important;
+}
+
+.ins-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px !important;
+}
+
+.ins-users {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px !important;
+  list-style: none;
+}
+
+.ins-users li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.ins-users small {
+  color: var(--muted);
+}
+
+.ins-locked {
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ---- Trophies ------------------------------------------------------------- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stats div {
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--panel-2);
+  text-align: center;
+}
+
+.stats dt {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stats dd {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.trophies {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  list-style: none;
+}
+
+.trophies li {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  opacity: 0.7;
+}
+
+.trophies li.is-earned {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--gold) 60%, transparent);
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+  opacity: 1;
+}
+
+.trophies h3 {
+  font-size: 16px;
+}
+
+.trophies p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.trophies small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.medal {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.is-earned .medal,
+.toast .medal {
+  background: linear-gradient(145deg, #fff1b8, var(--gold) 55%, #9b6413);
+  color: #2a1700;
+  box-shadow: 0 4px 10px -4px rgb(120 70 0 / 0.7);
+}
+
+/* ---- Trade desk ----------------------------------------------------------- */
+
+.trade {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 26px;
+  align-items: start;
+}
+
+.trade-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.trade-card .card {
+  --cw: 190px;
+}
+
+.trade-status {
+  color: var(--good);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.trade-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.trade-details {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 14px;
+  font-size: 15px;
+}
+
+.trade-details dt {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.trade-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.trade-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 2px dashed var(--line);
+  border-radius: 16px;
+  background: var(--panel-2);
+}
+
+.trade-form h3 {
+  font-size: 20px;
+}
+
+.trade-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.trade-form input,
+.trade-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  font-size: 15px;
+  font-weight: 400;
+  resize: vertical;
+}
+
+.trade-form input:focus,
+.trade-form textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 0;
+}
+
+.trade-form .btn {
+  align-self: flex-start;
+}
+
+/* ---- Toasts --------------------------------------------------------------- */
+
+.toasts {
+  position: fixed;
+  top: 76px;
+  right: 16px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(330px, calc(100vw - 32px));
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  animation: slide 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.toast-title {
+  font-family: var(--display);
+  font-weight: 800;
+}
+
+.toast-text {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+@keyframes slide {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+
+/* ---- Small screens -------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  .inspect {
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  .ins-hand {
+    padding: 22px 16px;
+  }
+
+  .card.is-big {
+    --cw: min(300px, 72vw);
+  }
+
+  .ins-text {
+    overflow: visible;
+    padding: 22px 20px 26px;
+  }
+
+  /* The card fills the screen: keep the way out in reach. */
+  .ins-close {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2;
+    box-shadow: var(--shadow);
+  }
+
+  .trade {
+    grid-template-columns: 1fr;
+  }
+
+  .trade-card {
+    flex-direction: row;
+  }
+
+  .trade-card .card {
+    --cw: 130px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .scrim {
+    padding: 10px;
+  }
+
+  .panel-head,
+  .panel-body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
