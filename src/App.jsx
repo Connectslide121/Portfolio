@@ -1,139 +1,182 @@
-import React, { Suspense, lazy, useCallback, useEffect, useState } from "react";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Projects from "./pages/Projects";
-import Contact from "./pages/Contact";
-import Footer from "./components/Footer";
-import { startField } from "./field/cursorField";
-import "./field/field.css";
+import React, { useCallback, useEffect, useState } from "react";
+import Header from "./ui/Header";
+import Shelf from "./ui/Shelf";
+import Album from "./ui/Album";
+import Opening from "./ui/Opening";
+import Inspect from "./ui/Inspect";
+import Trophies from "./ui/Trophies";
+import Trade from "./ui/Trade";
+import Toasts from "./ui/Toasts";
+import CV from "./ui/CV";
+import { SETS, cardById } from "./cards/catalog";
+import { addPack, award, drawPack, emptyCollection, loadCollection, packsLeft, saveCollection } from "./cards/collection";
 
-// Journey mode is lazy so GSAP and the world SVG never touch first paint for a
-// visitor who only wants the CV (guardrail in docs/JOURNEY_PLAN.md §8).
-const JourneyStage = lazy(() => import("./journey/JourneyStage"));
-
-// D17: Journey mode is what a first-time visitor lands on. Once someone has
-// chosen the CV we remember it, so a return visit does not put the animation
-// in front of them again — the hero teaser is always there to go back in.
-const CV_PREFERRED = "jm-prefers-cv";
-
-const read = (key) => {
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null; // private mode, blocked storage — fall back to the default
-  }
-};
-
-const write = (key, value) => {
-  try {
-    value === null
-      ? window.localStorage.removeItem(key)
-      : window.localStorage.setItem(key, value);
-  } catch {
-    /* nothing to do — the preference just will not persist */
-  }
-};
-
-const startInJourney = () => {
-  const params = new URLSearchParams(window.location.search);
-  const hash = window.location.hash;
-  if (params.has("cv") || hash.startsWith("#cv")) return false;
-  if (params.has("journey") || hash.startsWith("#journey")) return true;
-  // Phones land on the CV (amends D17). The journey is built for a wide
-  // stage — on a phone it is a stack of panels over a cropped world — and a
-  // phone visitor is more often someone checking a link in a hurry. The
-  // hero's ticket is right there to go in, and an explicit #journey link
-  // still opens it anywhere.
-  if (window.matchMedia("(max-width: 768px)").matches) return false;
-  return read(CV_PREFERRED) !== "1";
-};
-
+/**
+ * The portfolio as a trading card game. The career is a collection of cards
+ * in three sets; boosters hold the cards you do not have yet; the album keeps
+ * what you pulled, and every card opens to the full CV entry behind it.
+ */
 export default function App() {
-  const [journeyOpen, setJourneyOpen] = useState(startInJourney);
+  const [view, setView] = useState(() => (window.location.hash === "#cv" ? "cv" : "shelf"));
+  const [albumSet, setAlbumSet] = useState("career");
+  const [collection, setCollection] = useState(loadCollection);
+  const [opening, setOpening] = useState(null);
+  const [inspecting, setInspecting] = useState(null);
+  const [panel, setPanel] = useState(null);
+  const [toasts, setToasts] = useState([]);
+  const [dark, setDark] = useState(() => document.body.classList.contains("dark-theme"));
 
-  // The cursor field. It follows whichever mode is on screen: the journey's
-  // stage when it is open, the CV otherwise — re-resolved on every DOM
-  // change, so opening and closing the journey moves it across.
-  useEffect(
-    () =>
-      startField(
-        () =>
-          document.querySelector(".j-stage") ||
-          document.querySelector(".App"),
-      ),
-    [],
-  );
+  useEffect(() => saveCollection(collection), [collection]);
 
-  const closeJourney = useCallback(() => {
-    setJourneyOpen(false);
-    write(CV_PREFERRED, "1");
-    window.history.replaceState(null, "", window.location.pathname);
+  const toast = useCallback((t) => {
+    const id = `${t.id}-${Date.now()}`;
+    setToasts((all) => [...all, { id, title: t.title, text: t.text }]);
+    setTimeout(() => setToasts((all) => all.filter((x) => x.id !== id)), 4200);
   }, []);
 
-  const openJourney = useCallback(() => {
-    setJourneyOpen(true);
-    write(CV_PREFERRED, null);
-  }, []);
+  /** Store the collection and announce any trophy it now earns. */
+  const commit = (next, { quiet = false } = {}) => {
+    if (quiet) {
+      setCollection(next);
+      return;
+    }
+    const { next: awarded, fresh } = award(next);
+    setCollection(awarded);
+    // A pile of trophies at once (opening everything) is one toast, not eight.
+    if (fresh.length > 2) toast({ id: "many", title: `${fresh.length} trophies earned`, text: fresh.map((t) => t.name).join(" · ") });
+    else fresh.forEach((t) => toast({ id: t.id, title: `Trophy · ${t.name}`, text: t.text }));
+  };
 
-  // The stage is fixed and full-screen, so the page behind it must not scroll.
-  useEffect(() => {
-    if (!journeyOpen) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [journeyOpen]);
+  const openPack = (setId) => {
+    const id = setId || SETS.find((s) => packsLeft(s.id, collection.owned))?.id;
+    if (!id || !packsLeft(id, collection.owned)) return;
+    setInspecting(null);
+    setPanel(null);
+    setOpening({ setId: id, cards: drawPack(id, collection.owned), packNo: Math.max(1, collection.opened + 1), key: Date.now() });
+  };
 
-  // A pasted #journey/... link is a same-document navigation, so React never
-  // re-reads it on its own. Without this, sharing a beat link with someone who
-  // already has the page open does nothing.
-  useEffect(() => {
-    const onHash = () => {
-      const hash = window.location.hash;
-      if (hash.startsWith("#journey")) setJourneyOpen(true);
-      else if (hash.startsWith("#cv")) setJourneyOpen(false);
-    };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
+  // The cards are yours the moment the foil tears; trophies wait until the
+  // reveal is over, so a toast never gives a pull away.
+  const tear = () => commit(addPack(collection, opening.cards), { quiet: true });
 
-  useEffect(() => {
-    if (!journeyOpen) return;
-    // An Escape something else already handled (leaving destruction mode)
-    // is not a request to leave the journey too.
-    const onKey = (e) =>
-      e.key === "Escape" && !e.defaultPrevented && closeJourney();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [journeyOpen, closeJourney]);
+  const closeOpening = () => {
+    setOpening(null);
+    commit(collection);
+  };
+
+  const openAnother = () => {
+    const setId = opening.setId;
+    commit(collection);
+    openPack(setId);
+  };
+
+  const openAll = () => {
+    let c = collection;
+    for (const s of SETS) while (packsLeft(s.id, c.owned)) c = addPack(c, drawPack(s.id, c.owned));
+    commit(c);
+    setAlbumSet("career");
+    setView("album");
+    window.scrollTo(0, 0);
+  };
+
+  const inspect = (card) => {
+    setInspecting(card.id);
+    if (!collection.inspected[card.id]) commit({ ...collection, inspected: { ...collection.inspected, [card.id]: true } });
+  };
+
+  const showPanel = (name) => {
+    setPanel(name);
+    if (name === "trade" && !collection.traded) commit({ ...collection, traded: true });
+  };
+
+  const toggleTheme = () => {
+    const next = !document.body.classList.contains("dark-theme");
+    document.body.classList.toggle("dark-theme", next);
+    try {
+      window.localStorage.setItem("jm-theme", next ? "dark" : "light");
+    } catch {
+      /* fine */
+    }
+    setDark(next);
+    if (next && !collection.night) commit({ ...collection, night: true });
+  };
+
+  const showView = (v) => {
+    setView(v);
+    window.scrollTo(0, 0);
+  };
+
+  const showAlbum = (setId) => {
+    if (setId) setAlbumSet(setId);
+    showView("album");
+  };
+
+  const showCv = () => {
+    setView("cv");
+    window.history.replaceState(null, "", "#cv");
+    window.scrollTo(0, 0);
+  };
+
+  if (view === "cv") {
+    return (
+      <CV
+        onPlay={() => {
+          setView("shelf");
+          window.history.replaceState(null, "", window.location.pathname);
+        }}
+      />
+    );
+  }
+
+  const card = inspecting && cardById[inspecting];
 
   return (
-    <div className="App">
-      <Navbar />
-      <div>
-        <Sidebar />
-        <main className="main-container">
-          <Home onEnterJourney={openJourney} journeyOpen={journeyOpen} />
-          <About />
-          <Projects />
-          <Contact />
-        </main>
-        <Footer />
-      </div>
+    <div className="table">
+      <Header view={view} collection={collection} dark={dark} onView={showView} onPanel={showPanel} onTheme={toggleTheme} onCv={showCv} />
 
-      {/* The journey chunk is lazy, and a null fallback meant the static page
-          painted first and then got covered — it read as landing on the wrong
-          page. The curtain paints in the same commit as the page behind it, so
-          there is nothing to see underneath while the chunk arrives. */}
-
-      {journeyOpen && (
-        <Suspense fallback={<div className="j-curtain" aria-hidden="true" />}>
-          <JourneyStage onExit={closeJourney} />
-        </Suspense>
+      {view === "album" ? (
+        <Album setId={albumSet} owned={collection.owned} onSet={setAlbumSet} onInspect={inspect} onOpen={openPack} />
+      ) : (
+        <Shelf owned={collection.owned} onOpen={openPack} onOpenAll={openAll} onAlbum={showAlbum} onInspect={inspect} onCv={showCv} />
       )}
+
+      <footer className="foot">
+        {new Date().getFullYear()} · Made with ♥ by Jon Mendizabal ·{" "}
+        <button type="button" className="link-btn" onClick={showCv}>
+          Read as CV
+        </button>
+      </footer>
+
+      {opening && (
+        <Opening
+          key={opening.key}
+          setId={opening.setId}
+          cards={opening.cards}
+          packNo={opening.packNo}
+          packsLeft={packsLeft(opening.setId, collection.owned)}
+          onTear={tear}
+          onClose={closeOpening}
+          onAnother={openAnother}
+          onInspect={inspect}
+        />
+      )}
+
+      {card && <Inspect card={card} owned={collection.owned} onInspect={inspect} onClose={() => setInspecting(null)} />}
+
+      {panel === "trophies" && (
+        <Trophies
+          collection={collection}
+          onClose={() => setPanel(null)}
+          onReset={() => {
+            setCollection(emptyCollection());
+            setPanel(null);
+            showView("shelf");
+          }}
+        />
+      )}
+      {panel === "trade" && <Trade onClose={() => setPanel(null)} />}
+
+      <Toasts toasts={toasts} />
     </div>
   );
 }
