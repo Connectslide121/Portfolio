@@ -109,7 +109,9 @@ const Game = forwardRef(function Game({ paused, night, events }, ref) {
       if (e.target.closest?.("input, textarea, select")) return;
       const k = KEYS[e.key];
       if (!k || pausedRef.current) return;
-      if (e.key === " " && e.target.closest?.("button, a")) return;
+      // While the run is live, Space is a jump even when a HUD button still
+      // has focus from a menu that just closed: let go of the button first.
+      if (e.key === " " && e.target.closest?.("button, a")) e.target.blur();
       e.preventDefault();
       s.input[k] = true;
       if (k === "jump" && !e.repeat) s.jumpBuffer = 0.14;
