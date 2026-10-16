@@ -212,10 +212,12 @@ const tools = toolCategories.flatMap((cat) =>
   cat.tools.map((t) => {
     const keys = [norm(t.name), ...(ALIASES[norm(t.name)] || [])];
     const hit = (label) => keys.includes(norm(label));
-    const usedIn = [
-      ...careerEntries.filter((e) => e.tech.some(hit)).map((e) => e.id),
-      ...projects.filter((p) => p.tech.some(hit)).map((p) => p.id),
+    const users = [
+      ...careerEntries.filter((e) => e.tech.some(hit)).map((e) => ({ id: e.id, name: e.quest.name })),
+      ...projects.filter((p) => p.tech.some(hit)).map((p) => ({ id: p.id, name: p.name })),
     ];
+    const usedIn = users.map((u) => u.id);
+    const more = users.length - 3;
     return {
       id: `tool-${norm(t.name).replace("#", "sharp")}`,
       set: "tools",
@@ -223,8 +225,11 @@ const tools = toolCategories.flatMap((cat) =>
       name: t.name,
       subtitle: cat.name,
       type: `Tool — ${cat.name}`,
-      text: usedIn.length
-        ? `Used in ${usedIn.length} ${usedIn.length === 1 ? "card" : "cards"} of this collection.`
+      text: users.length
+        ? `Used in ${users
+            .slice(0, 3)
+            .map((u) => u.name)
+            .join(", ")}${more > 0 ? ` and ${more} more` : ""}.`
         : "Part of the everyday toolbox.",
       rarity: cat.name === "AI & Machine Learning" || cat.tools.length === 1 ? "uncommon" : "common",
       cost: "",
