@@ -1,22 +1,52 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
-import "./styles/styles.css";
-import App from "./App";
+import "./picker/switch.css";
+import ModeSwitch from "./picker/ModeSwitch";
+import { currentModeId, fontsHref, modeById } from "./modes/registry";
 
-// The site is printed on paper: light is the default and public/index.html
-// ships a bare <body>. Dark ("ink") is opt-in, so only an explicit stored
-// choice adds the class — toggle, never add-if, so a stored "light" also wins
-// over anything a cached HTML might still carry.
+// One address, nine sites: ?mode=<id> loads that design and nothing else, so
+// its global styles have the page to themselves. No mode, the picker.
+const mode = modeById(currentModeId());
+
+// Light and dark are shared by every mode (jm-theme). Without a stored
+// choice each design keeps its own default: the night designs start dark.
 try {
-  const prefersDark = window.localStorage.getItem("jm-theme") === "dark";
-  document.body.classList.toggle("dark-theme", prefersDark);
+  const stored = window.localStorage.getItem("jm-theme");
+  document.body.classList.toggle("dark-theme", stored ? stored === "dark" : Boolean(mode?.darkByDefault));
 } catch {
-  /* blocked storage — keep whatever default the HTML set */
+  document.body.classList.toggle("dark-theme", Boolean(mode?.darkByDefault));
 }
+
+if (mode) {
+  const fonts = document.createElement("link");
+  fonts.rel = "stylesheet";
+  fonts.href = fontsHref(mode);
+  document.head.appendChild(fonts);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", mode.themeColor);
+  document.querySelector('link[rel="icon"][type="image/svg+xml"]')?.setAttribute("href", `${process.env.PUBLIC_URL}/modes/${mode.id}/favicon.svg`);
+  document.documentElement.dataset.mode = mode.id;
+  try {
+    window.localStorage.setItem("jm-mode", mode.id);
+  } catch {
+    /* the picker just won't offer "back to" */
+  }
+}
+
+const Picker = lazy(() => import("./picker/Picker"));
+const Mode = mode && lazy(mode.load);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <Suspense fallback={null}>
+      {mode ? (
+        <>
+          <Mode />
+          <ModeSwitch mode={mode} />
+        </>
+      ) : (
+        <Picker />
+      )}
+    </Suspense>
   </React.StrictMode>
 );
