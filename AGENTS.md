@@ -44,35 +44,25 @@ This is a personal portfolio website built with React 18, showcasing Jon Mendiza
 
 ```
 src/
-├── App.jsx                 # Main app component with all sections
-├── index.js               # React app entry point
-├── components/            # Reusable UI components
-│   ├── Navbar.jsx         # Navigation with scroll-based active states
-│   ├── Sidebar.jsx        # Social media links sidebar
-│   ├── ThemeToggle.jsx    # Dark/light theme switcher
-│   ├── Tools.jsx          # Technology stack display
-│   ├── Experience.jsx     # Work experience section
-│   ├── Education.jsx      # Education background
-│   ├── Footer.jsx         # Site footer
-│   └── projectList.js     # Project data configuration
-├── pages/                 # Page section components
-│   ├── Home.jsx           # Hero section
-│   ├── About.jsx          # About me section
-│   ├── Projects.jsx       # Projects showcase
-│   └── Contact.jsx        # Contact form
-├── styles/                # CSS modules
-│   ├── styles.css         # Global styles and CSS variables
-│   ├── navbar.css         # Navigation styling
-│   ├── home.css           # Hero section styling
-│   ├── about.css          # About section styling
-│   ├── projects.css       # Projects gallery styling
-│   ├── contact.css        # Contact form styling
-│   └── sidebar.css        # Sidebar styling
+├── App.jsx                # Runs the game: world, menus, panels, CV view
+├── index.js               # Entry point; restores the stored theme
+├── game/
+│   ├── map.js             # The overworld grid, buildings, signs, path finding
+│   ├── draw.js            # Tiles, buildings and characters drawn in code
+│   ├── World.jsx          # Canvas engine: camera, movement, input, night light
+│   ├── content.js         # Dialogue scripts built from src/data
+│   ├── progress.js        # XP, levels, achievements (localStorage)
+│   └── rng.js             # Seeded random numbers
+├── ui/                    # Dialogue, Hud, Pad, Toasts, Panel, QuestLog, Bag,
+│                          # Arcade, PostOffice, MapMenu, Trophies, CV
+├── components/            # ProjectMedia (lazy video), SocialIcon,
+│   │                      # projectList.js, richText.jsx
+├── data/                  # Content: journey.js (profile, experience,
+│                          # education, chapters, beats), tools, social,
+│                          # site copy, media / tech / organisation lookups
+├── styles/                # styles.css (tokens, windows), game.css,
+│                          # panels.css, cv.css
 └── images/                # Static assets
-    ├── home-image.webp    # Profile image
-    ├── logo.webp          # Personal logo
-    ├── projects/          # Project preview media
-    └── tools/             # Technology icons
 ```
 
 ## Coding Standards & Conventions
@@ -105,7 +95,8 @@ export default function ComponentName() {
 ### CSS & Styling
 
 - **Use CSS Custom Properties** extensively for theming
-- **Follow the existing CSS variable naming**: `--primaryColor`, `--textPrimary`, etc.
+- **Follow the existing CSS variable naming**: `--win-a`, `--win-b`, `--win-ink`, `--frame`, `--gold`, `--page`, etc. (see `src/styles/styles.css`)
+- **Use the menu window** (`.window`) and `.rpg-btn` for any new UI; pixel fonts only at 17px and above
 - **Dark theme support**: All new styles must support both light and dark themes
 - **Responsive design**: Use existing breakpoint patterns
 - **No inline styles**: Keep all styling in CSS files
@@ -114,16 +105,18 @@ export default function ComponentName() {
 ```css
 /* CSS Variable Pattern */
 body {
-  --primaryColor: #0f172a;
-  --textPrimary: #0f172a;
-  --accentColor: #3b82f6;
+  /* day */
+  --page: #f3e7c9;
+  --win-a: #2f55d4;
+  --win-b: #10196b;
   /* ... more variables */
 }
 
 body.dark-theme {
-  --primaryColor: #f8fafc;
-  --textPrimary: #f8fafc;
-  --accentColor: #60a5fa;
+  /* night */
+  --page: #0f1224;
+  --win-a: #4a2f8f;
+  --win-b: #150b33;
   /* ... dark theme overrides */
 }
 ```
@@ -173,22 +166,21 @@ body.dark-theme {
 
 1. Add project data to `projectList.js` in appropriate array
 2. Add media file to `src/images/projects/`
-3. Import media in `Projects.jsx` and add to media mapping objects
+3. Import the media in `src/data/projectMedia.js` and add it to the `VIDEOS` or `IMAGES` map
 4. Ensure project has required fields: title, description, technologies, repository, etc.
 
 ### Adding a New Technology/Tool
 
 1. Add icon to `src/images/tools/`
-2. Update the tools array in `Tools.jsx`
+2. Add it to `toolCategories` in `src/data/tools.js`
 3. Ensure icon follows the naming convention (lowercase, no spaces)
 
-### Adding New Sections
+### Adding a New Place
 
-1. Create component in `src/pages/` or `src/components/`
-2. Add corresponding CSS file in `src/styles/`
-3. Import and include in `App.jsx`
-4. Add navigation link to `Navbar.jsx` if needed
-5. Update scroll detection logic in navbar if it's a main section
+1. Add the building to `BUILDINGS` in `src/game/map.js` (position, door, `target`); paths and scenery follow
+2. Give it a style in `STYLE` in `src/game/draw.js`
+3. Handle its `target.kind` in `open()` in `App.jsx`, with a script in `src/game/content.js` or a panel in `src/ui/`
+4. Add it to `QuestLog`'s `WHERE` map if it tells a CV entry
 
 ## Performance & Best Practices
 
