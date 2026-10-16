@@ -9,6 +9,7 @@
 :root {
   --display: "Cinzel", "Trajan Pro", Georgia, serif;
   --sans: "Inter", "Segoe UI", system-ui, sans-serif;
+  --serif: Georgia, "Times New Roman", serif;
   --gold: #e3a92b;
   --gold-hi: #ffe08a;
   --legend: #ff8a3d;

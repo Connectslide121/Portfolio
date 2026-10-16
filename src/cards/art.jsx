@@ -425,8 +425,15 @@ export default function Art({ card, live = false }) {
   if (a.kind === "project") {
     const media = mediaFor(a.title);
     if (live) {
+      // The drawn screen sits under the clip, so there is something to look
+      // at while a large video loads.
       return (
         <div className="art art-media">
+          {media.type === "video" && (
+            <svg className="art-under" viewBox="0 0 100 70" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <ProjectScreen id={id} title={a.title} category={a.category} />
+            </svg>
+          )}
           <ProjectMedia title={a.title} className="art-fill" />
         </div>
       );
