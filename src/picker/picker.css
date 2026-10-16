@@ -1,0 +1,347 @@
+/* The picker. Loaded only on the front door, never under a mode, so it can
+   set the page up for itself. It keeps the original site's look — warm
+   paper, Instrument Serif and Inter Tight, a coral accent — and stays quiet
+   so the nine thumbnails do the talking. */
+
+body {
+  --pk-bg: #f4efe6;
+  --pk-card: #fffaf2;
+  --pk-ink: #1d1b19;
+  --pk-muted: #6d665d;
+  --pk-line: rgb(29 27 25 / 0.12);
+  --pk-accent: #ff7657;
+  --pk-shadow: 0 1px 2px rgb(40 30 20 / 0.06), 0 14px 34px -18px rgb(40 30 20 / 0.35);
+  margin: 0;
+  background: var(--pk-bg);
+  color: var(--pk-ink);
+  font-family: "Inter Tight", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.dark-theme {
+  --pk-bg: #191816;
+  --pk-card: #23211e;
+  --pk-ink: #f1ebe0;
+  --pk-muted: #a59d92;
+  --pk-line: rgb(241 235 224 / 0.12);
+  --pk-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 16px 36px -18px rgb(0 0 0 / 0.8);
+}
+
+.picker *,
+.picker *::before,
+.picker *::after {
+  box-sizing: border-box;
+}
+
+.picker {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pk-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 22px 28px 0;
+}
+
+.pk-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.25;
+}
+
+.pk-brand b {
+  display: block;
+  font-weight: 600;
+}
+
+.pk-brand small {
+  color: var(--pk-muted);
+  font-size: 13px;
+}
+
+.pk-mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--pk-ink);
+  color: var(--pk-bg);
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 19px;
+}
+
+.pk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid var(--pk-line);
+  border-radius: 999px;
+  background: var(--pk-card);
+  color: var(--pk-ink);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.pk-btn:hover {
+  border-color: var(--pk-ink);
+}
+
+.pk-btn:active {
+  transform: translateY(1px);
+}
+
+.pk-btn-main {
+  border-color: var(--pk-ink);
+  background: var(--pk-ink);
+  color: var(--pk-bg);
+}
+
+.pk-theme {
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+.picker :focus-visible {
+  outline: 2px solid var(--pk-accent);
+  outline-offset: 3px;
+}
+
+.pk-main {
+  flex: 1;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.pk-intro {
+  max-width: 860px;
+  padding: 64px 0 44px;
+}
+
+.pk-eyebrow {
+  margin: 0 0 14px;
+  color: var(--pk-muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pk-intro h1 {
+  margin: 0;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: clamp(44px, 7vw, 86px);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.pk-intro h1 em {
+  color: var(--pk-accent);
+}
+
+.pk-lede {
+  margin: 22px 0 0;
+  max-width: 640px;
+  color: var(--pk-muted);
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.pk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+/* The three by three. */
+.pk-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pk-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px 10px 18px;
+  border: 1px solid var(--pk-line);
+  border-radius: 18px;
+  background: var(--pk-card);
+  color: inherit;
+  text-decoration: none;
+  box-shadow: var(--pk-shadow);
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease;
+}
+
+.pk-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--pk-ink);
+}
+
+.pk-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--pk-line);
+}
+
+.pk-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.pk-card:hover .pk-thumb img {
+  transform: scale(1.04);
+}
+
+/* Each thumbnail in the theme you are looking at. */
+.pk-dark,
+body.dark-theme .pk-light {
+  display: none !important;
+}
+
+body.dark-theme .pk-dark {
+  display: block !important;
+}
+
+.pk-open {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--pk-ink);
+  color: var(--pk-bg);
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.pk-card:hover .pk-open,
+.pk-card:focus-visible .pk-open {
+  opacity: 1;
+  transform: none;
+}
+
+.pk-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 8px 0;
+  color: var(--pk-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pk-no {
+  color: var(--pk-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.pk-last {
+  margin-left: auto;
+  color: var(--pk-accent);
+}
+
+.pk-card h2 {
+  margin: 6px 8px 0;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.pk-card p {
+  margin: 8px 8px 0;
+  color: var(--pk-muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.pk-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 56px 28px 40px;
+  color: var(--pk-muted);
+  font-size: 14px;
+}
+
+.pk-foot a {
+  color: var(--pk-ink);
+}
+
+.pk-foot span {
+  margin-left: auto;
+}
+
+@media (max-width: 980px) {
+  .pk-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+@media (max-width: 620px) {
+  .pk-top,
+  .pk-main,
+  .pk-foot {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .pk-brand small {
+    display: none;
+  }
+
+  .pk-intro {
+    padding: 40px 0 28px;
+  }
+
+  .pk-lede {
+    font-size: 16px;
+  }
+
+  .pk-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pk-foot span {
+    display: none;
+  }
+}
