@@ -1,0 +1,49 @@
+.listings {
+  columns: 5 200px;
+  column-gap: 24px;
+  column-rule: 1px solid var(--hair);
+}
+
+.listing {
+  break-inside: avoid;
+  margin-bottom: 18px;
+}
+
+.listing h3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--label);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--rule);
+  padding-bottom: 2px;
+  margin-bottom: 4px;
+}
+
+.listing h3 span {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.listing li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px dotted var(--hair);
+  font-size: 14px;
+}
+
+.listing img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  filter: grayscale(1) contrast(1.2);
+}
+
+body.dark-theme .listing img {
+  filter: grayscale(1) invert(1) contrast(1.1);
+}

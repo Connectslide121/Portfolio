@@ -1,0 +1,214 @@
+/* ==========================================================================
+   Quest. The portfolio as a top-down RPG. Pixel fonts, classic blue menu
+   windows with a white frame, and a world that goes dark at night (the
+   dark theme) with its lamps and windows lit.
+   ========================================================================== */
+
+:root {
+  --pixel: "Press Start 2P", monospace;
+  --text: "Pixelify Sans", "Trebuchet MS", sans-serif;
+}
+
+body {
+  --page: #f3e7c9;
+  --page-ink: #2a2015;
+  --win-a: #2f55d4;
+  --win-b: #10196b;
+  --win-ink: #ffffff;
+  --win-dim: #c8d3ff;
+  --frame: #ffffff;
+  --gold: #ffd23f;
+  --accent: #ff6fb5;
+  --good: #57e389;
+}
+
+body.dark-theme {
+  --page: #0f1224;
+  --page-ink: #e8e6ff;
+  --win-a: #4a2f8f;
+  --win-b: #150b33;
+  --win-dim: #cbbcff;
+  --frame: #e8e0ff;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--page);
+  color: var(--page-ink);
+  font-family: var(--text);
+  font-size: 17px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+kbd {
+  font-family: var(--pixel);
+  font-size: 8px;
+  padding: 2px 4px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  opacity: 0.8;
+}
+
+/* The menu window everything is drawn in. */
+.window {
+  background: linear-gradient(180deg, var(--win-a), var(--win-b));
+  color: var(--win-ink);
+  border: 3px solid var(--frame);
+  border-radius: 10px;
+  box-shadow: 0 0 0 3px #0a0f2a, 0 10px 0 rgb(0 0 0 / 0.35);
+}
+
+.rpg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 2px solid var(--frame);
+  border-radius: 6px;
+  background: rgb(255 255 255 / 0.08);
+  font-family: var(--pixel);
+  font-size: 10px;
+  line-height: 1.4;
+  text-decoration: none;
+  color: var(--win-ink);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.rpg-btn:hover,
+.rpg-btn:focus-visible {
+  background: var(--gold);
+  color: #10196b;
+}
+
+.rpg-btn:active {
+  transform: translateY(2px);
+}
+
+.rpg-btn.ghost {
+  border-style: dashed;
+}
+
+.rpg-btn .social-icon,
+.cv-social .social-icon {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.link-btn {
+  text-decoration: underline;
+  color: var(--gold);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chips li {
+  padding: 2px 8px;
+  border: 1px solid var(--win-dim);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.blink {
+  animation: blink 0.9s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Pixel type stops being readable below ~17px — a 5 reads as an 8. Small
+   print, and the plain CV page, use an ordinary sans. */
+:root {
+  --plain: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+}
+
+.quest-list small,
+.toast-text,
+.panel-note,
+.chips li,
+.q-role,
+.quest-detail dd,
+.bag-item p,
+.post-details dd,
+.trophies small,
+.wm-label,
+.hud-place,
+.cv p,
+.cv li,
+.letter label,
+.cab-info p {
+  font-family: var(--plain);
+}

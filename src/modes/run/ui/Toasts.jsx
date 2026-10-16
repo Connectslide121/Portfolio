@@ -1,0 +1,13 @@
+import React from "react";
+
+export default function Toasts({ toasts }) {
+  return (
+    <div className="toasts" aria-live="polite">
+      {toasts.map((t) => (
+        <p key={t.id} className={`toast toast-${t.kind}`}>
+          {t.text}
+        </p>
+      ))}
+    </div>
+  );
+}

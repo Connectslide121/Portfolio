@@ -1,0 +1,187 @@
+/* ==========================================================================
+   Run. The portfolio as a side-scrolling platformer. NES-style chrome: black
+   boxes with a white double frame, gold for what matters, pixel type for
+   labels and an ordinary sans for reading. Day (light) and night (dark)
+   change the skies of the run.
+   ========================================================================== */
+
+:root {
+  --pixel: "Press Start 2P", monospace;
+  --plain: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  --gold: #ffd23f;
+  --red: #e0245e;
+  --good: #2bd47d;
+  --cyan: #22e0ff;
+}
+
+body {
+  --page: #8fd3ff;
+  --page-ink: #111;
+  --win-a: #141414;
+  --win-b: #000000;
+  --win-ink: #ffffff;
+  --win-dim: #b9c2d6;
+  --frame: #ffffff;
+}
+
+body.dark-theme {
+  --page: #0b1030;
+  --page-ink: #f2f4ff;
+  --win-a: #11142e;
+  --win-b: #070818;
+  --frame: #cfd6ff;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--page);
+  color: var(--page-ink);
+  font-family: var(--plain);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 22px;
+  padding: 2px 5px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  font-family: var(--pixel);
+  font-size: 9px;
+  text-align: center;
+}
+
+/* The NES box: black, a white frame, a black outline around that. */
+.window {
+  background: linear-gradient(180deg, var(--win-a), var(--win-b));
+  color: var(--win-ink);
+  border: 4px solid var(--frame);
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px #000, 8px 8px 0 4px rgb(0 0 0 / 0.35);
+}
+
+.nes-btn,
+.rpg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 3px solid #fff;
+  background: #000;
+  color: #fff;
+  box-shadow: inset -3px -3px 0 #555, 3px 3px 0 #000;
+  font-family: var(--pixel);
+  font-size: 10px;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: transform 0.08s steps(1);
+}
+
+.nes-btn:hover,
+.nes-btn[aria-selected="true"],
+.nes-btn[aria-pressed="true"] {
+  background: #2f6bd6;
+}
+
+.nes-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: inset 3px 3px 0 #555;
+}
+
+.nes-btn.is-gold {
+  background: var(--gold);
+  color: #000;
+  box-shadow: inset -3px -3px 0 #b88a10, 3px 3px 0 #000;
+}
+
+.nes-btn .social-icon,
+.cv-social .social-icon {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chips li {
+  padding: 2px 8px;
+  border: 2px solid var(--win-dim);
+  font-size: 13px;
+}
+
+.note {
+  color: var(--win-dim);
+  margin-bottom: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

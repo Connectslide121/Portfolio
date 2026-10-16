@@ -1,0 +1,187 @@
+.home {
+  padding-top: calc(var(--header) + clamp(24px, 4vw, 56px));
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.home-grid {
+  row-gap: clamp(24px, 3vw, 40px);
+  align-items: start;
+}
+
+.home-meta {
+  grid-column: 1 / span 2;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}
+
+.home-copy {
+  grid-column: 3 / span 5;
+  max-width: 620px;
+}
+
+.home-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--red-ink);
+  margin-bottom: 18px;
+}
+
+.home-lede {
+  font-size: clamp(26px, 2.7vw, 44px);
+  font-weight: 600;
+  font-stretch: 92%;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.home-blurb {
+  margin-top: 22px;
+  max-width: 48ch;
+  font-size: 16px;
+  color: var(--ink-2);
+}
+
+.home-cta {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.home-art {
+  grid-column: 9 / span 4;
+  grid-row: 1 / span 2;
+}
+
+.home-art-btn {
+  display: block;
+  width: 100%;
+  cursor: crosshair;
+}
+
+.home-art figcaption {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* The name. Set so large it becomes the poster's ground line. */
+.home-name {
+  grid-column: 1 / -1;
+  margin-top: clamp(24px, 4vw, 48px);
+  font-weight: 800;
+  font-stretch: 72%;
+  line-height: 0.8;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+}
+
+.home-name-first {
+  display: block;
+  font-size: clamp(56px, 9.4vw, 170px);
+  color: var(--red);
+}
+
+.home-name-last {
+  position: relative;
+  display: block;
+  font-size: clamp(64px, 18vw, 330px);
+  margin-left: -0.03em;
+  white-space: nowrap;
+}
+
+.home-name-dot {
+  display: inline-block;
+  width: 0.14em;
+  height: 0.14em;
+  margin-left: 0.04em;
+  border-radius: 50%;
+  background: var(--red);
+}
+
+@media (max-width: 1100px) {
+  .home-copy {
+    grid-column: 3 / span 6;
+  }
+  .home-art {
+    grid-column: 9 / span 4;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-meta {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .home-copy {
+    grid-column: 1 / -1;
+  }
+  .home-art {
+    grid-column: 2 / span 3;
+    grid-row: auto;
+  }
+  .home-name-last {
+    font-size: 18vw;
+  }
+}
+
+/* --- Ticker ------------------------------------------------------------ */
+
+.ticker {
+  margin-top: clamp(28px, 4vw, 56px);
+  background: var(--red);
+  color: var(--on-red);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 70s linear infinite;
+}
+
+.ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+.ticker ul {
+  display: flex;
+}
+
+.ticker li {
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ticker li::after {
+  content: "●";
+  font-size: 0.6em;
+  vertical-align: 0.25em;
+  margin: 0 22px;
+}
+
+@keyframes ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}

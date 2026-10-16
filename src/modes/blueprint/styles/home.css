@@ -1,0 +1,85 @@
+.cover {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(24px, 4vw, 64px);
+  align-items: center;
+}
+
+.cover-name {
+  font-family: var(--cond);
+  font-size: clamp(48px, 6.4vw, 108px);
+  font-weight: 700;
+  line-height: 0.88;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+}
+
+.cover-title {
+  margin-top: 26px;
+  font-size: clamp(13px, 1.1vw, 16px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.general-note {
+  margin-top: 40px;
+  border: 1px solid var(--line-2);
+  padding: 16px 18px 18px;
+  position: relative;
+}
+
+.note-label {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  padding: 0 8px;
+  background: var(--sheet);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--note);
+  transition: background-color 0.4s ease;
+}
+
+.cover-lede {
+  font-family: var(--cond);
+  font-size: clamp(22px, 2.1vw, 32px);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.cover-blurb {
+  margin-top: 22px;
+  max-width: 54ch;
+  color: var(--line-2);
+}
+
+.cover-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 32px;
+}
+
+.cover-coords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 36px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.cover-coords span::before {
+  content: "⌖ ";
+  color: var(--note);
+}
+
+@media (max-width: 1000px) {
+  .cover {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,231 @@
+/* --- Process flow -------------------------------------------------------- */
+
+.flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(36px, 5vw, 72px);
+}
+
+.flow-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.flow-symbol {
+  position: relative;
+  height: 92px;
+  border: 1.5px solid var(--line);
+  display: grid;
+  place-items: center;
+}
+
+.shape-terminator .flow-symbol {
+  border-radius: 46px;
+}
+
+.shape-decision .flow-symbol {
+  border: 0;
+}
+
+.shape-decision .flow-symbol::before {
+  content: "";
+  width: 64px;
+  height: 64px;
+  border: 1.5px solid var(--line);
+  transform: rotate(45deg);
+}
+
+.shape-process .flow-symbol {
+  border-width: 1.5px 6px;
+  border-style: solid double;
+}
+
+/* Inside each symbol: a small motif for the act. */
+.shape-terminator .flow-symbol::after {
+  content: "";
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid var(--red);
+  background: repeating-linear-gradient(45deg, var(--red) 0 1.5px, transparent 1.5px 6px);
+}
+
+.shape-decision .flow-symbol::after {
+  content: "?";
+  position: absolute;
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 26px;
+}
+
+.shape-process .flow-symbol::after {
+  content: "{ }";
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: 0.1em;
+}
+
+.flow-arrow {
+  position: absolute;
+  top: 46px;
+  right: calc(-1 * clamp(36px, 5vw, 72px));
+  width: clamp(36px, 5vw, 72px);
+  height: 0;
+  border-top: 1.5px solid var(--line);
+}
+
+.flow-arrow::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: -6px;
+  border: 5.5px solid transparent;
+  border-left: 10px solid var(--line);
+  border-right: 0;
+}
+
+.flow-span {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--note);
+}
+
+.flow-body h4 {
+  font-family: var(--cond);
+  font-size: clamp(26px, 2.6vw, 38px);
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1;
+  margin: 4px 0 8px;
+}
+
+.flow-body p:last-child {
+  color: var(--line-2);
+  max-width: 34ch;
+}
+
+@media (max-width: 800px) {
+  .flow {
+    grid-template-columns: 1fr;
+  }
+  .flow-arrow {
+    top: auto;
+    bottom: calc(-1 * clamp(36px, 5vw, 72px));
+    right: auto;
+    left: 50%;
+    width: 0;
+    height: clamp(36px, 5vw, 72px);
+    border-top: 0;
+    border-left: 1.5px solid var(--line);
+  }
+  .flow-arrow::after {
+    right: auto;
+    top: auto;
+    bottom: -1px;
+    left: -6px;
+    border: 5.5px solid transparent;
+    border-top: 10px solid var(--line);
+    border-bottom: 0;
+  }
+}
+
+/* --- Parts list ----------------------------------------------------------- */
+
+.bom {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px clamp(20px, 3vw, 44px);
+  align-items: start;
+}
+
+.bom-group h4 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--line);
+  border-bottom-width: 1px;
+  font-family: var(--cond);
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.bom-sec,
+.bom-qty {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--note);
+  letter-spacing: 0.1em;
+}
+
+.bom-qty {
+  margin-left: auto;
+}
+
+.bom-group ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-left: 1.5px solid var(--line);
+  border-right: 1.5px solid var(--line);
+  border-bottom: 1.5px solid var(--line);
+}
+
+.bom-group li {
+  display: grid;
+  grid-template-columns: 46px 34px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--faint);
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.bom-group li:nth-child(odd) {
+  border-right: 1px solid var(--faint);
+}
+
+.bom-group li:hover {
+  background: var(--face-t);
+}
+
+.bom-ref {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.bom-mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--plate-light);
+  border: 1px solid var(--line-2);
+}
+
+.bom-mark img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+@media (max-width: 1000px) {
+  .bom {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .bom-group ol {
+    grid-template-columns: 1fr;
+  }
+  .bom-group li:nth-child(odd) {
+    border-right: 0;
+  }
+}

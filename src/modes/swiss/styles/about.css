@@ -1,0 +1,165 @@
+/* --- Three acts -------------------------------------------------------- */
+
+.acts {
+  row-gap: 48px;
+}
+
+.act {
+  grid-column: span 4;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.act-text {
+  border-top: 2px solid var(--rule);
+  padding-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  column-gap: var(--gutter);
+}
+
+.act-span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  padding-top: 6px;
+}
+
+.act h3 {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: clamp(32px, 3.4vw, 56px);
+  font-weight: 800;
+  font-stretch: 80%;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+
+.act-text p:last-child {
+  grid-column: 2;
+  margin-top: 10px;
+  color: var(--ink-2);
+  max-width: 32ch;
+}
+
+@media (max-width: 900px) {
+  .act {
+    grid-column: 1 / -1;
+  }
+}
+
+/* --- Tools ------------------------------------------------------------- */
+
+.tools {
+  margin-top: clamp(80px, 10vw, 150px);
+}
+
+.tools-head {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: baseline;
+  border-top: 2px solid var(--rule);
+  padding-top: 14px;
+  margin-bottom: 8px;
+}
+
+.tools-head h3 {
+  grid-column: 1 / span 5;
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 700;
+  font-stretch: 88%;
+  letter-spacing: -0.03em;
+}
+
+.tools-head p {
+  grid-column: 6 / -1;
+  color: var(--ink-2);
+}
+
+.tools-list {
+  grid-column: 1 / -1;
+}
+
+.tools-row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  padding: 18px 0;
+  border-bottom: 1px solid var(--hair);
+}
+
+.tools-row dt {
+  grid-column: 1 / span 4;
+  font-weight: 700;
+  font-size: 18px;
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+}
+
+.tools-count {
+  font-size: 12px;
+  color: var(--red-ink);
+  min-width: 2ch;
+}
+
+.tools-row dd {
+  grid-column: 5 / -1;
+}
+
+.tools-row ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px var(--gutter);
+}
+
+.tools-row li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+}
+
+.tools-row img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: grayscale(1) contrast(1.2);
+  opacity: 0.8;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.tools-row li:hover img {
+  filter: none;
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .tools-head h3,
+  .tools-head p {
+    grid-column: 1 / -1;
+  }
+  .tools-row {
+    grid-template-columns: 1fr;
+    row-gap: 12px;
+  }
+  .tools-row dt,
+  .tools-row dd {
+    grid-column: 1;
+  }
+  .tools-row ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Several marks are black on transparent. On the dark theme they sit on a
+   small paper tile so they do not vanish. */
+body.dark-theme .tools-row img {
+  background: #e8e8e3;
+  padding: 2px;
+  filter: grayscale(1);
+  opacity: 1;
+}

@@ -1,0 +1,233 @@
+/* ==========================================================================
+   Collect. The portfolio as a trading card game: the career is a 58-card
+   collection in three sets, opened booster by booster and kept in an album.
+   The page is the table the cards are played on — a printed play mat by day
+   (light), a felt mat under a lamp by night (dark). The cards themselves are
+   printed objects and look the same in both.
+   ========================================================================== */
+
+:root {
+  --display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --sans: "Inter", "Segoe UI", system-ui, sans-serif;
+  --serif: Georgia, "Times New Roman", serif;
+  --gold: #e3a92b;
+  --gold-hi: #ffe08a;
+  --legend: #ff8a3d;
+  --good: #2fbf71;
+  --radius: 14px;
+}
+
+body {
+  --bg: #efe5d0;
+  --bg-2: #e2d5b9;
+  --mat-line: rgb(60 40 20 / 0.08);
+  --ink: #1d1733;
+  --muted: #6a6178;
+  --panel: #fffaf0;
+  --panel-2: #f6eedd;
+  --line: rgb(29 23 51 / 0.14);
+  --accent: #6b3df0;
+  --accent-ink: #ffffff;
+  --shadow: 0 18px 40px -18px rgb(40 20 0 / 0.45);
+}
+
+body.dark-theme {
+  --bg: #15112a;
+  --bg-2: #0b0918;
+  --mat-line: rgb(255 255 255 / 0.05);
+  --ink: #f3eefe;
+  --muted: #a69dc2;
+  --panel: #211b3b;
+  --panel-2: #2a2349;
+  --line: rgb(255 255 255 / 0.12);
+  --accent: #9b7bff;
+  --accent-ink: #12092e;
+  --shadow: 0 18px 40px -16px rgb(0 0 0 / 0.75);
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* The play mat: a lit centre, darker edges, and the printed zone lines. */
+body {
+  min-height: 100vh;
+  color: var(--ink);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 50% 20%, transparent 0 45%, var(--bg-2) 100%),
+    linear-gradient(var(--mat-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mat-line) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  background-attachment: fixed;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--accent);
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+
+/* Buttons: a pill, and a gold foil one for the main call. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn[aria-pressed="true"],
+.btn[aria-current="page"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+}
+
+.btn-gold {
+  border: 0;
+  color: #2a1700;
+  background: linear-gradient(135deg, #fff1b8, var(--gold) 45%, #b9791a 55%, var(--gold-hi));
+  background-size: 200% 200%;
+  box-shadow: 0 4px 0 #8a5a12, 0 10px 24px -10px rgb(160 100 0 / 0.7);
+  animation: foil 4s ease-in-out infinite;
+}
+
+.btn-gold:hover {
+  border: 0;
+}
+
+.btn-gold:active {
+  box-shadow: 0 1px 0 #8a5a12;
+  transform: translateY(3px);
+}
+
+@keyframes foil {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+/* A chip for tech names and tags. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel-2);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+button.chip {
+  cursor: pointer;
+}
+
+button.chip:hover {
+  border-color: var(--accent);
+}
+
+.chip img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.social-icon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

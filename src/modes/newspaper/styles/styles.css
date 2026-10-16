@@ -1,0 +1,297 @@
+/* ==========================================================================
+   The Mendizabal Chronicle. A broadsheet: blackletter masthead, black
+   Playfair headlines, Caslon body in tight justified columns separated by
+   hairline rules, and photographs printed as live halftones. The morning
+   edition is ink on newsprint; the night edition is newsprint ink on black.
+   ========================================================================== */
+
+:root {
+  --black: "UnifrakturMaguntia", "Old English Text MT", serif;
+  --head: "Playfair Display", "Times New Roman", serif;
+  --serif: "Libre Caslon Text", Georgia, serif;
+  --label: "Oswald", "Arial Narrow", sans-serif;
+  --max: 1320px;
+}
+
+body {
+  --paper: #f0ebdf;
+  --paper-2: #e6dfd0;
+  --ink: #161513;
+  --ink-2: #4a4640;
+  --muted: #7a746a;
+  --rule: #161513;
+  --hair: rgb(22 21 19 / 0.28);
+  --spot: #b3261e;
+  --select: #f2d16b;
+}
+
+body.dark-theme {
+  --paper: #131210;
+  --paper-2: #1d1b18;
+  --ink: #ece5d6;
+  --ink-2: #b8b0a1;
+  --muted: #8a8377;
+  --rule: #ece5d6;
+  --hair: rgb(236 229 214 / 0.24);
+  --spot: #ff6b5e;
+  --select: #6b5a1d;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 52px;
+}
+
+body {
+  background-color: var(--paper);
+  /* Newsprint has a grain. */
+  background-image: radial-gradient(rgb(0 0 0 / 0.035) 1px, transparent 1px);
+  background-size: 3px 3px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+::selection {
+  background: var(--select);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--spot);
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--spot);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  top: -60px;
+  left: 12px;
+  z-index: 300;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 6px 10px;
+}
+.skip-link:focus {
+  top: 8px;
+}
+
+.page {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 clamp(14px, 3vw, 36px);
+}
+
+/* --- Newspaper furniture ------------------------------------------------ */
+
+.kicker {
+  font-family: var(--label);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--spot);
+}
+
+.box-head {
+  font-family: var(--label);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 4px 0;
+  border-top: 3px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 12px;
+}
+
+.box {
+  margin-bottom: 24px;
+}
+
+.dropcap::first-letter {
+  float: left;
+  font-family: var(--head);
+  font-weight: 900;
+  font-size: 4.1em;
+  line-height: 0.8;
+  padding: 0.06em 0.08em 0 0;
+}
+
+.filed {
+  font-family: var(--label);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.jump {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--spot);
+}
+
+.jump:hover {
+  text-decoration: underline;
+}
+
+.press-btn {
+  font-family: var(--label);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border: 2px solid var(--ink);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.press-btn:hover,
+.press-btn-solid {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.press-btn-solid:hover {
+  background: var(--spot);
+  border-color: var(--spot);
+  color: #fff;
+}
+
+.project-links {
+  font-family: var(--label);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.project-links a {
+  color: var(--spot);
+  text-decoration: none;
+}
+
+.project-links a:hover {
+  text-decoration: underline;
+}
+
+.product-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--spot);
+}
+
+/* The running header each section ("page") opens with. */
+.section-flag {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 16px;
+  padding: 10px 0 8px;
+  margin: clamp(48px, 7vw, 88px) 0 24px;
+  border-top: 6px double var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.section-flag h2 {
+  font-family: var(--head);
+  font-weight: 900;
+  font-size: clamp(30px, 4vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.flag-page,
+.flag-aside {
+  font-family: var(--label);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.flag-page {
+  padding: 2px 8px;
+  border: 1px solid var(--rule);
+  color: var(--ink);
+}
+
+@media (max-width: 700px) {
+  .section-flag {
+    grid-template-columns: auto 1fr;
+  }
+  .flag-aside {
+    grid-column: 1 / -1;
+  }
+}
+
+.imprint {
+  margin-top: clamp(56px, 8vw, 96px);
+  padding-top: 14px;
+  padding-bottom: 40px;
+  border-top: 6px double var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px 24px;
+  font-family: var(--label);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.imprint a {
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

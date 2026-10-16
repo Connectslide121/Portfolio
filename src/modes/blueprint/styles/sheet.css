@@ -1,0 +1,196 @@
+.sheet {
+  padding: calc(var(--header) + 20px) clamp(10px, 2.4vw, 36px) 12px;
+}
+
+.sheet + .sheet {
+  padding-top: clamp(28px, 4vw, 56px);
+}
+
+/* Double-ruled frame: the outer trim line and the heavier border inside it. */
+.sheet-frame {
+  position: relative;
+  max-width: 1480px;
+  margin: 0 auto;
+  background: var(--sheet);
+  border: 1px solid var(--line-2);
+  padding: 22px;
+  box-shadow: 0 30px 60px -40px rgb(0 0 0 / 0.45);
+  transition: background-color 0.4s ease;
+}
+
+.sheet-inner {
+  --pad: clamp(16px, 3.4vw, 56px);
+  position: relative;
+  border: 2px solid var(--line);
+  padding: var(--pad);
+}
+
+/* --- Zones ---------------------------------------------------------------- */
+
+.zones {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.zones-row,
+.zones-col {
+  position: absolute;
+  display: flex;
+}
+
+.zones-row {
+  left: 22px;
+  right: 22px;
+  height: 22px;
+}
+
+.zones-top {
+  top: 0;
+}
+
+.zones-bottom {
+  bottom: 0;
+}
+
+.zones-col {
+  top: 22px;
+  bottom: 22px;
+  width: 22px;
+  flex-direction: column;
+}
+
+.zones-left {
+  left: 0;
+}
+
+.zones-right {
+  right: 0;
+}
+
+.zones span {
+  flex: 1;
+  display: grid;
+  place-items: center;
+}
+
+.zones-row span + span {
+  border-left: 1px solid var(--faint);
+}
+
+.zones-col span + span {
+  border-top: 1px solid var(--faint);
+}
+
+/* --- Heading ------------------------------------------------------------- */
+
+.sheet-head {
+  margin-bottom: clamp(28px, 4vw, 48px);
+}
+
+.sheet-kicker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--note);
+}
+
+.sheet-no {
+  padding: 2px 8px;
+  border: 1px solid var(--note);
+  color: var(--note);
+  font-weight: 600;
+}
+
+.sheet-head h2 {
+  margin-top: 14px;
+  font-family: var(--cond);
+  font-size: clamp(38px, 5.6vw, 84px);
+  font-weight: 700;
+  line-height: 0.95;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.sheet-intro {
+  margin-top: 16px;
+  max-width: 64ch;
+  color: var(--line-2);
+}
+
+/* --- Title block ----------------------------------------------------------- */
+
+.title-block {
+  margin: clamp(48px, 6vw, 80px) calc(-1 * var(--pad)) calc(-1 * var(--pad)) auto;
+  width: min(640px, calc(100% + 2 * var(--pad)));
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 2px solid var(--line);
+  border-left: 2px solid var(--line);
+  font-size: 12px;
+}
+
+.title-block > div {
+  padding: 6px 10px 8px;
+  border-right: 1px solid var(--line-2);
+  border-top: 1px solid var(--line-2);
+}
+
+.title-block > div:nth-child(-n + 2) {
+  border-top: 0;
+}
+
+.title-block .tb-project {
+  grid-column: span 2;
+}
+
+.title-block .tb-title {
+  grid-column: span 3;
+}
+
+.title-block dt {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.title-block dd {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.title-block .tb-title dd {
+  font-family: var(--cond);
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+@media (max-width: 700px) {
+  .sheet {
+    padding-inline: 8px;
+  }
+  .sheet-frame {
+    padding: 8px;
+  }
+  .zones {
+    display: none;
+  }
+  .title-block {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .title-block .tb-project,
+  .title-block .tb-title {
+    grid-column: 1 / -1;
+  }
+  .title-block > div:nth-child(2) {
+    border-top: 1px solid var(--line-2);
+  }
+}

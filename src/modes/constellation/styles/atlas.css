@@ -1,0 +1,165 @@
+.atlas-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
+}
+
+.atlas {
+  width: 100%;
+  overflow: visible;
+}
+
+.atlas-disc {
+  fill: color-mix(in srgb, var(--bg) 60%, transparent);
+  stroke: var(--line-2);
+}
+
+.atlas-ring {
+  fill: none;
+  stroke: var(--line);
+}
+
+.atlas-ecliptic {
+  fill: none;
+  stroke: var(--glow);
+  stroke-opacity: 0.45;
+  stroke-dasharray: 6 6;
+}
+
+.atlas-rim {
+  fill: none;
+  stroke: var(--line-2);
+}
+
+.atlas-tick {
+  stroke: var(--line-2);
+}
+
+.figure {
+  fill: none;
+  stroke: var(--cool);
+  stroke-opacity: 0.45;
+  stroke-width: 1.2;
+  transition: stroke-opacity 0.3s ease;
+}
+
+.constellation.is-hot .figure {
+  stroke-opacity: 1;
+}
+
+.con-name {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 22px;
+  text-anchor: middle;
+  fill: var(--ink);
+}
+
+.con-sub {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-anchor: middle;
+  fill: var(--muted);
+}
+
+.star {
+  cursor: pointer;
+  outline: none;
+}
+
+.star-core {
+  fill: var(--star);
+  transition: r 0.2s ease;
+}
+
+.star-glow {
+  opacity: 0.55;
+}
+
+body:not(.dark-theme) .star-glow {
+  opacity: 0;
+}
+
+.star-hit {
+  fill: transparent;
+}
+
+.star:hover .star-core,
+.star:focus .star-core {
+  fill: var(--glow);
+}
+
+.star:hover .star-glow,
+.star:focus .star-glow {
+  opacity: 1;
+}
+
+.star-label line {
+  stroke: var(--glow);
+}
+
+.star-label text {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 500;
+  fill: var(--glow);
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 5px;
+}
+
+.atlas-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.atlas-legend dt {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 8px;
+}
+
+.atlas-legend dt i {
+  font-family: var(--display);
+  font-size: 20px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
+
+.atlas-legend ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+
+.atlas-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.atlas-legend img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  padding: 1px;
+  border-radius: 50%;
+  background: #f4efe6;
+}
+
+@media (max-width: 900px) {
+  .atlas-layout {
+    grid-template-columns: 1fr;
+  }
+}

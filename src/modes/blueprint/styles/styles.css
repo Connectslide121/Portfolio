@@ -1,0 +1,315 @@
+/* ==========================================================================
+   Blueprint. The portfolio as a drawing set: every section is a sheet with a
+   frame, zones and a title block, drawn in one line colour on cyanotype blue
+   (dark) or whiteprint paper (light). Red is the checker's pencil: markups,
+   revisions, things that are live.
+   ========================================================================== */
+
+:root {
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --cond: "IBM Plex Sans Condensed", "Arial Narrow", sans-serif;
+  --header: 52px;
+  --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+
+/* Whiteprint (light). */
+body {
+  --paper: #eeece4;
+  --sheet: #f6f5ef;
+  --line: #17407c;
+  --line-2: rgb(23 64 124 / 0.78);
+  --muted: rgb(23 64 124 / 0.6);
+  --faint: rgb(23 64 124 / 0.22);
+  --grid-1: rgb(23 64 124 / 0.06);
+  --grid-2: rgb(23 64 124 / 0.12);
+  --note: #2b6cb8;
+  --red: #cf3326;
+  --face-t: rgb(23 64 124 / 0.04);
+  --face-l: rgb(23 64 124 / 0.1);
+  --face-r: rgb(23 64 124 / 0.18);
+  --plate-light: #ffffff;
+  --plate-dark: #17407c;
+  --select: rgb(207 51 38 / 0.25);
+}
+
+/* Blueprint (dark). */
+body.dark-theme {
+  --paper: #0b3361;
+  --sheet: #0f3c70;
+  --line: #eaf2ff;
+  --line-2: rgb(234 242 255 / 0.8);
+  --muted: rgb(234 242 255 / 0.58);
+  --faint: rgb(234 242 255 / 0.22);
+  --grid-1: rgb(234 242 255 / 0.05);
+  --grid-2: rgb(234 242 255 / 0.11);
+  --note: #9fd2ff;
+  --red: #ff7a68;
+  --face-t: rgb(234 242 255 / 0.05);
+  --face-l: rgb(234 242 255 / 0.1);
+  --face-r: rgb(234 242 255 / 0.17);
+  --plate-light: #eaf2ff;
+  --plate-dark: #0a2c55;
+  --select: rgb(255 122 104 / 0.35);
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header) + 12px);
+}
+
+body {
+  background-color: var(--paper);
+  /* Drafting film: a 5 mm minor grid and a 25 mm major one. */
+  background-image: linear-gradient(var(--grid-2) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-2) 1px, transparent 1px),
+    linear-gradient(var(--grid-1) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-1) 1px, transparent 1px);
+  background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+  background-attachment: fixed;
+  color: var(--line);
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+::selection {
+  background: var(--select);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px dashed var(--red);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  top: -60px;
+  left: 16px;
+  z-index: 300;
+  background: var(--line);
+  color: var(--paper);
+  padding: 6px 10px;
+}
+.skip-link:focus {
+  top: 8px;
+}
+
+/* --- Shared pieces ------------------------------------------------------ */
+
+.sub-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 14px;
+  margin: clamp(48px, 6vw, 80px) 0 22px;
+  font-family: var(--cond);
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--faint);
+  padding-bottom: 8px;
+}
+
+.sub-head span {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--note);
+  letter-spacing: 0.08em;
+}
+
+.draft-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 46px;
+  padding: 0 18px;
+  border: 1.5px solid var(--line);
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  position: relative;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Tick marks at the corners, like a dimensioned rectangle. */
+.draft-btn::before,
+.draft-btn::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid var(--line);
+  transition: transform 0.3s var(--ease);
+}
+.draft-btn::before {
+  top: -6px;
+  left: -6px;
+  border-width: 1.5px 0 0 1.5px;
+}
+.draft-btn::after {
+  bottom: -6px;
+  right: -6px;
+  border-width: 0 1.5px 1.5px 0;
+}
+
+.draft-btn:hover::before {
+  transform: translate(-3px, -3px);
+}
+.draft-btn:hover::after {
+  transform: translate(3px, 3px);
+}
+
+.draft-btn span {
+  transition: transform 0.25s var(--ease);
+}
+.draft-btn:hover span {
+  transform: translateX(4px);
+}
+
+.draft-btn-solid {
+  background: var(--line);
+  color: var(--paper);
+}
+
+.draft-btn:not(.draft-btn-solid):hover {
+  background: var(--face-l);
+}
+
+.text-btn,
+.text-link {
+  font-family: var(--mono);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  color: var(--note);
+}
+
+.text-btn:hover,
+.text-link:hover {
+  color: var(--red);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-list li {
+  font-size: 12px;
+  padding: 2px 8px;
+  border: 1px dashed var(--line-2);
+}
+
+.foot-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--note);
+  margin-right: 10px;
+}
+
+.logo-plate {
+  display: inline-flex;
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+
+.logo-plate[data-tone="light"] {
+  background: #0d1b2e;
+}
+
+.logo-plate img {
+  height: 26px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+}
+
+.product-link {
+  color: var(--line);
+  text-decoration: underline;
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.product-link:hover {
+  color: var(--red);
+}
+
+/* --- Reveal: lines are drawn, then the sheet settles -------------------- */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.8s var(--ease);
+}
+
+[data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

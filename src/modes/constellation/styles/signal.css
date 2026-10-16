@@ -1,0 +1,180 @@
+.signal {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+}
+
+.dish {
+  width: 100%;
+  max-width: 360px;
+  overflow: visible;
+}
+
+.dish-face {
+  fill: color-mix(in srgb, var(--card) 70%, var(--ink) 8%);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.dish-feed,
+.dish-mount,
+.dish-ground {
+  stroke: var(--ink-2);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.dish-ground {
+  stroke: var(--line-2);
+}
+
+.dish-tip {
+  fill: var(--glow);
+}
+
+.wave {
+  fill: none;
+  stroke: var(--glow);
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 205px 78px;
+  animation: ping 3.2s ease-out infinite;
+  animation-delay: calc(var(--i) * 0.8s);
+}
+
+@keyframes ping {
+  0% {
+    opacity: 0;
+    transform: translate(-30px, 30px) scale(0.3);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(40px, -40px) scale(1.6);
+  }
+}
+
+.coords {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 8px 14px;
+  margin-top: 20px;
+}
+
+.coords dt {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 3px;
+}
+
+.coords a {
+  text-decoration: none;
+}
+
+.coords a:hover {
+  color: var(--glow);
+}
+
+.profiles {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.profiles a {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  transition: border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profiles a:hover {
+  border-color: var(--glow);
+  color: var(--glow);
+  box-shadow: 0 0 20px -4px var(--glow);
+}
+
+.social-icon {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+
+.signal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px;
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: 22px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.signal-form h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.signal-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.signal-form label span {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.signal-form input,
+.signal-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: transparent;
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  font-size: 15px;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.signal-form input::placeholder,
+.signal-form textarea::placeholder {
+  color: var(--muted);
+}
+
+.signal-form input:focus,
+.signal-form textarea:focus {
+  outline: none;
+  border-color: var(--glow);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--glow) 20%, transparent);
+}
+
+.signal-form .btn {
+  align-self: flex-start;
+}
+
+@media (max-width: 860px) {
+  .signal {
+    grid-template-columns: 1fr;
+  }
+  .dish {
+    max-width: 260px;
+  }
+}
