@@ -3,7 +3,7 @@
 ## Commits
 
 - **Commit as you go**, in small, logical commits: each commit is one coherent change — a feature step, a fix or a refactor, together with its tests and docs — with a clear message saying what changed and why. Don't bundle unrelated changes, and don't leave finished work uncommitted.
-- **Never push.** The user reviews and pushes manually.
+- **Always push.** After committing, push your commits to the branch's remote so nothing stays only on the local machine. Never force-push or rewrite history that has already been pushed.
 - **No AI attribution in commit messages.** Don't add `Co-Authored-By` trailers or any "generated with" lines.
 
 ## Ending a session
