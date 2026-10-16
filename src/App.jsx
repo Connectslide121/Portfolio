@@ -1,139 +1,179 @@
-import React, { Suspense, lazy, useCallback, useEffect, useState } from "react";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Projects from "./pages/Projects";
-import Contact from "./pages/Contact";
-import Footer from "./components/Footer";
-import { startField } from "./field/cursorField";
-import "./field/field.css";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import World from "./game/World";
+import useProgress from "./game/progress";
+import { BUILDINGS, SIGNS, approachOf, region } from "./game/map";
+import { entryScript, indiaScript, chapterScript, signScript, startScript, sprintaScript, HINTS } from "./game/content";
+import Hud from "./ui/Hud";
+import Pad from "./ui/Pad";
+import Dialogue from "./ui/Dialogue";
+import QuestLog from "./ui/QuestLog";
+import Bag from "./ui/Bag";
+import Arcade from "./ui/Arcade";
+import PostOffice from "./ui/PostOffice";
+import MapMenu from "./ui/MapMenu";
+import Trophies from "./ui/Trophies";
+import Toasts from "./ui/Toasts";
+import CV from "./ui/CV";
 
-// Journey mode is lazy so GSAP and the world SVG never touch first paint for a
-// visitor who only wants the CV (guardrail in docs/JOURNEY_PLAN.md §8).
-const JourneyStage = lazy(() => import("./journey/JourneyStage"));
-
-// D17: Journey mode is what a first-time visitor lands on. Once someone has
-// chosen the CV we remember it, so a return visit does not put the animation
-// in front of them again — the hero teaser is always there to go back in.
-const CV_PREFERRED = "jm-prefers-cv";
-
-const read = (key) => {
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null; // private mode, blocked storage — fall back to the default
-  }
-};
-
-const write = (key, value) => {
-  try {
-    value === null
-      ? window.localStorage.removeItem(key)
-      : window.localStorage.setItem(key, value);
-  } catch {
-    /* nothing to do — the preference just will not persist */
-  }
-};
-
-const startInJourney = () => {
-  const params = new URLSearchParams(window.location.search);
-  const hash = window.location.hash;
-  if (params.has("cv") || hash.startsWith("#cv")) return false;
-  if (params.has("journey") || hash.startsWith("#journey")) return true;
-  // Phones land on the CV (amends D17). The journey is built for a wide
-  // stage — on a phone it is a stack of panels over a cropped world — and a
-  // phone visitor is more often someone checking a link in a hurry. The
-  // hero's ticket is right there to go in, and an explicit #journey link
-  // still opens it anywhere.
-  if (window.matchMedia("(max-width: 768px)").matches) return false;
-  return read(CV_PREFERRED) !== "1";
-};
+const PLACE = { spain: "Basque Country, Spain", river: "The river", india: "Coimbatore, India", sea: "The sea", sweden: "Växjö, Sweden" };
+const SCHOOLS = ["uni", "lea", "lexicon"];
 
 export default function App() {
-  const [journeyOpen, setJourneyOpen] = useState(startInJourney);
+  const world = useRef(null);
+  const progress = useProgress();
+  const { visit, unlock } = progress;
+  const [view, setView] = useState(() => (window.location.hash === "#cv" ? "cv" : "game"));
+  const [dialogue, setDialogue] = useState(null);
+  const [panel, setPanel] = useState(null);
+  const [place, setPlace] = useState(PLACE.spain);
+  const [dark, setDark] = useState(() => document.body.classList.contains("dark-theme"));
+  const [, setSigns] = useState(() => new Set());
 
-  // The cursor field. It follows whichever mode is on screen: the journey's
-  // stage when it is open, the CV otherwise — re-resolved on every DOM
-  // change, so opening and closing the journey moves it across.
-  useEffect(
-    () =>
-      startField(
-        () =>
-          document.querySelector(".j-stage") ||
-          document.querySelector(".App"),
-      ),
-    [],
+  // A first-time player is greeted by the signpost at the start.
+  useEffect(() => {
+    if (view !== "game" || progress.visited.length) return;
+    const id = window.setTimeout(() => setDialogue((d) => d || startScript()), 700);
+    return () => window.clearTimeout(id);
+    // Only on arrival.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Achievements that follow from what has been visited.
+  useEffect(() => {
+    const v = progress.visited;
+    if (SCHOOLS.every((s) => v.includes(s))) unlock("scholar");
+    if (BUILDINGS.every((b) => v.includes(b.id))) unlock("completionist");
+  }, [progress.visited, unlock]);
+
+  useEffect(() => {
+    if (dark && view === "game") unlock("night-owl");
+  }, [dark, view, unlock]);
+
+  const open = useCallback(
+    (thing) => {
+      if (thing.type === "villager") {
+        setDialogue([{ speaker: "Villager", text: HINTS[Math.floor(Math.random() * HINTS.length)] }]);
+        return;
+      }
+      if (thing.type === "sign") {
+        const t = thing.sign.target;
+        setSigns((s) => {
+          const next = new Set(s).add(thing.sign.id);
+          if (next.size === SIGNS.length) unlock("reader");
+          return next;
+        });
+        visit(`sign-${thing.sign.id}`, 25);
+        setDialogue(t.kind === "start" ? startScript() : t.kind === "chapter" ? chapterScript(t.id) : signScript(t.text));
+        return;
+      }
+      const b = thing.building;
+      visit(b.id);
+      const t = b.target;
+      if (b.id === "foundry") unlock("hot-metal");
+      if (t.kind === "entry") setDialogue(entryScript(t.id));
+      else if (t.kind === "beat") setDialogue(indiaScript());
+      else if (t.kind === "sprinta") {
+        unlock("guildmate");
+        setDialogue(sprintaScript());
+      } else if (t.kind === "bag") {
+        unlock("packed");
+        setPanel("bag");
+      } else if (t.kind === "arcade") setPanel("arcade");
+      else if (t.kind === "post") {
+        unlock("postman");
+        setPanel("post");
+      }
+    },
+    [visit, unlock],
   );
 
-  const closeJourney = useCallback(() => {
-    setJourneyOpen(false);
-    write(CV_PREFERRED, "1");
-    window.history.replaceState(null, "", window.location.pathname);
+  const onStep = useCallback(
+    (x) => {
+      unlock("first-steps");
+      const r = region(x);
+      setPlace(PLACE[r]);
+      if (r === "india") unlock("passport");
+      if (r === "sweden") unlock("valkommen");
+    },
+    [unlock],
+  );
+
+  const travel = useCallback((b) => {
+    const [x, y] = approachOf({ type: "door", building: b });
+    world.current?.teleport(x, y, b.door[1] < y ? "up" : "down");
+    setPanel(null);
+    setPlace(PLACE[region(x)]);
   }, []);
 
-  const openJourney = useCallback(() => {
-    setJourneyOpen(true);
-    write(CV_PREFERRED, null);
+  const toggleTheme = useCallback(() => {
+    const next = !document.body.classList.contains("dark-theme");
+    document.body.classList.toggle("dark-theme", next);
+    try {
+      window.localStorage.setItem("jm-theme", next ? "dark" : "light");
+    } catch {
+      /* fine */
+    }
+    setDark(next);
   }, []);
 
-  // The stage is fixed and full-screen, so the page behind it must not scroll.
+  // Menu keys.
   useEffect(() => {
-    if (!journeyOpen) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
+    const onKey = (e) => {
+      if (view !== "game" || dialogue || e.target.closest?.("input, textarea")) return;
+      const k = e.key.toLowerCase();
+      const map = { q: "quests", i: "bag", m: "map", t: "trophies" };
+      if (map[k]) {
+        e.preventDefault();
+        setPanel((p) => (p === map[k] ? null : map[k]));
+        if (map[k] === "bag") unlock("packed");
+      }
     };
-  }, [journeyOpen]);
-
-  // A pasted #journey/... link is a same-document navigation, so React never
-  // re-reads it on its own. Without this, sharing a beat link with someone who
-  // already has the page open does nothing.
-  useEffect(() => {
-    const onHash = () => {
-      const hash = window.location.hash;
-      if (hash.startsWith("#journey")) setJourneyOpen(true);
-      else if (hash.startsWith("#cv")) setJourneyOpen(false);
-    };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
-
-  useEffect(() => {
-    if (!journeyOpen) return;
-    // An Escape something else already handled (leaving destruction mode)
-    // is not a request to leave the journey too.
-    const onKey = (e) =>
-      e.key === "Escape" && !e.defaultPrevented && closeJourney();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [journeyOpen, closeJourney]);
+  }, [view, dialogue, unlock]);
+
+  const showCv = () => {
+    setView("cv");
+    window.history.replaceState(null, "", "#cv");
+    window.scrollTo(0, 0);
+  };
+  const showGame = () => {
+    setView("game");
+    window.history.replaceState(null, "", window.location.pathname);
+  };
+
+  if (view === "cv") return <CV onPlay={showGame} />;
+
+  const close = () => setPanel(null);
 
   return (
-    <div className="App">
-      <Navbar />
-      <div>
-        <Sidebar />
-        <main className="main-container">
-          <Home onEnterJourney={openJourney} journeyOpen={journeyOpen} />
-          <About />
-          <Projects />
-          <Contact />
-        </main>
-        <Footer />
-      </div>
-
-      {/* The journey chunk is lazy, and a null fallback meant the static page
-          painted first and then got covered — it read as landing on the wrong
-          page. The curtain paints in the same commit as the page behind it, so
-          there is nothing to see underneath while the chunk arrives. */}
-
-      {journeyOpen && (
-        <Suspense fallback={<div className="j-curtain" aria-hidden="true" />}>
-          <JourneyStage onExit={closeJourney} />
-        </Suspense>
+    <div className="game">
+      <World ref={world} paused={Boolean(dialogue || panel)} onInteract={open} onStep={onStep} dark={dark} />
+      <Hud progress={progress} place={place} onOpen={(p) => {
+          if (p === "bag") unlock("packed");
+          setPanel(p);
+        }} dark={dark} onTheme={toggleTheme} onCv={showCv} />
+      <Pad world={world} />
+      {dialogue && <Dialogue script={dialogue} onClose={() => setDialogue(null)} />}
+      {panel === "quests" && <QuestLog visited={progress.visited} onClose={close} onTravel={travel} />}
+      {panel === "bag" && <Bag onClose={close} />}
+      {panel === "arcade" && <Arcade onClose={close} onPlay={() => unlock("high-score")} />}
+      {panel === "post" && <PostOffice onClose={close} />}
+      {panel === "map" && <MapMenu visited={progress.visited} here={world.current?.position()} onClose={close} onTravel={travel} />}
+      {panel === "trophies" && (
+        <Trophies
+          unlocked={progress.unlocked}
+          xp={progress.xp}
+          onClose={close}
+          onReset={() => {
+            progress.reset();
+            setSigns(new Set());
+            world.current?.teleport(3, 14, "right");
+            close();
+          }}
+        />
       )}
+      <Toasts toasts={progress.toasts} />
     </div>
   );
 }
