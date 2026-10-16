@@ -2,11 +2,28 @@
 
 A personal portfolio website built with React. It showcases the developer Jon Mendizabal, highlighting projects, experience and contact information. The site is deployed through GitHub Pages.
 
+## Design — Run
+
+This branch turns the portfolio into a side-scrolling pixel platformer: one
+long level that runs from 2005 to today. Run and jump with the arrow keys,
+WASD and Space, or with the on-screen buttons on a phone.
+
+- **Every stage is a CV entry**: the university campus, the AML foundry (mind
+  the molten steel), the plant in India, the Swedish snow at Lexicon and the
+  software years at Sprinta. Each flag opens the full role or degree.
+- **? blocks** hold the skills of each stage, **coins** are the projects, laid
+  out by date, and **bugs** wait to be stomped in the software years.
+- **Collection** shows the projects you picked up, skills by stage and the
+  toolbox; **Stages** travels to any flag already reached. Reach the goal for
+  your stats and the contact form.
+- **Night** (the dark theme) swaps every sky for its night palette.
+- **Read as CV** shows everything on one plain page (also at `#cv`).
+
 ## Features
 
 - **Single Page Application** built with React and React Router style sections
 - **Dark/Light theme toggle** implemented via CSS variables
-- **Projects gallery** with media previews and technology icons
+- **Projects** — coins along the level, in the Collection, plus a plain list on the CV page
 - **About section** summarising tools, work experience and education
 - **Responsive design** suitable for mobile and desktop screens
 - **Contact form** powered by [Getform](https://getform.io/)
@@ -50,7 +67,12 @@ src/           React components, pages and styles
 src/images/    Media assets used on the site
 ```
 
-Project data for the **Projects** section is stored in `src/components/projectList.js`.
+Content lives in data files, separate from the layout:
+
+- `src/components/projectList.js` — projects
+- `src/data/journey.js` — profile, experience, education, career chapters
+- `src/data/tools.js`, `src/data/social.js`, `src/data/site.js` — tools, profiles elsewhere, contact and section copy
+- `src/data/projectMedia.js`, `projectTech.js`, `orgLogos.js` — media and logo lookups
 
 ## License
 
