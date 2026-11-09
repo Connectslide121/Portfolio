@@ -1,20 +1,5 @@
 # Agent Instructions — Jon Mendizabal's Portfolio
 
-## Commits
-
-- **Commit as you go**, in small, logical commits: each commit is one coherent change — a feature step, a fix or a refactor, together with its tests and docs — with a clear message saying what changed and why. Don't bundle unrelated changes, and don't leave finished work uncommitted.
-- **Don't push.** Commit only: the user reviews and pushes the commits themself (a push starts the pipeline builds). Never force-push or rewrite history that has already been pushed.
-- **No AI attribution in commit messages.** Don't add `Co-Authored-By` trailers or any "generated with" lines.
-
-## Ending a session
-
-End every session with a short recap for the user. Include only the points that have something to say — skip the rest entirely, and never write filler such as "no decisions were made":
-
-- **Done** — what was changed or completed.
-- **Need to know** — anything the user should be aware of: risks, things not verified, actions needed from them.
-- **Decisions** — choices you made on the user's behalf that they should know about.
-- **Next steps** — sensible follow-ups, if any.
-
 ---
 
 ## Agent instructions and skills
