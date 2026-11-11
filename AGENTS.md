@@ -29,9 +29,10 @@ This is a personal portfolio website built with React 18, showcasing Jon Mendiza
 
 ```
 src/
-├── index.js               # Reads ?mode=, loads that mode (or the picker),
-│                          # its fonts, favicon and theme default
-├── picker/                # Picker (the front page: the featured mode, then a
+├── index.js               # Reads ?mode=, loads that mode (the default one
+│                          # without it, the picker for ?mode=picker), its
+│                          # fonts, favicon and theme default
+├── picker/                # Picker (every design: the featured mode, then a
 │                          # grid of the rest), ModeSwitch (the pill
 │                          # over every mode) and their CSS
 ├── modes/
@@ -116,7 +117,9 @@ body.dark-theme {
 
 ### Modes and Navigation
 
-- `src/index.js` picks what to render from `?mode=<id>`: no mode (or an unknown one) shows the picker
+- `src/index.js` picks what to render from `?mode=<id>`: no mode opens the default design (`DEFAULT_MODE` in the registry, the `featured` one), and `?mode=picker` (or any id that is not a mode) shows the picker
+- Build links with `hrefFor(id)` and `pickerHref()` from the registry, never by hand: the default mode lives at the bare address
+- The picker must stay reachable from every mode in plain sight: the style switcher does it everywhere, and the default design also links to it from its footer
 - Moving between modes is a full page load (plain links), so only one mode's code and styles are ever on the page
 - Each mode keeps its own in-page navigation (its own nav, hashes like `#cv`)
 
@@ -156,7 +159,7 @@ body.dark-theme {
 ### Adding or Changing a Mode
 
 1. A mode is a folder in `src/modes/<id>/` with a `main.js` that imports its stylesheets and re-exports its `App`; inside it, import shared content with relative paths up to `src/data` and `src/components`
-2. Register it in `MODES` in `src/modes/registry.js` (name, kind, blurb, Google Fonts query, theme colour, `darkByDefault` if night is its default, `switchAt` if the switcher should sit in another corner, `featured` on the one mode the picker shows across its whole first row; keep it first in the list)
+2. Register it in `MODES` in `src/modes/registry.js` (name, kind, blurb, Google Fonts query, theme colour, `darkByDefault` if night is its default, `switchAt` if the switcher should sit in another corner, `featured` on the one mode the site opens on and the picker shows across its whole first row; keep it first in the list)
 3. Add its favicon as `public/modes/<id>/favicon.svg` and its thumbnails as `src/images/modes/<id>-light.webp` and `<id>-dark.webp` (800×500, a 1440×900 screenshot scaled down, with the switcher hidden)
 4. Content changes go in `src/data` and `src/components` only, so every mode picks them up
 5. When replacing `window.location` parts (`history.replaceState`), keep `window.location.search`, or the mode is lost on reload

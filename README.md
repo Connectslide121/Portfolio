@@ -4,12 +4,12 @@ A personal portfolio website built with React. It showcases the developer Jon Me
 
 ## Design — ten modes
 
-The portfolio ships ten complete designs of the same CV, and visitors pick one.
-The front page is the **picker**: the newest design across the first row, then
-a three-by-three grid of the others (each thumbnail in the light or dark theme
-you are looking at). Every mode then carries a
-small **style switcher** to step to the previous or next design or back to
-the grid.
+The portfolio ships ten complete designs of the same CV. The site opens on
+**Mendi**, the newest one; the other nine are a click away on the **picker**
+(`?mode=picker`): Mendi across the first row, then a three-by-three grid of
+the others (each thumbnail in the light or dark theme you are looking at).
+Every mode carries a small **style switcher** to step to the previous or next
+design or to the picker, and Mendi links to it from its footer too.
 
 | # | Mode | Kind |
 |---|------|------|
@@ -24,7 +24,7 @@ the grid.
 | 9 | Run | Side-scrolling platformer |
 | 10 | Collect | Trading card game |
 
-A mode lives at `?mode=<id>` (`mendi`, `swiss`, `blueprint`, `jonos`, `newspaper`,
+The bare address is Mendi. A mode lives at `?mode=<id>` (`mendi`, `swiss`, `blueprint`, `jonos`, `newspaper`,
 `constellation`, `stickers`, `quest`, `run`, `collect`); the CV pages of the
 games keep working at `?mode=<id>#cv`. Only the picked mode is downloaded,
 with its own styles and fonts, and the light/dark choice is shared by all.
