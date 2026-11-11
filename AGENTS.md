@@ -31,10 +31,11 @@ This is a personal portfolio website built with React 18, showcasing Jon Mendiza
 src/
 ├── index.js               # Reads ?mode=, loads that mode (or the picker),
 │                          # its fonts, favicon and theme default
-├── picker/                # Picker (the 3x3 front page), ModeSwitch (the pill
+├── picker/                # Picker (the front page: the featured mode, then a
+│                          # grid of the rest), ModeSwitch (the pill
 │                          # over every mode) and their CSS
 ├── modes/
-│   ├── registry.js        # The nine modes: name, blurb, fonts, colours, loader
+│   ├── registry.js        # The ten modes: name, blurb, fonts, colours, loader
 │   └── <id>/              # One complete design per folder: main.js (its CSS
 │                          # and App), App.jsx, its components, styles, art
 ├── components/            # Shared content: projectList.js, richText.jsx
@@ -155,7 +156,7 @@ body.dark-theme {
 ### Adding or Changing a Mode
 
 1. A mode is a folder in `src/modes/<id>/` with a `main.js` that imports its stylesheets and re-exports its `App`; inside it, import shared content with relative paths up to `src/data` and `src/components`
-2. Register it in `MODES` in `src/modes/registry.js` (name, kind, blurb, Google Fonts query, theme colour, `darkByDefault` if night is its default, `switchAt` if the switcher should sit in another corner)
+2. Register it in `MODES` in `src/modes/registry.js` (name, kind, blurb, Google Fonts query, theme colour, `darkByDefault` if night is its default, `switchAt` if the switcher should sit in another corner, `featured` on the one mode the picker shows across its whole first row; keep it first in the list)
 3. Add its favicon as `public/modes/<id>/favicon.svg` and its thumbnails as `src/images/modes/<id>-light.webp` and `<id>-dark.webp` (800×500, a 1440×900 screenshot scaled down, with the switcher hidden)
 4. Content changes go in `src/data` and `src/components` only, so every mode picks them up
 5. When replacing `window.location` parts (`history.replaceState`), keep `window.location.search`, or the mode is lost on reload
