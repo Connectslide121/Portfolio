@@ -1,10 +1,21 @@
-// The nine designs. Each one is a complete site of its own in src/modes/<id>,
+// The ten designs. Each one is a complete site of its own in src/modes/<id>,
 // loaded only when it is picked, so its global styles never meet another's.
 // They all read the same content from src/data and src/components.
 
 const FONTS = "https://fonts.googleapis.com/css2?";
 
 export const MODES = [
+  {
+    id: "mendi",
+    name: "Mendi",
+    kind: "Landscape",
+    blurb: "Basque for mountain: a generated range that cools from a molten dawn to the northern lights.",
+    font: "family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,0..100,0..1;1,9..144,300..700,0..100,0..1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;600",
+    themeColor: "#f8f2e7",
+    // The newest one: the picker gives it the whole first row.
+    featured: true,
+    load: () => import("./mendi/main"),
+  },
   {
     id: "swiss",
     name: "Swiss",
