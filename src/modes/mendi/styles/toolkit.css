@@ -1,0 +1,84 @@
+/* The pack: each group a row (its name, then its tools on one shared grid,
+   so the tools line up from group to group), over a map's contour lines. */
+
+.tool-group {
+  display: grid;
+  grid-template-columns: minmax(170px, 270px) minmax(0, 1fr);
+  gap: clamp(18px, 4vw, 64px);
+  padding-block: 30px;
+  border-top: 1px solid var(--line-strong);
+}
+
+.tool-group dt {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font: 400 1.5rem/1.2 var(--font-display);
+  font-variation-settings: "SOFT" 60;
+  letter-spacing: -0.015em;
+}
+
+.tool-group dt small {
+  font: 500 0.72rem/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--ember);
+}
+
+.tool-group ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+  gap: 10px;
+}
+
+.tool-group li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--card);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.25;
+  transition: transform 0.3s var(--ease), border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.6s ease;
+}
+
+.tool-group li:hover {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+/* The mark on its plate: light ink gets the dark one. */
+.tool-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgb(27 37 49 / 0.08);
+}
+
+.tool-icon.on-dark {
+  background: #1b2531;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+.tool-icon img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+@media (max-width: 760px) {
+  .tool-group {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-group ul {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}

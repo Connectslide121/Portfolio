@@ -1,0 +1,275 @@
+/* Base camp: how to reach me on the left, the form on the right, and the
+   mountains at dusk under both. */
+
+.contact {
+  padding-bottom: clamp(56px, 7vw, 96px);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+  gap: clamp(36px, 7vw, 104px);
+  align-items: start;
+}
+
+.contact-email {
+  display: inline-block;
+  max-width: 100%;
+  font: 400 clamp(1.55rem, 3.3vw, 2.6rem) / 1.15 var(--font-display);
+  font-variation-settings: "SOFT" 60;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-decoration-color: var(--ember-fill);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+  transition: color 0.2s ease;
+}
+
+.contact-email:hover {
+  color: var(--ember);
+}
+
+.contact-facts {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: 18px clamp(24px, 4vw, 56px);
+  margin-top: 40px;
+}
+
+.contact-facts dt {
+  font: 500 0.7rem/1.3 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.contact-facts dd {
+  margin-top: 6px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.contact-facts a {
+  text-decoration: none;
+}
+
+.contact-facts a:hover {
+  color: var(--ember);
+}
+
+.contact-social {
+  margin-top: 40px;
+  border-top: 1px solid var(--line-strong);
+}
+
+/* Fixed columns: mark, name, handle, and the arrow at the far right. */
+.contact-social a {
+  display: grid;
+  grid-template-columns: 22px 9ch minmax(0, 1fr) 2ch;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.contact-social a:hover {
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+
+.social-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.contact-social b {
+  font-weight: 600;
+}
+
+.contact-social span {
+  overflow: hidden;
+  font: 500 0.8rem/1.4 var(--font-mono);
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contact-social i {
+  font-style: normal;
+  text-align: right;
+  color: var(--muted);
+  transition: transform 0.3s var(--ease), color 0.2s ease;
+}
+
+.contact-social a:hover i {
+  color: var(--ember);
+  transform: translate(3px, -3px);
+}
+
+/* --- The form ----------------------------------------------------------- */
+
+.contact-form {
+  display: grid;
+  gap: 18px;
+  padding: clamp(24px, 3.4vw, 40px);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease), background-color 0.6s ease;
+}
+
+.contact-form h3 {
+  margin-bottom: 4px;
+  font-size: 1.7rem;
+}
+
+.contact-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.contact-form label span {
+  font: 500 0.7rem/1.3 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 13px;
+  background: var(--paper);
+  font-size: 1rem;
+  line-height: 1.4;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.6s ease;
+}
+
+.contact-form textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.contact-form ::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+
+.contact-form input:hover,
+.contact-form textarea:hover {
+  border-color: var(--ink-2);
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: var(--glacier);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--glacier-fill) 26%, transparent);
+}
+
+.contact-form .btn {
+  margin-top: 6px;
+}
+
+/* --- The foot of the page ----------------------------------------------- */
+
+.footer {
+  background: var(--paper);
+  transition: background-color 0.6s ease;
+}
+
+.footer-bar {
+  padding-block: 12px 96px;
+  background: var(--d4);
+  color: var(--on-dusk);
+  transition: background-color 0.6s ease;
+}
+
+.footer-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 20px clamp(24px, 4vw, 56px);
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.footer-brand .mark {
+  width: 36px;
+  height: 36px;
+}
+
+.footer-brand b {
+  display: block;
+  font: 500 1.15rem/1.2 var(--font-display);
+  font-variation-settings: "SOFT" 60;
+}
+
+.footer-brand small {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.84rem;
+  opacity: 0.72;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  font-size: 0.9rem;
+}
+
+.footer-links a,
+.footer-top {
+  text-decoration: none;
+  opacity: 0.82;
+  transition: opacity 0.2s ease;
+}
+
+.footer-links a:hover,
+.footer-top:hover {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.footer-top {
+  font: 500 0.76rem/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .contact-facts {
+    grid-template-columns: repeat(2, auto);
+  }
+
+  .contact-social a {
+    grid-template-columns: 22px minmax(0, 1fr) 2ch;
+  }
+
+  .contact-social span {
+    display: none;
+  }
+}

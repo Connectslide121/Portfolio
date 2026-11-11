@@ -1,0 +1,198 @@
+/* The hero: the headline in the open sky, the ranges below it. */
+
+.hero {
+  --art-h: min(620px, 62svh);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: max(100svh, 720px);
+  overflow: clip;
+}
+
+/* The copy keeps the top of the hero; the padding under it is the room the
+   ranges need, so a long headline on a small screen makes the hero taller
+   instead of running into the mountains. */
+.hero-copy {
+  z-index: 2;
+  padding-top: calc(var(--nav) + clamp(24px, 6svh, 76px));
+  padding-bottom: calc(var(--art-h) * 0.56);
+}
+
+.hero h1 {
+  display: grid;
+  gap: clamp(18px, 2.2vw, 28px);
+  letter-spacing: 0;
+}
+
+.hero-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  font: 500 0.78rem/1.4 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  animation: mendi-rise 0.9s var(--ease) both;
+}
+
+.hero-kicker b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.hero-kicker span::before {
+  content: "";
+  display: inline-block;
+  width: 30px;
+  height: 1px;
+  margin-right: 14px;
+  vertical-align: middle;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.hero-lede {
+  max-width: 21ch;
+  font-size: clamp(2.45rem, 5.3vw, 4.7rem);
+  line-height: 1.01;
+  letter-spacing: -0.028em;
+  animation: mendi-rise 1s var(--ease) 0.08s both;
+}
+
+/* Hot, then cold: the headline cools between its two italics. */
+.hero-lede em:last-of-type {
+  color: var(--glacier);
+}
+
+.hero-sub {
+  max-width: 46ch;
+  margin-top: clamp(20px, 2.4vw, 30px);
+  font-size: clamp(1.04rem, 1.35vw, 1.22rem);
+  color: var(--ink-2);
+  animation: mendi-rise 1s var(--ease) 0.18s both;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: clamp(24px, 3vw, 36px);
+  animation: mendi-rise 1s var(--ease) 0.28s both;
+}
+
+.hero .btn-ghost {
+  background: color-mix(in srgb, var(--paper) 50%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.hero .btn-ghost:hover {
+  background: var(--ink);
+}
+
+.field-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 18px;
+  margin-top: clamp(22px, 2.6vw, 32px);
+  font: 500 0.76rem/1.4 var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  animation: mendi-rise 1s var(--ease) 0.38s both;
+}
+
+.field-note time {
+  font-variant-numeric: tabular-nums;
+}
+
+.pulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--glacier-fill);
+}
+
+.pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: mendi-ping 2.6s ease-out infinite;
+}
+
+.hero-scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  z-index: 2;
+  padding: 8px 12px;
+  transform: translateX(-50%);
+  font: 500 0.7rem/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.hero-scroll:hover {
+  color: var(--ember);
+}
+
+.hero-scroll span {
+  display: inline-block;
+  margin-left: 6px;
+  animation: mendi-nod 2.2s var(--ease) infinite;
+}
+
+@keyframes mendi-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+}
+
+@keyframes mendi-ping {
+  to {
+    opacity: 0;
+    transform: scale(3.4);
+  }
+}
+
+@keyframes mendi-nod {
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@media (max-width: 760px) {
+  .hero {
+    --art-h: min(430px, 48svh);
+    min-height: max(100svh, 640px);
+  }
+
+  .hero-copy {
+    padding-bottom: calc(var(--art-h) * 0.62);
+  }
+
+  /* Name over title, rather than a rule that wraps mid-line. */
+  .hero-kicker {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .hero-kicker span::before {
+    display: none;
+  }
+
+  .hero-scroll {
+    display: none;
+  }
+}
