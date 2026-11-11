@@ -18,7 +18,7 @@ const go = (id) => {
   window.location.href = hrefFor(id);
 };
 
-/** The front door: the nine designs, side by side. */
+/** The front door: every design, side by side, the featured one across the top. */
 export default function Picker() {
   const [dark, setDark] = useState(() => document.body.classList.contains("dark-theme"));
   const last = (() => {
@@ -29,12 +29,13 @@ export default function Picker() {
     }
   })();
 
-  // 1–9 open a mode straight away.
+  // 1–9 open a mode straight away, and 0 the tenth.
   useEffect(() => {
     const onKey = (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest?.("input, textarea")) return;
-      const n = Number(e.key);
-      if (n >= 1 && n <= MODES.length) go(MODES[n - 1].id);
+      if (!/^\d$/.test(e.key)) return;
+      const n = Number(e.key) || 10;
+      if (n <= MODES.length) go(MODES[n - 1].id);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -97,7 +98,7 @@ export default function Picker() {
 
         <ol className="pk-grid">
           {MODES.map((m, i) => (
-            <li key={m.id}>
+            <li key={m.id} className={m.featured ? "is-featured" : undefined}>
               <a className="pk-card" href={hrefFor(m.id)} aria-label={`${m.name}: ${m.blurb}`}>
                 <span className="pk-thumb">
                   {thumbs[`${m.id}-light`] && <img className="pk-light" src={thumbs[`${m.id}-light`]} alt="" loading="lazy" />}
@@ -109,6 +110,7 @@ export default function Picker() {
                 <span className="pk-meta">
                   <span className="pk-no">{String(i + 1).padStart(2, "0")}</span>
                   <span className="pk-kind">{m.kind}</span>
+                  {m.featured && <span className="pk-new">New</span>}
                   {last === m && <span className="pk-last">Last visited</span>}
                 </span>
                 <h2>{m.name}</h2>
@@ -126,7 +128,7 @@ export default function Picker() {
             {l.label}
           </a>
         ))}
-        <span>Tip: press 1–{MODES.length} to jump straight in.</span>
+        <span>Tip: press {MODES.length > 9 ? "1–9 or 0" : `1–${MODES.length}`} to jump straight in.</span>
       </footer>
     </div>
   );
