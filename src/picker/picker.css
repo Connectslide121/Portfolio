@@ -1,4 +1,4 @@
-/* The picker. Loaded only on the front door, never under a mode, so it can
+/* The picker. Loaded only on its own page, never under a mode, so it can
    set the page up for itself. It keeps the original site's look — warm
    paper, Instrument Serif and Inter Tight, a coral accent — and stays quiet
    so the thumbnails do the talking. */

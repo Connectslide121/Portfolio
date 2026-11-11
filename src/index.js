@@ -2,11 +2,13 @@ import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import "./picker/switch.css";
 import ModeSwitch from "./picker/ModeSwitch";
-import { currentModeId, fontsHref, modeById } from "./modes/registry";
+import { DEFAULT_MODE, currentModeId, fontsHref, modeById } from "./modes/registry";
 
-// One address, nine sites: ?mode=<id> loads that design and nothing else, so
-// its global styles have the page to themselves. No mode, the picker.
-const mode = modeById(currentModeId());
+// One address, ten sites: ?mode=<id> loads that design and nothing else, so
+// its global styles have the page to themselves. No mode at all opens the
+// default design; ?mode=picker (or any id that is not a mode) the picker.
+const requested = currentModeId();
+const mode = requested ? modeById(requested) : DEFAULT_MODE;
 
 // Light and dark are shared by every mode (jm-theme). Without a stored
 // choice each design keeps its own default: the night designs start dark.

@@ -3,6 +3,7 @@ import { Dusk, Mark } from "../art/Scenery";
 import { profile } from "../../../data/journey";
 import { contact } from "../../../data/site";
 import { socialLinks } from "../../../data/social";
+import { MODES, pickerHref } from "../../registry";
 
 export default function Footer() {
   return (
@@ -31,6 +32,10 @@ export default function Footer() {
               </li>
             ))}
           </ul>
+          {/* The same CV in the other designs: also behind the switcher, but said in words here. */}
+          <a className="footer-styles" href={pickerHref()}>
+            {MODES.length - 1} other styles <span aria-hidden="true">→</span>
+          </a>
           <a className="footer-top" href="#top">
             Back to the top <span aria-hidden="true">↑</span>
           </a>

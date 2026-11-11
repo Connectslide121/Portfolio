@@ -103,11 +103,20 @@ export const MODES = [
 ];
 
 export const modeById = (id) => MODES.find((m) => m.id === id);
+
+/** The design the site opens on when the address names none: the featured one. */
+export const DEFAULT_MODE = MODES.find((m) => m.featured) || MODES[0];
+
+// Not a mode, so index.js falls through to the picker for it.
+const PICKER = "picker";
 export const fontsHref = (m) => `${FONTS}${m.font}&display=swap`;
 
 /** The mode in the address bar (?mode=quest), if there is one. */
 export const currentModeId = () => new URLSearchParams(window.location.search).get("mode");
 
-/** Where a mode lives: same page, its id in the query, any #cv hash dropped. */
-export const hrefFor = (id) => `${window.location.pathname}?mode=${id}`;
-export const pickerHref = () => window.location.pathname;
+/**
+ * Where a mode lives: same page, its id in the query, any #cv hash dropped.
+ * The default mode lives at the bare address.
+ */
+export const hrefFor = (id) => (id === DEFAULT_MODE.id ? window.location.pathname : `${window.location.pathname}?mode=${id}`);
+export const pickerHref = () => `${window.location.pathname}?mode=${PICKER}`;

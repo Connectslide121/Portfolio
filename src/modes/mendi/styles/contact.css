@@ -194,7 +194,7 @@
 
 .footer-inner {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 20px clamp(24px, 4vw, 56px);
 }
@@ -231,6 +231,7 @@
 }
 
 .footer-links a,
+.footer-styles,
 .footer-top {
   text-decoration: none;
   opacity: 0.82;
@@ -238,12 +239,14 @@
 }
 
 .footer-links a:hover,
+.footer-styles:hover,
 .footer-top:hover {
   opacity: 1;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
+.footer-styles,
 .footer-top {
   font: 500 0.76rem/1 var(--font-mono);
   letter-spacing: 0.08em;

@@ -18,7 +18,7 @@ const go = (id) => {
   window.location.href = hrefFor(id);
 };
 
-/** The front door: every design, side by side, the featured one across the top. */
+/** Every design, side by side, the featured one across the top. Lives at ?mode=picker. */
 export default function Picker() {
   const [dark, setDark] = useState(() => document.body.classList.contains("dark-theme"));
   const last = (() => {
