@@ -21,13 +21,17 @@
   background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 44%, var(--sky-3) 82%);
 }
 
+/* The sky is the farthest thing there is: it keeps half of the scroll and
+   almost none of the pointer. */
 .land-stars {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   opacity: 0;
+  transform: translate3d(calc(var(--mx, 0) * -8px), calc(var(--sy, 0) * 0.5px + var(--my, 0) * -5px), 0);
   transition: opacity 0.9s ease;
+  will-change: transform;
 }
 
 body.dark-theme .land-stars {
@@ -50,6 +54,7 @@ body.dark-theme .land-stars {
   opacity: 0;
   mix-blend-mode: screen;
   pointer-events: none;
+  transform: translate3d(calc(var(--mx, 0) * -14px), calc(var(--sy, 0) * 0.42px + var(--my, 0) * -6px), 0);
   transition: opacity 1.2s ease;
 }
 
@@ -94,21 +99,112 @@ body.dark-theme .aurora {
   animation: mendi-aurora-a 28s ease-in-out infinite alternate-reverse;
 }
 
+/* A shooting star now and then, at night: out of sight for most of its
+   cycle, then one quick streak. */
+.shooting {
+  display: none;
+  position: absolute;
+  top: 14%;
+  left: 60%;
+  width: 150px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.9));
+  opacity: 0;
+  transform: rotate(152deg);
+  pointer-events: none;
+  animation: mendi-shoot 13s ease-in infinite;
+}
+
+.shooting + .shooting {
+  top: 7%;
+  left: 31%;
+  width: 110px;
+  animation-duration: 21s;
+  animation-delay: -8s;
+}
+
+body.dark-theme .shooting {
+  display: block;
+}
+
+/* Thin clouds crossing the sky, a couple of minutes from edge to edge. */
+.clouds {
+  position: absolute;
+  inset: 0 0 34% 0;
+  pointer-events: none;
+  transform: translate3d(calc(var(--mx, 0) * -10px), calc(var(--sy, 0) * 0.38px + var(--my, 0) * -4px), 0);
+}
+
+.clouds span {
+  position: absolute;
+  left: -480px;
+  width: 380px;
+  height: 64px;
+  background:
+    radial-gradient(closest-side, var(--cloud), transparent) 8% 60% / 52% 62% no-repeat,
+    radial-gradient(closest-side, var(--cloud), transparent) 46% 34% / 58% 96% no-repeat,
+    radial-gradient(closest-side, var(--cloud), transparent) 96% 66% / 50% 58% no-repeat;
+  filter: blur(5px);
+  animation: mendi-cloud 150s linear infinite;
+  will-change: transform;
+}
+
+.clouds span:nth-child(1) {
+  top: 40%;
+  animation-delay: -24s;
+}
+
+.clouds span:nth-child(2) {
+  top: 58%;
+  width: 300px;
+  height: 48px;
+  opacity: 0.8;
+  animation-duration: 190s;
+  animation-delay: -112s;
+}
+
+.clouds span:nth-child(3) {
+  top: 25%;
+  width: 460px;
+  height: 70px;
+  opacity: 0.7;
+  animation-duration: 230s;
+  animation-delay: -171s;
+}
+
+.clouds span:nth-child(4) {
+  top: 70%;
+  width: 260px;
+  height: 40px;
+  animation-duration: 170s;
+  animation-delay: -66s;
+}
+
 .land-art {
   position: absolute;
   inset: auto 0 0 0;
   height: var(--art-h);
 }
 
-/* One layer per range. --sy is the hero's scroll (px), --depth how much of
-   it this layer keeps: the far ranges sink, the near ones barely move. */
+/* One layer per range, a little wider than the hero so it can slide.
+   --sy is the hero's scroll (px) and --depth how much of it the layer keeps:
+   the far ranges sink, the near ones barely move. --mx and --my are the
+   pointer (-1 to 1) and --near how far the layer follows it: the near ones
+   slide the most, the way things do when you move your head. */
 .land-layer {
   position: absolute;
-  inset: 0;
-  width: 100%;
+  top: 0;
+  left: -48px;
+  width: calc(100% + 96px);
+  max-width: none;
   height: 100%;
   overflow: visible;
-  transform: translate3d(0, calc(var(--sy, 0) * var(--depth, 0) * 1px), 0);
+  transform: translate3d(
+    calc(var(--mx, 0) * var(--near, 0) * -30px),
+    calc(var(--sy, 0) * var(--depth, 0) * 1px + var(--my, 0) * var(--near, 0) * -9px),
+    0
+  );
   will-change: transform;
 }
 
@@ -118,34 +214,49 @@ body.dark-theme .aurora {
 }
 
 .land-sun {
-  --depth: 0.44;
+  --depth: 0.56;
+  --near: 0.05;
 }
 .ridge-1 {
-  --depth: 0.34;
+  --depth: 0.44;
+  --near: 0.12;
   fill: var(--r1);
 }
 .ridge-2 {
-  --depth: 0.27;
+  --depth: 0.36;
+  --near: 0.2;
   fill: var(--r2);
 }
 .ridge-3 {
-  --depth: 0.2;
+  --depth: 0.28;
+  --near: 0.32;
   fill: var(--r3);
 }
 .ridge-4 {
-  --depth: 0.14;
+  --depth: 0.2;
+  --near: 0.46;
   fill: var(--r4);
 }
 .ridge-5 {
-  --depth: 0.08;
+  --depth: 0.12;
+  --near: 0.62;
   fill: var(--r5);
 }
 .ridge-6 {
-  --depth: 0.03;
+  --depth: 0.05;
+  --near: 0.8;
   fill: var(--r6);
 }
 .ridge-7 {
+  --near: 1;
   fill: var(--paper);
+}
+
+/* The glow around the sun breathes, slowly. */
+.sky-glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mendi-breathe 8s ease-in-out infinite alternate;
 }
 
 .sky-body {
@@ -153,7 +264,7 @@ body.dark-theme .aurora {
 }
 
 body.dark-theme .sky-body {
-  transform: translateY(-96px);
+  transform: translateY(-74px);
 }
 
 .sun-disc,
@@ -186,8 +297,16 @@ body.dark-theme .moon {
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0.7;
-  animation: mendi-birds 36s ease-in-out infinite alternate;
+  animation: mendi-birds 54s ease-in-out infinite alternate;
   transition: opacity 0.6s ease;
+}
+
+/* Each bird beats its wings, out of step with the others. */
+.birds path {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: mendi-flap 0.64s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * -0.19s);
 }
 
 body.dark-theme .birds {
@@ -243,13 +362,89 @@ body.dark-theme .birds {
 
 @keyframes mendi-birds {
   to {
-    transform: translate(-90px, -26px);
+    transform: translate(-190px, -44px);
+  }
+}
+
+@keyframes mendi-flap {
+  to {
+    transform: scaleY(0.3);
   }
 }
 
 @keyframes mendi-drift {
   to {
-    transform: translate3d(9%, 0, 0);
+    opacity: 0.72;
+    transform: translate3d(11%, 0, 0) scaleY(1.18);
+  }
+}
+
+@keyframes mendi-breathe {
+  to {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes mendi-shoot {
+  0%,
+  94% {
+    opacity: 0;
+    transform: rotate(152deg) translateX(0);
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(152deg) translateX(360px);
+  }
+}
+
+@keyframes mendi-cloud {
+  to {
+    transform: translate3d(calc(100vw + 560px), 0, 0);
+  }
+}
+
+/* Specks rising over the forest, in front of the trees and behind the last
+   hill. Each one has its own place, size, pace and drift (set inline). */
+.motes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: translate3d(calc(var(--mx, 0) * -26px), calc(var(--sy, 0) * 0.04px + var(--my, 0) * -8px), 0);
+}
+
+.motes span {
+  position: absolute;
+  left: var(--x);
+  bottom: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: var(--mote);
+  box-shadow: 0 0 7px 1px var(--mote-glow);
+  opacity: 0;
+  animation: mendi-mote var(--t) ease-in-out var(--w) infinite;
+}
+
+@keyframes mendi-mote {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+  20%,
+  56% {
+    opacity: var(--mote-o);
+  }
+  38%,
+  78% {
+    opacity: calc(var(--mote-o) * var(--mote-dim));
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--dx), -64px, 0);
   }
 }
 
@@ -308,6 +503,27 @@ body.dark-theme .birds {
   animation: mendi-route 2.4s linear infinite;
 }
 
+/* The water moves a little. */
+.pc-water {
+  animation: mendi-shimmer 6s ease-in-out infinite alternate;
+}
+
+/* The plane sits part of the way along the route; where the browser can
+   move things along a path, it flies it, over and over. */
+.pc-plane {
+  transform: translate(214px, 79px) rotate(70deg);
+}
+
+@supports (offset-path: path("M0 0")) {
+  .pc-plane {
+    transform: none;
+    offset-path: path("M62,178 Q196,22 338,162");
+    offset-rotate: auto 90deg;
+    offset-distance: 58%;
+    animation: mendi-fly 18s ease-in-out infinite;
+  }
+}
+
 .pc-aurora {
   animation: mendi-glow 9s ease-in-out infinite;
 }
@@ -334,6 +550,27 @@ body.dark-theme .birds {
 @keyframes mendi-route {
   to {
     stroke-dashoffset: -16;
+  }
+}
+
+@keyframes mendi-shimmer {
+  to {
+    transform: translateX(9px);
+  }
+}
+
+@keyframes mendi-fly {
+  0% {
+    offset-distance: 5%;
+    opacity: 0;
+  }
+  8%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 95%;
+    opacity: 0;
   }
 }
 
@@ -447,4 +684,100 @@ body.dark-theme .birds {
 
 body.dark-theme .dusk-stars {
   opacity: 0.85;
+}
+
+/* --- Depth on the way down the page --------------------------------------
+   Where the browser can tie an animation to an element crossing the screen,
+   the layered drawings shift against each other as they pass: the far parts
+   lag behind the near ones. No script; anywhere else they simply sit still,
+   and so they do for anyone who asked for less motion. */
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .postcard {
+      view-timeline: --card block;
+    }
+
+    .pc-l1,
+    .pc-l2,
+    .pc-l3 {
+      animation: mendi-pass linear both;
+      animation-timeline: --card;
+    }
+
+    .pc-l1 {
+      --pass: 12px;
+    }
+    .pc-l2 {
+      --pass: 7px;
+    }
+    .pc-l3 {
+      --pass: 3.5px;
+    }
+
+    .fold {
+      view-timeline: --fold block;
+    }
+
+    .fold-back {
+      --pass: 9px;
+      animation: mendi-pass linear both;
+      animation-timeline: --fold;
+    }
+
+    .toolkit {
+      view-timeline: --map block;
+    }
+
+    .contours {
+      --pass: 56px;
+      animation: mendi-pass linear both;
+      animation-timeline: --map;
+    }
+
+    /* The dusk rises into place as the foot of the page comes up. */
+    .footer {
+      view-timeline: --dusk block;
+    }
+
+    .dusk-stars,
+    .dusk-1,
+    .dusk-2,
+    .dusk-3 {
+      animation: mendi-settle linear both;
+      animation-timeline: --dusk;
+      animation-range: entry 0% cover 62%;
+    }
+
+    .dusk-stars {
+      --pass: 120px;
+    }
+    .dusk-1 {
+      --pass: 88px;
+    }
+    .dusk-2 {
+      --pass: 56px;
+    }
+    .dusk-3 {
+      --pass: 28px;
+    }
+  }
+}
+
+@keyframes mendi-pass {
+  from {
+    transform: translateY(calc(var(--pass) * -1));
+  }
+  to {
+    transform: translateY(var(--pass));
+  }
+}
+
+@keyframes mendi-settle {
+  from {
+    transform: translateY(var(--pass));
+  }
+  to {
+    transform: none;
+  }
 }

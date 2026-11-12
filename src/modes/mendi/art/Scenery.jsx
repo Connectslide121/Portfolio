@@ -57,7 +57,7 @@ export function Dusk() {
     <svg className="dusk" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" aria-hidden="true">
       <g className="dusk-stars">
         {sky.map((s, i) => (
-          <circle key={i} cx={s.x} cy={s.y} r={s.r} opacity={s.o} />
+          <circle key={i} className={s.twinkle ? "twinkle" : undefined} cx={s.x} cy={s.y} r={s.r} opacity={s.o} style={s.twinkle ? { "--i": i % 7 } : undefined} />
         ))}
       </g>
       {layers.map((l, i) => (

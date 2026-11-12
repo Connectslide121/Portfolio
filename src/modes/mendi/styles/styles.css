@@ -70,6 +70,12 @@ body {
   --r5: #4a516c;
   --r6: #242f45;
   --mist: rgb(255 244 228 / 0.72);
+  --cloud: rgb(255 234 210 / 0.9);
+  /* Specks in the air: dust catching the light by day, fireflies by night */
+  --mote: #fff6dc;
+  --mote-glow: rgb(255 236 190 / 0.7);
+  --mote-o: 0.75;
+  --mote-dim: 0.55;
 
   /* The footer: the same ranges, cooled */
   --d1: #cfdcd4;
@@ -113,6 +119,11 @@ body.dark-theme {
   --r5: #0f1c2e;
   --r6: #0a1422;
   --mist: rgb(150 205 225 / 0.1);
+  --cloud: rgb(140 172 212 / 0.07);
+  --mote: #ffe08a;
+  --mote-glow: rgb(255 214 110 / 0.75);
+  --mote-o: 0.95;
+  --mote-dim: 0.12;
 
   --d1: #18314b;
   --d2: #12263f;

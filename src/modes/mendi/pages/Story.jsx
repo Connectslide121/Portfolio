@@ -68,8 +68,8 @@ export default function Story() {
             <path className="route-line" d={trail} />
           </svg>
           <ol className="route-stops">
-            {stops.map((b) => (
-              <li key={b.id} style={{ "--tone": heatTone(b.heat), "--lift": `${lift(b)}px` }}>
+            {stops.map((b, n) => (
+              <li key={b.id} style={{ "--tone": heatTone(b.heat), "--lift": `${lift(b)}px`, "--n": n }}>
                 <a href={`#${b.entryIds[0]}`}>
                   <i className="route-dot" aria-hidden="true" />
                   <span className="route-year">{b.railLabel}</span>

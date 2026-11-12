@@ -67,26 +67,65 @@ export function useScrolled(after = 24) {
 }
 
 /**
- * Hands the hero its scroll position as --sy (in px, clamped to its own
- * height), once per frame. Each layer of the landscape multiplies it by its
- * own depth, so the far ranges fall behind the near ones.
+ * Hands the hero what its landscape moves by, once per frame and only while
+ * something is changing:
+ *   --sy         its scroll position, in px, clamped to its own height
+ *   --mx, --my   where the pointer is over it, -1 to 1 from the centre
+ * Each layer takes its own share of both, so the far ranges fall behind the
+ * near ones. The pointer is eased towards (the scene glides, it does not
+ * jump) and only read where there is a mouse to follow.
  */
 export function useParallax(ref) {
   useEffect(() => {
     const el = ref.current;
     if (!el || reducedMotion()) return undefined;
+    const follows = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const at = { x: 0, y: 0 };
+    const to = { x: 0, y: 0 };
     let frame = 0;
-    const update = () => {
+    let scrolled = -1;
+
+    const tick = () => {
       frame = 0;
-      el.style.setProperty("--sy", Math.min(Math.max(window.scrollY, 0), el.offsetHeight).toFixed(1));
+      const y = Math.min(Math.max(window.scrollY, 0), el.offsetHeight);
+      if (y !== scrolled) {
+        scrolled = y;
+        el.style.setProperty("--sy", y.toFixed(1));
+      }
+      const dx = to.x - at.x;
+      const dy = to.y - at.y;
+      if (Math.abs(dx) > 0.0005 || Math.abs(dy) > 0.0005) {
+        at.x += dx * 0.06;
+        at.y += dy * 0.06;
+        el.style.setProperty("--mx", at.x.toFixed(4));
+        el.style.setProperty("--my", at.y.toFixed(4));
+        frame = window.requestAnimationFrame(tick);
+      }
     };
-    const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(update);
+    const wake = () => {
+      if (!frame) frame = window.requestAnimationFrame(tick);
     };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const onMove = (e) => {
+      to.x = (e.clientX / window.innerWidth) * 2 - 1;
+      to.y = (e.clientY / window.innerHeight) * 2 - 1;
+      wake();
+    };
+    const onLeave = () => {
+      to.x = 0;
+      to.y = 0;
+      wake();
+    };
+
+    wake();
+    window.addEventListener("scroll", wake, { passive: true });
+    if (follows) {
+      el.addEventListener("pointermove", onMove);
+      el.addEventListener("pointerleave", onLeave);
+    }
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", wake);
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerleave", onLeave);
       window.cancelAnimationFrame(frame);
     };
   }, [ref]);

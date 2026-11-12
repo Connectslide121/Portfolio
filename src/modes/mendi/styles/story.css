@@ -80,6 +80,13 @@
   height: 200px;
   margin-top: 12px;
   overflow: visible;
+  /* Drawn from left to right when the trail first comes into view. */
+  clip-path: inset(-12px 100% -12px 0);
+  transition: clip-path 2.4s var(--ease) 0.35s;
+}
+
+.route.is-in .route-chart {
+  clip-path: inset(-12px -12px -12px 0);
 }
 
 .route-line {
@@ -147,6 +154,11 @@
   width: 1px;
   height: var(--lift);
   background: repeating-linear-gradient(180deg, var(--tone) 0 3px, transparent 3px 8px);
+  opacity: 0;
+  transition: opacity 0.6s ease calc(0.9s + var(--n, 0) * 0.3s);
+}
+
+.route.is-in .route-stops a::before {
   opacity: 0.75;
 }
 
@@ -160,7 +172,14 @@
   border-radius: 50%;
   background: var(--tone);
   box-shadow: 0 0 0 4px var(--paper), 0 0 0 5px var(--tone);
-  transition: transform 0.3s var(--ease), box-shadow 0.6s ease;
+  /* Each stop lands as the line reaches it (scale), and grows a little under
+     the pointer (transform): two properties, so neither waits for the other. */
+  scale: 0;
+  transition: transform 0.3s var(--ease), box-shadow 0.6s ease, scale 0.55s var(--ease) calc(0.7s + var(--n, 0) * 0.3s);
+}
+
+.route.is-in .route-dot {
+  scale: 1;
 }
 
 .route-stops a:hover .route-dot,

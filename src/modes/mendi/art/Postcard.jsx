@@ -34,10 +34,12 @@ function Steel() {
         </radialGradient>
       </defs>
       <rect width={W} height={H} fill="url(#pc-steel-sky)" />
-      <circle cx="286" cy="128" r="120" fill="url(#pc-steel-sun)" />
-      <circle cx="286" cy="128" r="34" fill="#fff3d0" />
-      <path d={art.far} fill="#cf5338" />
-      <path d={art.mid} fill="#9a3230" />
+      <g className="pc-l1">
+        <circle cx="286" cy="128" r="120" fill="url(#pc-steel-sun)" />
+        <circle cx="286" cy="128" r="34" fill="#fff3d0" />
+      </g>
+      <path className="pc-l2" d={art.far} fill="#cf5338" />
+      <path className="pc-l3" d={art.mid} fill="#9a3230" />
 
       {/* Smoke, drifting off the stack */}
       <g className="pc-smoke" fill="#f6c9a2">
@@ -78,7 +80,8 @@ function Reset() {
   const art = useMemo(() => {
     const south = range({ seed: 201, base: 190, amp: 70, freq: 2.4, sharp: 0.6 });
     const north = range({ seed: 223, base: 176, amp: 34, freq: 3, sharp: 0.1 });
-    return { south: ridgePath(south, 200), north: ridgePath(north, 200), trees: pines(north, { seed: 4, gap: 5, min: 6, max: 13, from: 0.62 }) };
+    // Closed below the waterline, so the coasts can slide a little without lifting off the sea.
+    return { south: ridgePath(south, 216), north: ridgePath(north, 216), trees: pines(north, { seed: 4, gap: 5, min: 6, max: 13, from: 0.62 }) };
   }, []);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="A dashed route across the sea, from a warm coast to a northern shore of pines">
@@ -105,14 +108,16 @@ function Reset() {
       </defs>
       <rect width={W} height={H} fill="url(#pc-reset-sky)" />
       <g clipPath="url(#pc-reset-west)">
-        <path d={art.south} fill="#b45d4d" />
+        <path className="pc-l2" d={art.south} fill="#b45d4d" />
       </g>
       <g clipPath="url(#pc-reset-east)" fill="#2e4d63">
-        <path d={art.trees} />
-        <path d={art.north} />
+        <g className="pc-l3">
+          <path d={art.trees} />
+          <path d={art.north} />
+        </g>
       </g>
       <rect y="196" width={W} height="104" fill="url(#pc-reset-sea)" />
-      <g stroke="#f6e6d8" strokeLinecap="round" opacity="0.45">
+      <g className="pc-water" stroke="#f6e6d8" strokeLinecap="round" opacity="0.45">
         <path d="M24,214 h70 M130,226 h110 M270,216 h96 M60,244 h130 M230,252 h120 M36,272 h90 M180,280 h150" strokeWidth="1.2" />
       </g>
 
@@ -124,9 +129,8 @@ function Reset() {
         <text x="62" y="162" textAnchor="middle">43° N</text>
         <text x="338" y="146" textAnchor="middle">57° N</text>
       </g>
-      <g className="pc-plane" fill="#fff6ea">
-        <path d="M0,-7 l2.2,5 l7,3.4 v2 l-7,-1.6 l-0.7,4 l2.2,1.6 v1.4 l-3.7,-1 l-3.7,1 v-1.4 l2.2,-1.6 l-0.7,-4 l-7,1.6 v-2 l7,-3.4 z" transform="translate(214 79) rotate(70)" />
-      </g>
+      {/* The plane flies the route (art.css); where it cannot, it sits part of the way along. */}
+      <path className="pc-plane" fill="#fff6ea" d="M0,-7 l2.2,5 l7,3.4 v2 l-7,-1.6 l-0.7,4 l2.2,1.6 v1.4 l-3.7,-1 l-3.7,1 v-1.4 l2.2,-1.6 l-0.7,-4 l-7,1.6 v-2 l7,-3.4 z" />
 
       {/* A compass rose */}
       <g transform="translate(356 44)" fill="none" stroke="#3a2f4d" strokeWidth="1" opacity="0.7">
@@ -144,7 +148,8 @@ function Software() {
     const far = range({ seed: 307, base: 190, amp: 44, freq: 2.6, sharp: 0.3 });
     const shore = range({ seed: 331, base: 204, amp: 26, freq: 3.4, sharp: 0 });
     return {
-      far: ridgePath(far, 200),
+      far: ridgePath(far, 216),
+      farMirror: ridgePath(far, 200),
       farTrees: pines(far, { seed: 6, gap: 5, min: 5, max: 11 }),
       shore: ridgePath(shore, 208),
       shoreTrees: pines(shore, { seed: 8, gap: 8, min: 12, max: 30, from: 0, to: 0.56 }),
@@ -174,17 +179,19 @@ function Software() {
         </filter>
       </defs>
       <rect width={W} height={H} fill="url(#pc-soft-sky)" />
-      {art.sky.map((s, i) => (
-        <circle key={i} cx={s.x} cy={s.y} r={s.r * 0.7} fill="#eaf6ff" opacity={s.o} />
-      ))}
-      <g className="pc-aurora" filter="url(#pc-soft-blur)" fill="url(#pc-soft-aurora)">
-        <path d="M-10,96 C70,20 150,120 232,58 S360,20 420,70 V120 C350,80 300,110 232,118 S80,150 -10,150 Z" />
-        <path d="M120,60 C190,10 260,70 330,30 S400,40 420,30 V70 C380,60 330,80 260,88 S170,100 120,104 Z" opacity="0.7" />
+      <g className="pc-l1">
+        {art.sky.map((s, i) => (
+          <circle key={i} cx={s.x} cy={s.y} r={s.r * 0.7} fill="#eaf6ff" opacity={s.o} />
+        ))}
+        <g className="pc-aurora" filter="url(#pc-soft-blur)" fill="url(#pc-soft-aurora)">
+          <path d="M-10,96 C70,20 150,120 232,58 S360,20 420,70 V120 C350,80 300,110 232,118 S80,150 -10,150 Z" />
+          <path d="M120,60 C190,10 260,70 330,30 S400,40 420,30 V70 C380,60 330,80 260,88 S170,100 120,104 Z" opacity="0.7" />
+        </g>
+        <circle cx="78" cy="56" r="13" fill="#f3f0e4" />
+        <circle cx="84" cy="52" r="12" fill="#12283f" />
       </g>
-      <circle cx="78" cy="56" r="13" fill="#f3f0e4" />
-      <circle cx="84" cy="52" r="12" fill="#12283f" />
 
-      <g fill="#1b4558">
+      <g className="pc-l3" fill="#1b4558">
         <path d={art.farTrees} />
         <path d={art.far} />
       </g>
@@ -192,9 +199,9 @@ function Software() {
       {/* The far shore, mirrored in the water */}
       <g fill="#0e2838" opacity="0.28" transform="translate(0 398) scale(1 -1)">
         <path d={art.farTrees} />
-        <path d={art.far} />
+        <path d={art.farMirror} />
       </g>
-      <g stroke="#bfeee2" strokeLinecap="round" opacity="0.35">
+      <g className="pc-water" stroke="#bfeee2" strokeLinecap="round" opacity="0.35">
         <path d="M40,222 h90 M190,214 h70 M300,228 h80 M90,246 h150 M260,256 h110 M20,270 h110 M170,282 h160" strokeWidth="1" />
       </g>
 
@@ -204,6 +211,11 @@ function Software() {
         <path d={art.shoreTrees} />
         <path d={art.shoreTrees2} />
         <path d={art.shore} />
+      </g>
+      <g className="pc-smoke" fill="#cfe6e4">
+        <circle cx="283" cy="143" r="3" opacity="0.5" />
+        <circle cx="287" cy="134" r="4.5" opacity="0.34" />
+        <circle cx="293" cy="123" r="6.5" opacity="0.2" />
       </g>
       <g>
         <path d="M240,178 l28,-17 l28,17 v24 h-56 z" fill="#b23a2e" />

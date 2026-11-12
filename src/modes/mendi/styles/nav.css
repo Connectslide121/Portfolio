@@ -174,3 +174,12 @@
     display: inline-grid;
   }
 }
+
+/* The sun in the mark comes up a little under the pointer. */
+.brand .mark-sun {
+  transition: transform 0.5s var(--ease);
+}
+
+.brand:hover .mark-sun {
+  transform: translateY(-2.5px);
+}

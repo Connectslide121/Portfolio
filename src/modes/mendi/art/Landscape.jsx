@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { rng } from "./rng";
 import { pines, ridge, ridgePath, smoothstep, stars } from "./terrain";
 
 const W = 1440;
@@ -30,10 +31,27 @@ const BIRDS = [
   [18, 40, 0.6],
 ];
 
+// Specks in the air over the forest: dust in the morning light by day,
+// fireflies by night. Where each one starts, how big it is, how long it
+// takes to rise and which way it drifts.
+const MOTES = (() => {
+  const r = rng(29);
+  return Array.from({ length: 16 }, () => ({
+    "--x": `${(3 + r() * 94).toFixed(1)}%`,
+    "--y": `${(3 + r() * 30).toFixed(1)}%`,
+    "--s": `${(2 + r() * 2.4).toFixed(1)}px`,
+    "--t": `${(9 + r() * 11).toFixed(1)}s`,
+    "--w": `${(-r() * 20).toFixed(1)}s`,
+    "--dx": `${Math.round(-36 + r() * 72)}px`,
+  }));
+})();
+
 /**
  * The hero: a mountain range at dawn (light) or under the northern lights
- * (dark). Every range is its own layer, so they can drift apart as the page
- * scrolls; the hero sets --sy, each layer multiplies it by its own depth.
+ * (dark). Every range is its own layer, so they can drift apart: the hero
+ * sets --sy (its scroll) and --mx / --my (the pointer), and each layer
+ * takes its own share of them. The far ranges keep most of the scroll and
+ * little of the pointer; the near ones the other way round.
  */
 export default function Landscape() {
   const { layers, sun } = useMemo(() => {
@@ -61,6 +79,15 @@ export default function Landscape() {
         <span />
         <span />
       </div>
+      <span className="shooting" />
+      <span className="shooting" />
+
+      <div className="clouds">
+        <span />
+        <span />
+        <span />
+        <span />
+      </div>
 
       <div className="land-art">
         <svg className="land-layer land-sun" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice">
@@ -72,13 +99,15 @@ export default function Landscape() {
           </defs>
           {/* The sun by day; by night it lifts clear of the ridge and thins to a crescent. */}
           <g className="sky-body">
-            <circle cx={sun.x} cy={sun.y} r="320" fill="url(#mendi-glow)" />
+            <circle className="sky-glow" cx={sun.x} cy={sun.y} r="320" fill="url(#mendi-glow)" />
             <circle className="sun-disc" cx={sun.x} cy={sun.y} r="50" />
             <path className="moon" transform={`rotate(-32 ${sun.x} ${sun.y})`} d={`M${sun.x},${sun.y - 42}A42,42 0 0 0 ${sun.x},${sun.y + 42}A27,42 0 0 1 ${sun.x},${sun.y - 42}Z`} />
           </g>
           <g className="birds">
             {BIRDS.map(([x, y, s], i) => (
-              <path key={i} transform={`translate(${sun.x + 210 + x} ${sun.y - 200 + y}) scale(${s})`} d="M-9,0 q4.5,-6 9,0 q4.5,-6 9,0" />
+              <g key={i} transform={`translate(${sun.x + 210 + x} ${sun.y - 200 + y}) scale(${s})`}>
+                <path style={{ "--i": i }} d="M-9,0 q4.5,-6 9,0 q4.5,-6 9,0" />
+              </g>
             ))}
           </g>
         </svg>
@@ -86,6 +115,13 @@ export default function Landscape() {
         {layers.map((l, i) => (
           <React.Fragment key={i}>
             {(i === 2 || i === 4 || i === 5) && <span className={`mist mist-${i}`} />}
+            {i === LAYERS.length - 1 && (
+              <div className="motes">
+                {MOTES.map((style, n) => (
+                  <span key={n} style={style} />
+                ))}
+              </div>
+            )}
             <svg className={`land-layer ridge-${i + 1}`} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice">
               {l.trees && <path d={l.trees} />}
               <path d={l.d} />
