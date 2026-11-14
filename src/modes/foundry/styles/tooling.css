@@ -23,7 +23,7 @@
 }
 
 .rack dt small {
-  font: 500 0.74rem/1 var(--font-mono);
+  font: 500 0.75rem/1 var(--font-mono);
   color: var(--ember);
 }
 

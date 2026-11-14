@@ -33,7 +33,7 @@
 }
 
 .contact-facts dt {
-  font: 500 0.7rem/1.3 var(--font-mono);
+  font: 500 0.75rem/1.3 var(--font-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -46,6 +46,8 @@
 }
 
 .contact-facts a {
+  display: inline-block;
+  min-height: 24px;
   text-decoration: none;
 }
 
@@ -125,7 +127,7 @@
 }
 
 .contact-form label span {
-  font: 500 0.7rem/1.3 var(--font-mono);
+  font: 500 0.75rem/1.3 var(--font-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);

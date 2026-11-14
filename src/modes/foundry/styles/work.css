@@ -57,7 +57,7 @@
   display: grid;
   grid-template-columns: 6ch minmax(0, 1fr) auto;
   gap: 12px;
-  font: 500 0.72rem/1 var(--font-mono);
+  font: 500 0.75rem/1 var(--font-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
@@ -123,7 +123,7 @@
 }
 
 .part-more {
-  font: 500 0.74rem/1 var(--font-mono);
+  font: 500 0.75rem/1 var(--font-mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
@@ -184,7 +184,7 @@
 .stock-tech,
 .stock-date {
   overflow: hidden;
-  font: 500 0.74rem/1.3 var(--font-mono);
+  font: 500 0.75rem/1.3 var(--font-mono);
   color: var(--muted);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -271,7 +271,7 @@
 .pd-info .project-meta {
   display: flex;
   justify-content: space-between;
-  font: 500 0.72rem/1 var(--font-mono);
+  font: 500 0.75rem/1 var(--font-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
@@ -314,7 +314,7 @@
   padding: 0 14px;
   border: 0;
   background: none;
-  font: 500 0.74rem/1 var(--font-mono);
+  font: 500 0.75rem/1 var(--font-mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
@@ -325,7 +325,7 @@
 }
 
 .pd-count {
-  font: 500 0.74rem/1 var(--font-mono);
+  font: 500 0.75rem/1 var(--font-mono);
   font-variant-numeric: tabular-nums;
   color: var(--muted);
 }
