@@ -128,7 +128,10 @@ export default function Picker() {
             {l.label}
           </a>
         ))}
-        <span>Tip: press {MODES.length > 9 ? "1–9 or 0" : `1–${MODES.length}`} to jump straight in.</span>
+        <span>
+          Tip: press {MODES.length > 9 ? "1–9 or 0" : `1–${MODES.length}`} to jump straight in
+          {MODES.length > 10 ? ` (the first ten; the other ${WORDS[MODES.length - 10] || MODES.length - 10} by Tab or a click)` : ""}.
+        </span>
       </footer>
     </div>
   );
