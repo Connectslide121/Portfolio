@@ -35,6 +35,8 @@ export const profile = {
   // set up the career change before the first scene shows a foundry, or the
   // foundry reads as a filing error rather than the point of the story.
   lede: "I cast steel for twelve years before I wrote my first line of production code.",
+  // Who he is now, for designs that lead with the work rather than the story.
+  headline: "I architect AI-driven platforms and lead the team that ships them.",
   blurb:
     "Building products end to end — thoughtful, intuitive UI/UX on the front, scalable and secure backends underneath. I architect systems that are a pleasure to use, robust at scale, and built to grow, bringing AI in where it genuinely adds value.",
 };
