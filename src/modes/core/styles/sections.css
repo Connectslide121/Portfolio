@@ -1,0 +1,352 @@
+/* Pipeline, Leading, Stack and Record. */
+
+/* --- Pipeline: a rail with five stops ---------------------------------- */
+
+/* Short enough to fit a screen whole, since it is held while it plays. */
+.pipeline {
+  padding-block: clamp(72px, 8vw, 120px);
+  background: var(--bg-2);
+}
+
+.pipeline .section-head {
+  margin-bottom: clamp(40px, 5vw, 64px);
+}
+
+.pipe {
+  position: relative;
+  padding-top: 12px;
+}
+
+/* The rail runs from the first stop's dot to the last one's. */
+.pipe-rail {
+  position: absolute;
+  top: 19px;
+  left: 10px;
+  right: calc(20% - 10px);
+  height: 2px;
+  background: var(--line-strong);
+}
+
+.pipe-fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--accent-fill), var(--ai));
+  transform-origin: left;
+}
+
+.pipe-token {
+  position: absolute;
+  top: -7px;
+  left: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--ink);
+  box-shadow: 0 0 0 6px var(--glow), 0 0 24px var(--accent);
+  rotate: 45deg;
+}
+
+.pipe-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.pipe-step {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding-top: 36px;
+}
+
+.pipe-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--bg-2);
+}
+
+.pipe-step:nth-child(4) .pipe-dot {
+  border-color: var(--ai);
+}
+
+.pipe-no {
+  font: 500 0.78rem/1 var(--mono);
+  color: var(--muted);
+}
+
+.pipe-name {
+  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+}
+
+.pipe-line {
+  color: var(--ink-2);
+}
+
+/* --- Leading ------------------------------------------------------------ */
+
+.statements {
+  display: grid;
+  gap: clamp(28px, 4vw, 48px);
+  max-width: 22ch;
+  max-width: 980px;
+}
+
+.statement {
+  font-size: clamp(1.8rem, 3.6vw, 3.2rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  color: var(--ink-2);
+}
+
+.statement strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: clamp(64px, 8vw, 110px);
+  border-top: 1px solid var(--line-strong);
+}
+
+.figure {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 28px;
+}
+
+.figure dt {
+  max-width: 24ch;
+  color: var(--ink-2);
+}
+
+/* A fixed width and tabular digits: counting up never moves its neighbours. */
+.figure-value {
+  width: 3ch;
+  font-size: clamp(4rem, 8vw, 7rem);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  background: linear-gradient(120deg, var(--accent-fill), var(--ai));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --- Stack -------------------------------------------------------------- */
+
+.stack {
+  background: var(--bg-2);
+}
+
+.groups {
+  border-top: 1px solid var(--line-strong);
+}
+
+.group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2.6fr);
+  gap: 20px clamp(24px, 4vw, 64px);
+  padding-block: 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+.group dt {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.group dt small {
+  font: 500 0.78rem/1 var(--mono);
+  color: var(--accent);
+}
+
+.group ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px 20px;
+}
+
+.tool {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.tool-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgb(11 16 32 / 0.1);
+}
+
+.tool-icon.on-dark {
+  background: #0f1524;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+}
+
+.tool-icon img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+/* --- Record ------------------------------------------------------------- */
+
+.record-head {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 40px;
+}
+
+.record-head h2 {
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+}
+
+.cv {
+  border-top: 1px solid var(--line-strong);
+}
+
+/* Fixed columns: dates, mark, role, where, and the kind at the right edge. */
+.cv-row {
+  display: grid;
+  grid-template-columns: 12ch 140px minmax(0, 1.3fr) minmax(0, 1fr) 9ch;
+  align-items: center;
+  gap: 20px;
+  padding-block: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cv-date,
+.cv-type {
+  font: 500 0.8rem/1.3 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+}
+
+.cv-type {
+  text-align: right;
+  color: var(--muted);
+}
+
+.cv-title {
+  font-weight: 600;
+}
+
+.cv-org {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.org-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: start;
+  height: 40px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.org-mark.tone-light {
+  background: #0f1524;
+}
+
+.org-mark img {
+  width: auto;
+  max-width: 116px;
+  height: 24px;
+  object-fit: contain;
+}
+
+@media (max-width: 899px) {
+  .pipe-rail {
+    top: 10px;
+    bottom: 10px;
+    left: 9px;
+    right: auto;
+    width: 2px;
+    height: auto;
+  }
+
+  .pipe-token {
+    display: none;
+  }
+
+  .pipe-steps {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .pipe-step {
+    padding: 0 0 0 40px;
+  }
+
+  .figures {
+    grid-template-columns: 1fr;
+  }
+
+  .group {
+    grid-template-columns: 1fr;
+  }
+
+  .group ul {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .cv-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "title type"
+      "org org"
+      "date mark";
+    gap: 6px 16px;
+  }
+
+  .cv-title {
+    grid-area: title;
+  }
+
+  .cv-org {
+    grid-area: org;
+  }
+
+  .cv-date {
+    grid-area: date;
+  }
+
+  .cv-type {
+    grid-area: type;
+  }
+
+  .cv-row .org-mark {
+    grid-area: mark;
+    justify-self: end;
+  }
+}
