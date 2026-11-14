@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Portfolio/static/css/main.95df416c.css",
-    "main.js": "/Portfolio/static/js/main.dc1affc4.js",
+    "main.js": "/Portfolio/static/js/main.2085b980.js",
     "static/css/88.f77aebf8.chunk.css": "/Portfolio/static/css/88.f77aebf8.chunk.css",
     "static/js/88.a879cd69.chunk.js": "/Portfolio/static/js/88.a879cd69.chunk.js",
     "static/css/596.06cc38c4.chunk.css": "/Portfolio/static/css/596.06cc38c4.chunk.css",
@@ -29,7 +29,7 @@
     "static/js/404.1dae0064.chunk.js": "/Portfolio/static/js/404.1dae0064.chunk.js",
     "static/js/660.9daa9f56.chunk.js": "/Portfolio/static/js/660.9daa9f56.chunk.js",
     "static/js/684.b6aa7a77.chunk.js": "/Portfolio/static/js/684.b6aa7a77.chunk.js",
-    "static/js/976.d8a95a15.chunk.js": "/Portfolio/static/js/976.d8a95a15.chunk.js",
+    "static/js/976.d2d60cfe.chunk.js": "/Portfolio/static/js/976.d2d60cfe.chunk.js",
     "static/media/daietpedia.mp4": "/Portfolio/static/media/daietpedia.723f1a59e4ce0f01b68f.mp4",
     "static/media/CodepenAI.mp4": "/Portfolio/static/media/CodepenAI.85c9461ac6be00e428f9.mp4",
     "static/media/Sokoban.mp4": "/Portfolio/static/media/Sokoban.bc6386163289a1f2456b.mp4",
@@ -107,10 +107,10 @@
     "static/media/atpl.webp": "/Portfolio/static/media/atpl.4afdb6ed8e16fa6f6a94.webp",
     "static/media/mongodb.webp": "/Portfolio/static/media/mongodb.a3526bf63e95b151d672.webp",
     "static/media/js.webp": "/Portfolio/static/media/js.9c804faa20a60ee692d8.webp",
-    "static/media/lexicon.svg": "/Portfolio/static/media/lexicon.f4174cd6ac9732401ab6b0c1797c0f27.svg",
+    "static/media/lexicon.svg": "/Portfolio/static/media/lexicon.a3a9394e0035213881511dbb09bbe4ab.svg",
     "index.html": "/Portfolio/index.html",
     "main.95df416c.css.map": "/Portfolio/static/css/main.95df416c.css.map",
-    "main.dc1affc4.js.map": "/Portfolio/static/js/main.dc1affc4.js.map",
+    "main.2085b980.js.map": "/Portfolio/static/js/main.2085b980.js.map",
     "88.f77aebf8.chunk.css.map": "/Portfolio/static/css/88.f77aebf8.chunk.css.map",
     "88.a879cd69.chunk.js.map": "/Portfolio/static/js/88.a879cd69.chunk.js.map",
     "596.06cc38c4.chunk.css.map": "/Portfolio/static/css/596.06cc38c4.chunk.css.map",
@@ -138,10 +138,10 @@
     "404.1dae0064.chunk.js.map": "/Portfolio/static/js/404.1dae0064.chunk.js.map",
     "660.9daa9f56.chunk.js.map": "/Portfolio/static/js/660.9daa9f56.chunk.js.map",
     "684.b6aa7a77.chunk.js.map": "/Portfolio/static/js/684.b6aa7a77.chunk.js.map",
-    "976.d8a95a15.chunk.js.map": "/Portfolio/static/js/976.d8a95a15.chunk.js.map"
+    "976.d2d60cfe.chunk.js.map": "/Portfolio/static/js/976.d2d60cfe.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.95df416c.css",
-    "static/js/main.dc1affc4.js"
+    "static/js/main.2085b980.js"
   ]
 }
