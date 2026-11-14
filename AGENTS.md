@@ -23,6 +23,7 @@ This is a personal portfolio website built with React 18, showcasing Jon Mendiza
 - **Components**: Functional components using ES6+ syntax
 - **State Management**: React hooks (useState, useEffect)
 - **Icons**: FontAwesome React components
+- **3D**: three.js 0.170.0 (pinned to the version Jig ships), used only by Foundry's billet. Its scene (`src/modes/foundry/forge/scene.js`) takes three.js as an argument and draws from a state, so the same code renders Jig scene-picture stills: re-render `src/images/foundry/billet-{dark,light}.webp` whenever the scene's first frame changes. three.js is imported only in `forge/live.js`, a lazy chunk; keep it out of every other import path
 - **Deployment**: GitHub Pages with automated deployment
 
 ### File Structure
@@ -36,7 +37,7 @@ src/
 │                          # grid of the rest), ModeSwitch (the pill
 │                          # over every mode) and their CSS
 ├── modes/
-│   ├── registry.js        # The ten modes: name, blurb, fonts, colours, loader
+│   ├── registry.js        # The eleven modes: name, blurb, fonts, colours, loader
 │   └── <id>/              # One complete design per folder: main.js (its CSS
 │                          # and App), App.jsx, its components, styles, art
 ├── components/            # Shared content: projectList.js, richText.jsx
