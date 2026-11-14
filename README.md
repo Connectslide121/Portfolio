@@ -5,15 +5,15 @@ A personal portfolio website built with React. It showcases the developer Jon Me
 ## Design — eleven modes
 
 The portfolio ships eleven complete designs of the same CV. The site opens on
-**Foundry**, the newest one; the other ten are a click away on the **picker**
-(`?mode=picker`): Foundry across the first row, then a grid of the others
+**Core**, the newest one; the other ten are a click away on the **picker**
+(`?mode=picker`): Core across the first row, then a grid of the others
 (each thumbnail in the light or dark theme you are looking at).
 Every mode carries a small **style switcher** to step to the previous or next
-design or to the picker, and Foundry links to it from its footer too.
+design or to the picker, and Core links to it from its footer too.
 
 | # | Mode | Kind |
 |---|------|------|
-| 1 | Foundry | A process sheet in steel: a live three.js billet that cools into a lattice as you read |
+| 1 | Core | The platforms he leads as a live three.js system that opens into its layers, with GSAP scroll motion throughout |
 | 2 | Mendi | A generated mountain landscape, dawn by day and northern lights by night |
 | 3 | Swiss | International Typographic Style, generative posters |
 | 4 | Blueprint | An engineering drawing set |
@@ -25,13 +25,14 @@ design or to the picker, and Foundry links to it from its footer too.
 | 10 | Run | Side-scrolling platformer |
 | 11 | Collect | Trading card game |
 
-The bare address is Foundry. A mode lives at `?mode=<id>` (`foundry`, `mendi`, `swiss`, `blueprint`, `jonos`, `newspaper`,
+The bare address is Core. A mode lives at `?mode=<id>` (`core`, `mendi`, `swiss`, `blueprint`, `jonos`, `newspaper`,
 `constellation`, `stickers`, `quest`, `run`, `collect`); the CV pages of the
 games keep working at `?mode=<id>#cv`. Only the picked mode is downloaded,
 with its own styles and fonts, and the light/dark choice is shared by all.
-Foundry's billet loads three.js in a chunk of its own, only on screens at
-least 900px wide with motion allowed and WebGL; everywhere else, and until it
-has drawn, a still rendered from the same scene stands in.
+Core's system loads three.js in a chunk of its own, only with motion allowed,
+WebGL and no Save-Data (lighter on phones); otherwise a still rendered from
+the same scene stands in. Its motion is GSAP (ScrollTrigger, SplitText), and
+none of it runs for visitors who ask for reduced motion.
 Each design started on its own `claude/portfolio-redesign-*` branch.
 
 ## Features

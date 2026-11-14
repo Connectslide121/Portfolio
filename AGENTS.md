@@ -23,7 +23,8 @@ This is a personal portfolio website built with React 18, showcasing Jon Mendiza
 - **Components**: Functional components using ES6+ syntax
 - **State Management**: React hooks (useState, useEffect)
 - **Icons**: FontAwesome React components
-- **3D**: three.js 0.170.0 (pinned to the version Jig ships), used only by Foundry's billet. Its scene (`src/modes/foundry/forge/scene.js`) takes three.js as an argument and draws from a state, so the same code renders Jig scene-picture stills: re-render `src/images/foundry/billet-{dark,light}.webp` whenever the scene's first frame changes. three.js is imported only in `forge/live.js`, a lazy chunk; keep it out of every other import path
+- **3D**: three.js 0.170.0 (pinned to the version Jig ships), used only by Core's system. Its scene (`src/modes/core/scene/scene.js`) takes three.js as an argument and draws from a state, so the same code renders Jig scene-picture stills: re-render `src/images/core/system-{dark,light}.webp` whenever the assembled scene changes. three.js is imported only in `scene/live.js`, a lazy chunk; keep it out of every other import path
+- **Motion**: GSAP 3 (ScrollTrigger, SplitText), used by Core through `src/modes/core/motion.js`. Create animations only inside `useMotion`, which runs them through `gsap.matchMedia` for `prefers-reduced-motion: no-preference` and reverts them on unmount; start them from hidden states in script (`gsap.from`), never in CSS, so reduced motion and no-script show the final layout
 - **Deployment**: GitHub Pages with automated deployment
 
 ### File Structure
