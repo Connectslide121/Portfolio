@@ -6,16 +6,16 @@ const FONTS = "https://fonts.googleapis.com/css2?";
 
 export const MODES = [
   {
-    id: "foundry",
-    name: "Foundry",
-    kind: "Industrial",
-    blurb: "A process sheet in steel: a live 3D billet that cools as you read and opens into a lattice.",
-    font: "family=Big+Shoulders:opsz,wght@10..72,400..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;600",
-    themeColor: "#0d0c0b",
+    id: "core",
+    name: "Core",
+    kind: "Interactive 3D",
+    blurb: "The platforms he leads as a live 3D system: drag it, point at it, scroll it open into its layers.",
+    font: "family=Geist:wght@400..700&family=Geist+Mono:wght@400..600",
+    themeColor: "#070a12",
     darkByDefault: true,
     // The newest one: the site opens on it and the picker gives it the whole first row.
     featured: true,
-    load: () => import("./foundry/main"),
+    load: () => import("./core/main"),
   },
   {
     id: "mendi",
