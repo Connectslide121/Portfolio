@@ -16,7 +16,7 @@ import { orgById } from "./orgLogos";
  * They are referenced from three directions now — résumé bullet links, the
  * summary links, and the journey cards' product row — and a URL that lives in
  * three literals is a URL that eventually differs in three literals. The
- * display LABEL still varies by context ("Podium Suite" in one bullet, "Podium
+ * display LABEL still varies by context ("Podium System" in one bullet, "Podium
  * 2.0" on the journey card), which is fine; only the address is shared.
  */
 export const productUrl = {
@@ -63,8 +63,8 @@ export const experience = [
       "Lead developer and architect across a portfolio of AI-powered products for the Jambiz Group, leading the development team, choosing the right stack for each product, and rapidly building MVPs as the company pivots to product-led growth.",
     bullets: [
       {
-        text: "Leading the modernization of {Podium Suite}, rebuilding a 7-year-old legacy tourism/transport platform on Mithril.js, .NET and SQL with feature parity and multi-tenant support",
-        links: { "Podium Suite": productUrl.podium },
+        text: "Leading the modernization of {Podium System}, rebuilding a 7-year-old legacy tourism/transport platform on Mithril.js, .NET and SQL with feature parity and multi-tenant support",
+        links: { "Podium System": productUrl.podium },
       },
       {
         text: "Built {Knowia Studio}, an AI eLearning platform with a multi-agent course-generation pipeline and vector-based RAG grounding",
@@ -79,7 +79,7 @@ export const experience = [
         links: { Govensa: productUrl.govensa },
       },
       {
-        text: "Built *two React Native / Expo staff mobile apps* — one for the new Podium Suite and one for the legacy Podium system, each talking to its own backend",
+        text: "Built *three React Native / Expo mobile apps* — one for Knowia Studio, and two for Podium System, one on the new platform and one on the legacy one, each talking to its own backend",
       },
     ],
     tech: [
@@ -373,7 +373,7 @@ export const beats = [
     objective: "Ship it, then modernize a 7-year-old platform without breaking it.",
     products: [
       { label: "CertumHub", href: productUrl.certumHub },
-      { label: "Podium Suite", href: productUrl.podium },
+      { label: "Podium System", href: productUrl.podium },
     ],
     status: "Complete",
     heat: 0.05,
@@ -398,7 +398,7 @@ export const beats = [
     products: [
       { label: "Govensa", href: productUrl.govensa },
       { label: "Knowia Studio", href: productUrl.knowia },
-      { label: "Podium Suite", href: productUrl.podium },
+      { label: "Podium System", href: productUrl.podium },
       { label: "Jambiz Hub", href: productUrl.jambizHub },
     ],
     status: "In progress",

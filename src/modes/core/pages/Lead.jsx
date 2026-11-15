@@ -12,7 +12,7 @@ const STATEMENTS = [
 const FIGURES = [
   { value: products.filter((p) => p.url).length, label: "products built or led" },
   { value: 7, label: "year-old platform, rebuilt with feature parity" },
-  { value: 2, label: "staff mobile apps in React Native" },
+  { value: 3, label: "mobile apps in React Native" },
 ];
 
 export default function Lead() {

@@ -8,10 +8,10 @@ import { productUrl } from "./journey";
 export const products = [
   {
     id: "podium",
-    name: "Podium Suite",
+    name: "Podium System",
     role: "Leading the rebuild",
     kind: "Tourism & transport platform",
-    line: "A 7-year-old legacy platform rebuilt on Mithril.js, .NET and SQL, with feature parity and multi-tenant support, plus React Native staff apps.",
+    line: "A 7-year-old legacy platform rebuilt on Mithril.js, .NET and SQL, with feature parity and multi-tenant support, plus React Native mobile apps.",
     stack: ["Mithril.js", ".NET", "SQL", "React Native"],
     url: productUrl.podium,
   },
@@ -20,8 +20,8 @@ export const products = [
     name: "Knowia Studio",
     role: "Built",
     kind: "AI e-learning",
-    line: "A multi-agent pipeline that generates courses, grounded with vector-based RAG.",
-    stack: ["Angular", "Azure Functions", "Agents", "RAG"],
+    line: "A multi-agent pipeline that generates courses, grounded with vector-based RAG, plus a React Native mobile app.",
+    stack: ["Angular", "Azure Functions", "Agents", "RAG", "React Native"],
     url: productUrl.knowia,
   },
   {
@@ -59,7 +59,7 @@ export const products = [
  * not one stack they all share.
  */
 export const layers = [
-  { id: "client", name: "Client", items: ["Angular", "React", "Mithril.js", "React Native / Expo", "TypeScript"], line: "Interfaces people enjoy using, on the web and on staff phones." },
+  { id: "client", name: "Client", items: ["Angular", "React", "Mithril.js", "React Native / Expo", "TypeScript"], line: "Interfaces people enjoy using, on the web and on phones." },
   { id: "services", name: "Services", items: [".NET 8", "C#", "Azure Functions", "Node.js"], line: "Backends built multi-tenant, serverless where it fits." },
   { id: "data", name: "Data", items: ["SQL", "CosmosDB", "Vector databases"], line: "Relations, documents and embeddings, each where it fits." },
   { id: "ai", name: "AI", items: ["Azure AI", "OpenAI", "RAG", "Agents"], line: "Brought in where it genuinely adds value, and grounded in real data." },
