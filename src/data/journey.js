@@ -114,10 +114,10 @@ export const experience = [
       status: "Complete",
     },
     summary:
-      "Sole developer of {CertumHub}, an AI-powered platform for e-learning and sustainability assessments with multilingual support, and later brought in as a consultant to modernize the legacy {Podium Stromma Suite} with a full UI facelift.",
+      "Sole developer of {CertumHub}, an AI-powered platform for e-learning and sustainability assessments with multilingual support, and later brought in as a consultant to modernize the legacy {Podium Suite} with a full UI facelift.",
     summaryLinks: {
       CertumHub: productUrl.certumHub,
-      "Podium Stromma Suite": productUrl.podium,
+      "Podium Suite": productUrl.podium,
     },
     bullets: [
       {
@@ -130,7 +130,7 @@ export const experience = [
         text: "Developed custom AI solutions integrating OpenAI APIs, Azure Functions, CosmosDB, and ML models",
       },
       {
-        text: "Delivered a rapid UI facelift of the 7-year-old Podium Stromma Suite, leading to a lead developer role on the platform",
+        text: "Delivered a rapid UI facelift of the 7-year-old Podium Suite, leading to a lead developer role on the platform",
       },
     ],
     tech: [
