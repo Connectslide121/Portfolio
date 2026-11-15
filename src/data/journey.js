@@ -110,14 +110,14 @@ export const experience = [
       constraint:
         "A 7-year-old platform with live customers, and AI modules with no prior art in-house.",
       objective:
-        "Ship CertumHub solo, then modernize the legacy Podium suite without breaking it.",
+        "Ship CertumHub solo, then modernize the legacy Podium System without breaking it.",
       status: "Complete",
     },
     summary:
-      "Sole developer of {CertumHub}, an AI-powered platform for e-learning and sustainability assessments with multilingual support, and later brought in as a consultant to modernize the legacy {Podium Suite} with a full UI facelift.",
+      "Sole developer of {CertumHub}, an AI-powered platform for e-learning and sustainability assessments with multilingual support, and later brought in as a consultant to modernize the legacy {Podium System} with a full UI facelift.",
     summaryLinks: {
       CertumHub: productUrl.certumHub,
-      "Podium Suite": productUrl.podium,
+      "Podium System": productUrl.podium,
     },
     bullets: [
       {
@@ -130,7 +130,7 @@ export const experience = [
         text: "Developed custom AI solutions integrating OpenAI APIs, Azure Functions, CosmosDB, and ML models",
       },
       {
-        text: "Delivered a rapid UI facelift of the 7-year-old Podium Suite, leading to a lead developer role on the platform",
+        text: "Delivered a rapid UI facelift of the 7-year-old Podium System, leading to a lead developer role on the platform",
       },
     ],
     tech: [
