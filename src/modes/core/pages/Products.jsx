@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { gsap, revealLines, useMotion } from "../motion";
 import SectionHead from "../components/SectionHead";
 import { products } from "../../../data/products";
+import { logoFor } from "../../../data/productLogos";
 
 /**
  * The products. Wide, the section pins and the cards run past sideways as
@@ -46,8 +47,12 @@ export default function Products() {
       root.classList.add("is-rail");
       const track = root.querySelector(".product-track");
       const viewport = root.querySelector(".product-viewport");
-      // How far the track must move for its last card to reach the right edge.
-      const distance = () => Math.max(0, track.scrollWidth + parseFloat(getComputedStyle(viewport).paddingLeft) - viewport.clientWidth);
+      // How far the track must move for its last card to reach the right edge
+      // of the page's width (the viewport less the fade at each side).
+      const distance = () => {
+        const style = getComputedStyle(viewport);
+        return Math.max(0, track.scrollWidth - (viewport.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)));
+      };
       gsap.to(track, {
         x: () => -distance(),
         ease: "none",
@@ -76,8 +81,15 @@ export default function Products() {
           {products.map((p, i) => (
             <li key={p.id} id={`product-${p.id}`} className={`product product-${p.id}`}>
               <div className="product-top">
-                <span className="product-no">{String(i + 1).padStart(2, "0")}</span>
-                <span className="product-role">{p.role}</span>
+                {logoFor(p.id) && (
+                  <span className="product-logo">
+                    <img src={logoFor(p.id)} alt="" width="36" height="36" />
+                  </span>
+                )}
+                <p className="product-tag">
+                  <span className="product-no">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="product-role">{p.role}</span>
+                </p>
               </div>
               <h3 className="product-name">{p.name}</h3>
               <p className="product-kind">{p.kind}</p>
