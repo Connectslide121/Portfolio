@@ -77,6 +77,17 @@
   position: relative;
 }
 
+/* The veil a card sinks under as the next one covers it (--dim, set on scroll). */
+.build-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--bg);
+  opacity: var(--dim, 0);
+  pointer-events: none;
+}
+
 .build-text {
   color: var(--ink-2);
 }

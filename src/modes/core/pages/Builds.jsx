@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { gsap, revealLines, useMotion } from "../motion";
+import { gsap, revealLines, ScrollTrigger, useMotion } from "../motion";
 import ProjectDialog from "../components/ProjectDialog";
 import ProjectLinks from "../components/ProjectLinks";
 import ProjectMedia from "../components/ProjectMedia";
@@ -24,18 +24,24 @@ export default function Builds() {
   useMotion(ref, () => {
     const root = ref.current;
     revealLines(root.querySelector(".section-head h2"), { scrollTrigger: { trigger: root, start: "top 75%" } });
+    // A card sinks back only as far as the next one covers it, measured from
+    // where the two really are: sticky boxes have no fixed scroll position to
+    // hang a start and an end on. It dims under a veil in the page colour
+    // (--dim) rather than by its own opacity, so the cards under it never
+    // show through.
     const cards = Array.from(root.querySelectorAll(".build"));
-    cards.forEach((card, i) => {
-      const next = cards[i + 1];
-      if (!next) return;
-      gsap.to(card.querySelector(".build-card"), {
-        scale: 0.92,
-        autoAlpha: 0.35,
-        ease: "none",
-        scrollTrigger: { trigger: next, start: "top bottom", end: "top 20%", scrub: true },
+    const faces = cards.map((card) => card.querySelector(".build-card"));
+    const sink = () => {
+      const boxes = cards.map((card) => card.getBoundingClientRect());
+      faces.forEach((face, i) => {
+        const next = boxes[i + 1];
+        const covered = next ? gsap.utils.clamp(0, 1, (boxes[i].bottom - next.top) / (boxes[i].height - 20)) : 0;
+        gsap.set(face, { scale: 1 - 0.08 * covered, "--dim": 0.65 * covered });
       });
-    });
+    };
+    ScrollTrigger.create({ trigger: root.querySelector(".build-stack"), start: "top bottom", end: "bottom top", onUpdate: sink, onRefresh: sink });
     gsap.from(root.querySelectorAll(".shelf-row"), { y: 24, autoAlpha: 0, duration: 0.7, ease: "power3.out", stagger: 0.04, scrollTrigger: { trigger: root.querySelector(".shelf"), start: "top 85%" } });
+    return () => faces.forEach((face) => face.style.removeProperty("--dim"));
   });
 
   return (
