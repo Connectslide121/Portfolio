@@ -466,6 +466,7 @@ export const chapters = [
  */
 export const galleryProjects = [
   "Lektoria",
+  "Waveland",
   "The Last Alibi",
   "CodepenAI",
   "DAIETpedia",
@@ -481,6 +482,8 @@ export const galleryProjects = [
 export const projectBlurbs = {
   Lektoria:
     "Assessment tool for teachers in Swedish schools: marks per skill, homework, retakes, progress.",
+  Waveland:
+    "Music games where every song is a level: drop in a track and play its beats, sections and drops.",
   "The Last Alibi":
     "AI detective game: every case is a new, solvable mystery written by an LLM.",
   CodepenAI: "AI code editor — build and edit web apps by prompt, or write it yourself.",

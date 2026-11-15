@@ -11,6 +11,18 @@ export const featuredProjects = [
     date: "November 2025"
   },
   {
+    title: "Waveland",
+    category: "Music Game",
+    media: "video",
+    description:
+      "A collection of music games in the browser where every song is a level. Drop in any track, or pick one of twenty the game composes itself, and it is analysed for its beats, tempo, energy, sections and drops. Each game then builds its level from that: a platformer where you jump, dash and slam in time with the music, and a 3D tunnel racer that bends with the melody and pulses with the bass. The audio analysis is written from scratch, every generated level is checked to be completable, and everything is timed from the audio clock so it stays in sync.",
+    technologies: ["ts", "Three.js", "Phaser"],
+    repository: "https://github.com/Connectslide121/Waveland",
+    livedemo: "https://connectslide121.github.io/Waveland/",
+    button: "Play game",
+    date: "November 2026"
+  },
+  {
     title: "The Last Alibi",
     category: "AI Game",
     media: "video",

@@ -12,6 +12,7 @@ import FlapryBlirb from "../images/projects/flapry-blirb.mp4";
 import ContactBook from "../images/projects/contact-book.mp4";
 import Lektoria from "../images/projects/lektoria.mp4";
 import TheLastAlibi from "../images/projects/the-last-alibi.mp4";
+import Waveland from "../images/projects/waveland.mp4";
 
 import Calculator from "../images/projects/calculator.webp";
 import imageGenerator from "../images/projects/ai-image-generator.webp";
@@ -25,6 +26,7 @@ import none from "../images/projects/none.jpg";
 
 const VIDEOS = {
   Lektoria,
+  Waveland,
   "The Last Alibi": TheLastAlibi,
   DAIETpedia,
   CodepenAI,
