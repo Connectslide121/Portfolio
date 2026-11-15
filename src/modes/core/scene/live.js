@@ -1,11 +1,58 @@
 // The live system: three.js, its glow and the scene, in a chunk of their own
 // that is only fetched when the hero can run it (motion allowed, WebGL).
-import * as THREE from "three";
+// Named imports, not `import * as THREE`: the scene takes three.js as an
+// object, and a namespace import would pull the whole library into the
+// chunk. Add a class here when scene.js starts using a new one.
+import {
+  BufferAttribute,
+  BufferGeometry,
+  Color,
+  Group,
+  IcosahedronGeometry,
+  InstancedBufferAttribute,
+  InstancedMesh,
+  Line,
+  LineBasicMaterial,
+  LineSegments,
+  Matrix4,
+  MeshBasicMaterial,
+  PerspectiveCamera,
+  Points,
+  PointsMaterial,
+  Quaternion,
+  Scene,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
+} from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { THEMES, createCore } from "./scene";
+
+const THREE = {
+  BufferAttribute,
+  BufferGeometry,
+  Color,
+  Group,
+  IcosahedronGeometry,
+  InstancedBufferAttribute,
+  InstancedMesh,
+  Line,
+  LineBasicMaterial,
+  LineSegments,
+  Matrix4,
+  MeshBasicMaterial,
+  PerspectiveCamera,
+  Points,
+  PointsMaterial,
+  Quaternion,
+  Scene,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
+};
 
 /**
  * Runs the system on `canvas`. `state` is shared with the page: GSAP tweens

@@ -21,7 +21,7 @@ import { orgById } from "./orgLogos";
  */
 export const productUrl = {
   podium: "https://www.podiumsystem.com",
-  knowia: "https://gentle-desert-0612fb603.7.azurestaticapps.net/",
+  knowia: "https://www.knowiastudio.com",
   jambizHub: "https://www.jambizhub.se",
   govensa: "https://www.govensa.se/",
   certumHub: "https://www.certumhub.com",
@@ -56,14 +56,14 @@ export const experience = [
       constraint:
         "Architecture for a whole product portfolio and a team to lead, mid-pivot to product-led growth.",
       objective:
-        "Define one shared modern stack and ship MVPs fast without fragmenting the platform.",
+        "Pick the right stack for each product and ship MVPs fast.",
       status: "In progress",
     },
     summary:
-      "Lead developer and architect across a portfolio of AI-powered products for the Jambiz Group, leading the development team, defining a shared modern stack — Angular 21, .NET 8 Azure Functions, and CosmosDB — and rapidly building MVPs as the company pivots to product-led growth.",
+      "Lead developer and architect across a portfolio of AI-powered products for the Jambiz Group, leading the development team, choosing the right stack for each product, and rapidly building MVPs as the company pivots to product-led growth.",
     bullets: [
       {
-        text: "Leading the modernization of {Podium Suite}, rebuilding a 7-year-old legacy tourism/transport platform on Angular 21 and Azure Functions with feature parity and multi-tenant support",
+        text: "Leading the modernization of {Podium Suite}, rebuilding a 7-year-old legacy tourism/transport platform on Mithril.js, .NET and SQL with feature parity and multi-tenant support",
         links: { "Podium Suite": productUrl.podium },
       },
       {
@@ -75,9 +75,6 @@ export const experience = [
         links: { "Jambiz Hub": productUrl.jambizHub },
       },
       {
-        text: "Designed *SAGE*, a reusable Nx monorepo of shared platform packages consumed across the product portfolio",
-      },
-      {
         text: "Took over and now lead development of {Govensa}, an AI contract-accountability platform for the Swedish public sector that extracts contract obligations for human review and tracks them through an immutable, audit-ready trail",
         links: { Govensa: productUrl.govensa },
       },
@@ -86,9 +83,12 @@ export const experience = [
       },
     ],
     tech: [
-      "Angular 21",
+      "Angular",
+      "React",
+      "Mithril.js",
       ".NET 8",
       "Azure Functions",
+      "SQL",
       "CosmosDB",
       "React Native",
       "Vector Databases",
@@ -394,7 +394,7 @@ export const beats = [
     material: "systems",
     constraint:
       "Architecture for a whole portfolio and a team to lead, mid-pivot to product-led growth.",
-    objective: "One shared stack behind every product in the portfolio.",
+    objective: "The right stack for each product, and a team that ships them.",
     products: [
       { label: "Govensa", href: productUrl.govensa },
       { label: "Knowia Studio", href: productUrl.knowia },
@@ -499,8 +499,7 @@ export const projectBlurbs = {
  *
  * Deliberately the tech STACK, not the internal architecture: a recruiter
  * reading this is usually not an engineer, so it uses the names they will
- * recognise on a job spec. Internal tooling (SAGE) is left to the CV, where
- * there is room to say what it is.
+ * recognise on a job spec.
  */
 export const stack = [
   {

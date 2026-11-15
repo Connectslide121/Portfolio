@@ -7,6 +7,9 @@ import { DEFAULT_MODE, currentModeId, fontsHref, modeById } from "./modes/regist
 // One address, ten sites: ?mode=<id> loads that design and nothing else, so
 // its global styles have the page to themselves. No mode at all opens the
 // default design; ?mode=picker (or any id that is not a mode) the picker.
+const PICKER_FONTS = "https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300..700;1,400&family=Instrument+Serif:ital@0;1&display=swap";
+const SWITCH_FONT = "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500&display=swap";
+
 const requested = currentModeId();
 const mode = requested ? modeById(requested) : DEFAULT_MODE;
 
@@ -19,11 +22,20 @@ try {
   document.body.classList.toggle("dark-theme", Boolean(mode?.darkByDefault));
 }
 
+const addFonts = (href) => {
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = href;
+  document.head.appendChild(link);
+};
+
+// Only the fonts this page draws with: the picker's two families on the
+// picker; on a mode, that mode's own and the one weight the switcher uses.
+if (!mode) addFonts(PICKER_FONTS);
+
 if (mode) {
-  const fonts = document.createElement("link");
-  fonts.rel = "stylesheet";
-  fonts.href = fontsHref(mode);
-  document.head.appendChild(fonts);
+  addFonts(fontsHref(mode));
+  addFonts(SWITCH_FONT);
   document.querySelector('meta[name="theme-color"]')?.setAttribute("content", mode.themeColor);
   document.querySelector('link[rel="icon"][type="image/svg+xml"]')?.setAttribute("href", `${process.env.PUBLIC_URL}/modes/${mode.id}/favicon.svg`);
   document.documentElement.dataset.mode = mode.id;

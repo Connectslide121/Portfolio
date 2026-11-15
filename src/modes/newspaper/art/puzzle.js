@@ -6,11 +6,11 @@ export const ROWS = 7;
 export const COLS = 10;
 
 export const WORDS = [
-  { n: 1, dir: "across", row: 0, col: 0, answer: "ANGULAR", clue: "Framework under Lektoria and the new Podium Suite" },
+  { n: 1, dir: "across", row: 0, col: 0, answer: "ANGULAR", clue: "Framework under Lektoria and Knowia Studio" },
   { n: 3, dir: "across", row: 2, col: 0, answer: "UNITY", clue: "Engine behind Plastic Slurg and Flapry Blirb" },
   { n: 5, dir: "across", row: 4, col: 5, answer: "STEEL", clue: "Material of the foundry years" },
   { n: 6, dir: "across", row: 6, col: 1, answer: "RAG", clue: "Grounding behind Knowia Studio's course generator" },
-  { n: 1, dir: "down", row: 0, col: 0, answer: "AZURE", clue: "Cloud the Functions in the stack run on" },
+  { n: 1, dir: "down", row: 0, col: 0, answer: "AZURE", clue: "Cloud whose Functions run Knowia Studio" },
   { n: 2, dir: "down", row: 0, col: 6, answer: "REACT", clue: "Library of the very first app, a calculator" },
   { n: 4, dir: "down", row: 2, col: 2, answer: "INDIA", clue: "Where a second plant came up to standard in 2017" },
 ];

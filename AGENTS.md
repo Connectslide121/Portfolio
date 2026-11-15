@@ -142,6 +142,7 @@ body.dark-theme {
 - Use WebP format for images when possible
 - Support both video (.mp4) and image (.webp) project previews
 - Videos should be set to `autoPlay loop muted playsInline`
+- Keep media light: images at most 1600px wide (WebP, quality ~80); videos H.264 at CRF ~28 with `-movflags +faststart`, and no audio track unless the clip really has sound
 
 ## Adding New Content
 

@@ -11,8 +11,8 @@ export const products = [
     name: "Podium Suite",
     role: "Leading the rebuild",
     kind: "Tourism & transport platform",
-    line: "A 7-year-old legacy platform rebuilt on Angular 21 and Azure Functions, with feature parity and multi-tenant support, plus React Native staff apps.",
-    stack: ["Angular 21", "Azure Functions", "CosmosDB", "React Native"],
+    line: "A 7-year-old legacy platform rebuilt on Mithril.js, .NET and SQL, with feature parity and multi-tenant support, plus React Native staff apps.",
+    stack: ["Mithril.js", ".NET", "SQL", "React Native"],
     url: productUrl.podium,
   },
   {
@@ -51,22 +51,17 @@ export const products = [
     stack: ["OpenAI", "Vector database", "Azure Functions", "CosmosDB"],
     url: productUrl.certumHub,
   },
-  {
-    id: "sage",
-    name: "SAGE",
-    role: "Designed",
-    kind: "Shared platform",
-    line: "A reusable Nx monorepo of shared platform packages that the products above are built on.",
-    stack: ["Nx", "Shared packages"],
-    url: null,
-  },
 ];
 
-/** The shared stack, layer by layer, top of the system to the bottom. */
+/**
+ * The layers every product is built across, top of the system to the bottom.
+ * Each product gets the tools that fit it: these are the ones in use today,
+ * not one stack they all share.
+ */
 export const layers = [
-  { id: "client", name: "Client", items: ["Angular 21", "React Native / Expo", "TypeScript"], line: "Interfaces people enjoy using, on the web and on staff phones." },
-  { id: "services", name: "Services", items: [".NET 8", "Azure Functions", "C#"], line: "Serverless backends, built multi-tenant." },
-  { id: "data", name: "Data", items: ["CosmosDB", "Vector databases", "SQL"], line: "Documents, relations and embeddings, each where it fits." },
+  { id: "client", name: "Client", items: ["Angular", "React", "Mithril.js", "React Native / Expo", "TypeScript"], line: "Interfaces people enjoy using, on the web and on staff phones." },
+  { id: "services", name: "Services", items: [".NET 8", "C#", "Azure Functions", "Node.js"], line: "Backends built multi-tenant, serverless where it fits." },
+  { id: "data", name: "Data", items: ["SQL", "CosmosDB", "Vector databases"], line: "Relations, documents and embeddings, each where it fits." },
   { id: "ai", name: "AI", items: ["Azure AI", "OpenAI", "RAG", "Agents"], line: "Brought in where it genuinely adds value, and grounded in real data." },
 ];
 

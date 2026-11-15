@@ -88,13 +88,9 @@ export default function Products() {
                 ))}
               </ul>
               <div className="product-foot">
-                {p.url ? (
-                  <a className="product-link" href={p.url} target="_blank" rel="noreferrer">
-                    Visit {p.name} <span aria-hidden="true">↗</span>
-                  </a>
-                ) : (
-                  <span className="product-internal">Internal platform, not public</span>
-                )}
+                <a className="product-link" href={p.url} target="_blank" rel="noreferrer">
+                  Visit {p.name} <span aria-hidden="true">↗</span>
+                </a>
               </div>
             </li>
           ))}

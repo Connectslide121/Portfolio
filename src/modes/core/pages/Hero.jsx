@@ -47,7 +47,7 @@ export default function Hero() {
         <div className="hero-foot">
           <p className="hint">
             <span className="hint-live">Drag the system. Point at a product.</span>
-            <span className="hint-still">The products and the stack they share.</span>
+            <span className="hint-still">The products I lead, layer by layer.</span>
           </p>
           <p className="hero-place">{contact.location}</p>
         </div>

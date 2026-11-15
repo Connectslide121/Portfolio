@@ -115,11 +115,3 @@
 .product:hover .product-link span {
   transform: translate(3px, -3px);
 }
-
-.product-internal {
-  display: inline-flex;
-  align-items: center;
-  min-height: 32px;
-  font: 500 0.8rem/1.3 var(--mono);
-  color: var(--muted);
-}

@@ -5,7 +5,7 @@ import { layers } from "../../../data/products";
 
 /**
  * The system opens: as this section comes up, the graph behind it explodes
- * into the four layers of the shared stack, and the layer being read lights
+ * into the four layers every product is built across, and the layer being read lights
  * up on the stage.
  */
 export default function Layers({ state }) {
@@ -53,8 +53,8 @@ export default function Layers({ state }) {
   return (
     <section id="system" className="section layers" ref={ref}>
       <div className="wrap">
-        <SectionHead num="01" label="The system" title="One stack, four layers, every product.">
-          <p>The products I lead share one modern stack and one set of platform packages, SAGE, from the screen down to the AI.</p>
+        <SectionHead num="01" label="The system" title="Four layers, every product.">
+          <p>Every product I lead runs from the screen down to the AI, each on the stack that fits it. I pick the tools for the problem, not the other way round.</p>
         </SectionHead>
         <ol className="layer-list">
           {layers.map((l, i) => (

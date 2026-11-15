@@ -36,8 +36,11 @@ export default function Stage({ state, children }) {
   useEffect(() => {
     if (!live) return undefined;
     let cancelled = false;
+    let cancelIdle = () => {};
     const lite = !window.matchMedia("(min-width: 900px)").matches;
-    import("./live").then(({ startCore }) => {
+    // three.js is the heaviest thing on the page: fetch it once the page and
+    // its words are in, so it never holds up the first paint.
+    const start = () => import("./live").then(({ startCore }) => {
       if (cancelled || !canvas.current) return;
       running.current = startCore({
         canvas: canvas.current,
@@ -59,8 +62,21 @@ export default function Stage({ state, children }) {
         },
       });
     });
+    const whenIdle = () => {
+      if (window.requestIdleCallback) {
+        const id = window.requestIdleCallback(start, { timeout: 1200 });
+        cancelIdle = () => window.cancelIdleCallback(id);
+      } else {
+        const id = window.setTimeout(start, 200);
+        cancelIdle = () => window.clearTimeout(id);
+      }
+    };
+    if (document.readyState === "complete") whenIdle();
+    else window.addEventListener("load", whenIdle, { once: true });
     return () => {
       cancelled = true;
+      window.removeEventListener("load", whenIdle);
+      cancelIdle();
       running.current?.stop();
       running.current = null;
     };

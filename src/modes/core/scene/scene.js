@@ -1,12 +1,12 @@
 /**
- * The system: the platforms Jon leads, as a live graph. Five products sit
- * round SAGE, the shared core; each product is a column of four nodes, one
- * per layer of the stack (client, services, data, AI), with smaller service
- * nodes round it and packets of light running along every link.
+ * The system: the platforms Jon leads, as a live graph. Five products sit in
+ * a ring; each is a column of four nodes, one per layer (client, services,
+ * data, AI), with smaller service nodes round it and packets of light running
+ * along every link. Each product is its own system on its own stack: the
+ * links between neighbours are the one team that works across them.
  *
  * Scrolled, the graph opens into those four layers: every node drops onto
- * its layer's plane, the products become columns through the stack and SAGE
- * the spine in the middle.
+ * its layer's plane and the products become columns through them.
  *
  * Everything is drawn from a state, never from the frame before, so the same
  * code renders the live hero and its still (a Jig scene picture):
@@ -74,7 +74,7 @@ export function createCore({ THREE, renderer, theme = THEMES.dark, post = null }
   world.add(system);
 
   // ── the nodes ─────────────────────────────────────────────────────────
-  // kind: 0 product node, 1 satellite, 2 core. owner: product index (-1 core).
+  // kind: 0 product node, 1 satellite. owner: product index.
   const nodes = [];
   const randomDir = () => {
     const u = rnd() * 2 - 1;
@@ -123,19 +123,6 @@ export function createCore({ THREE, renderer, theme = THEMES.dark, post = null }
       });
     }
   }
-  const coreStart = nodes.length;
-  for (let l = 0; l < LAYERS; l++) {
-    nodes.push({
-      kind: 2,
-      owner: -1,
-      layer: l,
-      size: 0.13,
-      graph: [0, (1.5 - l) * 0.62, 0],
-      open: [0, layerY(l), 0],
-      scatter: scatterOf(),
-      delay: 0,
-    });
-  }
   const productNode = (p, l) => p * (LAYERS + SATELLITES) + l;
 
   const nodeMesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), new THREE.MeshBasicMaterial(), nodes.length);
@@ -146,16 +133,14 @@ export function createCore({ THREE, renderer, theme = THEMES.dark, post = null }
   const edges = [];
   for (let p = 0; p < PRODUCTS; p++) {
     for (let l = 0; l < LAYERS - 1; l++) edges.push([productNode(p, l), productNode(p, l + 1), p]);
-    for (let l = 0; l < LAYERS; l++) edges.push([productNode(p, l), coreStart + l, p]);
     for (let k = 0; k < SATELLITES; k++) {
       const s = p * (LAYERS + SATELLITES) + LAYERS + k;
       edges.push([productNode(p, nodes[s].layer), s, p]);
     }
-    // Neighbours share their AI and data layers.
+    // The team, across the products: neighbours linked at the AI and data layers.
     edges.push([productNode(p, 3), productNode((p + 1) % PRODUCTS, 3), -2]);
     edges.push([productNode(p, 2), productNode((p + 2) % PRODUCTS, 2), -2]);
   }
-  for (let l = 0; l < LAYERS - 1; l++) edges.push([coreStart + l, coreStart + l + 1, -1]);
 
   const linePos = new Float32Array(edges.length * 6);
   const lineCol = new Float32Array(edges.length * 6);
@@ -175,11 +160,7 @@ export function createCore({ THREE, renderer, theme = THEMES.dark, post = null }
   const packetMaterial = new THREE.PointsMaterial({ size: 0.09, vertexColors: true, sizeAttenuation: true });
   system.add(new THREE.Points(packetGeometry, packetMaterial));
 
-  // ── SAGE's shell, and the layer planes the graph opens onto ───────────
-  const shellMaterial = new THREE.MeshBasicMaterial({ wireframe: true, transparent: true, depthWrite: false });
-  const shell = new THREE.Mesh(new THREE.IcosahedronGeometry(0.95, 1), shellMaterial);
-  system.add(shell);
-
+  // ── the layer planes the graph opens onto ─────────────────────────────
   const planes = [];
   for (let l = 0; l < LAYERS; l++) {
     const g = new THREE.Group();
@@ -238,7 +219,6 @@ export function createCore({ THREE, renderer, theme = THEMES.dark, post = null }
     next.layers.forEach((c) => layerColors.push(new THREE.Color(c)));
     coreColor.set(next.core);
     edgeColor.set(next.edge);
-    shellMaterial.color.copy(edgeColor);
     dustMaterial.color.set(next.dust);
     planes.forEach((pl, l) => pl.material.color.copy(layerColors[l]));
   }
@@ -295,13 +275,13 @@ export function createCore({ THREE, renderer, theme = THEMES.dark, post = null }
       const bob = Math.sin(t * 0.9 + i * 1.7) * 0.03 * (n.kind === 1 ? 2 : 1);
       at[i].set(n.scatter[0] + (gx - n.scatter[0]) * k, n.scatter[1] + (gy - n.scatter[1]) * k + bob, n.scatter[2] + (gz - n.scatter[2]) * k);
 
-      const lit = hover < 0 ? 1 : n.owner === hover || n.kind === 2 ? 1 : 0.32;
+      const lit = hover < 0 ? 1 : n.owner === hover ? 1 : 0.32;
       const focused = focus < 0 ? 1 : n.layer === Math.round(focus) ? 1 : 0.38 + 0.62 * (1 - ex);
       const grow = (n.owner === hover && hover >= 0 ? 1.55 : 1) * (focus >= 0 && n.layer === Math.round(focus) ? 1 + 0.4 * ex : 1);
       s.setScalar(n.size * grow * (0.2 + 0.8 * k));
       m.compose(at[i], q, s);
       nodeMesh.setMatrixAt(i, m);
-      mixBg(n.kind === 2 ? coreColor : layerColors[n.layer], Math.min(lit, focused) * (0.25 + 0.75 * k), tmp);
+      mixBg(layerColors[n.layer], Math.min(lit, focused) * (0.25 + 0.75 * k), tmp);
       nodeMesh.setColorAt(i, tmp);
     });
     nodeMesh.instanceMatrix.needsUpdate = true;
@@ -314,7 +294,7 @@ export function createCore({ THREE, renderer, theme = THEMES.dark, post = null }
       const lit = hover < 0 ? 0.55 : owner === hover ? 1 : 0.14;
       const sameLayer = nodes[a].layer === nodes[b].layer;
       const focused = focus < 0 || !sameLayer ? 1 : nodes[a].layer === Math.round(focus) ? 1.4 : 0.5;
-      const color = sameLayer && owner >= 0 && nodes[a].kind !== 2 && nodes[b].kind !== 2 ? layerColors[nodes[a].layer] : edgeColor;
+      const color = sameLayer && owner >= 0 ? layerColors[nodes[a].layer] : edgeColor;
       mixBg(color, Math.min(1, lit * focused) * smooth(assemble * 1.3 - 0.3), tmp);
       tmp.toArray(lineCol, k * 6);
       tmp.toArray(lineCol, k * 6 + 3);
@@ -332,11 +312,6 @@ export function createCore({ THREE, renderer, theme = THEMES.dark, post = null }
     packetGeometry.attributes.position.needsUpdate = true;
     packetGeometry.attributes.color.needsUpdate = true;
 
-    shell.position.copy(at[coreStart + 1]).lerp(at[coreStart + 2], 0.5);
-    shell.rotation.set(t * 0.2, t * 0.3, 0);
-    shell.scale.setScalar(Math.max(0.001, (1 - ex) * smooth(assemble)));
-    shellMaterial.opacity = 0.35 * (1 - ex);
-
     planes.forEach((pl, l) => {
       const f = focus >= 0 && l === Math.round(focus) ? 1 : 0.45;
       pl.material.opacity = ex * f * (theme.dark ? 0.5 : 0.6);
@@ -349,8 +324,8 @@ export function createCore({ THREE, renderer, theme = THEMES.dark, post = null }
     // Where each product's label goes: above its top node, in pixels.
     world.updateMatrixWorld();
     projected.length = 0;
-    for (let p = 0; p < PRODUCTS + 1; p++) {
-      const head = p < PRODUCTS ? at[productNode(p, 0)] : at[coreStart];
+    for (let p = 0; p < PRODUCTS; p++) {
+      const head = at[productNode(p, 0)];
       v.copy(head).applyMatrix4(system.matrixWorld);
       v.y += 0.32;
       v.project(camera);
@@ -365,10 +340,10 @@ export function createCore({ THREE, renderer, theme = THEMES.dark, post = null }
     }
   }
 
-  /** The labels' places from the last frame: five products, then SAGE. */
+  /** The labels' places from the last frame, one per product. */
   const labels = () => projected;
 
-  /** The product (0..4, or 5 for SAGE) nearest the pointer, or -1. */
+  /** The product (0..4) nearest the pointer, or -1. */
   function pick(nx, ny) {
     let best = -1;
     let bestD = 0.09;

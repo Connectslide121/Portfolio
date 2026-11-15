@@ -203,7 +203,6 @@ const ALIASES = {
   openaiapi: ["openai"],
   tailwind: ["tailwindcss"],
   azureaifoundry: ["azureai"],
-  angular: ["angular21"],
 };
 
 const careerEntries = [...experience, ...education];

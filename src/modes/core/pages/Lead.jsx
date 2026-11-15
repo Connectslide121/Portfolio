@@ -6,7 +6,7 @@ import { products } from "../../../data/products";
 // What the role is, in his words from the CV, and three figures taken from it.
 const STATEMENTS = [
   { lead: "I lead the team.", rest: "The development team behind the Jambiz Group's AI-powered products." },
-  { lead: "I set the stack.", rest: "One modern stack for all of them: Angular 21, .NET 8 Azure Functions and CosmosDB." },
+  { lead: "I pick the stack.", rest: "Whatever fits each product: Angular, React or Mithril.js on the front, .NET, Azure Functions, SQL or CosmosDB behind it." },
   { lead: "I ship fast.", rest: "MVPs built quickly, as the company moves to product-led growth." },
 ];
 const FIGURES = [
