@@ -139,6 +139,9 @@ body:not(.dark-theme) .sun-glow {
 .planet-3 {
   fill: #ffd28a;
 }
+.planet-4 {
+  fill: #7fe3c4;
+}
 
 .planet-ring {
   fill: none;

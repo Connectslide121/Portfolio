@@ -7,9 +7,10 @@ import { scrollToSection } from "../components/hooks";
  * planet keeps its own period; labels counter-rotate so they stay upright.
  * Click a planet to fly to its entry in the catalogue.
  */
-const ORBITS = [92, 138, 184, 230];
-const PERIODS = [26, 40, 58, 84]; // seconds per revolution
-const START = [20, 160, 260, 70]; // degrees, so they do not start in a line
+// One entry per featured project: add one to each list when a project joins.
+const ORBITS = [78, 116, 154, 192, 230];
+const PERIODS = [26, 40, 58, 84, 116]; // seconds per revolution
+const START = [20, 160, 260, 70, 200]; // degrees, so they do not start in a line
 
 export default function Orrery() {
   return (
@@ -41,7 +42,7 @@ export default function Orrery() {
               onClick={() => scrollToSection(`obj-${i + 1}`)}
               onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), scrollToSection(`obj-${i + 1}`))}
             >
-              <circle className={`planet-body planet-${i}`} r={9 + i * 1.5} />
+              <circle className={`planet-body planet-${i}`} r={9 + i * 1.2} />
               {i === 3 && <ellipse className="planet-ring" rx="22" ry="6" />}
               <g className="planet-label-wrap">
                 <text className="planet-label" y={-18 - i}>
