@@ -114,14 +114,14 @@ export const experience = [
       status: "Complete",
     },
     summary:
-      "Sole developer of {CertumHub}, an AI-powered platform for e-learning and sustainability assessments with multilingual support, and later brought in as a consultant to modernize the legacy {Podium System} with a full UI facelift.",
+      "Sole developer of {CertumHub}, an AI-powered compliance platform with ISO 26000, VSME and EU AI Act modules and multilingual support, and later brought in as a consultant to modernize the legacy {Podium System} with a full UI facelift.",
     summaryLinks: {
       CertumHub: productUrl.certumHub,
       "Podium System": productUrl.podium,
     },
     bullets: [
       {
-        text: "Architected complex AI modules including course builder, ISO 26000 verification, and chat assistants",
+        text: "Architected complex AI modules including ISO 26000 verification, compliance assessments, and chat assistants",
       },
       {
         text: "Implemented a vector database-powered AI content system using embedding models and RAG architecture",
